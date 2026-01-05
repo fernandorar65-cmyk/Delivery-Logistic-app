@@ -1,0 +1,83 @@
+<div class="client-form-container">
+  <div class="header">
+    <a routerLink="/clients" class="btn-back">← Volver</a>
+    <h1>{{ isEditMode() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h1>
+  </div>
+
+  @if (loading() && isEditMode()) {
+    <div class="loading">Cargando cliente...</div>
+  } @else {
+    <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="client-form">
+      @if (error()) {
+        <div class="error-message">{{ error() }}</div>
+      }
+
+      <div class="form-group">
+        <label for="name">Nombre *</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          [class.invalid]="clientForm.get('name')?.invalid && clientForm.get('name')?.touched"
+        />
+        @if (clientForm.get('name')?.invalid && clientForm.get('name')?.touched) {
+          <span class="error-text">{{ getFieldError('name') }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          [class.invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
+        />
+        @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
+          <span class="error-text">{{ getFieldError('email') }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Teléfono</label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="address">Dirección</label>
+        <textarea
+          id="address"
+          formControlName="address"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          routerLink="/clients"
+          class="btn btn-secondary"
+          [disabled]="loading()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="clientForm.invalid || loading()"
+        >
+          @if (loading()) {
+            Guardando...
+          } @else {
+            {{ isEditMode() ? 'Actualizar' : 'Crear' }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>
+
