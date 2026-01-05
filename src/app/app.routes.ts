@@ -11,75 +11,87 @@ import { InternalClientFormViewComponent } from './views/internal-clients/intern
 import { UserListViewComponent } from './views/users/user-list-view/user-list-view.component';
 import { UserDetailViewComponent } from './views/users/user-detail-view/user-detail-view.component';
 import { UserFormViewComponent } from './views/users/user-form-view/user-form-view.component';
+import { LoginViewComponent } from './views/login/login-view.component';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/clients',
+    redirectTo: '/login',
     pathMatch: 'full'
   },
   {
-    path: 'clients',
-    component: ClientListViewComponent
+    path: 'login',
+    component: LoginViewComponent
   },
   {
-    path: 'clients/new',
-    component: ClientFormViewComponent
-  },
-  {
-    path: 'clients/:id',
-    component: ClientDetailViewComponent
-  },
-  {
-    path: 'clients/:id/edit',
-    component: ClientFormViewComponent
-  },
-  {
-    path: 'drivers',
-    component: DriverListViewComponent
-  },
-  {
-    path: 'drivers/new',
-    component: DriverFormViewComponent
-  },
-  {
-    path: 'drivers/:id',
-    component: DriverDetailViewComponent
-  },
-  {
-    path: 'drivers/:id/edit',
-    component: DriverFormViewComponent
-  },
-  {
-    path: 'internal-clients',
-    component: InternalClientListViewComponent
-  },
-  {
-    path: 'internal-clients/new',
-    component: InternalClientFormViewComponent
-  },
-  {
-    path: 'internal-clients/:id',
-    component: InternalClientDetailViewComponent
-  },
-  {
-    path: 'internal-clients/:id/edit',
-    component: InternalClientFormViewComponent
-  },
-  {
-    path: 'users',
-    component: UserListViewComponent
-  },
-  {
-    path: 'users/new',
-    component: UserFormViewComponent
-  },
-  {
-    path: 'users/:id',
-    component: UserDetailViewComponent
-  },
-  {
-    path: 'users/:id/edit',
-    component: UserFormViewComponent
+    path: '',
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: 'clients',
+        component: ClientListViewComponent
+      },
+      {
+        path: 'clients/new',
+        component: ClientFormViewComponent
+      },
+      {
+        path: 'clients/:id',
+        component: ClientDetailViewComponent
+      },
+      {
+        path: 'clients/:id/edit',
+        component: ClientFormViewComponent
+      },
+      {
+        path: 'drivers',
+        component: DriverListViewComponent
+      },
+      {
+        path: 'drivers/new',
+        component: DriverFormViewComponent
+      },
+      {
+        path: 'drivers/:id',
+        component: DriverDetailViewComponent
+      },
+      {
+        path: 'drivers/:id/edit',
+        component: DriverFormViewComponent
+      },
+      {
+        path: 'internal-clients',
+        component: InternalClientListViewComponent
+      },
+      {
+        path: 'internal-clients/new',
+        component: InternalClientFormViewComponent
+      },
+      {
+        path: 'internal-clients/:id',
+        component: InternalClientDetailViewComponent
+      },
+      {
+        path: 'internal-clients/:id/edit',
+        component: InternalClientFormViewComponent
+      },
+      {
+        path: 'users',
+        component: UserListViewComponent
+      },
+      {
+        path: 'users/new',
+        component: UserFormViewComponent
+      },
+      {
+        path: 'users/:id',
+        component: UserDetailViewComponent
+      },
+      {
+        path: 'users/:id/edit',
+        component: UserFormViewComponent
+      }
+    ]
   }
 ];

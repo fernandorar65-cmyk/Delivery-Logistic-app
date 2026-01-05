@@ -1,5 +1,5 @@
 export interface TokenRequest {
-  username: string;
+  email: string;
   password: string;
 }
 

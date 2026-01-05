@@ -1,0 +1,67 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1 class="login-title">Iniciar Sesión</h1>
+      <p class="login-subtitle">Ingresa tus credenciales para acceder</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      @if (error()) {
+        <div class="error-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="email">
+          Email <span class="required">*</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="correo@ejemplo.com"
+          [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        />
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <span class="error-text">{{ getFieldError('email') }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          Contraseña <span class="required">*</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Ingresa tu contraseña"
+          [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        />
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <span class="error-text">{{ getFieldError('password') }}</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loginForm.invalid || loading()"
+      >
+        @if (loading()) {
+          <div class="btn-spinner"></div>
+          Iniciando sesión...
+        } @else {
+          Iniciar Sesión
+        }
+      </button>
+    </form>
+  </div>
+</div>
+
