@@ -18,6 +18,8 @@ export class LoginViewComponent {
 
   loading = signal(false);
   error = signal<string | null>(null);
+  showPassword = signal(false);
+  rememberMe = signal(false);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -48,14 +50,27 @@ export class LoginViewComponent {
           this.router.navigate(['/clients']);
         },
         error: (err) => {
-          this.error.set('Credenciales inválidas. Por favor, verifica tu email y contraseña.');
           this.loading.set(false);
+          
+          // Manejar diferentes tipos de errores
+          if (err.status === 401 || err.status === 400) {
+            this.error.set('Credenciales inválidas. Por favor, verifica tu email y contraseña.');
+          } else if (err.status === 0) {
+            this.error.set('Error de conexión. Por favor, verifica tu conexión a internet.');
+          } else {
+            this.error.set('Error al iniciar sesión. Por favor, intenta nuevamente.');
+          }
+          
           console.error('Error en login:', err);
         }
       });
     } else {
       this.loginForm.markAllAsTouched();
     }
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword.set(!this.showPassword());
   }
 
   getFieldError(fieldName: string): string {

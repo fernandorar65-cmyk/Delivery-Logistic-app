@@ -4,8 +4,8 @@ export interface TokenRequest {
 }
 
 export interface TokenResponse {
-  access: string;
   refresh: string;
+  access: string;
 }
 
 export interface RefreshTokenRequest {
