@@ -33,6 +33,17 @@
           </div>
         }
 
+        @if (driver()!.is_active !== undefined) {
+          <div class="info-row">
+            <span class="label">Estado:</span>
+            <span class="value">
+              <span [class]="'status-badge ' + (driver()!.is_active ? 'active' : 'inactive')">
+                {{ driver()!.is_active ? 'Activo' : 'Inactivo' }}
+              </span>
+            </span>
+          </div>
+        }
+
         @if (driver()!.vehicle_type) {
           <div class="info-row">
             <span class="label">Tipo de Vehículo:</span>
