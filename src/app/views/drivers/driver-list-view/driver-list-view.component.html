@@ -52,9 +52,8 @@
               <th>ID</th>
               <th>Nombre</th>
               <th>Email</th>
-              <th>Teléfono</th>
               <th>Licencia</th>
-              <th>Tipo de Vehículo</th>
+              <th>Estado</th>
               <th class="actions-header">Acciones</th>
             </tr>
           </thead>
@@ -64,13 +63,20 @@
                 <td class="id-cell">{{ driver.id }}</td>
                 <td class="name-cell">
                   <div class="name-wrapper">
-                    <strong>{{ driver.name }}</strong>
+                    <strong>{{ driver.first_name }} {{ driver.last_name }}</strong>
                   </div>
                 </td>
                 <td>{{ driver.email }}</td>
-                <td>{{ driver.phone || '-' }}</td>
                 <td>{{ driver.license_number || '-' }}</td>
-                <td>{{ driver.vehicle_type || '-' }}</td>
+                <td>
+                  @if (driver.is_active !== undefined) {
+                    <span [class]="'status-badge ' + (driver.is_active ? 'active' : 'inactive')">
+                      {{ driver.is_active ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
                 <td class="actions-cell">
                   <div class="action-buttons">
                     <a [routerLink]="['/drivers', driver.id]" class="action-btn view-btn" title="Ver detalles">

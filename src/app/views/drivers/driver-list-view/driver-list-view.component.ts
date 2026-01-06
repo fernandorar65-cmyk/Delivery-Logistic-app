@@ -59,7 +59,7 @@ export class DriverListViewComponent {
     }
   }
 
-  deleteDriver(id: number) {
+  deleteDriver(id: string) {
     if (confirm('¿Está seguro de que desea eliminar este conductor?')) {
       this.loading.set(true);
       this.driverService.delete(id).subscribe({

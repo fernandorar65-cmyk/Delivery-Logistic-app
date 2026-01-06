@@ -232,6 +232,24 @@
   font-weight: 500;
 }
 
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status-badge.inactive {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
 @media (max-width: 768px) {
   .page-container {
     padding: 0;

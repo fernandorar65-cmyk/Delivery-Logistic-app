@@ -23,11 +23,11 @@ export class DriverDetailViewComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadDriver(Number(id));
+      this.loadDriver(id);
     }
   }
 
-  loadDriver(id: number) {
+  loadDriver(id: string) {
     this.loading.set(true);
     this.error.set(null);
 

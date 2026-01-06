@@ -21,9 +21,8 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Email</th>
-            <th>Teléfono</th>
             <th>Licencia</th>
-            <th>Tipo de Vehículo</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -31,11 +30,18 @@
           @for (driver of drivers(); track driver.id) {
             <tr>
               <td>{{ driver.id }}</td>
-              <td>{{ driver.name }}</td>
+              <td>{{ driver.first_name }} {{ driver.last_name }}</td>
               <td>{{ driver.email }}</td>
-              <td>{{ driver.phone || '-' }}</td>
               <td>{{ driver.license_number || '-' }}</td>
-              <td>{{ driver.vehicle_type || '-' }}</td>
+              <td>
+                @if (driver.is_active !== undefined) {
+                  <span [class]="'status-badge ' + (driver.is_active ? 'active' : 'inactive')">
+                    {{ driver.is_active ? 'Activo' : 'Inactivo' }}
+                  </span>
+                } @else {
+                  <span>-</span>
+                }
+              </td>
               <td class="actions">
                 <a [routerLink]="['/drivers', driver.id]" class="btn btn-sm btn-view">Ver</a>
                 <a [routerLink]="['/drivers', driver.id, 'edit']" class="btn btn-sm btn-edit">Editar</a>

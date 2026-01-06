@@ -19,7 +19,7 @@ export class DriverFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   isEditMode = signal(false);
-  driverId = signal<number | null>(null);
+  driverId = signal<string | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
 
@@ -35,17 +35,18 @@ export class DriverFormComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id && this.route.snapshot.url.some(segment => segment.path === 'edit')) {
       this.isEditMode.set(true);
-      this.driverId.set(Number(id));
-      this.loadDriver(Number(id));
+      this.driverId.set(id);
+      this.loadDriver(id);
     }
   }
 
-  loadDriver(id: number) {
+  loadDriver(id: string) {
     this.loading.set(true);
     this.driverService.getById(id).subscribe({
       next: (driver) => {
         this.driverForm.patchValue({
-          name: driver.name,
+          first_name: driver.first_name,
+          last_name: driver.last_name,
           email: driver.email,
           phone: driver.phone || '',
           license_number: driver.license_number || '',

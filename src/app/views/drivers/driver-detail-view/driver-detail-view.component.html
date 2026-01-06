@@ -40,7 +40,7 @@
     <div class="card detail-card">
       <div class="detail-header">
         <div class="detail-title-section">
-          <h2 class="detail-title">{{ driver()!.name }}</h2>
+          <h2 class="detail-title">{{ driver()!.first_name }} {{ driver()!.last_name }}</h2>
           <span class="detail-badge">ID: {{ driver()!.id }}</span>
         </div>
       </div>
@@ -116,6 +116,25 @@
         <div class="info-section">
           <h3 class="section-title">Información del Sistema</h3>
           <div class="info-grid">
+            @if (driver()!.is_active !== undefined) {
+              <div class="info-item">
+                <div class="info-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Estado</span>
+                  <span class="info-value">
+                    <span [class]="'status-badge ' + (driver()!.is_active ? 'active' : 'inactive')">
+                      {{ driver()!.is_active ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            }
+
             @if (driver()!.created_at) {
               <div class="info-item">
                 <div class="info-icon">

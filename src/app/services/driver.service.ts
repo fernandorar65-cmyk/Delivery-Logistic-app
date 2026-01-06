@@ -17,7 +17,7 @@ export class DriverService {
     return this.http.get<PaginatedResponse<Driver>>(`${this.apiUrl}/`, { params });
   }
 
-  getById(id: number): Observable<Driver> {
+  getById(id: string): Observable<Driver> {
     return this.http.get<Driver>(`${this.apiUrl}/${id}/`);
   }
 
@@ -25,15 +25,15 @@ export class DriverService {
     return this.http.post<Driver>(`${this.apiUrl}/`, driver);
   }
 
-  update(id: number, driver: DriverUpdate): Observable<Driver> {
+  update(id: string, driver: DriverUpdate): Observable<Driver> {
     return this.http.put<Driver>(`${this.apiUrl}/${id}/`, driver);
   }
 
-  partialUpdate(id: number, driver: DriverUpdate): Observable<Driver> {
+  partialUpdate(id: string, driver: DriverUpdate): Observable<Driver> {
     return this.http.patch<Driver>(`${this.apiUrl}/${id}/`, driver);
   }
 
-  delete(id: number): Observable<void> {
+  delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}/`);
   }
 }
