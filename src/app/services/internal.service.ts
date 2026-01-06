@@ -22,6 +22,7 @@ export class InternalService {
   }
 
   create(internal: InternalCreate): Observable<Internal> {
+    console.log("aca", internal);
     return this.http.post<Internal>(`${this.apiUrl}/`, internal);
   }
 

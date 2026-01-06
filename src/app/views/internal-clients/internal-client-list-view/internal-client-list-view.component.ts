@@ -59,7 +59,7 @@ export class InternalClientListViewComponent {
     }
   }
 
-  deleteInternalClient(id: number) {
+  deleteInternalClient(id: string) {
     if (confirm('¿Está seguro de que desea eliminar este cliente interno?')) {
       this.loading.set(true);
       this.internalClientService.delete(id).subscribe({

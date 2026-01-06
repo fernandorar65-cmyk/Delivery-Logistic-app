@@ -23,11 +23,11 @@ export class InternalClientDetailViewComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadInternalClient(Number(id));
+      this.loadInternalClient(id);
     }
   }
 
-  loadInternalClient(id: number) {
+  loadInternalClient(id: string) {
     this.loading.set(true);
     this.error.set(null);
 

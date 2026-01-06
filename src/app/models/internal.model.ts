@@ -1,14 +1,15 @@
 export interface Internal {
   id?: number;
-  name: string;
+  email?: string;
+  name?: string;
   description?: string;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface InternalCreate {
-  name: string;
-  description?: string;
+  email: string;
+  password: string;
 }
 
 export interface InternalUpdate {

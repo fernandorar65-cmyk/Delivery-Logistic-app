@@ -63,7 +63,7 @@
                 <td class="id-cell">{{ internalClient.id }}</td>
                 <td class="name-cell">
                   <div class="name-wrapper">
-                    <strong>{{ internalClient.name }}</strong>
+                    <strong>{{ internalClient.name || internalClient.email || '-' }}</strong>
                   </div>
                 </td>
                 <td>{{ internalClient.email }}</td>

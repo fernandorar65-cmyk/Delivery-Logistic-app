@@ -19,34 +19,34 @@ export class InternalClientFormViewComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   isEditMode = signal(false);
-  internalClientId = signal<number | null>(null);
+  internalClientId = signal<string | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
 
   internalClientForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['']
+    password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id && this.route.snapshot.url.some(segment => segment.path === 'edit')) {
       this.isEditMode.set(true);
-      this.internalClientId.set(Number(id));
-      this.loadInternalClient(Number(id));
+      this.internalClientId.set(id);
+      this.loadInternalClient(id);
     }
   }
 
-  loadInternalClient(id: number) {
+  loadInternalClient(id: string) {
     this.loading.set(true);
     this.internalClientService.getById(id).subscribe({
       next: (internalClient) => {
         this.internalClientForm.patchValue({
-          name: internalClient.name,
-          email: internalClient.email,
-          phone: internalClient.phone || ''
+          email: internalClient.email || ''
         });
+        // En modo edición, el password es opcional
+        this.internalClientForm.get('password')?.clearValidators();
+        this.internalClientForm.get('password')?.updateValueAndValidity();
         this.loading.set(false);
       },
       error: (err) => {
@@ -62,7 +62,12 @@ export class InternalClientFormViewComponent implements OnInit {
       this.loading.set(true);
       this.error.set(null);
 
-      const formValue = this.internalClientForm.value;
+      const formValue = { ...this.internalClientForm.value };
+      
+      // Si estamos editando y no hay password, no lo enviamos
+      if (this.isEditMode() && !formValue.password) {
+        delete formValue.password;
+      }
 
       if (this.isEditMode() && this.internalClientId()) {
         this.internalClientService.update(this.internalClientId()!, formValue).subscribe({
@@ -77,13 +82,31 @@ export class InternalClientFormViewComponent implements OnInit {
         });
       } else {
         this.internalClientService.create(formValue).subscribe({
-          next: (internalClient) => {
-            this.router.navigate(['/internal-clients', internalClient.id]);
+          next: (response) => {
+            console.log('Respuesta del servidor:', response);
+            // Si la respuesta tiene un id, navegamos al detalle
+            if (response && response.id) {
+              this.router.navigate(['/internal-clients', response.id]);
+            } else {
+              // Si no hay id, redirigimos a la lista
+              this.router.navigate(['/internal-clients']);
+            }
+            this.loading.set(false);
           },
           error: (err) => {
-            this.error.set('Error al crear el cliente interno.');
             this.loading.set(false);
             console.error('Error creating internal client:', err);
+            
+            // Manejar diferentes tipos de errores
+            if (err.status === 400) {
+              this.error.set('Datos inválidos. Por favor, verifica el email y la contraseña.');
+            } else if (err.status === 409) {
+              this.error.set('El email ya está registrado.');
+            } else if (err.status === 0) {
+              this.error.set('Error de conexión. Por favor, verifica tu conexión a internet.');
+            } else {
+              this.error.set('Error al crear el cliente interno. Por favor, intenta nuevamente.');
+            }
           }
         });
       }

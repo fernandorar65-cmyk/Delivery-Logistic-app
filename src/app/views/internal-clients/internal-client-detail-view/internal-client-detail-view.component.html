@@ -40,7 +40,7 @@
     <div class="card detail-card">
       <div class="detail-header">
         <div class="detail-title-section">
-          <h2 class="detail-title">{{ internalClient()!.name }}</h2>
+          <h2 class="detail-title">{{ internalClient()!.name || internalClient()!.email || 'Cliente Interno' }}</h2>
           <span class="detail-badge">ID: {{ internalClient()!.id }}</span>
         </div>
       </div>
@@ -81,6 +81,20 @@
         <div class="info-section">
           <h3 class="section-title">Información del Sistema</h3>
           <div class="info-grid">
+            @if (internalClient()!.role) {
+              <div class="info-item">
+                <div class="info-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Rol</span>
+                  <span class="info-value">{{ internalClient()!.role }}</span>
+                </div>
+              </div>
+            }
             @if (internalClient()!.created_at) {
               <div class="info-item">
                 <div class="info-icon">

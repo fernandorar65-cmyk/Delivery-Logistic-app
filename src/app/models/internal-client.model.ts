@@ -1,21 +1,20 @@
 export interface InternalClient {
-  id?: number;
-  name: string;
+  id?: string;
   email: string;
+  role?: string;
+  name?: string;
   phone?: string;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface InternalClientCreate {
-  name: string;
   email: string;
-  phone?: string;
+  password: string;
 }
 
 export interface InternalClientUpdate {
-  name?: string;
   email?: string;
-  phone?: string;
+  password?: string;
 }
 

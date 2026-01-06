@@ -17,7 +17,7 @@ export class InternalClientService {
     return this.http.get<PaginatedResponse<InternalClient>>(`${this.apiUrl}/`, { params });
   }
 
-  getById(id: number): Observable<InternalClient> {
+  getById(id: string): Observable<InternalClient> {
     return this.http.get<InternalClient>(`${this.apiUrl}/${id}/`);
   }
 
@@ -25,15 +25,15 @@ export class InternalClientService {
     return this.http.post<InternalClient>(`${this.apiUrl}/`, internalClient);
   }
 
-  update(id: number, internalClient: InternalClientUpdate): Observable<InternalClient> {
+  update(id: string, internalClient: InternalClientUpdate): Observable<InternalClient> {
     return this.http.put<InternalClient>(`${this.apiUrl}/${id}/`, internalClient);
   }
 
-  partialUpdate(id: number, internalClient: InternalClientUpdate): Observable<InternalClient> {
+  partialUpdate(id: string, internalClient: InternalClientUpdate): Observable<InternalClient> {
     return this.http.patch<InternalClient>(`${this.apiUrl}/${id}/`, internalClient);
   }
 
-  delete(id: number): Observable<void> {
+  delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}/`);
   }
 }
