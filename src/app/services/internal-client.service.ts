@@ -1,17 +1,20 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { InternalClient, InternalClientCreate, InternalClientUpdate } from '../models/internal-client.model';
+import { PaginatedResponse } from '../models/paginated-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InternalClientService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/v1/internal-clients';
+  private apiUrl = `${environment.apiUrl}/internals`;
 
-  getAll(): Observable<InternalClient[]> {
-    return this.http.get<InternalClient[]>(`${this.apiUrl}/`);
+  getAll(page: number = 1): Observable<PaginatedResponse<InternalClient>> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<PaginatedResponse<InternalClient>>(`${this.apiUrl}/`, { params });
   }
 
   getById(id: number): Observable<InternalClient> {

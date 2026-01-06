@@ -22,13 +22,13 @@ export class ClientListComponent {
     this.loadClients();
   }
 
-  loadClients() {
+  loadClients(page: number = 1) {
     this.loading.set(true);
     this.error.set(null);
     
-    this.clientService.getAll().subscribe({
-      next: (data) => {
-        this.clients.set(data);
+    this.clientService.getAll(page).subscribe({
+      next: (response) => {
+        this.clients.set(response.results);
         this.loading.set(false);
       },
       error: (err) => {

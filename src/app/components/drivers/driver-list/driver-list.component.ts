@@ -22,13 +22,13 @@ export class DriverListComponent {
     this.loadDrivers();
   }
 
-  loadDrivers() {
+  loadDrivers(page: number = 1) {
     this.loading.set(true);
     this.error.set(null);
     
-    this.driverService.getAll().subscribe({
-      next: (data) => {
-        this.drivers.set(data);
+    this.driverService.getAll(page).subscribe({
+      next: (response) => {
+        this.drivers.set(response.results);
         this.loading.set(false);
       },
       error: (err) => {

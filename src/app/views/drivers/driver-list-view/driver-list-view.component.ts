@@ -17,18 +17,26 @@ export class DriverListViewComponent {
   drivers = signal<Driver[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+  currentPage = signal(1);
+  totalCount = signal(0);
+  hasNext = signal(false);
+  hasPrevious = signal(false);
 
   constructor() {
-    this.loadDrivers();
+    this.loadDrivers(1);
   }
 
-  loadDrivers() {
+  loadDrivers(page: number = 1) {
     this.loading.set(true);
     this.error.set(null);
     
-    this.driverService.getAll().subscribe({
-      next: (data) => {
-        this.drivers.set(data);
+    this.driverService.getAll(page).subscribe({
+      next: (response) => {
+        this.drivers.set(response.results);
+        this.totalCount.set(response.count);
+        this.hasNext.set(response.next !== null);
+        this.hasPrevious.set(response.previous !== null);
+        this.currentPage.set(page);
         this.loading.set(false);
       },
       error: (err) => {
@@ -37,6 +45,18 @@ export class DriverListViewComponent {
         console.error('Error loading drivers:', err);
       }
     });
+  }
+
+  nextPage() {
+    if (this.hasNext()) {
+      this.loadDrivers(this.currentPage() + 1);
+    }
+  }
+
+  previousPage() {
+    if (this.hasPrevious()) {
+      this.loadDrivers(this.currentPage() - 1);
+    }
   }
 
   deleteDriver(id: number) {

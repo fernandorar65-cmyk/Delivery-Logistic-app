@@ -17,18 +17,26 @@ export class ClientListViewComponent {
   clients = signal<Client[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+  currentPage = signal(1);
+  totalCount = signal(0);
+  hasNext = signal(false);
+  hasPrevious = signal(false);
 
   constructor() {
-    this.loadClients();
+    this.loadClients(1);
   }
 
-  loadClients() {
+  loadClients(page: number = 1) {
     this.loading.set(true);
     this.error.set(null);
     
-    this.clientService.getAll().subscribe({
-      next: (data) => {
-        this.clients.set(data);
+    this.clientService.getAll(page).subscribe({
+      next: (response) => {
+        this.clients.set(response.results);
+        this.totalCount.set(response.count);
+        this.hasNext.set(response.next !== null);
+        this.hasPrevious.set(response.previous !== null);
+        this.currentPage.set(page);
         this.loading.set(false);
       },
       error: (err) => {
@@ -37,6 +45,18 @@ export class ClientListViewComponent {
         console.error('Error loading clients:', err);
       }
     });
+  }
+
+  nextPage() {
+    if (this.hasNext()) {
+      this.loadClients(this.currentPage() + 1);
+    }
+  }
+
+  previousPage() {
+    if (this.hasPrevious()) {
+      this.loadClients(this.currentPage() - 1);
+    }
   }
 
   deleteClient(id: number) {

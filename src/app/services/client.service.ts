@@ -1,17 +1,20 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Client, ClientCreate, ClientUpdate } from '../models/client.model';
+import { PaginatedResponse } from '../models/paginated-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/v1/clients';
+  private apiUrl = `${environment.apiUrl}/clients`;
 
-  getAll(): Observable<Client[]> {
-    return this.http.get<Client[]>(this.apiUrl);
+  getAll(page: number = 1): Observable<PaginatedResponse<Client>> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<PaginatedResponse<Client>>(`${this.apiUrl}/`, { params });
   }
 
   getById(id: number): Observable<Client> {
@@ -19,7 +22,7 @@ export class ClientService {
   }
 
   create(client: ClientCreate): Observable<Client> {
-    return this.http.post<Client>(this.apiUrl, client);
+    return this.http.post<Client>(`${this.apiUrl}/`, client);
   }
 
   update(id: number, client: ClientUpdate): Observable<Client> {
