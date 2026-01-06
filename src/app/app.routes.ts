@@ -12,6 +12,7 @@ import { UserListViewComponent } from './views/users/user-list-view/user-list-vi
 import { UserDetailViewComponent } from './views/users/user-detail-view/user-detail-view.component';
 import { UserFormViewComponent } from './views/users/user-form-view/user-form-view.component';
 import { LoginViewComponent } from './views/login/login-view.component';
+import { DashboardViewComponent } from './views/dashboard/dashboard-view.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
@@ -28,6 +29,10 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     children: [
+      {
+        path: 'dashboard',
+        component: DashboardViewComponent
+      },
       {
         path: 'clients',
         component: ClientListViewComponent
@@ -91,6 +96,11 @@ export const routes: Routes = [
       {
         path: 'users/:id/edit',
         component: UserFormViewComponent
+      },
+      {
+        path: '',
+        redirectTo: '/dashboard',
+        pathMatch: 'full'
       }
     ]
   }

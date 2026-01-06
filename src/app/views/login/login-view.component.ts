@@ -46,8 +46,8 @@ export class LoginViewComponent {
             localStorage.setItem('refresh_token', response.refresh);
           }
           
-          // Redirigir a la página principal
-          this.router.navigate(['/clients']);
+          // Redirigir al dashboard
+          this.router.navigate(['/dashboard']);
         },
         error: (err) => {
           this.loading.set(false);
