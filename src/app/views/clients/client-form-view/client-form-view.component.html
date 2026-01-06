@@ -35,22 +35,6 @@
           <h3 class="section-title">Información Básica</h3>
           
           <div class="form-group">
-            <label for="name">
-              Nombre <span class="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              formControlName="name"
-              placeholder="Ingrese el nombre completo"
-              [class.invalid]="clientForm.get('name')?.invalid && clientForm.get('name')?.touched"
-            />
-            @if (clientForm.get('name')?.invalid && clientForm.get('name')?.touched) {
-              <span class="error-text">{{ getFieldError('name') }}</span>
-            }
-          </div>
-
-          <div class="form-group">
             <label for="email">
               Email <span class="required">*</span>
             </label>
@@ -65,29 +49,58 @@
               <span class="error-text">{{ getFieldError('email') }}</span>
             }
           </div>
-        </div>
-
-        <div class="form-section">
-          <h3 class="section-title">Información de Contacto</h3>
 
           <div class="form-group">
-            <label for="phone">Teléfono</label>
+            <label for="password">
+              Contraseña 
+              @if (!isEditMode()) {
+                <span class="required">*</span>
+              } @else {
+                <span class="optional">(opcional)</span>
+              }
+            </label>
             <input
-              type="tel"
-              id="phone"
-              formControlName="phone"
-              placeholder="+1 234 567 8900"
+              type="password"
+              id="password"
+              formControlName="password"
+              [placeholder]="isEditMode() ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
+              [class.invalid]="clientForm.get('password')?.invalid && clientForm.get('password')?.touched"
             />
+            @if (clientForm.get('password')?.invalid && clientForm.get('password')?.touched) {
+              <span class="error-text">{{ getFieldError('password') }}</span>
+            }
           </div>
 
           <div class="form-group">
-            <label for="address">Dirección</label>
-            <textarea
-              id="address"
-              formControlName="address"
-              rows="3"
-              placeholder="Ingrese la dirección completa"
-            ></textarea>
+            <label for="business_name">
+              Nombre de la Empresa <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="business_name"
+              formControlName="business_name"
+              placeholder="Ingrese el nombre de la empresa"
+              [class.invalid]="clientForm.get('business_name')?.invalid && clientForm.get('business_name')?.touched"
+            />
+            @if (clientForm.get('business_name')?.invalid && clientForm.get('business_name')?.touched) {
+              <span class="error-text">{{ getFieldError('business_name') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="ruc">
+              RUC <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="ruc"
+              formControlName="ruc"
+              placeholder="Ingrese el RUC"
+              [class.invalid]="clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched"
+            />
+            @if (clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched) {
+              <span class="error-text">{{ getFieldError('ruc') }}</span>
+            }
           </div>
         </div>
 

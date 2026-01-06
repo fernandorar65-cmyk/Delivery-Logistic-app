@@ -65,12 +65,12 @@
                 <td class="id-cell">{{ client.id }}</td>
                 <td class="name-cell">
                   <div class="name-wrapper">
-                    <strong>{{ client.name }}</strong>
+                    <strong>{{ client.business_name }}</strong>
                   </div>
                 </td>
                 <td>{{ client.email }}</td>
-                <td>{{ client.phone || '-' }}</td>
-                <td>{{ client.address || '-' }}</td>
+                <td>{{ client.phone_number || '-' }}</td>
+                <td>{{ client.contact_phone || '-' }}</td>
                 <td class="actions-cell">
                   <div class="action-buttons">
                     <a [routerLink]="['/clients', client.id]" class="action-btn view-btn" title="Ver detalles">

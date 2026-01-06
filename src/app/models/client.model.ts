@@ -1,24 +1,26 @@
 export interface Client {
-  id?: number;
-  name: string;
+  id?: string;
   email: string;
-  phone?: string;
-  address?: string;
+  business_name: string;
+  ruc: string;
+  phone_number?: string | null;
+  contact_phone?: string | null;
+  is_active?: boolean;
   created_at?: string;
-  updated_at?: string;
+  user?: string;
 }
 
 export interface ClientCreate {
-  name: string;
   email: string;
-  phone?: string;
-  address?: string;
+  password: string;
+  business_name: string;
+  ruc: string;
 }
 
 export interface ClientUpdate {
-  name?: string;
   email?: string;
-  phone?: string;
-  address?: string;
+  password?: string;
+  business_name?: string;
+  ruc?: string;
 }
 

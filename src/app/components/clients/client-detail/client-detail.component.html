@@ -16,7 +16,7 @@
 
     <div class="client-card">
       <div class="client-header">
-        <h1>{{ client()!.name }}</h1>
+        <h1>{{ client()!.business_name }}</h1>
         <span class="badge">ID: {{ client()!.id }}</span>
       </div>
 
@@ -26,17 +26,17 @@
           <span class="value">{{ client()!.email }}</span>
         </div>
 
-        @if (client()!.phone) {
+        @if (client()!.phone_number) {
           <div class="info-row">
             <span class="label">Teléfono:</span>
-            <span class="value">{{ client()!.phone }}</span>
+            <span class="value">{{ client()!.phone_number }}</span>
           </div>
         }
 
-        @if (client()!.address) {
+        @if (client()!.contact_phone) {
           <div class="info-row">
             <span class="label">Dirección:</span>
-            <span class="value">{{ client()!.address }}</span>
+            <span class="value">{{ client()!.contact_phone }}</span>
           </div>
         }
 
@@ -47,10 +47,10 @@
           </div>
         }
 
-        @if (client()!.updated_at) {
+        @if (client()!.created_at) {
           <div class="info-row">
             <span class="label">Última actualización:</span>
-            <span class="value">{{ client()!.updated_at | date: 'medium' }}</span>
+            <span class="value">{{ client()!.created_at | date: 'medium' }}</span>
           </div>
         }
       </div>

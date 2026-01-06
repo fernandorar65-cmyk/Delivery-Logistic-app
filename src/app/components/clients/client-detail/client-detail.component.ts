@@ -23,11 +23,11 @@ export class ClientDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadClient(Number(id));
+      this.loadClient(id);
     }
   }
 
-  loadClient(id: number) {
+  loadClient(id: string) {
     this.loading.set(true);
     this.error.set(null);
 

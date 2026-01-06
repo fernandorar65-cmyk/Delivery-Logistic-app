@@ -17,7 +17,7 @@ export class ClientService {
     return this.http.get<PaginatedResponse<Client>>(`${this.apiUrl}/`, { params });
   }
 
-  getById(id: number): Observable<Client> {
+  getById(id: string): Observable<Client> {
     return this.http.get<Client>(`${this.apiUrl}/${id}/`);
   }
 
@@ -25,11 +25,11 @@ export class ClientService {
     return this.http.post<Client>(`${this.apiUrl}/`, client);
   }
 
-  update(id: number, client: ClientUpdate): Observable<Client> {
+  update(id: string, client: ClientUpdate): Observable<Client> {
     return this.http.put<Client>(`${this.apiUrl}/${id}/`, client);
   }
 
-  partialUpdate(id: number, client: ClientUpdate): Observable<Client> {
+  partialUpdate(id: string, client: ClientUpdate): Observable<Client> {
     return this.http.patch<Client>(`${this.apiUrl}/${id}/`, client);
   }
 }

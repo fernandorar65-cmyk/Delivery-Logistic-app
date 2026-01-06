@@ -19,36 +19,38 @@ export class ClientFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   isEditMode = signal(false);
-  clientId = signal<number | null>(null);
+  clientId = signal<string | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
 
   clientForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: [''],
-    address: ['']
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    business_name: ['', [Validators.required, Validators.minLength(2)]],
+    ruc: ['', [Validators.required, Validators.minLength(8)]]
   });
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id && this.route.snapshot.url.some(segment => segment.path === 'edit')) {
       this.isEditMode.set(true);
-      this.clientId.set(Number(id));
-      this.loadClient(Number(id));
+      this.clientId.set(id);
+      this.loadClient(id);
     }
   }
 
-  loadClient(id: number) {
+  loadClient(id: string) {
     this.loading.set(true);
     this.clientService.getById(id).subscribe({
       next: (client) => {
         this.clientForm.patchValue({
-          name: client.name,
-          email: client.email,
-          phone: client.phone || '',
-          address: client.address || ''
+          email: client.email || '',
+          business_name: client.business_name || '',
+          ruc: client.ruc || ''
         });
+        // En modo edición, el password es opcional
+        this.clientForm.get('password')?.clearValidators();
+        this.clientForm.get('password')?.updateValueAndValidity();
         this.loading.set(false);
       },
       error: (err) => {
@@ -64,10 +66,14 @@ export class ClientFormComponent implements OnInit {
       this.loading.set(true);
       this.error.set(null);
 
-      const formValue = this.clientForm.value;
+      const formValue = { ...this.clientForm.value };
+      
+      // Si estamos editando y no hay password, no lo enviamos
+      if (this.isEditMode() && !formValue.password) {
+        delete formValue.password;
+      }
 
       if (this.isEditMode() && this.clientId()) {
-        // Usar PUT para actualización completa
         this.clientService.update(this.clientId()!, formValue).subscribe({
           next: () => {
             this.router.navigate(['/clients', this.clientId()]);
@@ -80,13 +86,29 @@ export class ClientFormComponent implements OnInit {
         });
       } else {
         this.clientService.create(formValue).subscribe({
-          next: (client) => {
-            this.router.navigate(['/clients', client.id]);
+          next: (response) => {
+            if (response && response.id) {
+              this.router.navigate(['/clients', response.id]);
+            } else {
+              this.router.navigate(['/clients']);
+            }
+            this.loading.set(false);
           },
           error: (err) => {
-            this.error.set('Error al crear el cliente.');
             this.loading.set(false);
             console.error('Error creating client:', err);
+            
+            if (err.status === 400) {
+              this.error.set('Datos inválidos. Por favor, verifica todos los campos.');
+            } else if (err.status === 401) {
+              this.error.set('No autorizado. Por favor, inicia sesión nuevamente.');
+            } else if (err.status === 409) {
+              this.error.set('El email o RUC ya está registrado.');
+            } else if (err.status === 0) {
+              this.error.set('Error de conexión. Por favor, verifica tu conexión a internet.');
+            } else {
+              this.error.set('Error al crear el cliente. Por favor, intenta nuevamente.');
+            }
           }
         });
       }
