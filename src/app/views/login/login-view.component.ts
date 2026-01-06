@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -15,6 +15,7 @@ export class LoginViewComponent {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -38,12 +39,14 @@ export class LoginViewComponent {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          // Guardar tokens en localStorage
-          if (response.access) {
-            localStorage.setItem('access_token', response.access);
-          }
-          if (response.refresh) {
-            localStorage.setItem('refresh_token', response.refresh);
+          // Guardar tokens en localStorage solo si estamos en el navegador
+          if (isPlatformBrowser(this.platformId)) {
+            if (response.access) {
+              localStorage.setItem('access_token', response.access);
+            }
+            if (response.refresh) {
+              localStorage.setItem('refresh_token', response.refresh);
+            }
           }
           
           // Redirigir al dashboard

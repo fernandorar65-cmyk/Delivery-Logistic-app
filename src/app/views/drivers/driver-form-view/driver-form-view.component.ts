@@ -24,11 +24,11 @@ export class DriverFormViewComponent implements OnInit {
   error = signal<string | null>(null);
 
   driverForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: [''],
-    license_number: [''],
-    vehicle_type: ['']
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    first_name: ['', [Validators.required, Validators.minLength(2)]],
+    last_name: ['', [Validators.required, Validators.minLength(2)]],
+    license_number: ['', [Validators.required, Validators.minLength(5)]]
   });
 
   ngOnInit() {
@@ -45,12 +45,14 @@ export class DriverFormViewComponent implements OnInit {
     this.driverService.getById(id).subscribe({
       next: (driver) => {
         this.driverForm.patchValue({
-          name: driver.name,
-          email: driver.email,
-          phone: driver.phone || '',
-          license_number: driver.license_number || '',
-          vehicle_type: driver.vehicle_type || ''
+          email: driver.email || '',
+          first_name: (driver as any).first_name || '',
+          last_name: (driver as any).last_name || '',
+          license_number: driver.license_number || ''
         });
+        // En modo edición, el password es opcional
+        this.driverForm.get('password')?.clearValidators();
+        this.driverForm.get('password')?.updateValueAndValidity();
         this.loading.set(false);
       },
       error: (err) => {
@@ -66,7 +68,12 @@ export class DriverFormViewComponent implements OnInit {
       this.loading.set(true);
       this.error.set(null);
 
-      const formValue = this.driverForm.value;
+      const formValue = { ...this.driverForm.value };
+      
+      // Si estamos editando y no hay password, no lo enviamos
+      if (this.isEditMode() && !formValue.password) {
+        delete formValue.password;
+      }
 
       if (this.isEditMode() && this.driverId()) {
         // Usar PUT para actualización completa
@@ -82,13 +89,33 @@ export class DriverFormViewComponent implements OnInit {
         });
       } else {
         this.driverService.create(formValue).subscribe({
-          next: (driver) => {
-            this.router.navigate(['/drivers', driver.id]);
+          next: (response) => {
+            console.log('Respuesta del servidor:', response);
+            // Si la respuesta tiene un id, navegamos al detalle
+            if (response && response.id) {
+              this.router.navigate(['/drivers', response.id]);
+            } else {
+              // Si no hay id, redirigimos a la lista
+              this.router.navigate(['/drivers']);
+            }
+            this.loading.set(false);
           },
           error: (err) => {
-            this.error.set('Error al crear el conductor.');
             this.loading.set(false);
             console.error('Error creating driver:', err);
+            
+            // Manejar diferentes tipos de errores
+            if (err.status === 400) {
+              this.error.set('Datos inválidos. Por favor, verifica todos los campos.');
+            } else if (err.status === 401) {
+              this.error.set('No autorizado. Por favor, inicia sesión nuevamente.');
+            } else if (err.status === 409) {
+              this.error.set('El email o número de licencia ya está registrado.');
+            } else if (err.status === 0) {
+              this.error.set('Error de conexión. Por favor, verifica tu conexión a internet.');
+            } else {
+              this.error.set('Error al crear el conductor. Por favor, intenta nuevamente.');
+            }
           }
         });
       }

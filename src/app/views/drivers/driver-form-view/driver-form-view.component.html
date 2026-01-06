@@ -35,22 +35,6 @@
           <h3 class="section-title">Información Básica</h3>
           
           <div class="form-group">
-            <label for="name">
-              Nombre <span class="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              formControlName="name"
-              placeholder="Ingrese el nombre completo"
-              [class.invalid]="driverForm.get('name')?.invalid && driverForm.get('name')?.touched"
-            />
-            @if (driverForm.get('name')?.invalid && driverForm.get('name')?.touched) {
-              <span class="error-text">{{ getFieldError('name') }}</span>
-            }
-          </div>
-
-          <div class="form-group">
             <label for="email">
               Email <span class="required">*</span>
             </label>
@@ -67,37 +51,72 @@
           </div>
 
           <div class="form-group">
-            <label for="phone">Teléfono</label>
+            <label for="password">
+              Contraseña 
+              @if (!isEditMode()) {
+                <span class="required">*</span>
+              } @else {
+                <span class="optional">(opcional)</span>
+              }
+            </label>
             <input
-              type="tel"
-              id="phone"
-              formControlName="phone"
-              placeholder="+1 234 567 8900"
+              type="password"
+              id="password"
+              formControlName="password"
+              [placeholder]="isEditMode() ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
+              [class.invalid]="driverForm.get('password')?.invalid && driverForm.get('password')?.touched"
             />
+            @if (driverForm.get('password')?.invalid && driverForm.get('password')?.touched) {
+              <span class="error-text">{{ getFieldError('password') }}</span>
+            }
           </div>
-        </div>
-
-        <div class="form-section">
-          <h3 class="section-title">Información de Conducción</h3>
 
           <div class="form-group">
-            <label for="license_number">Número de Licencia</label>
+            <label for="first_name">
+              Nombre <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="first_name"
+              formControlName="first_name"
+              placeholder="Ingrese el nombre"
+              [class.invalid]="driverForm.get('first_name')?.invalid && driverForm.get('first_name')?.touched"
+            />
+            @if (driverForm.get('first_name')?.invalid && driverForm.get('first_name')?.touched) {
+              <span class="error-text">{{ getFieldError('first_name') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="last_name">
+              Apellido <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="last_name"
+              formControlName="last_name"
+              placeholder="Ingrese el apellido"
+              [class.invalid]="driverForm.get('last_name')?.invalid && driverForm.get('last_name')?.touched"
+            />
+            @if (driverForm.get('last_name')?.invalid && driverForm.get('last_name')?.touched) {
+              <span class="error-text">{{ getFieldError('last_name') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="license_number">
+              Número de Licencia <span class="required">*</span>
+            </label>
             <input
               type="text"
               id="license_number"
               formControlName="license_number"
               placeholder="Ej: ABC123456"
+              [class.invalid]="driverForm.get('license_number')?.invalid && driverForm.get('license_number')?.touched"
             />
-          </div>
-
-          <div class="form-group">
-            <label for="vehicle_type">Tipo de Vehículo</label>
-            <input
-              type="text"
-              id="vehicle_type"
-              formControlName="vehicle_type"
-              placeholder="Ej: Sedán, SUV, Motocicleta, etc."
-            />
+            @if (driverForm.get('license_number')?.invalid && driverForm.get('license_number')?.touched) {
+              <span class="error-text">{{ getFieldError('license_number') }}</span>
+            }
           </div>
         </div>
 

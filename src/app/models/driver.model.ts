@@ -10,18 +10,18 @@ export interface Driver {
 }
 
 export interface DriverCreate {
-  name: string;
   email: string;
-  phone?: string;
-  license_number?: string;
-  vehicle_type?: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  license_number: string;
 }
 
 export interface DriverUpdate {
-  name?: string;
   email?: string;
-  phone?: string;
+  password?: string;
+  first_name?: string;
+  last_name?: string;
   license_number?: string;
-  vehicle_type?: string;
 }
 
