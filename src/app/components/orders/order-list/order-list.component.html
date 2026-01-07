@@ -1,0 +1,29 @@
+@if (loading()) {
+  <div class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Cargando órdenes...</p>
+  </div>
+} @else if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+  </div>
+} @else if (orders().length === 0) {
+  <div class="empty-state">
+    <p>No hay órdenes registradas</p>
+  </div>
+} @else {
+  <div class="orders-list">
+    @for (order of orders(); track order.id) {
+      <div class="order-item">
+        <div class="order-info">
+          <h3>{{ order.order_number }}</h3>
+          <p>{{ order.description }}</p>
+        </div>
+        <div class="order-actions">
+          <a [routerLink]="['/orders', order.id]" class="btn-view">Ver</a>
+        </div>
+      </div>
+    }
+  </div>
+}
+

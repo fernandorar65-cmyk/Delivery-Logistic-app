@@ -14,6 +14,9 @@ import { UserFormViewComponent } from './views/users/user-form-view/user-form-vi
 import { OperationListViewComponent } from './views/operations/operation-list-view/operation-list-view.component';
 import { OperationDetailViewComponent } from './views/operations/operation-detail-view/operation-detail-view.component';
 import { OperationFormViewComponent } from './views/operations/operation-form-view/operation-form-view.component';
+import { OrderListViewComponent } from './views/orders/order-list-view/order-list-view.component';
+import { OrderDetailViewComponent } from './views/orders/order-detail-view/order-detail-view.component';
+import { OrderFormViewComponent } from './views/orders/order-form-view/order-form-view.component';
 import { LoginViewComponent } from './views/login/login-view.component';
 import { DashboardViewComponent } from './views/dashboard/dashboard-view.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
@@ -115,6 +118,22 @@ export const routes: Routes = [
       {
         path: 'operations/:id/edit',
         component: OperationFormViewComponent
+      },
+      {
+        path: 'orders',
+        component: OrderListViewComponent
+      },
+      {
+        path: 'orders/new',
+        component: OrderFormViewComponent
+      },
+      {
+        path: 'orders/:id',
+        component: OrderDetailViewComponent
+      },
+      {
+        path: 'orders/:id/edit',
+        component: OrderFormViewComponent
       },
       {
         path: '',
