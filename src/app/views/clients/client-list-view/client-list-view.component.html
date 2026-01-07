@@ -1,16 +1,16 @@
 <div class="page-container">
   <div class="page-header">
     <div class="page-title-section">
-      <h1 class="page-title">Clientes</h1>
-      <p class="page-subtitle">Gestiona todos tus clientes desde aquí</p>
+      <h1 class="page-title">Gestión de Clientes</h1>
+      <p class="page-subtitle">Administre la información, roles y estados de sus clientes y clientes internos logística y acceso.</p>
     </div>
-    <a routerLink="/clients/new" class="btn btn-primary">
+    <button (click)="openNewClientModal()" class="btn btn-primary">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
       Nuevo Cliente
-    </a>
+    </button>
   </div>
 
   @if (loading()) {
@@ -37,7 +37,7 @@
       </svg>
       <h3>No hay clientes registrados</h3>
       <p>Comienza agregando tu primer cliente al sistema</p>
-      <a routerLink="/clients/new" class="btn btn-primary">Crear Primer Cliente</a>
+      <button (click)="openNewClientModal()" class="btn btn-primary">Crear Primer Cliente</button>
     </div>
   } @else {
     <div class="card table-card">
@@ -73,24 +73,144 @@
                 <td>{{ client.contact_phone || '-' }}</td>
                 <td class="actions-cell">
                   <div class="action-buttons">
-                    <a [routerLink]="['/clients', client.id]" class="action-btn view-btn" title="Ver detalles">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    </a>
-                    <a [routerLink]="['/clients', client.id, 'edit']" class="action-btn edit-btn" title="Editar">
+                    <button (click)="openEditClientModal(client)" class="action-btn edit-btn" title="Editar">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
-                    </a>
+                    </button>
                   </div>
                 </td>
               </tr>
             }
           </tbody>
         </table>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Flotante -->
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">{{ isEditMode() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+          <button class="modal-close" (click)="closeModal()" type="button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="modal-form">
+          @if (formError()) {
+            <div class="form-error-message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ formError() }}</span>
+            </div>
+          }
+
+          <div class="form-section">
+            <h3 class="section-title">Información Básica</h3>
+            
+            <div class="form-group">
+              <label for="business_name">
+                Razón Social / Nombre de Empresa <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="business_name"
+                formControlName="business_name"
+                placeholder="Ingrese el nombre de la empresa"
+                [class.invalid]="clientForm.get('business_name')?.invalid && clientForm.get('business_name')?.touched"
+              />
+              @if (clientForm.get('business_name')?.invalid && clientForm.get('business_name')?.touched) {
+                <span class="error-text">{{ getFieldError('business_name') }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="ruc">
+                RUT / Tax ID <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="ruc"
+                formControlName="ruc"
+                placeholder="Ingrese el RUT"
+                [class.invalid]="clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched"
+              />
+              @if (clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched) {
+                <span class="error-text">{{ getFieldError('ruc') }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="email">
+                Email <span class="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="correo@ejemplo.com"
+                [class.invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
+              />
+              @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
+                <span class="error-text">{{ getFieldError('email') }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="password">
+                Contraseña 
+                @if (!isEditMode()) {
+                  <span class="required">*</span>
+                } @else {
+                  <span class="optional">(opcional - dejar en blanco para no cambiar)</span>
+                }
+              </label>
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                [placeholder]="isEditMode() ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
+                [class.invalid]="clientForm.get('password')?.invalid && clientForm.get('password')?.touched"
+              />
+              @if (clientForm.get('password')?.invalid && clientForm.get('password')?.touched) {
+                <span class="error-text">{{ getFieldError('password') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeModal()"
+              [disabled]="formLoading()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="clientForm.invalid || formLoading()"
+            >
+              @if (formLoading()) {
+                <div class="btn-spinner"></div>
+                Guardando...
+              } @else {
+                {{ isEditMode() ? 'Guardar Cambios' : 'Crear Cliente' }}
+              }
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   }
