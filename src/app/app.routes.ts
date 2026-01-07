@@ -11,6 +11,9 @@ import { InternalClientFormViewComponent } from './views/internal-clients/intern
 import { UserListViewComponent } from './views/users/user-list-view/user-list-view.component';
 import { UserDetailViewComponent } from './views/users/user-detail-view/user-detail-view.component';
 import { UserFormViewComponent } from './views/users/user-form-view/user-form-view.component';
+import { OperationListViewComponent } from './views/operations/operation-list-view/operation-list-view.component';
+import { OperationDetailViewComponent } from './views/operations/operation-detail-view/operation-detail-view.component';
+import { OperationFormViewComponent } from './views/operations/operation-form-view/operation-form-view.component';
 import { LoginViewComponent } from './views/login/login-view.component';
 import { DashboardViewComponent } from './views/dashboard/dashboard-view.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
@@ -96,6 +99,22 @@ export const routes: Routes = [
       {
         path: 'users/:id/edit',
         component: UserFormViewComponent
+      },
+      {
+        path: 'operations',
+        component: OperationListViewComponent
+      },
+      {
+        path: 'operations/new',
+        component: OperationFormViewComponent
+      },
+      {
+        path: 'operations/:id',
+        component: OperationDetailViewComponent
+      },
+      {
+        path: 'operations/:id/edit',
+        component: OperationFormViewComponent
       },
       {
         path: '',

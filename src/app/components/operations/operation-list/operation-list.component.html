@@ -1,0 +1,29 @@
+@if (loading()) {
+  <div class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Cargando operaciones...</p>
+  </div>
+} @else if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+  </div>
+} @else if (operations().length === 0) {
+  <div class="empty-state">
+    <p>No hay operaciones registradas</p>
+  </div>
+} @else {
+  <div class="operations-list">
+    @for (operation of operations(); track operation.id) {
+      <div class="operation-item">
+        <div class="operation-info">
+          <h3>{{ operation.name }}</h3>
+          <p>{{ operation.description }}</p>
+        </div>
+        <div class="operation-actions">
+          <a [routerLink]="['/operations', operation.id]" class="btn-view">Ver</a>
+        </div>
+      </div>
+    }
+  </div>
+}
+

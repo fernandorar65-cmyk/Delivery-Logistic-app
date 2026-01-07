@@ -1,0 +1,125 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title-section">
+      <a routerLink="/operations" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Volver
+      </a>
+      <h1 class="page-title">Detalle de la Operación</h1>
+      <p class="page-subtitle">Información completa de la operación</p>
+    </div>
+    @if (operation()) {
+      <a [routerLink]="['/operations', operation()!.id, 'edit']" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        Editar Operación
+      </a>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="card loading-card">
+      <div class="loading-spinner"></div>
+      <p>Cargando operación...</p>
+    </div>
+  } @else if (error()) {
+    <div class="card error-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <p>{{ error() }}</p>
+      <a routerLink="/operations" class="btn btn-secondary">Volver a la lista</a>
+    </div>
+  } @else if (operation()) {
+    <div class="card detail-card">
+      <div class="detail-header">
+        <div class="detail-title-section">
+          <h2 class="detail-title">{{ operation()!.name }}</h2>
+          <span class="detail-badge">ID: {{ operation()!.id }}</span>
+        </div>
+      </div>
+
+      <div class="detail-content">
+        <div class="info-section">
+          <h3 class="section-title">Información General</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Descripción</span>
+                <span class="info-value">{{ operation()!.description }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Conductor</span>
+                <span class="info-value">{{ operation()!.driver }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3 class="section-title">Estado</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Estado</span>
+                <div class="status-badges">
+                  <span class="badge" [class.active]="operation()!.is_active">
+                    {{ operation()!.is_active ? 'Activa' : 'Inactiva' }}
+                  </span>
+                  <span class="badge" [class.finalized]="operation()!.is_finalized">
+                    {{ operation()!.is_finalized ? 'Finalizada' : 'En Proceso' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            @if (operation()!.created_at) {
+              <div class="info-item">
+                <div class="info-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Fecha de creación</span>
+                  <span class="info-value">{{ operation()!.created_at | date: 'medium' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

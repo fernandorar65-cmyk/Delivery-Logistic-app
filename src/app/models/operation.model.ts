@@ -1,21 +1,27 @@
 export interface Operation {
-  id?: number;
+  id?: string;
   name: string;
-  description?: string;
-  status?: string;
+  description: string;
+  is_active: boolean;
+  is_finalized: boolean;
+  driver: string;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface OperationCreate {
   name: string;
-  description?: string;
-  status?: string;
+  description: string;
+  is_active: boolean;
+  is_finalized: boolean;
+  driver: string;
 }
 
 export interface OperationUpdate {
   name?: string;
   description?: string;
-  status?: string;
+  is_active?: boolean;
+  is_finalized?: boolean;
+  driver?: string;
 }
 
