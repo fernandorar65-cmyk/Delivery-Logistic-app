@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientService } from '../../../services/client.service';
 import { Client, ClientCreate } from '../../../models/client.model';
@@ -8,7 +7,7 @@ import { Client, ClientCreate } from '../../../models/client.model';
 @Component({
   selector: 'app-client-list-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
 })

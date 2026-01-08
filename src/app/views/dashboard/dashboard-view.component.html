@@ -1,32 +1,43 @@
 <div class="dashboard-container">
   <!-- Header del Dashboard -->
   <div class="dashboard-header">
-    <div>
-      <h1 class="dashboard-title">Panel de Control</h1>
-      <p class="dashboard-subtitle">Resumen de operaciones y métricas clave</p>
+    <div class="header-left">
+      <h1 class="dashboard-title">Resumen de Operaciones</h1>
+      <div class="search-container">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Buscar por ID de rastreo, cliente..."
+          [(ngModel)]="searchQuery"
+        />
+      </div>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-secondary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
+    <div class="header-right">
+      <div class="user-dropdown">
+        <span class="user-label">ADMIN</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
-        Exportar
+      </div>
+      <button class="icon-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
       </button>
-      <a routerLink="/clients/new" class="btn btn-primary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        + Nuevo Pedido
-      </a>
+      <div class="user-avatar">
+        <span>A</span>
+      </div>
     </div>
   </div>
 
   <!-- Cards de Métricas -->
   <div class="metrics-grid">
-    <div class="metric-card">
+    <div class="metric-card metric-card-orders" style="animation-delay: 0.1s">
       <div class="metric-header">
         <div class="metric-icon orders">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -35,245 +46,262 @@
             <line x1="3" y1="9" x2="21" y2="9"></line>
           </svg>
         </div>
-        <span class="metric-badge" [class.positive]="ordersTodayChange().isPositive" [class.negative]="!ordersTodayChange().isPositive">
-          {{ ordersTodayChange().isPositive ? '+' : '-' }}{{ ordersTodayChange().value }}% vs ayer
+        <span class="metric-badge positive">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          +{{ totalShipmentsChange().value }}%
         </span>
       </div>
       <div class="metric-content">
-        <h3 class="metric-value">{{ ordersToday() }}</h3>
-        <p class="metric-label">Pedidos Hoy</p>
+        <h3 class="metric-value">{{ totalShipments() | number }}</h3>
+        <p class="metric-label">Total Envíos</p>
+        <p class="metric-description">Comparado con semana anterior</p>
       </div>
+      <div class="metric-hover-effect"></div>
     </div>
 
-    <div class="metric-card">
+    <div class="metric-card metric-card-success" style="animation-delay: 0.2s">
       <div class="metric-header">
-        <div class="metric-icon transit">
+        <div class="metric-icon success">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z"></path>
-            <circle cx="5.5" cy="18.5" r="2.5"></circle>
-            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
         </div>
-        <span class="metric-badge" [class.positive]="inTransitChange().isPositive" [class.negative]="!inTransitChange().isPositive">
-          {{ inTransitChange().isPositive ? '+' : '-' }}{{ inTransitChange().value }}% vs ayer
+        <span class="metric-badge positive">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          +{{ deliveredSuccessChange().value }}%
         </span>
       </div>
       <div class="metric-content">
-        <h3 class="metric-value">{{ inTransit() }}</h3>
-        <p class="metric-label">En Tránsito</p>
+        <h3 class="metric-value">{{ deliveredSuccess() }}%</h3>
+        <p class="metric-label">Entregados (Éxito)</p>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="deliveredSuccess()"></div>
+        </div>
       </div>
+      <div class="metric-hover-effect"></div>
     </div>
 
-    <div class="metric-card">
+    <div class="metric-card metric-card-alert" style="animation-delay: 0.3s">
       <div class="metric-header">
-        <div class="metric-icon pending">
+        <div class="metric-icon alert">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
         </div>
-        <span class="metric-badge" [class.positive]="pendingChange().isPositive" [class.negative]="!pendingChange().isPositive">
-          {{ pendingChange().isPositive ? '+' : '-' }}{{ pendingChange().value }}% vs ayer
+        <span class="metric-badge alert-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          </svg>
+          Alert
         </span>
       </div>
       <div class="metric-content">
-        <h3 class="metric-value">{{ pending() }}</h3>
-        <p class="metric-label">Pendientes</p>
+        <h3 class="metric-value">{{ awaitingAssignment() }}</h3>
+        <p class="metric-label">En Espera de Asignación</p>
+        <p class="metric-description">Requieren vehículo</p>
       </div>
+      <div class="metric-hover-effect"></div>
     </div>
 
-    <div class="metric-card">
+    <div class="metric-card metric-card-incidents" style="animation-delay: 0.4s">
       <div class="metric-header">
-        <div class="metric-icon drivers">
+        <div class="metric-icon incidents">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
         </div>
-        <span class="metric-badge stable">{{ driversStatus() }}</span>
+        <span class="metric-badge negative">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+            <polyline points="17 18 23 18 23 12"></polyline>
+          </svg>
+          -{{ activeIncidentsChange().value }}%
+        </span>
       </div>
       <div class="metric-content">
-        <h3 class="metric-value">{{ activeDrivers().current }}/{{ activeDrivers().total }}</h3>
-        <p class="metric-label">Choferes Activos</p>
+        <h3 class="metric-value">{{ activeIncidents() }}</h3>
+        <p class="metric-label">Incidentes Activos</p>
+        <p class="metric-description">Atención inmediata requerida</p>
       </div>
+      <div class="metric-hover-effect"></div>
     </div>
   </div>
 
-  <!-- Gráficos y Tablas -->
-  <div class="charts-grid">
-    <!-- Gráfico de Volumen de Entregas -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <div>
-          <h3 class="chart-title">Volumen de Entregas</h3>
-          <p class="chart-subtitle">Actividad de los últimos 7 días</p>
-        </div>
-        <a href="#" class="chart-link">Ver reporte completo</a>
+  <!-- Gestión de Envíos -->
+  <div class="shipments-section">
+    <div class="shipments-header">
+      <div>
+        <h2 class="shipments-title">Gestión de Envíos</h2>
+        <p class="shipments-subtitle">Visualiza y gestiona el estado de todos los pedidos.</p>
       </div>
-      <div class="chart-content">
-        <div class="bar-chart">
-          @for (day of deliveryVolume(); track day.day) {
-            <div class="bar-item">
-              <div class="bar-wrapper">
-                <div 
-                  class="bar" 
-                  [class.today]="day.isToday"
-                  [style.height.%]="getBarHeight(day.value)"
-                ></div>
-              </div>
-              <span class="bar-label" [class.today]="day.isToday">{{ day.day }}</span>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- Gráfico de Estado de Pedidos -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3 class="chart-title">Estado de Pedidos</h3>
-      </div>
-      <div class="chart-content">
-        <div class="donut-chart">
-          <div class="donut-center">
-            <span class="donut-total">{{ orderStatus().total }}</span>
-            <span class="donut-label">TOTAL</span>
-          </div>
-          <svg class="donut-svg" viewBox="0 0 200 200">
-            <!-- Entregados - 65% -->
-            <circle
-              class="donut-segment delivered"
-              cx="100"
-              cy="100"
-              r="80"
-              fill="none"
-              stroke="#3b82f6"
-              stroke-width="40"
-              stroke-dasharray="calc(65 * 502.65 / 100) 502.65"
-              stroke-dashoffset="0"
-              transform="rotate(-90 100 100)"
-            ></circle>
-            <!-- En Ruta - 20% -->
-            <circle
-              class="donut-segment in-route"
-              cx="100"
-              cy="100"
-              r="80"
-              fill="none"
-              stroke="#fbbf24"
-              stroke-width="40"
-              stroke-dasharray="calc(20 * 502.65 / 100) 502.65"
-              stroke-dashoffset="calc(-65 * 502.65 / 100)"
-              transform="rotate(-90 100 100)"
-            ></circle>
-            <!-- Retrasados - 15% -->
-            <circle
-              class="donut-segment delayed"
-              cx="100"
-              cy="100"
-              r="80"
-              fill="none"
-              stroke="#ef4444"
-              stroke-width="40"
-              stroke-dasharray="calc(15 * 502.65 / 100) 502.65"
-              stroke-dashoffset="calc(-85 * 502.65 / 100)"
-              transform="rotate(-90 100 100)"
-            ></circle>
-          </svg>
-        </div>
-        <div class="donut-legend">
-          <div class="legend-item">
-            <span class="legend-dot delivered"></span>
-            <span class="legend-label">Entregados</span>
-            <span class="legend-value">{{ orderStatus().delivered.percentage }}%</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot in-route"></span>
-            <span class="legend-label">En Ruta</span>
-            <span class="legend-value">{{ orderStatus().inRoute.percentage }}%</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot delayed"></span>
-            <span class="legend-label">Retrasados</span>
-            <span class="legend-value">{{ orderStatus().delayed.percentage }}%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabla de Pedidos Recientes y Accesos Rápidos -->
-  <div class="bottom-grid">
-    <!-- Pedidos Recientes -->
-    <div class="table-card">
-      <div class="table-header">
-        <h3 class="table-title">Pedidos Recientes</h3>
-        <button class="icon-button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="shipments-actions">
+        <button class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
           </svg>
+          Filtros
         </button>
+        <a routerLink="/orders/new" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          + Nuevo Envío
+        </a>
       </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'all'"
+        (click)="setActiveTab('all')"
+      >
+        Todos
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'in-route'"
+        (click)="setActiveTab('in-route')"
+      >
+        En Ruta
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'pending'"
+        (click)="setActiveTab('pending')"
+      >
+        Pendientes
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'delivered'"
+        (click)="setActiveTab('delivered')"
+      >
+        Entregados
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'incidents'"
+        (click)="setActiveTab('incidents')"
+      >
+        Incidentes
+        @if (getIncidentsCount() > 0) {
+          <span class="tab-badge">{{ getIncidentsCount() }}</span>
+        }
+      </button>
+    </div>
+
+    <!-- Tabla de Envíos -->
+    <div class="table-card">
       <div class="table-wrapper">
-        <table class="data-table">
+        <table class="shipments-table">
           <thead>
             <tr>
-              <th>ID Pedido</th>
-              <th>Cliente</th>
-              <th>Destino</th>
-              <th>Chofer</th>
-              <th>Estado</th>
-              <th class="actions-header">Acciones</th>
+              <th>ID ENVÍO</th>
+              <th>CLIENTE</th>
+              <th>DESTINO / ETA</th>
+              <th>VEHÍCULO</th>
+              <th>ESTADO</th>
+              <th class="actions-header">ACCIONES</th>
             </tr>
           </thead>
           <tbody>
-            @for (order of recentOrders(); track order.id) {
+            @if (loading()) {
               <tr>
-                <td class="id-cell">{{ order.id }}</td>
-                <td>{{ order.client }}</td>
-                <td>{{ order.destination }}</td>
-                <td>{{ order.driver }}</td>
-                <td>
-                  <span [class]="'status-badge ' + order.statusClass">
-                    {{ order.status }}
-                  </span>
-                </td>
-                <td class="actions-cell">
-                  <button class="action-btn view-btn" title="Ver detalles">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  </button>
+                <td colspan="6" class="loading-cell">
+                  <div class="loading-spinner"></div>
+                  <p>Cargando envíos...</p>
                 </td>
               </tr>
+            } @else {
+              @for (shipment of getFilteredShipments(); track shipment.id) {
+                <tr>
+                  <td class="id-cell">#{{ shipment.id }}</td>
+                  <td class="client-cell">
+                    <div class="client-info">
+                      <div class="client-avatar" [class]="'avatar-' + shipment.client.avatar.toLowerCase()">
+                        {{ shipment.client.avatar }}
+                      </div>
+                      <div>
+                        <div class="client-name">{{ shipment.client.name }}</div>
+                        @if (shipment.client.type) {
+                          <div class="client-type">{{ shipment.client.type }}</div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td class="destination-cell">
+                    <div class="destination-address">{{ shipment.destination }}</div>
+                    <div class="destination-eta" [class.delayed]="shipment.eta.includes('Retrasado')" [class.delivered]="shipment.eta.includes('Entregado')">
+                      {{ shipment.eta }}
+                    </div>
+                  </td>
+                  <td class="vehicle-cell">
+                    @if (shipment.vehicle) {
+                      <div>
+                        <div class="vehicle-name">{{ shipment.vehicle.name }}</div>
+                        @if (shipment.vehicle.plate) {
+                          <div class="vehicle-plate">Placa: {{ shipment.vehicle.plate }}</div>
+                        }
+                      </div>
+                    } @else {
+                      <a href="#" class="assign-link">Asignar</a>
+                    }
+                  </td>
+                  <td>
+                    <span [class]="'status-badge status-' + shipment.status">
+                      @if (shipment.status === 'in-route') {
+                        <span class="status-dot"></span>
+                      } @else if (shipment.status === 'incident') {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        </svg>
+                      } @else if (shipment.status === 'delivered') {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      } @else {
+                        <span class="status-dot"></span>
+                      }
+                      {{ shipment.statusText }}
+                    </span>
+                  </td>
+                  <td class="actions-cell">
+                    <button class="action-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>
       </div>
-    </div>
 
-    <!-- Accesos Rápidos -->
-    <div class="quick-access-card">
-      <h3 class="quick-access-title">Accesos Rápidos</h3>
-      <div class="quick-access-buttons">
-        <a routerLink="/clients/new" class="quick-access-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span>Crear Pedido</span>
-        </a>
-        <a routerLink="/clients/new" class="quick-access-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="8.5" cy="7" r="4"></circle>
-            <line x1="20" y1="8" x2="20" y2="14"></line>
-            <line x1="23" y1="11" x2="17" y2="11"></line>
-          </svg>
-          <span>Registrar Cliente</span>
-        </a>
+      <!-- Paginación -->
+      <div class="pagination">
+        <span class="pagination-info">Mostrando 1-5 de {{ totalShipmentsCount() }} envíos</span>
+        <div class="pagination-buttons">
+          <button class="pagination-btn" [disabled]="currentPage() === 1">Anterior</button>
+          <button class="pagination-btn" [disabled]="currentPage() * 5 >= totalShipmentsCount()">Siguiente</button>
+        </div>
       </div>
     </div>
   </div>
