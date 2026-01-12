@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-
 <html class="light" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>LogiSaaS - Inicio de Sesión</title>
+<title>Acceso Seguro Premium - LogiSaaS</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
@@ -14,148 +12,132 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#137fec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
+                        "primary": "#0f172a",
+                        "accent": "#2563eb",
+                        "surface": "#f8fafc",
                     },
                     fontFamily: {
-                        "display": ["Inter", "sans-serif"]
+                        "sans": ["Plus Jakarta Sans", "sans-serif"]
                     },
                     borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
                     },
                 },
             },
         }
     </script>
-<style>
-        body {
-            font-family: 'Inter', sans-serif;
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply font-sans text-slate-900 antialiased;
+            }
+        }
+        .login-input {
+            @apply w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl transition-all duration-300 outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent placeholder:text-slate-400;
+        }
+        .btn-premium {
+            @apply relative overflow-hidden bg-primary text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-5px_rgba(15,23,42,0.3)] active:translate-y-0;
+        }
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(37, 99, 235, 0.4) 100%);
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display">
-<!-- Top Navigation Bar -->
-<header class="flex items-center justify-between border-b border-solid border-[#dbe0e6] dark:border-gray-800 bg-white dark:bg-background-dark px-6 md:px-10 py-3 z-10">
-<div class="flex items-center gap-3 text-primary">
-<div class="size-8">
-<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-<path clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill-rule="evenodd"></path>
-</svg>
+<body class="min-h-screen bg-white">
+<main class="flex min-h-screen">
+<section class="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center px-8 md:px-16 lg:px-24 bg-white z-10">
+<div class="max-w-md w-full mx-auto space-y-10">
+<div class="flex items-center gap-2 mb-12">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg shadow-lg">
+<span class="material-symbols-outlined text-white text-2xl">shield_with_heart</span>
 </div>
-<h2 class="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">LogiSaaS</h2>
+<span class="text-xl font-extrabold tracking-tight text-primary">LOGISAAS <span class="text-accent">PREMIUM</span></span>
 </div>
-<div class="flex items-center gap-4">
-<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold transition-colors hover:bg-primary/20">
-<span class="material-symbols-outlined mr-2 text-lg">support_agent</span>
-<span class="truncate">Soporte</span>
-</button>
+<div class="space-y-3">
+<h1 class="text-4xl font-extrabold tracking-tight text-slate-900">Acceso Seguro</h1>
+<p class="text-slate-500 text-lg leading-relaxed">Gestione su cadena de suministro con los más altos estándares de seguridad y eficiencia.</p>
 </div>
-</header>
-<!-- Main Content: Split Screen Layout -->
-<main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
-<!-- Left Side: Login Form -->
-<div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 bg-white dark:bg-background-dark">
-<div class="max-w-[420px] w-full space-y-8">
-<div class="text-left">
-<h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-tight mb-2">
-                        Bienvenido al Portal Logístico
-                    </h1>
-<p class="text-[#617589] dark:text-gray-400 text-base">
-                        Ingresa tus credenciales para gestionar entregas, flota y pedidos en tiempo real.
-                    </p>
-</div>
-<form class="space-y-5">
-<!-- Email Field -->
-<div class="flex flex-col gap-2">
-<label class="text-[#111418] dark:text-white text-sm font-semibold leading-normal">
-                            Correo Electrónico
-                        </label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">mail</span>
-<input class="form-input flex w-full rounded-lg border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-gray-800 text-[#111418] dark:text-white h-14 pl-12 pr-4 placeholder:text-[#617589] focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="nombre@empresa.com" type="email"/>
+<form class="space-y-6" onsubmit="return false">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 ml-1">Correo Corporativo</label>
+<div class="relative group">
+<input class="login-input" placeholder="nombre@compania.com" required="" type="email"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none">
+<span class="material-symbols-outlined text-emerald-500 text-xl">check_circle</span>
 </div>
 </div>
-<!-- Password Field -->
-<div class="flex flex-col gap-2">
-<div class="flex justify-between items-center">
-<label class="text-[#111418] dark:text-white text-sm font-semibold leading-normal">
-                                Contraseña
-                            </label>
-<a class="text-primary text-sm font-semibold hover:underline" href="#">¿Olvidaste tu contraseña?</a>
 </div>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
-<input class="form-input flex w-full rounded-lg border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-gray-800 text-[#111418] dark:text-white h-14 pl-12 pr-4 placeholder:text-[#617589] focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="••••••••" type="password"/>
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="text-sm font-semibold text-slate-700">Contraseña</label>
+<a class="text-sm font-medium text-accent hover:text-blue-700 transition-colors" href="#">¿Olvidó sus datos?</a>
+</div>
+<div class="relative group">
+<input class="login-input" placeholder="••••••••" required="" type="password"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-600">
+<span class="material-symbols-outlined text-xl">visibility</span>
 </div>
 </div>
-<!-- Remember me -->
-<div class="flex items-center gap-2">
-<input class="rounded text-primary focus:ring-primary border-gray-300 dark:bg-gray-800 dark:border-gray-700" id="remember" type="checkbox"/>
-<label class="text-sm text-[#617589] dark:text-gray-400 cursor-pointer" for="remember">Mantener sesión iniciada</label>
 </div>
-<!-- Submit Button -->
-<button class="w-full flex cursor-pointer items-center justify-center rounded-lg h-14 px-5 bg-primary text-white text-base font-bold tracking-wide hover:bg-blue-600 transition-colors shadow-lg shadow-primary/20" type="submit">
-                        Iniciar Sesión
-                        <span class="material-symbols-outlined ml-2">arrow_forward</span>
+<div class="flex items-center justify-between py-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-slate-300 text-accent focus:ring-accent/20 transition-all cursor-pointer" type="checkbox"/>
+<span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Mantener sesión activa</span>
+</label>
+</div>
+<button class="w-full btn-premium flex items-center justify-center gap-2 group" type="submit">
+                        Ingresar al Sistema
+                        <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
 </button>
 </form>
-<div class="pt-6 border-t border-[#f0f2f4] dark:border-gray-800 text-center">
-<p class="text-sm text-[#617589] dark:text-gray-400">
-                        ¿No tienes una cuenta? 
-                        <a class="text-primary font-bold hover:underline" href="#">Contacta a tu administrador</a>
-</p>
+<div class="pt-8 border-t border-slate-100">
+<div class="flex flex-wrap gap-6 justify-center">
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">verified</span> Aliados
+                        </div>
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">location_on</span> Global
+                        </div>
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">support</span> 24/7
+                        </div>
 </div>
-<div class="flex justify-center gap-6 pt-2">
-<div class="flex items-center gap-1 text-[12px] text-gray-400 uppercase tracking-widest font-bold">
-<span class="material-symbols-outlined text-[16px]">verified_user</span> Aliados
+</div>
+</div>
+</section>
+<section class="hidden lg:block lg:flex-1 relative overflow-hidden bg-slate-900">
+<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAP55B0oyc3h29fhJbJVnZvWnQ9VYtS2OyiSJcshL-E-o4IytPumNO_k7UJQKiWPiIK68--Psf7_OICLm0TaSzXn6EBvhl2YONKYBxcmf11wCrNntw9W5JC6oalQRFTKG7mhCXWOM8NpNbk2pn2dpfG3CIOElQUv7o9-cQE3l3DZwQ02_SG1b_4Xl_di3av8ZENTnpP3fz3iXOfxClTsh0c8Nk9yAfNdn02-SK0kuq2gKDy0zwGWX3F_JGdP7edEBrQF_QRB3CTb6Hc');"></div>
+<div class="absolute inset-0 gradient-overlay"></div>
+<div class="relative h-full flex flex-col justify-end p-20 text-white">
+<div class="max-w-xl space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Sistema Operativo Live
                     </div>
-<div class="flex items-center gap-1 text-[12px] text-gray-400 uppercase tracking-widest font-bold">
-<span class="material-symbols-outlined text-[16px]">local_shipping</span> Flota
-                    </div>
-<div class="flex items-center gap-1 text-[12px] text-gray-400 uppercase tracking-widest font-bold">
-<span class="material-symbols-outlined text-[16px]">analytics</span> Dashboard
-                    </div>
-</div>
-</div>
-</div>
-<!-- Right Side: Visual Hero Area -->
-<div class="hidden lg:flex w-1/2 relative bg-primary overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-br from-primary/80 to-blue-900 z-10"></div>
-<!-- Background Image -->
-<div class="absolute inset-0 bg-cover bg-center" data-alt="Modern logistics warehouse with delivery trucks" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAP55B0oyc3h29fhJbJVnZvWnQ9VYtS2OyiSJcshL-E-o4IytPumNO_k7UJQKiWPiIK68--Psf7_OICLm0TaSzXn6EBvhl2YONKYBxcmf11wCrNntw9W5JC6oalQRFTKG7mhCXWOM8NpNbk2pn2dpfG3CIOElQUv7o9-cQE3l3DZwQ02_SG1b_4Xl_di3av8ZENTnpP3fz3iXOfxClTsh0c8Nk9yAfNdn02-SK0kuq2gKDy0zwGWX3F_JGdP7edEBrQF_QRB3CTb6Hc');">
-</div>
-<!-- Floating Stats Card -->
-<div class="relative z-20 flex flex-col justify-center items-center h-full px-20 text-white">
-<div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20 max-w-md">
-<span class="material-symbols-outlined text-4xl mb-4 bg-white/20 p-3 rounded-full">speed</span>
-<h3 class="text-2xl font-bold mb-3">Eficiencia Operativa</h3>
-<p class="text-white/80 leading-relaxed mb-6">
-                        Optimiza tus rutas y reduce tiempos de entrega en un 30% mediante nuestra inteligencia de asignación automática.
+<h2 class="text-5xl font-bold leading-tight">Infraestructura Tecnológica de Clase Mundial</h2>
+<p class="text-white/80 text-lg leading-relaxed">
+                        Nuestra red logística premium utiliza inteligencia artificial para garantizar que cada entrega llegue a su destino con precisión quirúrgica y máxima seguridad.
                     </p>
-<div class="flex gap-4">
-<div class="flex-1 bg-white/5 p-4 rounded-lg border border-white/10 text-center">
-<div class="text-2xl font-bold">2.4k+</div>
-<div class="text-[10px] uppercase opacity-70">Entregas Hoy</div>
+<div class="grid grid-cols-2 gap-8 pt-8">
+<div class="space-y-1">
+<p class="text-3xl font-bold">99.9%</p>
+<p class="text-white/60 text-sm uppercase tracking-wider font-semibold">Uptime del Sistema</p>
 </div>
-<div class="flex-1 bg-white/5 p-4 rounded-lg border border-white/10 text-center">
-<div class="text-2xl font-bold">98%</div>
-<div class="text-[10px] uppercase opacity-70">SLA Cumplido</div>
-</div>
-</div>
-</div>
-<!-- Bottom Decorative Text -->
-<div class="absolute bottom-10 left-10 text-white/40 text-xs font-mono">
-                    LOGISAAS CLOUD INFRASTRUCTURE // GLOBAL LOGISTICS NETWORK 2024
-                </div>
+<div class="space-y-1">
+<p class="text-3xl font-bold">Encritpado</p>
+<p class="text-white/60 text-sm uppercase tracking-wider font-semibold">AES-256 Bit Security</p>
 </div>
 </div>
+</div>
+</div>
+<div class="absolute top-10 right-10 text-white/20 font-mono text-xs tracking-widest uppercase">
+                Premium Logistics Hub // v4.0.2
+            </div>
+</section>
 </main>
-<!-- Footer for Mobile/Accessibility -->
-<footer class="lg:hidden p-6 text-center text-[#617589] dark:text-gray-500 text-xs border-t border-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-background-dark">
-        © 2024 LogiSaaS. Gestión Logística Profesional. Todos los derechos reservados.
-    </footer>
+<button class="fixed bottom-6 right-6 lg:left-6 lg:right-auto w-12 h-12 bg-white text-slate-900 border border-slate-200 rounded-full shadow-xl flex items-center justify-center hover:bg-slate-50 transition-colors z-50">
+<span class="material-symbols-outlined">headset_mic</span>
+</button>
+
 </body></html>

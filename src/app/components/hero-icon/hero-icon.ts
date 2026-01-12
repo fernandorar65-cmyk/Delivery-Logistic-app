@@ -36,6 +36,14 @@ const iconPaths: Record<string, string> = {
   'chart-bar': '<path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/>',
   'bolt': '<path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/>',
   'exclamation-circle': '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75A9 9 0 1 1 3 12m9 3.75h.008v.008H12v-.008Zm0 0h.008v.008H12V15Z"/>',
+  'check-circle': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+  'arrow-forward': '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>',
+  'arrow_forward': '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>',
+  'verified': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 18.75 10c.568 0 1.125.05 1.67.143a11.99 11.99 0 0 1 2.08 2.52 12.01 12.01 0 0 1-2.08 2.52 11.959 11.959 0 0 1-1.67.143c-5.385 0-9.75-4.365-9.75-9.75 0-1.125.19-2.205.536-3.206Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75"/>',
+  'location-on': '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>',
+  'support': '<path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/>',
+  'headset-mic': '<path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 21a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3H4.5a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h2.25Z"/>',
+  'shield-heart': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 18.75 10c.568 0 1.125.05 1.67.143a11.99 11.99 0 0 1 2.08 2.52 12.01 12.01 0 0 1-2.08 2.52 11.959 11.959 0 0 1-1.67.143c-5.385 0-9.75-4.365-9.75-9.75 0-1.125.19-2.205.536-3.206Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75c.5 0 1 .5 1 1.25 0 .75-.5 1.25-1 1.25s-1-.5-1-1.25c0-.75.5-1.25 1-1.25Z"/>',
 };
 
 export type IconName = keyof typeof iconPaths;
