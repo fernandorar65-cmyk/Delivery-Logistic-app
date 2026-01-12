@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientService } from '../../../services/client.service';
 import { Client, ClientCreate } from '../../../models/client.model';
+import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 
 @Component({
   selector: 'app-client-list-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent],
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
 })

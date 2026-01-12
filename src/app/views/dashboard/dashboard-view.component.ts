@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
 import { Order } from '../../models/order.model';
+import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
 
 @Component({
   selector: 'app-dashboard-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, DecimalPipe],
+  imports: [CommonModule, RouterLink, FormsModule, DecimalPipe, HeroIconComponent],
   templateUrl: './dashboard-view.component.html',
   styleUrl: './dashboard-view.component.css'
 })

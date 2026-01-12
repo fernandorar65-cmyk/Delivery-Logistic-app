@@ -34,7 +34,7 @@
 .logo-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #4facfe;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -112,7 +112,7 @@
 }
 
 .add-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #4facfe;
   color: white;
 }
 
@@ -139,7 +139,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #4facfe;
   color: white;
   display: flex;
   align-items: center;
@@ -224,7 +224,7 @@
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: #4facfe 0%, rgba(118, 75, 162, 0.1) 100%);
   color: #667eea;
   font-weight: 500;
 }
@@ -279,4 +279,5 @@
     padding: 1rem;
   }
 }
+
 

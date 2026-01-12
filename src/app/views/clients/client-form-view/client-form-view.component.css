@@ -198,14 +198,16 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #4facfe;
   color: white;
-  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 2px 4px rgba(79, 172, 254, 0.2);
 }
 
 .btn-primary:hover:not(:disabled) {
+  background: #3d9ae8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: #3d9ae8;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
 }
 
 .btn-primary:disabled {
@@ -252,3 +254,4 @@
     width: 100%;
   }
 }
+
