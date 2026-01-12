@@ -1,0 +1,245 @@
+<main class="assignment-container">
+  <!-- Header & Toolbar Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <!-- Title & Stats -->
+      <div class="title-section">
+        <div class="title-group">
+          <h1 class="page-title">Asignación de Pedidos</h1>
+          <p class="page-subtitle">Gestiona y asigna pedidos pendientes a la flota disponible en tiempo real.</p>
+        </div>
+        <!-- Stats Chips -->
+        <div class="stats-chips">
+          <div class="stat-chip">
+            <span class="stat-label">Pendientes</span>
+            <span class="stat-value">{{ stats().pending }}</span>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-label">Vehículos</span>
+            <span class="stat-value primary">{{ stats().vehicles }}</span>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-label">Capacidad Total</span>
+            <span class="stat-value">{{ stats().totalCapacity }} T</span>
+          </div>
+        </div>
+      </div>
+      <!-- Filters Toolbar -->
+      <div class="filters-toolbar">
+        <div class="search-wrapper">
+          <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Buscar por ID, zona o cliente..."
+            [(ngModel)]="searchQuery"
+          />
+        </div>
+        <div class="filters-group">
+          <button class="filter-btn primary">
+            <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
+            Filtros Avanzados
+          </button>
+          @for (filter of activeFilters(); track filter) {
+            <button class="filter-btn active" (click)="removeFilter(filter)">
+              {{ filter }}
+              <app-hero-icon name="x-mark" [size]="16"></app-hero-icon>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Split Content Area -->
+  <div class="content-split">
+    <!-- Left Panel: Pending Orders (60%) -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <div class="header-left">
+          <h3 class="panel-title">Pedidos Pendientes</h3>
+          <span class="badge-count">{{ stats().pending }}</span>
+        </div>
+        <div class="header-right">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              class="checkbox-input"
+              [checked]="selectAll()"
+              (change)="toggleSelectAll()"
+            />
+            Seleccionar todo
+          </label>
+          <button class="link-btn" (click)="autoMatch()">Auto-match</button>
+        </div>
+      </div>
+      <!-- Orders List -->
+      <div class="orders-list">
+        @for (order of pendingOrders(); track order.id) {
+          <div 
+            class="order-card" 
+            [class.selected]="order.selected"
+            (click)="toggleOrderSelection(order.id)"
+          >
+            <div class="order-content">
+              <div class="order-checkbox">
+                <input 
+                  type="checkbox" 
+                  class="checkbox-input"
+                  [checked]="order.selected"
+                  (click)="$event.stopPropagation()"
+                  (change)="toggleOrderSelection(order.id)"
+                />
+              </div>
+              <div class="order-info">
+                <div class="order-header">
+                  <span class="order-number">{{ order.orderNumber }}</span>
+                  @for (tag of order.tags; track tag) {
+                    <span class="order-tag" [class]="getTagClass(tag)">{{ tag }}</span>
+                  }
+                </div>
+                <div class="order-client">{{ order.clientName }}</div>
+                <div class="order-time">
+                  <app-hero-icon name="clock" [size]="14"></app-hero-icon>
+                  {{ order.timeAgo }}
+                </div>
+              </div>
+            </div>
+            <div class="order-details">
+              <div class="order-metrics">
+                <div class="metric-value">{{ order.weight }} kg</div>
+                <div class="metric-sub">{{ order.volume }} m³</div>
+              </div>
+              <div class="order-zone">
+                <app-hero-icon name="map-pin" [size]="14"></app-hero-icon>
+                {{ order.zone }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right Panel: Vehicles (40%) -->
+    <div class="right-panel">
+      <div class="panel-header">
+        <div class="header-left">
+          <h3 class="panel-title">Flota Disponible</h3>
+          <span class="badge-count primary">{{ stats().vehicles }}</span>
+        </div>
+        <button class="icon-btn">
+          <app-hero-icon name="funnel" [size]="20"></app-hero-icon>
+        </button>
+      </div>
+      <!-- Vehicles List -->
+      <div class="vehicles-list">
+        @for (vehicle of vehicles(); track vehicle.id) {
+          <div 
+            class="vehicle-card" 
+            [class.recommended]="vehicle.recommended"
+            [class.disabled]="vehicle.status === 'maintenance'"
+          >
+            @if (vehicle.recommended) {
+              <div class="recommended-badge">RECOMENDADO</div>
+            }
+            <div class="vehicle-header">
+              <div class="vehicle-info">
+                <div class="vehicle-icon">
+                  <app-hero-icon name="truck" [size]="24"></app-hero-icon>
+                </div>
+                <div>
+                  <h4 class="vehicle-name">{{ vehicle.name }}</h4>
+                  <p class="vehicle-plate">{{ vehicle.plate }}</p>
+                </div>
+              </div>
+              <div class="vehicle-driver">
+                <p class="driver-label">Conductor</p>
+                <p class="driver-name">{{ vehicle.driver }}</p>
+              </div>
+            </div>
+            @if (vehicle.status === 'maintenance') {
+              <div class="maintenance-badge">Mantenimiento</div>
+            }
+            <!-- Capacity Visualization -->
+            <div class="capacity-section">
+              <div class="capacity-header">
+                <span class="capacity-label">Carga Actual</span>
+                <span class="capacity-value">
+                  {{ vehicle.currentLoad }} kg 
+                  <span class="capacity-max">/ {{ vehicle.maxCapacity }} kg</span>
+                </span>
+              </div>
+              <div class="capacity-bar">
+                <div 
+                  class="capacity-fill existing" 
+                  [style.width.%]="getVehicleCapacityPercent(vehicle)"
+                ></div>
+                @if (vehicle.recommended && selectedOrders.length > 0) {
+                  <div 
+                    class="capacity-fill potential" 
+                    [style.width.%]="getPotentialLoadPercent(vehicle)"
+                  ></div>
+                }
+              </div>
+              @if (vehicle.recommended && selectedOrders.length > 0) {
+                <div class="potential-load">
+                  <app-hero-icon name="plus" [size]="14"></app-hero-icon>
+                  +{{ totalSelectedWeight }} kg (Selección actual)
+                </div>
+              }
+            </div>
+            <!-- Action -->
+            @if (vehicle.status === 'available') {
+              <button 
+                class="assign-btn"
+                [disabled]="selectedOrders.length === 0"
+                (click)="assignOrdersToVehicle(vehicle.id)"
+              >
+                Asignar {{ selectedOrders.length }} Pedido{{ selectedOrders.length !== 1 ? 's' : '' }}
+                <app-hero-icon name="arrow-right" [size]="16"></app-hero-icon>
+              </button>
+            }
+            @if (vehicle.status === 'available' && !vehicle.recommended) {
+              <div class="vehicle-footer">
+                <div class="vehicle-zones">
+                  @for (zone of vehicle.zone; track zone) {
+                    <span class="zone-badge">{{ zone }}</span>
+                  }
+                </div>
+                <button class="details-btn">Ver Detalles</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Bottom Summary -->
+  <div class="summary-bar">
+    <div class="summary-content">
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <span class="summary-label">Seleccionados</span>
+          <span class="summary-value">{{ selectedOrders.length }} Pedido{{ selectedOrders.length !== 1 ? 's' : '' }}</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-stat">
+          <span class="summary-label">Peso Total</span>
+          <span class="summary-value">{{ totalSelectedWeight }} kg</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-stat">
+          <span class="summary-label">Volumen</span>
+          <span class="summary-value">{{ totalSelectedVolume.toFixed(1) }} m³</span>
+        </div>
+      </div>
+      <div class="summary-actions">
+        <button class="btn-secondary">Cancelar</button>
+        <button class="btn-primary" [disabled]="selectedOrders.length === 0">
+          Confirmar Asignación
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

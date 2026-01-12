@@ -63,6 +63,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender
   },
   {
+    path: 'orders/assignment',
+    renderMode: RenderMode.Prerender
+  },
+  {
     path: 'allies',
     renderMode: RenderMode.Prerender
   },

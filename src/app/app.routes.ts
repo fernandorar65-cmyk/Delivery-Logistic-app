@@ -148,6 +148,11 @@ export const routes: Routes = [
           .then(m => m.OrderFormViewComponent)
       },
       {
+        path: 'orders/assignment',
+        loadComponent: () => import('./views/orders/order-assignment-view/order-assignment-view.component')
+          .then(m => m.OrderAssignmentViewComponent)
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full'
