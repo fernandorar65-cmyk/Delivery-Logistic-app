@@ -1,0 +1,188 @@
+<main class="ally-list-container">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs">
+    <a href="#" class="breadcrumb-link">Inicio</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Gestión de Aliados</span>
+  </div>
+
+  <!-- Page Heading -->
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">Directorio de Aliados</h1>
+      <p class="page-subtitle">Gestión centralizada de socios logísticos, flota y conductores.</p>
+    </div>
+    <button class="btn-new-ally">
+      <app-hero-icon name="plus" [size]="20"></app-hero-icon>
+      <span>Nuevo Aliado</span>
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    @for (stat of stats(); track stat.label) {
+      <div class="stat-card" [class]="'stat-' + stat.iconColor">
+        <div class="stat-header">
+          <p class="stat-label">{{ stat.label }}</p>
+          <div class="stat-icon" [class]="'icon-' + stat.iconColor">
+            <app-hero-icon [name]="stat.icon" [size]="20"></app-hero-icon>
+          </div>
+        </div>
+        <div class="stat-content">
+          <p class="stat-value">{{ stat.value }}</p>
+          @if (stat.subtitle) {
+            <p class="stat-subtitle" [class]="stat.trend === 'up' ? 'trend-up' : ''">
+              @if (stat.trend === 'up') {
+                <app-hero-icon name="arrow-trending-up" [size]="14"></app-hero-icon>
+              }
+              {{ stat.subtitle }}
+            </p>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Toolbar: Search & Filters -->
+  <div class="toolbar">
+    <!-- Search -->
+    <div class="search-container">
+      <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar por nombre, ID o empresa..."
+        [(ngModel)]="searchQuery"
+      />
+    </div>
+    <!-- Filters & Actions -->
+    <div class="toolbar-actions">
+      <button class="filter-btn">
+        <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
+        <span>Estado</span>
+      </button>
+      <button class="filter-btn">
+        <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
+        <span>Zona</span>
+      </button>
+      <div class="toolbar-divider"></div>
+      <button class="filter-btn">
+        <app-hero-icon name="download" [size]="18"></app-hero-icon>
+        <span>Exportar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Aliado / Empresa</th>
+            <th>Estado</th>
+            <th>Flota</th>
+            <th>Conductores</th>
+            <th>Zona / Cobertura</th>
+            <th>Calif.</th>
+            <th class="text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ally of allies(); track ally.id) {
+            <tr class="table-row">
+              <td class="ally-info">
+                <div class="ally-avatar">
+                  @if (ally.logo) {
+                    <img [src]="ally.logo" [alt]="ally.name" />
+                  } @else if (ally.initials) {
+                    <div class="ally-initials">{{ ally.initials }}</div>
+                  } @else {
+                    <div class="ally-initials">{{ ally.name.charAt(0) }}</div>
+                  }
+                </div>
+                <div class="ally-details">
+                  <p class="ally-name">{{ ally.name }}</p>
+                  <p class="ally-id">ID: #{{ ally.id }}</p>
+                </div>
+              </td>
+              <td>
+                <span class="status-badge" [class]="getStatusClass(ally.status)">
+                  <span class="status-dot"></span>
+                  {{ getStatusLabel(ally.status) }}
+                </span>
+              </td>
+              <td>
+                <div class="fleet-info">
+                  <div class="fleet-item">
+                    <app-hero-icon name="truck" [size]="18" class="fleet-icon"></app-hero-icon>
+                    <span class="fleet-count">{{ ally.trucks }}</span>
+                  </div>
+                  <div class="fleet-item" [class.opacity-40]="ally.motorcycles === 0">
+                    <app-hero-icon name="user" [size]="18" class="fleet-icon"></app-hero-icon>
+                    <span class="fleet-count">{{ ally.motorcycles }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                @if (ally.driverAvatars && ally.driverAvatars.length > 0) {
+                  <div class="drivers-avatars">
+                    @for (avatar of ally.driverAvatars.slice(0, 3); track $index) {
+                      <img [src]="avatar" [alt]="'Driver ' + ($index + 1)" class="driver-avatar" />
+                    }
+                    @if (ally.drivers > ally.driverAvatars.length) {
+                      <div class="driver-avatar-more">+{{ ally.drivers - ally.driverAvatars.length }}</div>
+                    }
+                  </div>
+                } @else {
+                  <span class="drivers-text">{{ ally.drivers }} Conductores</span>
+                }
+              </td>
+              <td>
+                <span class="zone-text">{{ ally.zone }}</span>
+              </td>
+              <td>
+                @if (ally.rating !== null) {
+                  <div class="rating">
+                    <app-hero-icon name="star" [size]="16" class="star-icon"></app-hero-icon>
+                    <span class="rating-value">{{ ally.rating }}</span>
+                  </div>
+                } @else {
+                  <div class="rating">
+                    <app-hero-icon name="star" [size]="16" class="star-icon-empty"></app-hero-icon>
+                    <span class="rating-empty">-</span>
+                  </div>
+                }
+              </td>
+              <td class="text-right">
+                <button class="action-btn">
+                  <app-hero-icon name="ellipsis-vertical" [size]="20"></app-hero-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+      <span class="pagination-info">Mostrando {{ startItem }}-{{ endItem }} de {{ totalItems() }} aliados</span>
+      <div class="pagination-controls">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage() === 1"
+          (click)="previousPage()"
+        >
+          Anterior
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage() === totalPages"
+          (click)="nextPage()"
+        >
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

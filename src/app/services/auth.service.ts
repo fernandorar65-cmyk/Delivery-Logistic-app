@@ -12,7 +12,7 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/token`;
 
   login(credentials: TokenRequest): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.apiUrl}/`, credentials);
+    return this.http.post<TokenResponse>(`${this.apiUrl}/obtain/`, credentials);
   }
 
   refreshToken(refreshToken: RefreshTokenRequest): Observable<TokenResponse> {
