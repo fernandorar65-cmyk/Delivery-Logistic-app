@@ -1,180 +1,152 @@
-.login-container {
+/* Login Wrapper */
+.login-wrapper {
   min-height: 100vh;
   display: flex;
-  background-color: #f8f9fa;
-}
-
-/* Panel Izquierdo - Branding */
-.login-branding {
-  flex: 1;
-  background: #4facfe 0%, rgba(30, 41, 59, 0.4) 50%, rgba(51, 65, 85, 0.4) 100%),
-              url('https://wallpapercave.com/wp/wp3788457.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
-  display: flex;
   flex-direction: column;
-  padding: 3rem 3.5rem;
-  overflow: hidden;
-  min-height: 100vh;
+  background-color: #f6f7f8;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.branding-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.1;
-  background-image: 
-    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px);
-}
-
-.branding-content {
-  position: relative;
-  z-index: 1;
-  color: white;
-  max-width: 500px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  flex: 1;
-}
-
-.logo-section {
+/* Top Navigation Bar */
+.login-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.logo-icon {
-  width: 48px;
-  height: 48px;
-  background: #2563eb;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.logo-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.brand-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-  color: white;
-  letter-spacing: -0.5px;
-}
-
-.branding-text {
-  display: flex;
-  flex-direction: column;
   justify-content: space-between;
-  height: 100%;
-  margin: 0;
+  border-bottom: 1px solid #dbe0e6;
+  background: white;
+  padding: 0.75rem 2.5rem;
+  z-index: 10;
 }
 
-.branding-title {
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  line-height: 1.2;
-  color: white;
-  letter-spacing: -0.5px;
-}
-
-.branding-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.95);
-  margin: 0;
-}
-
-.branding-features {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  margin-top: 2rem;
-}
-
-.feature-item {
+.header-logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.9375rem;
-  color: white;
-  font-weight: 500;
+  color: #137fec;
 }
 
-.feature-item svg {
-  flex-shrink: 0;
-  color: white;
-  stroke-width: 3;
-}
-
-.branding-footer {
-  margin-top: auto;
-  padding-top: 2rem;
-  font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.8);
-  text-align: left;
-}
-
-/* Panel Derecho - Formulario */
-.login-form-panel {
-  flex: 1;
+.logo-icon {
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  padding: 3rem;
-  overflow-y: auto;
 }
 
-.form-container {
+.logo-icon svg {
   width: 100%;
-  max-width: 450px;
+  height: 100%;
+  fill: currentColor;
+}
+
+.logo-text {
+  color: #111418;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.support-btn {
+  display: flex;
+  min-width: 84px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  background: rgba(19, 127, 236, 0.1);
+  color: #137fec;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  transition: background-color 0.2s;
+  gap: 0.5rem;
+}
+
+.support-btn:hover {
+  background: rgba(19, 127, 236, 0.2);
+}
+
+/* Main Content: Split Screen Layout */
+.login-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .login-main {
+    flex-direction: row;
+  }
+}
+
+/* Left Side: Login Form */
+.login-form-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: white;
+}
+
+@media (min-width: 1024px) {
+  .login-form-section {
+    width: 50%;
+    padding: 4rem;
+  }
+}
+
+.form-wrapper {
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .form-header {
-  margin-bottom: 2rem;
+  text-align: left;
 }
 
 .form-title {
+  color: #111418;
   font-size: 1.875rem;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   margin: 0 0 0.5rem 0;
-  letter-spacing: -0.5px;
 }
 
 .form-subtitle {
-  font-size: 0.875rem;
-  color: #666;
-  margin: 0;
+  color: #617589;
+  font-size: 1rem;
   line-height: 1.5;
+  margin: 0;
 }
 
 .login-form {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .error-message {
   background-color: #ffebee;
   color: #d32f2f;
   padding: 1rem 1.25rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -182,20 +154,28 @@
   font-size: 0.875rem;
 }
 
-.error-message svg {
+.error-message app-hero-icon {
   flex-shrink: 0;
+  color: #d32f2f;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #333;
+.form-label {
+  color: #111418;
   font-size: 0.875rem;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.password-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .input-wrapper {
@@ -207,51 +187,41 @@
 .input-icon {
   position: absolute;
   left: 1rem;
-  color: #999;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
   pointer-events: none;
   z-index: 1;
 }
 
-.form-group input {
+.form-input {
+  flex: 1;
   width: 100%;
-  padding: 0.875rem 1rem 0.875rem 3rem;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 0.9375rem;
+  border-radius: 0.5rem;
+  border: 1px solid #dbe0e6;
+  background: white;
+  color: #111418;
+  height: 3.5rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  font-size: 1rem;
   transition: all 0.2s;
   box-sizing: border-box;
-  font-family: inherit;
-  background-color: #fafafa;
 }
 
-.form-group:has(.password-toggle) input {
-  padding-right: 3rem;
+.form-input::placeholder {
+  color: #617589;
 }
 
-.form-group input:focus {
+.form-input:focus {
   outline: none;
-  border-color: #2563eb;
-  background-color: white;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #137fec;
+  box-shadow: 0 0 0 2px rgba(19, 127, 236, 0.2);
 }
 
-.form-group input:focus ~ .input-icon,
-.form-group input:not(:placeholder-shown) ~ .input-icon {
-  color: #2563eb;
-}
-
-.form-group input:focus ~ .password-toggle,
-.form-group input:not(:placeholder-shown) ~ .password-toggle {
-  color: #2563eb;
-}
-
-.form-group input.invalid {
+.form-input.invalid {
   border-color: #d32f2f;
   background-color: #fff5f5;
-}
-
-.form-group input::placeholder {
-  color: #999;
 }
 
 .password-toggle {
@@ -260,7 +230,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #999;
+  color: #9ca3af;
   padding: 0.25rem;
   display: flex;
   align-items: center;
@@ -270,84 +240,78 @@
 }
 
 .password-toggle:hover {
-  color: #2563eb;
-}
-
-.password-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.5rem;
-  font-size: 0.8125rem;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  color: #666;
-  user-select: none;
-}
-
-.remember-me input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: #2563eb;
-}
-
-.forgot-password {
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.forgot-password:hover {
-  color: #1e40af;
-  text-decoration: underline;
+  color: #137fec;
 }
 
 .error-text {
   display: block;
   color: #d32f2f;
   font-size: 0.8125rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
-.btn {
-  display: inline-flex;
+.remember-me-group {
+  display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  width: 100%;
-  padding: 0.875rem 1.75rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9375rem;
+}
+
+.remember-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  accent-color: #137fec;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 1rem;
+}
+
+.remember-label {
+  font-size: 0.875rem;
+  color: #617589;
+  cursor: pointer;
+  user-select: none;
+}
+
+.forgot-password {
+  color: #137fec;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
 }
 
 .btn-primary {
-  background: #4facfe;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  height: 3.5rem;
+  padding: 0 1.25rem;
+  background: #137fec;
   color: white;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  border: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(19, 127, 236, 0.2);
+  gap: 0.5rem;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  background: #3d9ae8;
-  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+  background: #0d6efd;
+  box-shadow: 0 6px 20px rgba(19, 127, 236, 0.3);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
 .btn-spinner {
@@ -360,130 +324,208 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .form-footer {
-  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f2f4;
   text-align: center;
 }
 
 .no-account {
-  font-size: 0.8125rem;
-  color: #666;
-  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: #617589;
+  margin: 0;
 }
 
 .contact-link {
-  color: #2563eb;
+  color: #137fec;
+  font-weight: 700;
   text-decoration: none;
-  font-weight: 500;
   transition: color 0.2s;
 }
 
 .contact-link:hover {
-  color: #1e40af;
   text-decoration: underline;
 }
 
-.legal-links {
+.features-badges {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-top: 0.5rem;
+}
+
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.badge-item app-hero-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Right Side: Visual Hero Area */
+.login-hero-section {
+  display: none;
+  width: 50%;
+  position: relative;
+  background: #137fec;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .login-hero-section {
+    display: flex;
+  }
+}
+
+.hero-background {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAP55B0oyc3h29fhJbJVnZvWnQ9VYtS2OyiSJcshL-E-o4IytPumNO_k7UJQKiWPiIK68--Psf7_OICLm0TaSzXn6EBvhl2YONKYBxcmf11wCrNntw9W5JC6oalQRFTKG7mhCXWOM8NpNbk2pn2dpfG3CIOElQUv7o9-cQE3l3DZwQ02_SG1b_4Xl_di3av8ZENTnpP3fz3iXOfxClTsh0c8Nk9yAfNdn02-SK0kuq2gKDy0zwGWX3F_JGdP7edEBrQF_QRB3CTb6Hc');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(19, 127, 236, 0.8) 0%, rgba(30, 64, 175, 0.9) 100%);
+  z-index: 10;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 0 5rem;
+  color: white;
+}
+
+.hero-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 28rem;
+  width: 100%;
+}
+
+.hero-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+}
+
+.hero-icon-wrapper app-hero-icon {
+  width: 32px;
+  height: 32px;
+  color: white;
+}
+
+.hero-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+}
+
+.hero-card-description {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.hero-footer-text {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 2.5rem;
+  color: rgba(255, 255, 255, 0.4);
   font-size: 0.75rem;
-  color: #999;
+  font-family: 'Courier New', monospace;
 }
 
-.legal-links a {
-  color: #999;
-  text-decoration: none;
-  transition: color 0.2s;
+/* Footer for Mobile */
+.login-footer-mobile {
+  display: block;
+  padding: 1.5rem;
+  text-align: center;
+  color: #617589;
+  font-size: 0.75rem;
+  border-top: 1px solid #f0f2f4;
+  background: white;
 }
 
-.legal-links a:hover {
-  color: #666;
-  text-decoration: underline;
-}
-
-.legal-links span {
-  color: #ccc;
+@media (min-width: 1024px) {
+  .login-footer-mobile {
+    display: none;
+  }
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-  .login-container {
-    flex-direction: column;
-  }
-
-  .login-branding {
-    min-height: 300px;
-    padding: 2rem;
-  }
-
-  .branding-title {
-    font-size: 2rem;
-  }
-
-  .branding-description {
-    font-size: 1rem;
-  }
-
-  .login-form-panel {
-    padding: 2rem;
-  }
-}
-
 @media (max-width: 768px) {
-  .login-branding {
-    min-height: 250px;
-    padding: 1.5rem;
-  }
-
-  .branding-content {
-    gap: 1.5rem;
-  }
-
-  .logo-section {
-    gap: 0.75rem;
-  }
-
-  .logo-icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .brand-title {
-    font-size: 1.5rem;
-  }
-
-  .branding-title {
-    font-size: 1.75rem;
-  }
-
-  .branding-description {
-    font-size: 0.9375rem;
-  }
-
-  .branding-features {
-    gap: 0.75rem;
-  }
-
-  .branding-footer {
-    font-size: 0.75rem;
-    padding-top: 1rem;
-  }
-
-  .login-form-panel {
-    padding: 1.5rem;
+  .login-header {
+    padding: 0.75rem 1.5rem;
   }
 
   .form-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .form-subtitle {
     font-size: 0.875rem;
   }
-}
 
+  .features-badges {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}

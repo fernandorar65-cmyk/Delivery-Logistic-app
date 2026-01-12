@@ -1,166 +1,181 @@
-<div class="login-container">
-  <!-- Panel Izquierdo - Branding -->
-  <div class="login-branding">
-    <div class="branding-content">
-      <div class="logo-section">
-        <div class="logo-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 3h15v13H1z"></path>
-            <path d="M16 8h4l3 3v5h-7V8z"></path>
-            <circle cx="5.5" cy="18.5" r="2.5"></circle>
-            <circle cx="18.5" cy="18.5" r="2.5"></circle>
-          </svg>
-        </div>
-        <h1 class="brand-title">Gestion Logistica App</h1>
+<div class="login-wrapper">
+  <!-- Top Navigation Bar -->
+  <header class="login-header">
+    <div class="header-logo">
+      <div class="logo-icon">
+        <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill-rule="evenodd"></path>
+        </svg>
       </div>
-      
-      <div class="branding-text">
-        <h2 class="branding-title">Logística Integral</h2>
-        <p class="branding-description">
-          Control total sobre sus pedidos, flota y operaciones en tiempo real.
-        </p>
-      </div>
-
-      <div class="branding-features">
-        <div class="feature-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          <span>Plataforma Segura</span>
-        </div>
-        <div class="feature-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          <span>Disponibilidad 24/7</span>
-        </div>
-      </div>
-
-      <div class="branding-footer">
-        <p>© 2024 Logistic App. Todos los derechos reservados.</p>
-      </div>
+      <h2 class="logo-text">LogiSaaS</h2>
     </div>
-    
-    <div class="branding-background">
-      <div class="background-pattern"></div>
+    <div class="header-actions">
+      <button class="support-btn">
+        <app-hero-icon name="chat-bubble-left-right" [size]="18"></app-hero-icon>
+        <span>Soporte</span>
+      </button>
     </div>
-  </div>
+  </header>
 
-  <!-- Panel Derecho - Formulario -->
-  <div class="login-form-panel">
-    <div class="form-container">
-      <div class="form-header">
-        <h1 class="form-title">Bienvenido</h1>
-        <p class="form-subtitle">Ingrese sus credenciales para acceder a la plataforma.</p>
-      </div>
+  <!-- Main Content: Split Screen Layout -->
+  <main class="login-main">
+    <!-- Left Side: Login Form -->
+    <div class="login-form-section">
+      <div class="form-wrapper">
+        <div class="form-header">
+          <h1 class="form-title">Bienvenido al Portal Logístico</h1>
+          <p class="form-subtitle">
+            Ingresa tus credenciales para gestionar entregas, flota y pedidos en tiempo real.
+          </p>
+        </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        @if (error()) {
-          <div class="error-message">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <span>{{ error() }}</span>
-          </div>
-        }
-
-        <div class="form-group">
-          <label for="email">Usuario o Correo Electrónico</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              placeholder="ej. usuario@logistica.com"
-              [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-            />
-          </div>
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <span class="error-text">{{ getFieldError('email') }}</span>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          @if (error()) {
+            <div class="error-message">
+              <app-hero-icon name="exclamation-circle" [size]="20"></app-hero-icon>
+              <span>{{ error() }}</span>
+            </div>
           }
-        </div>
 
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
-              id="password"
-              formControlName="password"
-              placeholder="Ingresa tu contraseña"
-              [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="togglePasswordVisibility()"
-              tabindex="-1"
-            >
-              @if (showPassword()) {
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                  <line x1="1" y1="1" x2="23" y2="23"></line>
-                </svg>
-              } @else {
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              }
-            </button>
-          </div>
-          <div class="password-actions">
-            <label class="remember-me">
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="email" class="form-label">Correo Electrónico</label>
+            <div class="input-wrapper">
+              <app-hero-icon name="envelope" [size]="20" class="input-icon"></app-hero-icon>
               <input
-                type="checkbox"
-                [checked]="rememberMe()"
-                (change)="rememberMe.set($any($event.target).checked)"
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="nombre@empresa.com"
+                class="form-input"
+                [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
               />
-              <span>Recordar mi usuario</span>
-            </label>
-            <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            </div>
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <span class="error-text">{{ getFieldError('email') }}</span>
+            }
           </div>
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <span class="error-text">{{ getFieldError('password') }}</span>
-          }
-        </div>
 
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="loginForm.invalid || loading()"
-        >
-          @if (loading()) {
-            <div class="btn-spinner"></div>
-            Iniciando sesión...
-          } @else {
-            Iniciar Sesión
-          }
-        </button>
+          <!-- Password Field -->
+          <div class="form-group">
+            <div class="password-label-row">
+              <label for="password" class="form-label">Contraseña</label>
+              <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            </div>
+            <div class="input-wrapper">
+              <app-hero-icon name="lock-closed" [size]="20" class="input-icon"></app-hero-icon>
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                id="password"
+                formControlName="password"
+                placeholder="••••••••"
+                class="form-input"
+                [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                tabindex="-1"
+              >
+                @if (showPassword()) {
+                  <app-hero-icon name="eye-slash" [size]="20"></app-hero-icon>
+                } @else {
+                  <app-hero-icon name="eye" [size]="20"></app-hero-icon>
+                }
+              </button>
+            </div>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <span class="error-text">{{ getFieldError('password') }}</span>
+            }
+          </div>
+
+          <!-- Remember me -->
+          <div class="remember-me-group">
+            <input
+              type="checkbox"
+              id="remember"
+              class="remember-checkbox"
+              [checked]="rememberMe()"
+              (change)="rememberMe.set($any($event.target).checked)"
+            />
+            <label for="remember" class="remember-label">Mantener sesión iniciada</label>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="loginForm.invalid || loading()"
+          >
+            @if (loading()) {
+              <div class="btn-spinner"></div>
+              Iniciando sesión...
+            } @else {
+              Iniciar Sesión
+              <app-hero-icon name="arrow-right" [size]="20"></app-hero-icon>
+            }
+          </button>
+        </form>
 
         <div class="form-footer">
           <p class="no-account">
             ¿No tienes una cuenta? 
-            <a href="#" class="contact-link">Contactar administrador</a>
+            <a href="#" class="contact-link">Contacta a tu administrador</a>
           </p>
-          <div class="legal-links">
-            <a href="#">Términos de Servicio</a>
-            <span>•</span>
-            <a href="#">Política de Privacidad</a>
+        </div>
+
+        <div class="features-badges">
+          <div class="badge-item">
+            <app-hero-icon name="shield-check" [size]="16"></app-hero-icon>
+            <span>Aliados</span>
+          </div>
+          <div class="badge-item">
+            <app-hero-icon name="truck" [size]="16"></app-hero-icon>
+            <span>Flota</span>
+          </div>
+          <div class="badge-item">
+            <app-hero-icon name="chart-bar" [size]="16"></app-hero-icon>
+            <span>Dashboard</span>
           </div>
         </div>
-      </form>
+      </div>
     </div>
-  </div>
+
+    <!-- Right Side: Visual Hero Area -->
+    <div class="login-hero-section">
+      <div class="hero-background"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-card">
+          <div class="hero-icon-wrapper">
+            <app-hero-icon name="bolt" [size]="32"></app-hero-icon>
+          </div>
+          <h3 class="hero-card-title">Eficiencia Operativa</h3>
+          <p class="hero-card-description">
+            Optimiza tus rutas y reduce tiempos de entrega en un 30% mediante nuestra inteligencia de asignación automática.
+          </p>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-value">2.4k+</div>
+              <div class="stat-label">Entregas Hoy</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">98%</div>
+              <div class="stat-label">SLA Cumplido</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-footer-text">
+          LOGISAAS CLOUD INFRASTRUCTURE // GLOBAL LOGISTICS NETWORK 2024
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer for Mobile -->
+  <footer class="login-footer-mobile">
+    © 2024 LogiSaaS. Gestión Logística Profesional. Todos los derechos reservados.
+  </footer>
 </div>
 
