@@ -23,6 +23,11 @@ export const routes: Routes = [
           .then(m => m.DashboardViewComponent)
       },
       {
+        path: 'allies',
+        loadComponent: () => import('./views/allies/ally-list-view/ally-list-view.component')
+          .then(m => m.AllyListViewComponent)
+      },
+      {
         path: 'clients',
         loadComponent: () => import('./views/clients/client-list-view/client-list-view.component')
           .then(m => m.ClientListViewComponent)

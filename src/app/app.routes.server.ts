@@ -62,6 +62,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'orders/new',
     renderMode: RenderMode.Prerender
   },
+  {
+    path: 'allies',
+    renderMode: RenderMode.Prerender
+  },
   // Rutas dinámicas con parámetros - server-side rendering
   {
     path: 'clients/:id',
