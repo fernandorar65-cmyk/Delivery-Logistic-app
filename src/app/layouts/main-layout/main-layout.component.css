@@ -111,6 +111,11 @@
   color: #333;
 }
 
+.logout-button:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
 .add-button {
   background: #4facfe;
   color: white;

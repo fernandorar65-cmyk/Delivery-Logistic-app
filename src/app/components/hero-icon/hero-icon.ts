@@ -46,6 +46,7 @@ const iconPaths: Record<string, string> = {
   'shield-heart': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 18.75 10c.568 0 1.125.05 1.67.143a11.99 11.99 0 0 1 2.08 2.52 12.01 12.01 0 0 1-2.08 2.52 11.959 11.959 0 0 1-1.67.143c-5.385 0-9.75-4.365-9.75-9.75 0-1.125.19-2.205.536-3.206Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75c.5 0 1 .5 1 1.25 0 .75-.5 1.25-1 1.25s-1-.5-1-1.25c0-.75.5-1.25 1-1.25Z"/>',
   'download': '<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>',
   'star': '<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>',
+  'arrow-right-on-rectangle': '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/>',
 };
 
 export type IconName = keyof typeof iconPaths;
