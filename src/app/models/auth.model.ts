@@ -6,9 +6,13 @@ export interface TokenRequest {
 export interface TokenResponse {
   refresh: string;
   access: string;
+  user_type: string;
 }
 
 export interface RefreshTokenRequest {
   refresh: string;
 }
 
+export interface RefreshTokenResponse {
+  access: string;
+}

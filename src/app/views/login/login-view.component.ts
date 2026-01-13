@@ -48,6 +48,9 @@ export class LoginViewComponent {
             if (response.refresh) {
               localStorage.setItem('refresh_token', response.refresh);
             }
+            if (response.user_type) {
+              localStorage.setItem('user_type', response.user_type);
+            }
           }
           
           // Redirigir al dashboard

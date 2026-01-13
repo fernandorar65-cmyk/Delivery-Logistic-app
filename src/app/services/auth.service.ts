@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TokenRequest, TokenResponse, RefreshTokenRequest } from '../models/auth.model';
+import { TokenRequest, TokenResponse, RefreshTokenRequest, RefreshTokenResponse } from '../models/auth.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -15,8 +15,8 @@ export class AuthService {
     return this.http.post<TokenResponse>(`${this.apiUrl}/obtain/`, credentials);
   }
 
-  refreshToken(refreshToken: RefreshTokenRequest): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.apiUrl}/refresh/`, refreshToken);
+  refreshToken(refreshToken: RefreshTokenRequest): Observable<RefreshTokenResponse> {
+    return this.http.post<RefreshTokenResponse>(`${this.apiUrl}/refresh/`, refreshToken);
   }
 }
 
