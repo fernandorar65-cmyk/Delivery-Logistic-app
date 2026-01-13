@@ -1,0 +1,243 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">Gestión de Empresas</h1>
+      <p class="page-subtitle">Administre la información de empresas asociadas al sistema.</p>
+    </div>
+    <button (click)="openNewCompanyModal()" class="btn btn-primary">
+      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
+      Nueva Empresa
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="card loading-card">
+      <div class="loading-spinner"></div>
+      <p>Cargando empresas...</p>
+    </div>
+  } @else if (error()) {
+    <div class="card error-card">
+      <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (companies().length === 0) {
+    <div class="card empty-state-card">
+      <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
+      <h3>No hay empresas registradas</h3>
+      <p>Comienza agregando tu primera empresa al sistema</p>
+      <button (click)="openNewCompanyModal()" class="btn btn-primary">Crear Primera Empresa</button>
+    </div>
+  } @else {
+    <div class="card table-card">
+      <div class="table-header">
+        <div class="table-info">
+          <span class="table-count">{{ companies().length }} empresa{{ companies().length !== 1 ? 's' : '' }}</span>
+        </div>
+      </div>
+      
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>RUC</th>
+              <th>Email</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th class="actions-header">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (company of companies(); track company.id) {
+              <tr>
+                <td class="id-cell">{{ company.id }}</td>
+                <td class="name-cell">
+                  <div class="name-wrapper">
+                    <strong>{{ company.company_name }}</strong>
+                  </div>
+                </td>
+                <td>{{ company.ruc }}</td>
+                <td>{{ company.user_email || '-' }}</td>
+                <td>{{ company.description || '-' }}</td>
+                <td>
+                  @if (company.user_type) {
+                    <span class="badge-type">{{ company.user_type }}</span>
+                  } @else {
+                    -
+                  }
+                </td>
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <button (click)="openEditCompanyModal(company)" class="action-btn edit-btn" title="Editar">
+                      <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
+                    </button>
+                    <button (click)="deleteCompany(company.id!)" class="action-btn delete-btn" title="Eliminar">
+                      <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      @if (totalCount() > 0) {
+        <div class="pagination">
+          <div class="pagination-info">
+            Página {{ currentPage() }} de {{ Math.ceil(totalCount() / 10) }}
+          </div>
+          <div class="pagination-controls">
+            <button 
+              class="pagination-btn" 
+              [disabled]="!hasPrevious()"
+              (click)="previousPage()"
+            >
+              Anterior
+            </button>
+            <button 
+              class="pagination-btn" 
+              [disabled]="!hasNext()"
+              (click)="nextPage()"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Modal Flotante -->
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">{{ isEditMode() ? 'Editar Empresa' : 'Nueva Empresa' }}</h2>
+          <button class="modal-close" (click)="closeModal()" type="button">
+            <app-hero-icon name="x-mark" [size]="24"></app-hero-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="modal-form">
+          @if (formError()) {
+            <div class="form-error-message">
+              <app-hero-icon name="exclamation-circle" [size]="20"></app-hero-icon>
+              <span>{{ formError() }}</span>
+            </div>
+          }
+
+          <div class="form-section">
+            <h3 class="section-title">Información Básica</h3>
+            
+            <div class="form-group">
+              <label for="company_name">
+                Nombre de Empresa <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="company_name"
+                formControlName="company_name"
+                placeholder="Ingrese el nombre de la empresa"
+                [class.invalid]="companyForm.get('company_name')?.invalid && companyForm.get('company_name')?.touched"
+              />
+              @if (companyForm.get('company_name')?.invalid && companyForm.get('company_name')?.touched) {
+                <span class="error-text">{{ getFieldError('company_name') }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="ruc">
+                RUC <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="ruc"
+                formControlName="ruc"
+                placeholder="Ingrese el RUC"
+                [class.invalid]="companyForm.get('ruc')?.invalid && companyForm.get('ruc')?.touched"
+              />
+              @if (companyForm.get('ruc')?.invalid && companyForm.get('ruc')?.touched) {
+                <span class="error-text">{{ getFieldError('ruc') }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="email">
+                Email <span class="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="correo@ejemplo.com"
+                [class.invalid]="companyForm.get('email')?.invalid && companyForm.get('email')?.touched"
+              />
+              @if (companyForm.get('email')?.invalid && companyForm.get('email')?.touched) {
+                <span class="error-text">{{ getFieldError('email') }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="description">
+                Descripción
+              </label>
+              <textarea
+                id="description"
+                formControlName="description"
+                placeholder="Ingrese una descripción de la empresa"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="password">
+                Contraseña 
+                @if (!isEditMode()) {
+                  <span class="required">*</span>
+                } @else {
+                  <span class="optional">(opcional - dejar en blanco para no cambiar)</span>
+                }
+              </label>
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                [placeholder]="isEditMode() ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
+                [class.invalid]="companyForm.get('password')?.invalid && companyForm.get('password')?.touched"
+              />
+              @if (companyForm.get('password')?.invalid && companyForm.get('password')?.touched) {
+                <span class="error-text">{{ getFieldError('password') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeModal()"
+              [disabled]="formLoading()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="companyForm.invalid || formLoading()"
+            >
+              @if (formLoading()) {
+                <div class="btn-spinner"></div>
+                Guardando...
+              } @else {
+                {{ isEditMode() ? 'Guardar Cambios' : 'Crear Empresa' }}
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
