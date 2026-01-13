@@ -23,6 +23,22 @@ function decodeJWT(token: string): any {
   }
 }
 
+// Función para verificar si el token está expirado
+function isTokenExpired(token: string | null): boolean {
+  if (!token) return true;
+
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return true;
+
+  // Obtener el tiempo actual en segundos
+  const currentTime = Math.floor(Date.now() / 1000);
+  // Tiempo de expiración del token
+  const expirationTime = decoded.exp;
+
+  // El token está expirado si el tiempo actual es mayor o igual al tiempo de expiración
+  return currentTime >= expirationTime;
+}
+
 // Función para verificar si el token está por expirar (en los próximos 5 minutos)
 function isTokenExpiringSoon(token: string | null): boolean {
   if (!token) return true;
@@ -61,20 +77,52 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     refreshToken = storageService.getItem('refresh_token');
   }
   
-  // Si no hay token, continuar sin autenticación
   if (!accessToken) {
-    return next(req).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 && isPlatformBrowser(platformId)) {
-          storageService.clear();
-          router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
-    );
+    if (isPlatformBrowser(platformId)) {
+      storageService.clear();
+      router.navigate(['/login']);
+    }
+    return throwError(() => new Error('No authentication token available'));
+  }
+
+  // Si el token ya expiró, intentar refrescar o redirigir al login
+  if (isTokenExpired(accessToken)) {
+    if (isPlatformBrowser(platformId)) {
+      // Si hay refresh token, intentar refrescar
+      if (refreshToken) {
+        return authService.refreshToken({ refresh: refreshToken }).pipe(
+          switchMap((response) => {
+            // Guardar el nuevo access token
+            if (response.access) {
+              storageService.setItem('access_token', response.access);
+            }
+            
+            // Clonar la petición original con el nuevo token
+            const clonedRequest = req.clone({
+              setHeaders: {
+                Authorization: `Bearer ${response.access}`
+              }
+            });
+            
+            return next(clonedRequest);
+          }),
+          catchError((error: HttpErrorResponse) => {
+            // Si el refresh falla, limpiar todo y redirigir al login
+            storageService.clear();
+            router.navigate(['/login']);
+            return throwError(() => error);
+          })
+        );
+      } else {
+        // No hay refresh token, redirigir al login
+        storageService.clear();
+        router.navigate(['/login']);
+        return throwError(() => new Error('Token expired and no refresh token available'));
+      }
+    }
+    return throwError(() => new Error('Token expired'));
   }
   
-  // Verificar si el token está por expirar
   if (isTokenExpiringSoon(accessToken) && refreshToken) {
     // Intentar refrescar el token antes de hacer la petición
     return authService.refreshToken({ refresh: refreshToken }).pipe(

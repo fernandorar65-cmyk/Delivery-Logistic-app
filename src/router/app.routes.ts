@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 // Componentes que se cargan siempre (eager loading)
 import { LoginViewComponent } from '../app/views/login/login-view.component';
 import { MainLayoutComponent } from '../app/layouts/main-layout/main-layout.component';
+import { authGuard } from '../app/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',
