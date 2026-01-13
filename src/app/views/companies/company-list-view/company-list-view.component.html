@@ -20,7 +20,7 @@
       <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
       <p>{{ error() }}</p>
     </div>
-  } @else if (companies().length === 0) {
+  } @else if (!companies() || companies().length === 0) {
     <div class="card empty-state-card">
       <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
       <h3>No hay empresas registradas</h3>
@@ -49,7 +49,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (company of companies(); track company.id) {
+            @for (company of (companies() || []); track company.id) {
               <tr>
                 <td class="id-cell">{{ company.id }}</td>
                 <td class="name-cell">
@@ -215,25 +215,23 @@
           </div>
 
           <div class="modal-actions">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              (click)="closeModal()"
-              [disabled]="formLoading()"
-            >
+            <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="formLoading()">
               Cancelar
             </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="companyForm.invalid || formLoading()"
-            >
+            <button type="submit" class="btn btn-primary" [disabled]="companyForm.invalid || formLoading()">
+              Crear Company
+              <!-- 
+                
               @if (formLoading()) {
                 <div class="btn-spinner"></div>
                 Guardando...
               } @else {
                 {{ isEditMode() ? 'Guardar Cambios' : 'Crear Empresa' }}
               }
+              
+              -->
+
+
             </button>
           </div>
         </form>

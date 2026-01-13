@@ -49,15 +49,18 @@ export class CompanyListViewComponent {
     
     this.companyService.getAll().subscribe({
       next: (response) => {
-        this.companies.set(response.result || []);
-        this.totalCount.set(response.pagination?.count || 0);
-        this.hasNext.set(response.pagination?.next !== null);
-        this.hasPrevious.set(response.pagination?.previous !== null);
+        // Asegurar que siempre sea un array
+        const companiesArray = Array.isArray(response?.result) ? response.result : [];
+        this.companies.set(companiesArray);
+        this.totalCount.set(response?.pagination?.count || 0);
+        this.hasNext.set(response?.pagination?.next !== null);
+        this.hasPrevious.set(response?.pagination?.previous !== null);
         this.currentPage.set(1);
         this.loading.set(false);
       },
       error: (err) => {
         this.error.set('Error al cargar las empresas. Por favor, intente nuevamente.');
+        this.companies.set([]); // Asegurar que siempre sea un array
         this.loading.set(false);
         console.error('Error loading companies:', err);
       }
@@ -115,10 +118,25 @@ export class CompanyListViewComponent {
     this.formError.set(null);
   }
 
-  onSubmit() {
-    if (this.companyForm.valid) {
-      this.formLoading.set(true);
-      this.formError.set(null);
+  onSubmit(event?: Event) {
+    // Prevenir el comportamiento por defecto del formulario
+    if (event) {
+      event.preventDefault();
+    }
+
+    // Prevenir submit si el formulario no existe o no es válido
+    if (!this.companyForm) {
+      console.error('Formulario no inicializado');
+      return;
+    }
+
+    if (!this.companyForm.valid) {
+      this.companyForm.markAllAsTouched();
+      return;
+    }
+
+    this.formLoading.set(true);
+    this.formError.set(null);
 
       const formValue = { ...this.companyForm.value };
       
@@ -130,6 +148,7 @@ export class CompanyListViewComponent {
       if (this.isEditMode() && this.editingCompanyId()) {
         this.companyService.update(this.editingCompanyId()!, formValue).subscribe({
           next: () => {
+            this.formLoading.set(false);
             this.closeModal();
             this.loadCompanies();
           },
@@ -150,6 +169,7 @@ export class CompanyListViewComponent {
 
         this.companyService.create(companyPayload).subscribe({
           next: () => {
+            this.formLoading.set(false);
             this.closeModal();
             this.loadCompanies();
           },
@@ -171,9 +191,6 @@ export class CompanyListViewComponent {
           }
         });
       }
-    } else {
-      this.companyForm.markAllAsTouched();
-    }
   }
 
   deleteCompany(id: string) {
