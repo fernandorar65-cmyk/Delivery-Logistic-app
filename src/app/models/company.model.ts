@@ -7,6 +7,11 @@ export interface Company {
   user_id?: string;
   user_email?: string;
   user_type?: string;
+  // Campos adicionales para el diseño mejorado
+  sector?: string;
+  city?: string;
+  branches?: number;
+  status?: 'active' | 'inactive';
 }
 
 export interface CompanyCreate {
