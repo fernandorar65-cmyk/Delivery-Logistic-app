@@ -1,0 +1,61 @@
+import { inject } from '@angular/core';
+import { Router, CanActivateFn } from '@angular/router';
+import { StorageService } from '../services/storage.service';
+import { PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+// Función para decodificar JWT sin verificar la firma (solo para obtener el payload)
+function decodeJWT(token: string): any {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    return null;
+  }
+}
+
+// Función para verificar si el token está expirado
+function isTokenExpired(token: string | null): boolean {
+  if (!token) return true;
+
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return true;
+
+  // Obtener el tiempo actual en segundos
+  const currentTime = Math.floor(Date.now() / 1000);
+  // Tiempo de expiración del token
+  const expirationTime = decoded.exp;
+
+  // El token está expirado si el tiempo actual es mayor o igual al tiempo de expiración
+  return currentTime >= expirationTime;
+}
+
+// Guard para rutas de invitado (login) - redirige al dashboard si ya está autenticado
+export const guestGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+  const storageService = inject(StorageService);
+  const platformId = inject(PLATFORM_ID);
+
+  if (!isPlatformBrowser(platformId)) {
+    // En el servidor, permitir la navegación (SSR)
+    return true;
+  }
+
+  const accessToken = storageService.getItem('access_token');
+
+  // Si hay token y no está expirado, redirigir al dashboard (ya está autenticado)
+  if (accessToken && !isTokenExpired(accessToken)) {
+    router.navigate(['/dashboard']);
+    return false;
+  }
+
+  // Si no hay token o está expirado, permitir el acceso al login
+  return true;
+};

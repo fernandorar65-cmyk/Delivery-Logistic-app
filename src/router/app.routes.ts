@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { LoginViewComponent } from '../app/views/login/login-view.component';
 import { MainLayoutComponent } from '../app/layouts/main-layout/main-layout.component';
 import { authGuard } from '../app/guards/auth.guard';
+import { guestGuard } from '../app/guards/guest.guard';
 
 export const routes: Routes = [
   {
@@ -12,7 +13,8 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginViewComponent
+    component: LoginViewComponent,
+    canActivate: [guestGuard]
   },
   {
     path: '',
