@@ -6,14 +6,16 @@
       <span>Inicio</span>
     </a>
     <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-current">Administración de Flota</span>
+    <a routerLink="/allies" class="breadcrumb-link">Aliados</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Vehículos de {{ allyLabel }}</span>
   </div>
 
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-title-section">
-      <h1 class="page-title">Administración de Flota</h1>
-      <p class="page-subtitle">Supervisión operativa y asignación técnica de unidades.</p>
+      <h1 class="page-title">{{ pageTitle }}</h1>
+      <p class="page-subtitle">{{ pageSubtitle }}</p>
     </div>
     <button class="btn btn-primary">
       <app-hero-icon name="plus" [size]="18"></app-hero-icon>
@@ -49,7 +51,7 @@
         <input
           type="text"
           class="search-input"
-          placeholder="Buscar por placa, modelo o aliado..."
+          placeholder="Buscar por placa, modelo..."
           [(ngModel)]="searchQuery"
           (ngModelChange)="searchQuery.set($event); currentPage.set(1)"
         />
@@ -65,16 +67,6 @@
           <option value="van">Van</option>
           <option value="motorcycle">Moto</option>
           <option value="tractor-trailer">Tractor-remolque</option>
-        </select>
-        <select
-          class="filter-select"
-          [(ngModel)]="providerFilter"
-          (ngModelChange)="providerFilter.set($event); currentPage.set(1)"
-        >
-          <option value="">Aliado Propietario</option>
-          @for (provider of uniqueProviders; track provider) {
-            <option [value]="provider">{{ provider }}</option>
-          }
         </select>
         <button class="filter-btn">
           <app-hero-icon name="funnel" [size]="18"></app-hero-icon>

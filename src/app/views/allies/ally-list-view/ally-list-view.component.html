@@ -177,7 +177,17 @@
                 }
               </td>
               <td class="text-right">
-                <button class="action-btn">
+                @if (ally.id) {
+                  <a
+                    class="action-btn"
+                    [routerLink]="['/allies', ally.id, 'vehicles']"
+                    [queryParams]="{ name: ally.name }"
+                    title="Ver vehículos"
+                  >
+                    <app-hero-icon name="truck" [size]="20"></app-hero-icon>
+                  </a>
+                }
+                <button class="action-btn" title="Más acciones">
                   <app-hero-icon name="ellipsis-vertical" [size]="20"></app-hero-icon>
                 </button>
               </td>

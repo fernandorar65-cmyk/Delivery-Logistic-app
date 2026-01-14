@@ -46,6 +46,9 @@ https://prologistic-api-dev.up.railway.app/api/v1/providers/8ebe2249-7dd2-4a1b-a
   }
 }
 
-
 https://prologistic-api-dev.up.railway.app/api/v1/providers/8ebe2249-7dd2-4a1b-a052-a5a3933f6f9e/ -- DELETE PROVIDER el ultimo string del url es el guid
 
+
+
+
+-- API DE PROVIDERS

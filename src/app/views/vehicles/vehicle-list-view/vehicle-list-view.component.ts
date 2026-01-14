@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { VehicleService } from '../../../services/vehicle.service';
 import { Vehicle } from '../../../models/vehicle.model';
@@ -25,9 +25,12 @@ interface StatCard {
 })
 export class VehicleListViewComponent implements OnInit {
   private vehicleService = inject(VehicleService);
+  private route = inject(ActivatedRoute);
 
   loading = signal(false);
   error = signal<string | null>(null);
+  allyId = signal<string | null>(null);
+  allyName = signal<string | null>(null);
 
   // Datos mock para las tarjetas de estadísticas
   stats = signal<StatCard[]>([
@@ -69,7 +72,15 @@ export class VehicleListViewComponent implements OnInit {
   vehicles = signal<Vehicle[]>([]);
 
   ngOnInit() {
-    this.loadVehicles();
+    this.route.paramMap.subscribe(params => {
+      this.allyId.set(params.get('allyId'));
+      this.currentPage.set(1);
+      this.loadVehicles();
+    });
+
+    this.route.queryParamMap.subscribe(params => {
+      this.allyName.set(params.get('name'));
+    });
   }
 
   loadVehicles() {
@@ -91,9 +102,10 @@ export class VehicleListViewComponent implements OnInit {
 
         this.vehicles.set(mappedVehicles);
         this.totalItems.set(response.pagination?.count || mappedVehicles.length);
-        
+        this.syncAllyName(mappedVehicles);
+
         // Actualizar estadísticas dinámicamente
-        this.updateStats(mappedVehicles);
+        this.updateStats(this.scopedVehicles);
         
         this.loading.set(false);
       },
@@ -103,7 +115,8 @@ export class VehicleListViewComponent implements OnInit {
         const mockVehicles = this.generateMockVehicles();
         this.vehicles.set(mockVehicles);
         this.totalItems.set(mockVehicles.length);
-        this.updateStats(mockVehicles);
+        this.syncAllyName(mockVehicles);
+        this.updateStats(this.scopedVehicles);
         this.loading.set(false);
       }
     });
@@ -137,6 +150,9 @@ export class VehicleListViewComponent implements OnInit {
   // Genera vehículos mock si el API no está disponible
   private generateMockVehicles(): Vehicle[] {
     const providers = ['Transportes Express', 'Logística Global', 'Propietario Aliado SA', 'Independiente'];
+    const providerIds = ['1', '2', '3', '4'];
+    const forcedProviderId = this.allyId();
+    const forcedProviderName = this.allyName();
     const types: Vehicle['vehicle_type'][] = ['truck', 'van', 'tractor-trailer', 'motorcycle'];
     const statuses: Vehicle['status'][] = ['in_route', 'available', 'maintenance', 'in_route'];
     const models = ['Volvo FH16', 'Mercedes Sprinter', 'Kenworth T680', 'Yamaha FZ-S'];
@@ -150,7 +166,8 @@ export class VehicleListViewComponent implements OnInit {
       model: models[i],
       brand: models[i].split(' ')[0],
       capacity: capacities[i],
-      provider_name: providers[i],
+      provider_id: forcedProviderId ?? providerIds[i],
+      provider_name: forcedProviderName ?? providers[i],
       status: statuses[i],
       ...this.generateVehicleMockData({} as Vehicle, i)
     }));
@@ -207,12 +224,43 @@ export class VehicleListViewComponent implements OnInit {
   totalItems = signal(0);
   itemsPerPage = 10;
 
+  get allyLabel(): string {
+    const name = this.allyName();
+    if (name) return name;
+    const id = this.allyId();
+    return id ? `Aliado #${id}` : 'Flota';
+  }
+
+  get pageTitle(): string {
+    return this.allyId() ? `Vehículos de ${this.allyLabel}` : 'Administración de Flota';
+  }
+
+  get pageSubtitle(): string {
+    return this.allyId()
+      ? 'Supervisión operativa de la flota asignada al aliado.'
+      : 'Supervisión operativa y asignación técnica de unidades.';
+  }
+
+  // Filtra por aliado seleccionado cuando aplica
+  get scopedVehicles(): Vehicle[] {
+    const allyId = this.allyId();
+    const allyName = this.allyName();
+    if (!allyId && !allyName) {
+      return this.vehicles();
+    }
+
+    return this.vehicles().filter(vehicle => {
+      const matchesId = allyId && vehicle.provider_id ? vehicle.provider_id === allyId : false;
+      const matchesName = allyName && vehicle.provider_name ? vehicle.provider_name === allyName : false;
+      return matchesId || matchesName;
+    });
+  }
+
   // Filtrar vehículos según búsqueda y filtros
   get filteredVehicles(): Vehicle[] {
-    let filtered = this.vehicles();
+    let filtered = this.scopedVehicles;
     const query = this.searchQuery().toLowerCase();
     const typeFilter = this.vehicleTypeFilter();
-    const providerFilter = this.providerFilter();
 
     if (query) {
       filtered = filtered.filter(vehicle =>
@@ -225,10 +273,6 @@ export class VehicleListViewComponent implements OnInit {
 
     if (typeFilter) {
       filtered = filtered.filter(vehicle => vehicle.vehicle_type === typeFilter);
-    }
-
-    if (providerFilter) {
-      filtered = filtered.filter(vehicle => vehicle.provider_name === providerFilter);
     }
 
     return filtered;
@@ -322,16 +366,16 @@ export class VehicleListViewComponent implements OnInit {
     }
   }
 
-  // Obtener lista única de proveedores para el filtro
-  get uniqueProviders(): string[] {
-    const providers = this.vehicles()
-      .map(v => v.provider_name)
-      .filter((p): p is string => !!p);
-    return Array.from(new Set(providers));
-  }
-
   // Obtener array de páginas para la paginación
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  private syncAllyName(vehicles: Vehicle[]) {
+    if (this.allyName() || !this.allyId()) return;
+    const match = vehicles.find(vehicle => vehicle.provider_id === this.allyId());
+    if (match?.provider_name) {
+      this.allyName.set(match.provider_name);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { ProviderService } from '../../../services/provider.service';
 import { Provider } from '../../../models/provider.model';
@@ -29,7 +30,7 @@ interface Ally extends Provider {
 @Component({
   selector: 'app-ally-list-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeroIconComponent],
+  imports: [CommonModule, FormsModule, RouterLink, HeroIconComponent],
   templateUrl: './ally-list-view.component.html',
   styleUrl: './ally-list-view.component.css'
 })

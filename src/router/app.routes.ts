@@ -32,6 +32,11 @@ export const routes: Routes = [
           .then(m => m.AllyListViewComponent)
       },
       {
+        path: 'allies/:allyId/vehicles',
+        loadComponent: () => import('../app/views/vehicles/vehicle-list-view/vehicle-list-view.component')
+          .then(m => m.VehicleListViewComponent)
+      },
+      {
         path: 'companies',
         loadComponent: () => import('../app/views/companies/company-list-view/company-list-view.component')
           .then(m => m.CompanyListViewComponent)
@@ -160,11 +165,6 @@ export const routes: Routes = [
         path: 'orders/assignment',
         loadComponent: () => import('../app/views/orders/order-assignment-view/order-assignment-view.component')
           .then(m => m.OrderAssignmentViewComponent)
-      },
-      {
-        path: 'vehicles',
-        loadComponent: () => import('../app/views/vehicles/vehicle-list-view/vehicle-list-view.component')
-          .then(m => m.VehicleListViewComponent)
       },
       {
         path: '',
