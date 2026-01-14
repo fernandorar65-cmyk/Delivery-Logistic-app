@@ -1,0 +1,205 @@
+<div class="page-container">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">
+      <app-hero-icon name="squares-2x2" [size]="16"></app-hero-icon>
+      <span>Inicio</span>
+    </a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Administración de Flota</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">Administración de Flota</h1>
+      <p class="page-subtitle">Supervisión operativa y asignación técnica de unidades.</p>
+    </div>
+    <button class="btn btn-primary">
+      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
+      Registrar Vehículo
+    </button>
+  </div>
+
+  <!-- Stats Summary -->
+  <div class="stats-grid">
+    @for (stat of stats(); track stat.label) {
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon" [class]="'stat-icon-' + stat.iconColor">
+            <app-hero-icon [name]="stat.icon" [size]="24"></app-hero-icon>
+          </div>
+          @if (stat.trendValue) {
+            <span class="stat-trend" [class]="'stat-trend-' + stat.trend">
+              {{ stat.trendValue }}
+            </span>
+          }
+        </div>
+        <p class="stat-label">{{ stat.label }}</p>
+        <p class="stat-value">{{ stat.value }}</p>
+      </div>
+    }
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filters-card">
+    <div class="filters-container">
+      <div class="search-wrapper">
+        <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Buscar por placa, modelo o aliado..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="searchQuery.set($event); currentPage.set(1)"
+        />
+      </div>
+      <div class="filters-row">
+        <select
+          class="filter-select"
+          [(ngModel)]="vehicleTypeFilter"
+          (ngModelChange)="vehicleTypeFilter.set($event); currentPage.set(1)"
+        >
+          <option value="">Tipo de Vehículo</option>
+          <option value="truck">Camión</option>
+          <option value="van">Van</option>
+          <option value="motorcycle">Moto</option>
+          <option value="tractor-trailer">Tractor-remolque</option>
+        </select>
+        <select
+          class="filter-select"
+          [(ngModel)]="providerFilter"
+          (ngModelChange)="providerFilter.set($event); currentPage.set(1)"
+        >
+          <option value="">Aliado Propietario</option>
+          @for (provider of uniqueProviders; track provider) {
+            <option [value]="provider">{{ provider }}</option>
+          }
+        </select>
+        <button class="filter-btn">
+          <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
+          Filtrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fleet Table Section -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2 class="table-title">Listado de Vehículos</h2>
+      <span class="table-count">Mostrando {{ paginatedVehicles.length }} de {{ filteredVehicles.length }}</span>
+    </div>
+
+    @if (loading()) {
+      <div class="table-loading">
+        <div class="loading-spinner"></div>
+        <p>Cargando vehículos...</p>
+      </div>
+    } @else if (error()) {
+      <div class="table-error">
+        <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+        <p>{{ error() }}</p>
+      </div>
+    } @else if (filteredVehicles.length === 0) {
+      <div class="table-empty">
+        <app-hero-icon name="truck" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
+        <p>No se encontraron vehículos</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Vehículo</th>
+              <th>Tipo / Modelo</th>
+              <th>Aliado</th>
+              <th>Capacidad</th>
+              <th>Estado</th>
+              <th class="text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (vehicle of paginatedVehicles; track vehicle.id) {
+              <tr class="table-row">
+                <td>
+                  <div class="vehicle-info">
+                    <div class="vehicle-image" [style.background-image]="vehicle.image ? 'url(' + vehicle.image + ')' : 'none'">
+                      @if (!vehicle.image) {
+                        <app-hero-icon name="truck" [size]="24" class="vehicle-placeholder-icon"></app-hero-icon>
+                      }
+                    </div>
+                    <div class="vehicle-details">
+                      <p class="vehicle-plate">{{ vehicle.license_plate }}</p>
+                      <p class="vehicle-id">ID: {{ vehicle.id }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <p class="vehicle-type">{{ getVehicleTypeLabel(vehicle.vehicle_type) }}</p>
+                  <p class="vehicle-model">{{ vehicle.model || '-' }}</p>
+                </td>
+                <td>
+                  <p class="vehicle-provider">{{ vehicle.provider_name || '-' }}</p>
+                </td>
+                <td>
+                  <p class="vehicle-capacity">{{ vehicle.capacity || '-' }}</p>
+                </td>
+                <td>
+                  <span class="status-badge" [class]="getStatusClass(vehicle.status)">
+                    {{ getStatusLabel(vehicle.status) }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <div class="action-buttons">
+                    <button class="action-btn" title="Ver Historial">
+                      <app-hero-icon name="clock" [size]="18"></app-hero-icon>
+                    </button>
+                    <button class="action-btn" title="Editar">
+                      <app-hero-icon name="pencil" [size]="18"></app-hero-icon>
+                    </button>
+                    <button class="action-btn action-btn-danger" title="Reportar Incidente">
+                      <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <span class="pagination-info">
+          Mostrando {{ startItem }} a {{ endItem }} de {{ filteredVehicles.length }} resultados
+        </span>
+        <div class="pagination-controls">
+          <button
+            class="pagination-btn"
+            [disabled]="currentPage() === 1"
+            (click)="previousPage()"
+          >
+            Anterior
+          </button>
+          @for (page of pages; track page) {
+            <button
+              class="pagination-btn"
+              [class.pagination-btn-active]="currentPage() === page"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+          <button
+            class="pagination-btn"
+            [disabled]="currentPage() === totalPages"
+            (click)="nextPage()"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

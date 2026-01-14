@@ -162,6 +162,11 @@ export const routes: Routes = [
           .then(m => m.OrderAssignmentViewComponent)
       },
       {
+        path: 'vehicles',
+        loadComponent: () => import('../app/views/vehicles/vehicle-list-view/vehicle-list-view.component')
+          .then(m => m.VehicleListViewComponent)
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full'
