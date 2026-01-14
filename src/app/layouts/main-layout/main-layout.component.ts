@@ -13,7 +13,7 @@ import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
 })
 export class MainLayoutComponent {
   private authService = inject(AuthService);
-  protected readonly title = signal('Patrick Proyecto');
+  protected readonly title = signal('LOGISAAS');
 
   logout(): void {
     this.authService.logout();
