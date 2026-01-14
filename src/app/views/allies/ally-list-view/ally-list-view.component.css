@@ -704,6 +704,47 @@
   cursor: not-allowed;
 }
 
+/* Loading and Error States */
+.loading-spinner {
+  width: clamp(2rem, 5vw, 3rem);
+  height: clamp(2rem, 5vw, 3rem);
+  border: 3px solid #f3f4f6;
+  border-top-color: #137fec;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.p-8 {
+  padding: clamp(2rem, 5vw, 3rem);
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mb-4 {
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.text-red-600 {
+  color: #dc2626;
+}
+
+.text-gray-400 {
+  color: #9ca3af;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .ally-list-container {

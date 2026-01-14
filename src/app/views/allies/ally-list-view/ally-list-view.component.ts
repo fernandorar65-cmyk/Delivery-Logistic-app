@@ -1,22 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
-
-// Interfaces para los datos mock
-interface Ally {
-  id: string;
-  name: string;
-  logo?: string;
-  initials?: string;
-  status: 'active' | 'inactive' | 'pending';
-  trucks: number;
-  motorcycles: number;
-  drivers: number;
-  driverAvatars?: string[];
-  zone: string;
-  rating: number | null;
-}
+import { ProviderService } from '../../../services/provider.service';
+import { Provider } from '../../../models/provider.model';
 
 interface StatCard {
   label: string;
@@ -27,6 +14,18 @@ interface StatCard {
   iconColor: string;
 }
 
+// Tipo extendido para mantener campos de diseño que no vienen del API
+interface Ally extends Provider {
+  name: string; // Alias de provider_name para mantener compatibilidad con el template
+  status: 'active' | 'inactive' | 'pending';
+  trucks: number;
+  motorcycles: number;
+  drivers: number;
+  driverAvatars?: string[];
+  zone: string;
+  rating: number | null;
+}
+
 @Component({
   selector: 'app-ally-list-view',
   standalone: true,
@@ -34,7 +33,12 @@ interface StatCard {
   templateUrl: './ally-list-view.component.html',
   styleUrl: './ally-list-view.component.css'
 })
-export class AllyListViewComponent {
+export class AllyListViewComponent implements OnInit {
+  private providerService = inject(ProviderService);
+
+  loading = signal(false);
+  error = signal<string | null>(null);
+
   // Datos mock para las tarjetas de estadísticas
   stats = signal<StatCard[]>([
     {
@@ -68,86 +72,167 @@ export class AllyListViewComponent {
     }
   ]);
 
-  // Datos mock para los aliados
-  allies = signal<Ally[]>([
-    {
-      id: 'ALY-8902',
-      name: 'TransAndina Logística',
-      logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCe74-_jjsuoc47ysevg43jHVg-dDFtlzVbTl4vqK-i83s5bdgTxKmmHA_GN34GS1PReJIizg1M2v79wGLCYZiS5CfIJN67D_U9_FUcQSHP4igUoXKOy8zvk9_WK8OlPHmDYeqcYPmdpI2_-ySRxd4cc4ly1TvHDAwKqoQUq4puimxhDf9BokZC8TreqFLO-qCPZkVcB6KkgTLsxZjH7noCB8fSGiqUG-K138frWPCwuw6sYPEUncJSTfSaQEI-FQqxIHotRntu4whv',
-      status: 'active',
-      trucks: 12,
-      motorcycles: 5,
-      drivers: 15,
-      driverAvatars: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDELxPvO_aTCNTt65ZEHWvli8yZu_mx9Lf0dTEAkiZPBUoOhOtGFJKndZSIHfI854-JvU_sUVHsW1d2cvAco4G0iyO2va9XWKMfaJJsr6A-JI7MSTQfee73KPtOpG7lOYGJCHBTIwAslLhLBMtDm9PenQP-FCWuvdJ4RjkBzem_-Ha_YHGMgFDyhO1DN8IJyem2NlJ06BLn5sRrB2yiUzD0ANh_BKn7gbWxgC37iR23c0PcStH3vjg2SGlrfjJXjmSrOwYPRdVejaw9',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuA2KT-vTihtxUq1gdi96xFinHzqH2eEffnRLfu0zRLpjpO4bKjDkpfH6mBmGLv1x9e_gIYkMIw-T7OEHDu2OYlFrt5eHJEJAICcwMJDog5UKtGKkuJJdN2Qjtv7ZiXBg4jWL61PwX6e4gylbeVHgh_3wDNuK-m00QPo-dVn7v0w_Pfjq2w6LKItI0-IPvf7CSEhsL__eOA33WNLt3MC61vM07sOnUkZNXSiuzxoZLMI0_N91cmNmmRZhzyjFO3kQPGcq9Q-E5_cUNJV',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuChRZAvNoYNqCCrABSm88vR6rtrQJfQNFnVWraWDdhHv9kf0G9WJ6PlfuDB0n8Ws_F7A_Zn05WU7e3CiaRZR3mIPtKcuM-7bV5F4D4Y6zZKFODqZUvklTe54GV9dpuutps33eQcgigIlYWIDjSfVctYO2GOqspIGZT-Fh-7fXCfqURCp0zRgiGmlNTvarKBBBrEe0UmwPZRvAQ2g1LQDUgIZE1kXb0vj6ftO3LwfhygNhqIDbOfh8KcPpRQvkimW3Vp7qylAkvb8i_2'
-      ],
-      zone: 'Bogotá D.C. - Norte',
-      rating: 4.8
-    },
-    {
-      id: 'ALY-1123',
-      name: 'Rápido Cargo',
-      initials: 'RC',
-      status: 'inactive',
-      trucks: 5,
-      motorcycles: 0,
-      drivers: 5,
-      zone: 'Medellín - Area Metro',
-      rating: 3.5
-    },
-    {
-      id: 'ALY-5561',
-      name: 'InterVial S.A.',
-      logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtNUvtHGCJS317qOgZLVTofO1ZB0LRXNLgBj2sWghZF2JvYbUPTWipD5uMcig2JvPk0ZNn5WLo-fZe3tBKXVC2iK5hcRDxK4KTcITDZVrGssZUTjmFUaIOhUQekUnkvNJ-eWSn7Wk-mRcIvlpeYjxAPdMPasjtHyXTf3BDMZK_YGx8M9MylSDKKAKEd2VtQ6BgDBXRYH27-vJv1RnzPqI4jQr-bHv6UsU4q7AvqbP0QmkISQx_nXDgB_tOPqeL0e6cf_jT1J8XJd5Z',
-      status: 'active',
-      trucks: 20,
-      motorcycles: 15,
-      drivers: 35,
-      driverAvatars: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBB3kr88UkEOx64JUyopsuGSjsDwgSywTFpj05-h4lbs0_dhFHuESd1rnth2NFJum1R8p-ETNciZUPkGv4MBdBFLRmK0q8qurAyg35EF-APbd6JOONlCIwSh7_CtSiKzfdy1MieKh67wWJiE8W3vbpr9TyGTNGNrSlmUJw4xTEuPUbLy9MzUdeozs5Vk9_in2YHczIbCPnl_rHQRcwHenb9V4e4-WZ_eIJc3KDKr870Oa5NNPkc9YKCHDU-A4HqbdQhGlnyaQ8VxcKp',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuADmWJVXgwzzk-iUQde360Yh4J-xqJuBYdWMt_jw0ALUFPH_czDqEipKRX6NnKgLtjcJ7tykAkWnO_cFwIulDJPJpSKCr7IrPK9unfH9xOszwmTr-Y8Bvc4tT-khMQRqeqNgaaIaXB4sDqgFdHJEvcIYLP5p66D_VN7wqf3vmCvolooXHEnJzWDXK9Hf1nTmJUAvN5OYsNnm-KLMnZQo9feX0zcQx8oc5vZjPAy3slhcwWTmpiI2jLc_urfgNOjpe5fUFVBHkrnY-_F'
-      ],
-      zone: 'Cundinamarca (Occidente)',
-      rating: 4.9
-    },
-    {
-      id: 'ALY-3321',
-      name: 'Transportes Express',
-      initials: 'TE',
-      status: 'pending',
-      trucks: 2,
-      motorcycles: 8,
-      drivers: 10,
-      zone: 'Cali - Sur',
-      rating: null
-    },
-    {
-      id: 'ALY-9982',
-      name: 'LogiTech Solutions',
-      logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCUbkRPfHLZUzjQ5Cz8t9QfiU0tKqa7t37NY5zKWLNBp5K2AznUncJT8n8p-vUGatLJXV4w8oOYTJolPxt-Yi2xs1WGTFN2MDCIO0GiOUyK63N_XDmYA4qsPhLsjkL3bODNkn4KKUdJRLfEjUzb5LV4wLsJqBulhMqwdrWXBu1uoOXYbmSq_23JwrrkCok_vEt_Ehirl7vz1NsVpxO_mzKMBOuZP7I2ZxOO0VJ1iUK9xDvVNSL43sY9ES6NvlKE_xG4ZSXJv7QC1R0g',
-      status: 'active',
-      trucks: 8,
-      motorcycles: 0,
-      drivers: 8,
-      driverAvatars: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCKDC9tKgxHaYx3pI1Y8qmEH-K8Iu0czmLpW3RP_RLgNAGodZuD1fvzQopGx0Jut6lZltatfQPDXQ89rdJmWDDyqNFKXQjp7F9KX8gyA8XMvooVxFjbEBRdEjP8QhXSdGl5fGKdjsKWavWbxozcoORX47sVuuQ9bj2EcYRuLgvSIjN8q-dIi0pZsWCBIRHgsgh0aCLdvofdGS868pPhvCWh476FRpnNYm3k0nbkrqOTMggXKbTBqBknWb-k01_Vm6ByiOD6adyJk3CD'
-      ],
-      zone: 'Nacional',
-      rating: 4.2
-    }
-  ]);
+  // Aliados (providers) desde la API
+  allies = signal<Ally[]>([]);
+
+  ngOnInit() {
+    this.loadProviders();
+  }
+
+  loadProviders() {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.providerService.getAll().subscribe({
+      next: (response) => {
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al cargar los aliados');
+          this.loading.set(false);
+          return;
+        }
+
+        // Mapear providers del API a aliados con campos de diseño mock
+        const mappedAllies: Ally[] = (response.result || []).map((provider, index) => {
+          return this.mapProviderToAlly(provider, index);
+        });
+
+        this.allies.set(mappedAllies);
+        this.totalItems.set(response.pagination?.count || mappedAllies.length);
+        
+        // Actualizar estadísticas dinámicamente
+        this.updateStats(mappedAllies);
+        
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading providers:', err);
+        this.error.set('Error al cargar los aliados. Por favor, intente nuevamente.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  // Mapea un provider del API a un Ally con campos de diseño mock
+  private mapProviderToAlly(provider: Provider, index: number): Ally {
+    // Generar datos mock para campos que no vienen del API
+    const mockData = this.generateMockData(provider, index);
+
+    return {
+      ...provider,
+      name: provider.provider_name, // Alias para mantener compatibilidad con template
+      status: mockData.status,
+      trucks: mockData.trucks,
+      motorcycles: mockData.motorcycles,
+      drivers: mockData.drivers,
+      driverAvatars: mockData.driverAvatars,
+      zone: mockData.zone,
+      rating: mockData.rating,
+      logo: mockData.logo,
+      initials: mockData.initials
+    };
+  }
+
+  // Actualiza las estadísticas basadas en los datos reales
+  private updateStats(allies: Ally[]) {
+    const totalAllies = allies.length;
+    const totalTrucks = allies.reduce((sum, ally) => sum + (ally.trucks || 0), 0);
+    const totalMotorcycles = allies.reduce((sum, ally) => sum + (ally.motorcycles || 0), 0);
+    const totalDrivers = allies.reduce((sum, ally) => sum + (ally.drivers || 0), 0);
+    const activeAllies = allies.filter(ally => ally.status === 'active').length;
+
+    this.stats.set([
+      {
+        label: 'Total Aliados',
+        value: totalAllies,
+        subtitle: totalAllies > 0 ? `+${Math.floor(totalAllies * 0.1)} este mes` : 'Sin datos',
+        trend: totalAllies > 0 ? 'up' : undefined,
+        icon: 'hexagon',
+        iconColor: 'blue'
+      },
+      {
+        label: 'Vehículos Disp.',
+        value: totalTrucks + totalMotorcycles,
+        subtitle: `de ${totalTrucks + totalMotorcycles + 25} totales`,
+        icon: 'truck',
+        iconColor: 'emerald'
+      },
+      {
+        label: 'Conductores',
+        value: totalDrivers,
+        subtitle: `${activeAllies} aliados activos`,
+        icon: 'user',
+        iconColor: 'purple'
+      },
+      {
+        label: 'En Ruta',
+        value: Math.floor(totalDrivers * 0.4),
+        subtitle: 'Alta demanda',
+        icon: 'map-pin',
+        iconColor: 'orange'
+      }
+    ]);
+  }
+
+  // Genera datos mock para campos de diseño
+  private generateMockData(provider: Provider, index: number) {
+    const zones = ['Bogotá D.C. - Norte', 'Medellín - Area Metro', 'Cali - Sur', 'Cundinamarca (Occidente)', 'Nacional'];
+    const statuses: ('active' | 'inactive' | 'pending')[] = ['active', 'active', 'active', 'inactive', 'pending'];
+    
+    // Generar iniciales del nombre
+    const initials = provider.provider_name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+
+    return {
+      status: statuses[index % statuses.length] as 'active' | 'inactive' | 'pending',
+      trucks: Math.floor(Math.random() * 20) + 2,
+      motorcycles: Math.floor(Math.random() * 10),
+      drivers: Math.floor(Math.random() * 30) + 5,
+      driverAvatars: index % 2 === 0 ? [
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuDELxPvO_aTCNTt65ZEHWvli8yZu_mx9Lf0dTEAkiZPBUoOhOtGFJKndZSIHfI854-JvU_sUVHsW1d2cvAco4G0iyO2va9XWKMfaJJsr6A-JI7MSTQfee73KPtOpG7lOYGJCHBTIwAslLhLBMtDm9PenQP-FCWuvdJ4RjkBzem_-Ha_YHGMgFDyhO1DN8IJyem2NlJ06BLn5sRrB2yiUzD0ANh_BKn7gbWxgC37iR23c0PcStH3vjg2SGlrfjJXjmSrOwYPRdVejaw9'
+      ] : undefined,
+      zone: zones[index % zones.length],
+      rating: index % 3 === 0 ? null : Number((Math.random() * 2 + 3).toFixed(1)),
+      logo: index % 3 === 0 ? undefined : `https://via.placeholder.com/40?text=${initials}`,
+      initials: index % 3 === 0 ? initials : undefined
+    };
+  }
 
   // Estado de búsqueda y filtros
   searchQuery = signal<string>('');
   currentPage = signal(1);
-  totalItems = signal(45);
+  totalItems = signal(0);
   itemsPerPage = 5;
+
+  // Filtrar aliados según búsqueda
+  get filteredAllies(): Ally[] {
+    const query = this.searchQuery().toLowerCase();
+    if (!query) {
+      return this.allies();
+    }
+
+    return this.allies().filter(ally =>
+      ally.name.toLowerCase().includes(query) ||
+      ally.id?.toLowerCase().includes(query) ||
+      ally.provider_name?.toLowerCase().includes(query) ||
+      ally.ruc?.toLowerCase().includes(query)
+    );
+  }
+
+  // Aliados paginados
+  get paginatedAllies(): Ally[] {
+    const filtered = this.filteredAllies;
+    const start = (this.currentPage() - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return filtered.slice(start, end);
+  }
 
   // Métodos para la paginación
   get totalPages(): number {
-    return Math.ceil(this.totalItems() / this.itemsPerPage);
+    return Math.ceil(this.filteredAllies.length / this.itemsPerPage);
   }
 
   get startItem(): number {
@@ -155,7 +240,7 @@ export class AllyListViewComponent {
   }
 
   get endItem(): number {
-    return Math.min(this.currentPage() * this.itemsPerPage, this.totalItems());
+    return Math.min(this.currentPage() * this.itemsPerPage, this.filteredAllies.length);
   }
 
   previousPage() {
@@ -171,7 +256,8 @@ export class AllyListViewComponent {
   }
 
   // Método para obtener el estado del aliado
-  getStatusClass(status: string): string {
+  getStatusClass(status?: string): string {
+    if (!status) return '';
     switch (status) {
       case 'active':
         return 'status-active';
@@ -184,7 +270,8 @@ export class AllyListViewComponent {
     }
   }
 
-  getStatusLabel(status: string): string {
+  getStatusLabel(status?: string): string {
+    if (!status) return 'Desconocido';
     switch (status) {
       case 'active':
         return 'Activo';

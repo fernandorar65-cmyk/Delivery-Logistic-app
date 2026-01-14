@@ -89,7 +89,29 @@
           </tr>
         </thead>
         <tbody>
-          @for (ally of allies(); track ally.id) {
+          @if (loading()) {
+            <tr>
+              <td colspan="7" class="text-center p-8">
+                <div class="loading-spinner mx-auto mb-4"></div>
+                <p>Cargando aliados...</p>
+              </td>
+            </tr>
+          } @else if (error()) {
+            <tr>
+              <td colspan="7" class="text-center p-8 text-red-600">
+                <app-hero-icon name="exclamation-triangle" [size]="24" class="mx-auto mb-4"></app-hero-icon>
+                <p>{{ error() }}</p>
+              </td>
+            </tr>
+          } @else if (paginatedAllies.length === 0) {
+            <tr>
+              <td colspan="7" class="text-center p-8">
+                <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="mx-auto mb-4 text-gray-400"></app-hero-icon>
+                <p>No se encontraron aliados</p>
+              </td>
+            </tr>
+          } @else {
+            @for (ally of paginatedAllies; track ally.id) {
             <tr class="table-row">
               <td class="ally-info">
                 <div class="ally-avatar">
@@ -160,13 +182,14 @@
                 </button>
               </td>
             </tr>
+            }
           }
         </tbody>
       </table>
     </div>
     <!-- Pagination -->
     <div class="pagination">
-      <span class="pagination-info">Mostrando {{ startItem }}-{{ endItem }} de {{ totalItems() }} aliados</span>
+      <span class="pagination-info">Mostrando {{ startItem }}-{{ endItem }} de {{ filteredAllies.length }} aliados</span>
       <div class="pagination-controls">
         <button 
           class="pagination-btn" 
