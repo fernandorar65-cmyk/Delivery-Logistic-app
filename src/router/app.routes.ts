@@ -37,6 +37,11 @@ export const routes: Routes = [
           .then(m => m.VehicleListViewComponent)
       },
       {
+        path: 'allies/:allyId/vehicles/:vehicleId',
+        loadComponent: () => import('../app/views/vehicles/vehicle-detail-view/vehicle-detail-view.component')
+          .then(m => m.VehicleDetailViewComponent)
+      },
+      {
         path: 'companies',
         loadComponent: () => import('../app/views/companies/company-list-view/company-list-view.component')
           .then(m => m.CompanyListViewComponent)

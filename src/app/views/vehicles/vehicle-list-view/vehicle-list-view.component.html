@@ -144,9 +144,20 @@
                 </td>
                 <td class="text-right">
                   <div class="action-buttons">
-                    <button class="action-btn" title="Ver Historial">
-                      <app-hero-icon name="clock" [size]="18"></app-hero-icon>
-                    </button>
+                    @if (vehicle.id) {
+                      <a
+                        class="action-btn"
+                        title="Ver Detalle"
+                        [routerLink]="['/allies', allyId(), 'vehicles', vehicle.id]"
+                        [queryParams]="{ name: allyName() ?? undefined }"
+                      >
+                        <app-hero-icon name="clock" [size]="18"></app-hero-icon>
+                      </a>
+                    } @else {
+                      <button class="action-btn" title="Ver Detalle" disabled>
+                        <app-hero-icon name="clock" [size]="18"></app-hero-icon>
+                      </button>
+                    }
                     <button class="action-btn" title="Editar">
                       <app-hero-icon name="pencil" [size]="18"></app-hero-icon>
                     </button>

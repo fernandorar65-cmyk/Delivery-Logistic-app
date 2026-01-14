@@ -126,5 +126,9 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'allies/:allyId/vehicles',
     renderMode: RenderMode.Server
+  },
+  {
+    path: 'allies/:allyId/vehicles/:vehicleId',
+    renderMode: RenderMode.Server
   }
 ];
