@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { VehicleService } from '../../../services/vehicle.service';
@@ -19,18 +19,34 @@ interface StatCard {
 @Component({
   selector: 'app-vehicle-list-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, HeroIconComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, HeroIconComponent],
   templateUrl: './vehicle-list-view.component.html',
   styleUrl: './vehicle-list-view.component.css'
 })
 export class VehicleListViewComponent implements OnInit {
   private vehicleService = inject(VehicleService);
   private route = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
 
   loading = signal(false);
   error = signal<string | null>(null);
   allyId = signal<string | null>(null);
   allyName = signal<string | null>(null);
+  createOpen = signal(false);
+  createLoading = signal(false);
+  createError = signal<string | null>(null);
+  vehicleTypes = [
+    { value: 'truck', label: 'Camión Pesado' },
+    { value: 'van', label: 'Van de Reparto' },
+    { value: 'motorcycle', label: 'Motocicleta Cargo' },
+    { value: 'tractor-trailer', label: 'Tractor-remolque' }
+  ];
+  statusOptions = [
+    { value: 'available', label: 'Activo / Disponible' },
+    { value: 'in_route', label: 'En Ruta' },
+    { value: 'maintenance', label: 'En Mantenimiento' },
+    { value: 'inactive', label: 'Inactivo' }
+  ];
 
   // Datos mock para las tarjetas de estadísticas
   stats = signal<StatCard[]>([
@@ -71,6 +87,27 @@ export class VehicleListViewComponent implements OnInit {
   // Vehículos desde la API
   vehicles = signal<Vehicle[]>([]);
 
+  createForm = this.fb.group({
+    license_plate: ['', [Validators.required, Validators.minLength(5)]],
+    brand: [''],
+    model: [''],
+    year: [new Date().getFullYear(), [Validators.min(1950)]],
+    vehicle_type: ['truck', Validators.required],
+    color: [''],
+    body_type: [''],
+    tara_kg: [''],
+    gross_weight_kg: [''],
+    net_capacity_kg: [''],
+    length_m: [''],
+    width_m: [''],
+    height_m: [''],
+    status: ['available'],
+    fuel_type: [''],
+    volume_m3: [''],
+    owner_document: [''],
+    photo_url: ['']
+  });
+
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.allyId.set(params.get('allyId'));
@@ -80,6 +117,99 @@ export class VehicleListViewComponent implements OnInit {
 
     this.route.queryParamMap.subscribe(params => {
       this.allyName.set(params.get('name'));
+    });
+  }
+
+  openCreateModal() {
+    if (!this.allyId()) {
+      this.createError.set('No se encontró el aliado para registrar el vehículo.');
+      return;
+    }
+    this.createError.set(null);
+    this.createForm.reset({
+      license_plate: '',
+      brand: '',
+      model: '',
+      year: new Date().getFullYear(),
+      vehicle_type: 'truck',
+      color: '',
+      body_type: '',
+      tara_kg: '',
+      gross_weight_kg: '',
+      net_capacity_kg: '',
+      length_m: '',
+      width_m: '',
+      height_m: '',
+      status: 'available',
+      fuel_type: '',
+      volume_m3: '',
+      owner_document: '',
+      photo_url: ''
+    });
+    this.createOpen.set(true);
+  }
+
+  closeCreateModal() {
+    this.createOpen.set(false);
+  }
+
+  submitCreateVehicle() {
+    if (this.createForm.invalid) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+
+    const allyId = this.allyId();
+    if (!allyId) {
+      this.createError.set('No se encontró el aliado para registrar el vehículo.');
+      return;
+    }
+
+    this.createLoading.set(true);
+    this.createError.set(null);
+
+    const {
+      license_plate,
+      brand,
+      model,
+      year,
+      vehicle_type,
+      color,
+      body_type,
+      tara_kg,
+      gross_weight_kg,
+      net_capacity_kg,
+      length_m,
+      width_m,
+      height_m,
+      status
+    } = this.createForm.getRawValue();
+
+    this.vehicleService.create(allyId, {
+      license_plate: license_plate ?? '',
+      brand: brand ?? undefined,
+      model: model ?? undefined,
+      year: year ?? undefined,
+      vehicle_type: (vehicle_type ?? 'truck') as Vehicle['vehicle_type'],
+      color: color ?? undefined,
+      body_type: body_type ?? undefined,
+      tara_kg: tara_kg ?? undefined,
+      gross_weight_kg: gross_weight_kg ?? undefined,
+      net_capacity_kg: net_capacity_kg ?? undefined,
+      length_m: length_m ?? undefined,
+      width_m: width_m ?? undefined,
+      height_m: height_m ?? undefined,
+      status: status ? (status as Vehicle['status']) : undefined
+    }).subscribe({
+      next: () => {
+        this.createLoading.set(false);
+        this.closeCreateModal();
+        this.loadVehicles();
+      },
+      error: () => {
+        this.createLoading.set(false);
+        this.createError.set('No se pudo registrar el vehículo. Intenta nuevamente.');
+      }
     });
   }
 
