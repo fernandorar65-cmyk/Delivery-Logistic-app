@@ -86,8 +86,17 @@ export class VehicleListViewComponent implements OnInit {
   loadVehicles() {
     this.loading.set(true);
     this.error.set(null);
+    const allyId = this.allyId();
 
-    this.vehicleService.getAll().subscribe({
+    if (!allyId) {
+      this.error.set('No se encontró el aliado para cargar vehículos.');
+      this.loading.set(false);
+      this.vehicles.set([]);
+      this.totalItems.set(0);
+      return;
+    }
+
+    this.vehicleService.getByProvider(allyId).subscribe({
       next: (response) => {
         if (response.errors && response.errors.length > 0) {
           this.error.set('Error al cargar los vehículos');
