@@ -49,7 +49,7 @@
             <p>{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }} • {{ vehicle()?.year || '-' }}</p>
           </div>
           <div class="vehicle-summary-actions">
-            <button class="primary-btn">
+            <button class="primary-btn" (click)="openEditModal()">
               <app-hero-icon name="pencil" [size]="18"></app-hero-icon>
               Editar Información
             </button>
@@ -179,3 +179,111 @@
     </div>
   }
 </div>
+
+@if (editOpen()) {
+  <div class="vehicle-edit-overlay" (click)="closeEditModal()">
+    <div class="vehicle-edit-modal" (click)="$event.stopPropagation()">
+      <div class="vehicle-edit-header">
+        <div>
+          <h2>Editar Vehículo</h2>
+          <p>Actualiza la información principal de la unidad.</p>
+        </div>
+        <button class="vehicle-edit-close" (click)="closeEditModal()" aria-label="Cerrar">
+          <app-hero-icon name="x-mark" [size]="20"></app-hero-icon>
+        </button>
+      </div>
+      <form [formGroup]="editForm" (ngSubmit)="submitEditVehicle()" class="vehicle-edit-body">
+        <div class="vehicle-edit-grid vehicle-edit-grid--three">
+          <div class="vehicle-edit-field">
+            <label>Placa / Matrícula</label>
+            <input formControlName="license_plate" type="text" placeholder="Ej: ABC-123" />
+            @if (editForm.get('license_plate')?.touched && editForm.get('license_plate')?.invalid) {
+              <span class="vehicle-edit-error">Ingresa una placa válida.</span>
+            }
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Marca</label>
+            <input formControlName="brand" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Modelo</label>
+            <input formControlName="model" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Año</label>
+            <input formControlName="year" type="number" />
+          </div>
+          <div class="vehicle-edit-field span-2">
+            <label>Tipo de Vehículo</label>
+            <select formControlName="vehicle_type">
+              @for (type of vehicleTypes; track type.value) {
+                <option [value]="type.value">{{ type.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="vehicle-edit-grid vehicle-edit-grid--three">
+          <div class="vehicle-edit-field">
+            <label>Color</label>
+            <input formControlName="color" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Tipo de Carrocería</label>
+            <input formControlName="body_type" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Capacidad neta (kg)</label>
+            <input formControlName="net_capacity_kg" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Peso tara (kg)</label>
+            <input formControlName="tara_kg" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Peso bruto (kg)</label>
+            <input formControlName="gross_weight_kg" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Estado</label>
+            <select formControlName="status">
+              @for (status of statusOptions; track status.value) {
+                <option [value]="status.value">{{ status.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="vehicle-edit-grid vehicle-edit-grid--three">
+          <div class="vehicle-edit-field">
+            <label>Largo (m)</label>
+            <input formControlName="length_m" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Ancho (m)</label>
+            <input formControlName="width_m" type="text" />
+          </div>
+          <div class="vehicle-edit-field">
+            <label>Alto (m)</label>
+            <input formControlName="height_m" type="text" />
+          </div>
+        </div>
+
+        @if (editError()) {
+          <div class="vehicle-edit-alert">{{ editError() }}</div>
+        }
+
+        <div class="vehicle-edit-actions">
+          <button type="button" class="vehicle-edit-btn" (click)="closeEditModal()">Cancelar</button>
+          <button type="submit" class="vehicle-edit-btn primary" [disabled]="editLoading()">
+            @if (editLoading()) {
+              Guardando...
+            } @else {
+              Guardar Cambios
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
