@@ -53,7 +53,7 @@
               <app-hero-icon name="pencil" [size]="18"></app-hero-icon>
               Editar Información
             </button>
-            <button class="danger-btn">
+            <button class="danger-btn" (click)="openDeleteModal()">
               <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
               Dar de Baja
             </button>
@@ -284,6 +284,36 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+}
+
+@if (deleteOpen()) {
+  <div class="vehicle-delete-overlay" (click)="closeDeleteModal()">
+    <div class="vehicle-delete-modal" (click)="$event.stopPropagation()">
+      <div class="vehicle-delete-icon">
+        <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+      </div>
+      <h2>Confirmar Baja de Vehículo</h2>
+      <p>¿Estás seguro de que deseas dar de baja este vehículo?</p>
+      <span class="vehicle-delete-warning">ESTA ACCIÓN ES IRREVERSIBLE.</span>
+
+      @if (deleteError()) {
+        <div class="vehicle-delete-error">{{ deleteError() }}</div>
+      }
+
+      <div class="vehicle-delete-actions">
+        <button class="vehicle-delete-btn danger" (click)="confirmDelete()" [disabled]="deleteLoading()">
+          @if (deleteLoading()) {
+            Procesando...
+          } @else {
+            Confirmar Baja
+          }
+        </button>
+        <button class="vehicle-delete-btn" (click)="closeDeleteModal()" type="button">
+          Mantener Vehículo
+        </button>
+      </div>
     </div>
   </div>
 }

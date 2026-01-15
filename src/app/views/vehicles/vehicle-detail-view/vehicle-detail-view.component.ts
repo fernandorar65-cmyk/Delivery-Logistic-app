@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { VehicleService } from '../../../services/vehicle.service';
@@ -17,6 +17,7 @@ export class VehicleDetailViewComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private vehicleService = inject(VehicleService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -27,6 +28,9 @@ export class VehicleDetailViewComponent implements OnInit {
   editOpen = signal(false);
   editLoading = signal(false);
   editError = signal<string | null>(null);
+  deleteOpen = signal(false);
+  deleteLoading = signal(false);
+  deleteError = signal<string | null>(null);
   vehicleTypes = [
     { value: 'truck', label: 'Camión Pesado' },
     { value: 'van', label: 'Van Mediana' },
@@ -175,6 +179,46 @@ export class VehicleDetailViewComponent implements OnInit {
       error: () => {
         this.editLoading.set(false);
         this.editError.set('No se pudo actualizar el vehículo.');
+      }
+    });
+  }
+
+  openDeleteModal(): void {
+    if (!this.vehicleId() || !this.allyId()) {
+      this.deleteError.set('No se encontró el vehículo para dar de baja.');
+      return;
+    }
+    this.deleteError.set(null);
+    this.deleteOpen.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.deleteOpen.set(false);
+    this.deleteError.set(null);
+  }
+
+  confirmDelete(): void {
+    const allyId = this.allyId();
+    const vehicleId = this.vehicleId();
+    if (!allyId || !vehicleId) {
+      this.deleteError.set('No se encontró el vehículo para dar de baja.');
+      return;
+    }
+
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
+
+    this.vehicleService.delete(allyId, vehicleId).subscribe({
+      next: () => {
+        this.deleteLoading.set(false);
+        this.closeDeleteModal();
+        this.router.navigate(['/allies', allyId, 'vehicles'], {
+          queryParams: { name: this.allyName() ?? undefined }
+        });
+      },
+      error: () => {
+        this.deleteLoading.set(false);
+        this.deleteError.set('No se pudo dar de baja el vehículo.');
       }
     });
   }
