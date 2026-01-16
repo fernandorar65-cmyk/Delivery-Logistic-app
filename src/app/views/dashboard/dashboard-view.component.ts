@@ -2,8 +2,6 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { OrderService } from '../../services/order.service';
-import { Order } from '../../models/order.model';
 import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
 
 @Component({
@@ -14,7 +12,6 @@ import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
   styleUrl: './dashboard-view.component.css'
 })
 export class DashboardViewComponent {
-  private orderService = inject(OrderService);
 
   // Estado de tabs
   activeTab = signal<'all' | 'in-route' | 'pending' | 'delivered' | 'incidents'>('all');
