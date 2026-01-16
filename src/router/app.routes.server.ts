@@ -23,14 +23,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender
   },
   {
-    path: 'users',
-    renderMode: RenderMode.Prerender
-  },
-  {
-    path: 'users/new',
-    renderMode: RenderMode.Prerender
-  },
-  {
     path: 'allies',
     renderMode: RenderMode.Prerender
   },
@@ -45,14 +37,6 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'clients/:id/edit',
-    renderMode: RenderMode.Server
-  },
-  {
-    path: 'users/:id',
-    renderMode: RenderMode.Server
-  },
-  {
-    path: 'users/:id/edit',
     renderMode: RenderMode.Server
   },
   {

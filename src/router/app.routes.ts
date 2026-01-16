@@ -67,26 +67,6 @@ export const routes: Routes = [
           .then(m => m.ClientFormViewComponent)
       },
       {
-        path: 'users',
-        loadComponent: () => import('../app/views/users/user-list-view/user-list-view.component')
-          .then(m => m.UserListViewComponent)
-      },
-      {
-        path: 'users/new',
-        loadComponent: () => import('../app/views/users/user-form-view/user-form-view.component')
-          .then(m => m.UserFormViewComponent)
-      },
-      {
-        path: 'users/:id',
-        loadComponent: () => import('../app/views/users/user-detail-view/user-detail-view.component')
-          .then(m => m.UserDetailViewComponent)
-      },
-      {
-        path: 'users/:id/edit',
-        loadComponent: () => import('../app/views/users/user-form-view/user-form-view.component')
-          .then(m => m.UserFormViewComponent)
-      },
-      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full'
