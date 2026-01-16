@@ -566,7 +566,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #4facfe, transparent);
+  background: (#4facfe, transparent);
   animation: shimmer 2s infinite;
 }
 

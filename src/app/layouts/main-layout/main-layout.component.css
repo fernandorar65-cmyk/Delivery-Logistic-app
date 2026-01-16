@@ -229,7 +229,7 @@
 }
 
 .nav-item.active {
-  background: #4facfe 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: (#4facfe 0%, rgba(118, 75, 162, 0.1) 100%);
   color: #667eea;
   font-weight: 500;
 }

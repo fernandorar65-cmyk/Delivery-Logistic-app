@@ -125,7 +125,7 @@
 .detail-header {
   padding: 2rem 2rem 1.5rem;
   border-bottom: 1px solid #e0e0e0;
-  background: #4facfe 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: (#4facfe 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .detail-title-section {
@@ -205,7 +205,7 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #4facfe 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(90deg, #4facfe 0%, rgba(118, 75, 162, 0.1) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
