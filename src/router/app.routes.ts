@@ -28,7 +28,7 @@ export const routes: Routes = [
       },
       {
         path: 'allies',
-        loadComponent: () => import('../app/views/allies/ally-list-view/ally-list-view.component')
+        loadComponent: () => import('../app/views/providers/providers-list-view/providers-list-view.component')
           .then(m => m.AllyListViewComponent)
       },
       {

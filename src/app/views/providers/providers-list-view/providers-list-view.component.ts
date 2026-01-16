@@ -28,11 +28,11 @@ interface Ally extends Provider {
 }
 
 @Component({
-  selector: 'app-ally-list-view',
+  selector: 'app-providers-list-view',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, HeroIconComponent],
-  templateUrl: './ally-list-view.component.html',
-  styleUrl: './ally-list-view.component.css'
+  templateUrl: './providers-list-view.component.html',
+  styleUrl: './providers-list-view.component.css'
 })
 export class AllyListViewComponent implements OnInit {
   private providerService = inject(ProviderService);
