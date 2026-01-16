@@ -32,8 +32,13 @@ export class ClientDetailViewComponent implements OnInit {
     this.error.set(null);
 
     this.clientService.getById(id).subscribe({
-      next: (data) => {
-        this.client.set(data);
+      next: (response) => {
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al cargar el cliente.');
+          this.loading.set(false);
+          return;
+        }
+        this.client.set(response.result);
         this.loading.set(false);
       },
       error: (err) => {
@@ -42,6 +47,24 @@ export class ClientDetailViewComponent implements OnInit {
         console.error('Error loading client:', err);
       }
     });
+  }
+
+  deleteClient() {
+    const id = this.client()?.id;
+    if (!id) return;
+    if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
+      this.loading.set(true);
+      this.error.set(null);
+      this.clientService.delete(id).subscribe({
+        next: () => {
+          this.router.navigate(['/clients']);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.error.set('Error al eliminar el cliente.');
+        }
+      });
+    }
   }
 }
 

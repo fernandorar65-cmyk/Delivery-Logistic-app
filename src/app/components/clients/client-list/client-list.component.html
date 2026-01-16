@@ -19,10 +19,10 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Nombre</th>
+            <th>Cliente</th>
+            <th>RUC</th>
+            <th>Descripción</th>
             <th>Email</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -30,10 +30,10 @@
           @for (client of clients(); track client.id) {
             <tr>
               <td>{{ client.id }}</td>
-              <td>{{ client.business_name }}</td>
+              <td>{{ client.client_name }}</td>
+              <td>{{ client.ruc }}</td>
+              <td>{{ client.description || '-' }}</td>
               <td>{{ client.email }}</td>
-              <td>{{ client.phone_number || '-' }}</td>
-              <td>{{ client.contact_phone || '-' }}</td>
               <td class="actions">
                 <a [routerLink]="['/clients', client.id]" class="btn btn-sm btn-view">Ver</a>
                 <a [routerLink]="['/clients', client.id, 'edit']" class="btn btn-sm btn-edit">Editar</a>

@@ -34,8 +34,9 @@ export class ClientListViewComponent {
   clientForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    business_name: ['', [Validators.required, Validators.minLength(2)]],
-    ruc: ['', [Validators.required, Validators.minLength(8)]]
+    client_name: ['', [Validators.required, Validators.minLength(2)]],
+    ruc: ['', [Validators.required, Validators.minLength(8)]],
+    description: ['']
   });
 
   constructor() {
@@ -48,10 +49,17 @@ export class ClientListViewComponent {
     
     this.clientService.getAll(page).subscribe({
       next: (response) => {
-        this.clients.set(response.results);
-        this.totalCount.set(response.count);
-        this.hasNext.set(response.next !== null);
-        this.hasPrevious.set(response.previous !== null);
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al cargar los clientes. Por favor, intente nuevamente.');
+          this.loading.set(false);
+          return;
+        }
+
+        const results = response.result || [];
+        this.clients.set(results);
+        this.totalCount.set(response.pagination?.count ?? results.length);
+        this.hasNext.set(!!response.pagination?.next);
+        this.hasPrevious.set(!!response.pagination?.previous);
         this.currentPage.set(page);
         this.loading.set(false);
       },
@@ -92,8 +100,9 @@ export class ClientListViewComponent {
     
     this.clientForm.patchValue({
       email: client.email || '',
-      business_name: client.business_name || '',
-      ruc: client.ruc || ''
+      client_name: client.client_name || '',
+      ruc: client.ruc || '',
+      description: client.description || ''
     });
     
     // En modo edición, el password es opcional
@@ -139,12 +148,18 @@ export class ClientListViewComponent {
         const clientPayload: ClientCreate = {
           email: formValue.email,
           password: formValue.password,
-          business_name: formValue.business_name,
-          ruc: formValue.ruc
+          client_name: formValue.client_name,
+          ruc: formValue.ruc,
+          description: formValue.description || undefined
         };
 
         this.clientService.create(clientPayload).subscribe({
-          next: () => {
+          next: (response) => {
+            if (response.errors && response.errors.length > 0) {
+              this.formError.set('Error al crear el cliente. Por favor, intenta nuevamente.');
+              this.formLoading.set(false);
+              return;
+            }
             this.closeModal();
             this.loadClients(this.currentPage());
           },
@@ -185,11 +200,21 @@ export class ClientListViewComponent {
     return '';
   }
 
-  deleteClient(id: number) {
+  deleteClient(id?: string) {
+    if (!id) return;
     if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
-      // Nota: El endpoint DELETE no está disponible para clients según la API
-      // Si se necesita, se debería agregar al servicio
-      console.log('Delete client:', id);
+      this.formLoading.set(true);
+      this.formError.set(null);
+      this.clientService.delete(id).subscribe({
+        next: () => {
+          this.formLoading.set(false);
+          this.loadClients(this.currentPage());
+        },
+        error: () => {
+          this.formLoading.set(false);
+          this.formError.set('Error al eliminar el cliente.');
+        }
+      });
     }
   }
 }

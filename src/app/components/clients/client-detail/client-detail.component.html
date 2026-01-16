@@ -16,27 +16,24 @@
 
     <div class="client-card">
       <div class="client-header">
-        <h1>{{ client()!.business_name }}</h1>
+        <h1>{{ client()!.client_name }}</h1>
         <span class="badge">ID: {{ client()!.id }}</span>
       </div>
 
       <div class="client-info">
         <div class="info-row">
+          <span class="label">RUC:</span>
+          <span class="value">{{ client()!.ruc }}</span>
+        </div>
+        <div class="info-row">
           <span class="label">Email:</span>
           <span class="value">{{ client()!.email }}</span>
         </div>
 
-        @if (client()!.phone_number) {
+        @if (client()!.description) {
           <div class="info-row">
-            <span class="label">Teléfono:</span>
-            <span class="value">{{ client()!.phone_number }}</span>
-          </div>
-        }
-
-        @if (client()!.contact_phone) {
-          <div class="info-row">
-            <span class="label">Dirección:</span>
-            <span class="value">{{ client()!.contact_phone }}</span>
+            <span class="label">Descripción:</span>
+            <span class="value">{{ client()!.description }}</span>
           </div>
         }
 

@@ -33,7 +33,7 @@ export class ClientDetailComponent implements OnInit {
 
     this.clientService.getById(id).subscribe({
       next: (data) => {
-        this.client.set(data);
+        this.client.set(data.result);
         this.loading.set(false);
       },
       error: (err) => {

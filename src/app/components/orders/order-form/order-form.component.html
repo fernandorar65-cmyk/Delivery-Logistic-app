@@ -64,7 +64,7 @@
               >
                 <option value="">Seleccione un cliente</option>
                 @for (client of clients(); track client.id) {
-                  <option [value]="client.id">{{ client.business_name }} - {{ client.email }}</option>
+                  <option [value]="client.id">{{ client.client_name }} - {{ client.email }}</option>
                 }
               </select>
             }

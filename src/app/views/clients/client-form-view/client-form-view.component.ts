@@ -26,8 +26,9 @@ export class ClientFormViewComponent implements OnInit {
   clientForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    business_name: ['', [Validators.required, Validators.minLength(2)]],
-    ruc: ['', [Validators.required, Validators.minLength(8)]]
+    client_name: ['', [Validators.required, Validators.minLength(2)]],
+    ruc: ['', [Validators.required, Validators.minLength(8)]],
+    description: ['']
   });
 
   ngOnInit() {
@@ -42,11 +43,18 @@ export class ClientFormViewComponent implements OnInit {
   loadClient(id: string) {
     this.loading.set(true);
     this.clientService.getById(id).subscribe({
-      next: (client) => {
+      next: (response) => {
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al cargar el cliente.');
+          this.loading.set(false);
+          return;
+        }
+        const client = response.result;
         this.clientForm.patchValue({
           email: client.email || '',
-          business_name: client.business_name || '',
-          ruc: client.ruc || ''
+          client_name: client.client_name || '',
+          ruc: client.ruc || '',
+          description: client.description || ''
         });
         // En modo edición, el password es opcional
         this.clientForm.get('password')?.clearValidators();
@@ -76,8 +84,13 @@ export class ClientFormViewComponent implements OnInit {
       if (this.isEditMode() && this.clientId()) {
         // Usar PUT para actualización completa
         this.clientService.update(this.clientId()!, formValue).subscribe({
-          next: () => {
-            this.router.navigate(['/clients', this.clientId()]);
+          next: (response) => {
+            if (response.errors && response.errors.length > 0) {
+              this.error.set('Error al actualizar el cliente.');
+              this.loading.set(false);
+              return;
+            }
+            this.router.navigate(['/clients', response.result.id || this.clientId()]);
           },
           error: (err) => {
             this.error.set('Error al actualizar el cliente.');
@@ -88,12 +101,14 @@ export class ClientFormViewComponent implements OnInit {
       } else {
         this.clientService.create(formValue).subscribe({
           next: (response) => {
-            console.log('Respuesta del servidor:', response);
-            // Si la respuesta tiene un id, navegamos al detalle
-            if (response && response.id) {
-              this.router.navigate(['/clients', response.id]);
+            if (response.errors && response.errors.length > 0) {
+              this.error.set('Error al crear el cliente. Por favor, intenta nuevamente.');
+              this.loading.set(false);
+              return;
+            }
+            if (response.result?.id) {
+              this.router.navigate(['/clients', response.result.id]);
             } else {
-              // Si no hay id, redirigimos a la lista
               this.router.navigate(['/clients']);
             }
             this.loading.set(false);

@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Client, ClientCreate, ClientUpdate } from '../models/client.model';
-import { PaginatedResponse } from '../models/paginated-response.model';
+import { ClientCreate, ClientListResponse, ClientResponse, ClientUpdate } from '../models/client.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -12,25 +11,29 @@ export class ClientService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/clients`;
 
-  getAll(page: number = 1): Observable<PaginatedResponse<Client>> {
+  getAll(page: number = 1): Observable<ClientListResponse> {
     const params = new HttpParams().set('page', page.toString());
-    return this.http.get<PaginatedResponse<Client>>(`${this.apiUrl}/`, { params });
+    return this.http.get<ClientListResponse>(`${this.apiUrl}/`, { params });
   }
 
-  getById(id: string): Observable<Client> {
-    return this.http.get<Client>(`${this.apiUrl}/${id}/`);
+  getById(id: string): Observable<ClientResponse> {
+    return this.http.get<ClientResponse>(`${this.apiUrl}/${id}/`);
   }
 
-  create(client: ClientCreate): Observable<Client> {
-    return this.http.post<Client>(`${this.apiUrl}/`, client);
+  create(client: ClientCreate): Observable<ClientResponse> {
+    return this.http.post<ClientResponse>(`${this.apiUrl}/`, client);
   }
 
-  update(id: string, client: ClientUpdate): Observable<Client> {
-    return this.http.put<Client>(`${this.apiUrl}/${id}/`, client);
+  update(id: string, client: ClientUpdate): Observable<ClientResponse> {
+    return this.http.put<ClientResponse>(`${this.apiUrl}/${id}/`, client);
   }
 
-  partialUpdate(id: string, client: ClientUpdate): Observable<Client> {
-    return this.http.patch<Client>(`${this.apiUrl}/${id}/`, client);
+  partialUpdate(id: string, client: ClientUpdate): Observable<ClientResponse> {
+    return this.http.patch<ClientResponse>(`${this.apiUrl}/${id}/`, client);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}/`);
   }
 }
 

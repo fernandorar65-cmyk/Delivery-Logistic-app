@@ -53,7 +53,7 @@ export class OrderFormComponent implements OnInit {
     this.loadingClients.set(true);
     this.clientService.getAll(1).subscribe({
       next: (response) => {
-        this.clients.set(response.results);
+        this.clients.set(response.result);
         this.loadingClients.set(false);
       },
       error: (err) => {

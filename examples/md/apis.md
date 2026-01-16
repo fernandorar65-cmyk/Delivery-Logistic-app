@@ -141,3 +141,23 @@ DTO QUE SE NECESITA -->
     }
 
 https://prologistic-api-dev.up.railway.app/api/v1/providers/{idProvider}/vehicles/{idVehicle}/ DELETE DE UN VEHICLE ASOCIADO A UN PROVIDER 
+
+
+
+-- APIS CLIENTES
+
+-- https://prologistic-api-dev.up.railway.app/api/v1/clients/ GET CLIENTS
+
+
+-- https://prologistic-api-dev.up.railway.app/api/v1/clients/ POST CLIENTS
+DTO
+  {
+  "client_name": "aksjdnakjdn",
+  "ruc": "12345678911",
+  "description": "asnjkdankdja",
+  "email": "user0101@example.com",
+  "password": "Contra123#"
+}
+
+https://prologistic-api-dev.up.railway.app/api/v1/clients/{idClient}/ GET BY ID
+https://prologistic-api-dev.up.railway.app/api/v1/clients/{idClient}/ DELETE BY ID

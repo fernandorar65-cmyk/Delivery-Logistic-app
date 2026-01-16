@@ -28,7 +28,7 @@ export class ClientListComponent {
     
     this.clientService.getAll(page).subscribe({
       next: (response) => {
-        this.clients.set(response.results);
+        this.clients.set(response.result);
         this.loading.set(false);
       },
       error: (err) => {
