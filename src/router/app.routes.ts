@@ -65,14 +65,14 @@ export const routes: Routes = [
       {
         path: 'clients',
         canActivate: [roleGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'company'] },
         loadComponent: () => import('../app/views/admin/client-list-view/client-list-view.component')
           .then(m => m.ClientListViewComponent)
       },
       {
         path: 'clients/:id',
         canActivate: [roleGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'company'] },
         loadComponent: () => import('../app/views/admin/client-detail-view/client-detail-view.component')
           .then(m => m.ClientDetailViewComponent)
       },
