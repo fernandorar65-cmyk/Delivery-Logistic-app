@@ -33,7 +33,7 @@
       <div class="user-menu">
         <div class="user-avatar">A</div>
         <div class="user-info">
-          <span class="user-name">Admin User</span>
+          <span class="user-name">{{ userEmail() || 'Usuario' }}</span>
           <span class="user-role">{{ getRoleLabel() }}</span>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

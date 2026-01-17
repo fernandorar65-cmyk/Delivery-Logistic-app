@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { StorageService } from '../../../services/storage.service';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 
 @Component({
@@ -17,6 +18,7 @@ export class LoginViewComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  private storageService = inject(StorageService);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -43,13 +45,17 @@ export class LoginViewComponent {
           // Guardar tokens en localStorage solo si estamos en el navegador
           if (isPlatformBrowser(this.platformId)) {
             if (response.access) {
-              localStorage.setItem('access_token', response.access);
+              this.storageService.setItem('access_token', response.access);
             }
             if (response.refresh) {
-              localStorage.setItem('refresh_token', response.refresh);
+              this.storageService.setItem('refresh_token', response.refresh);
             }
             if (response.user_type) {
-              localStorage.setItem('user_type', response.user_type);
+              this.storageService.setItem('user_type', response.user_type);
+            }
+            const emailToStore = credentials.email;
+            if (emailToStore) {
+              this.storageService.setItem('user_email', emailToStore);
             }
           }
           

@@ -19,10 +19,12 @@ export class MainLayoutComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   protected readonly title = signal('LOGISAAS');
   protected readonly userType = signal<string | null>(null);
+  protected readonly userEmail = signal<string | null>(null);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.userType.set(this.storageService.getItem('user_type'));
+      this.userEmail.set(this.storageService.getItem('user_email'));
     }
   }
 
@@ -40,13 +42,14 @@ export class MainLayoutComponent implements OnInit {
     if (!currentRole) {
       return 'Usuario';
     }
+    const normalizedRole = currentRole === 'platform' ? 'admin' : currentRole;
     const labels: Record<string, string> = {
-      admin: 'platform',
-      company: 'company',
-      provider: 'provider',
-      client: 'client',
+      admin: 'Admin',
+      company: 'Company',
+      provider: 'Provider',
+      client: 'Client',
     };
-    return labels[currentRole] ?? currentRole;
+    return labels[normalizedRole] ?? normalizedRole;
   }
 
   logout(): void {
