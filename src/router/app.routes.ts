@@ -30,14 +30,14 @@ export const routes: Routes = [
       {
         path: 'providers',
         canActivate: [roleGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'company'] },
         loadComponent: () => import('../app/views/admin/providers-list-view/providers-list-view.component')
           .then(m => m.AllyListViewComponent)
       },
       {
         path: 'allies',
         canActivate: [roleGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'company'] },
         loadComponent: () => import('../app/views/admin/providers-list-view/providers-list-view.component')
           .then(m => m.AllyListViewComponent)
       },
