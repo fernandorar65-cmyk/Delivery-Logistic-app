@@ -13,6 +13,12 @@
 
       <div class="provider-modal-body">
         <form [formGroup]="form" (ngSubmit)="submit()" class="provider-form">
+          @if (checkError()) {
+            <div class="check-error">
+              <span class="material-symbols-outlined">error</span>
+              {{ checkError() }}
+            </div>
+          }
           <div class="form-grid">
             <div class="form-col">
               <label class="field">
@@ -25,7 +31,30 @@
               </label>
               <label class="field">
                 <span>Correo Electrónico de Contacto</span>
-                <input type="email" formControlName="contact_email" placeholder="contacto@empresa.com" />
+                <div class="field-with-status">
+                  <input type="email" formControlName="contact_email" placeholder="contacto@empresa.com" />
+                  <button
+                    type="button"
+                    class="email-check-btn"
+                    (click)="verifyEmail()"
+                    [disabled]="checkLoading()"
+                  >
+                    Verificar
+                  </button>
+                  @if (emailStatus() === 'checking') {
+                    <span class="email-status pending" title="Verificando">
+                      <span class="material-symbols-outlined">progress_activity</span>
+                    </span>
+                  } @else if (emailStatus() === 'unique') {
+                    <span class="email-status success" title="Email disponible">
+                      <span class="material-symbols-outlined">check_circle</span>
+                    </span>
+                  } @else if (emailStatus() === 'exists') {
+                    <span class="email-status danger" title="Email ya registrado">
+                      <span class="material-symbols-outlined">error</span>
+                    </span>
+                  }
+                </div>
               </label>
               <label class="field">
                 <span>Teléfono</span>
@@ -82,10 +111,33 @@
 
       <div class="provider-modal-footer">
         <button type="button" class="btn secondary" (click)="close()">Cancelar</button>
-        <button type="submit" class="btn primary" (click)="submit()">
-          <span class="material-symbols-outlined">save</span>
-          Guardar Aliado
+        <button type="submit" class="btn primary" (click)="submit()" [disabled]="checkLoading()">
+          @if (checkLoading()) {
+            <span class="material-symbols-outlined">hourglass_top</span>
+            Verificando correo...
+          } @else {
+            <span class="material-symbols-outlined">save</span>
+            Guardar Aliado
+          }
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (matchModalOpen()) {
+  <div class="match-overlay" (click)="closeMatchModal()">
+    <div class="match-modal" (click)="$event.stopPropagation()">
+      <div class="match-icon">
+        <span class="material-symbols-outlined">hub</span>
+      </div>
+      <h3>Proveedor ya registrado</h3>
+      <p>
+        El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
+      </p>
+      <div class="match-actions">
+        <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
+        <button type="button" class="btn primary" (click)="confirmMatchRequest()">Enviar solicitud</button>
       </div>
     </div>
   </div>

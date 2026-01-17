@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { catchError, finalize, of } from 'rxjs';
+import { ProviderService } from '../../../services/provider.service';
 
 export interface ProviderCreatePayload {
   company_name: string;
@@ -23,10 +25,18 @@ export interface ProviderCreatePayload {
 })
 export class ProviderCreateModalComponent {
   private fb = inject(FormBuilder);
+  private providerService = inject(ProviderService);
 
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
   @Output() saved = new EventEmitter<ProviderCreatePayload>();
+  @Output() requestMatch = new EventEmitter<string>();
+
+  checkLoading = signal(false);
+  checkError = signal<string | null>(null);
+  emailStatus = signal<'idle' | 'checking' | 'unique' | 'exists' | 'error'>('idle');
+  matchModalOpen = signal(false);
+  matchEmail = signal<string | null>(null);
 
   form = this.fb.group({
     company_name: ['', [Validators.required, Validators.minLength(2)]],
@@ -40,8 +50,56 @@ export class ProviderCreateModalComponent {
     logo_file: [null as File | null]
   });
 
+  verifyEmail(): void {
+    const emailValue = (this.form.value.contact_email ?? '').toString().trim().toLowerCase();
+    if (!emailValue) {
+      this.emailStatus.set('idle');
+      return;
+    }
+    if (this.form.get('contact_email')?.invalid) {
+      this.emailStatus.set('idle');
+      this.checkError.set('Ingresa un correo válido para verificar.');
+      return;
+    }
+
+    this.checkError.set(null);
+    this.emailStatus.set('checking');
+    this.checkLoading.set(true);
+    this.providerService.checkProviderEmail(emailValue).pipe(
+      catchError(() => {
+        this.emailStatus.set('error');
+        this.checkError.set('No se pudo verificar el correo.');
+        return of(null);
+      }),
+      finalize(() => this.checkLoading.set(false))
+    ).subscribe((response: any) => {
+      if (!response) return;
+      const exists = Boolean(response?.result?.id);
+      if (exists) {
+        this.emailStatus.set('exists');
+        this.matchEmail.set(response?.result?.user_email || emailValue);
+        this.matchModalOpen.set(true);
+        return;
+      }
+      this.emailStatus.set('unique');
+    });
+  }
+
   close(): void {
     this.closed.emit();
+  }
+
+  closeMatchModal(): void {
+    this.matchModalOpen.set(false);
+    this.matchEmail.set(null);
+  }
+
+  confirmMatchRequest(): void {
+    const email = this.matchEmail();
+    if (email) {
+      this.requestMatch.emit(email);
+    }
+    this.closeMatchModal();
   }
 
   onLogoSelected(event: Event): void {
@@ -56,6 +114,7 @@ export class ProviderCreateModalComponent {
       return;
     }
 
+    this.checkError.set(null);
     const payload: ProviderCreatePayload = {
       company_name: this.form.value.company_name ?? '',
       tax_id: this.form.value.tax_id ?? '',
@@ -68,6 +127,15 @@ export class ProviderCreateModalComponent {
       logo_file: this.form.value.logo_file ?? null
     };
 
+    if (this.emailStatus() === 'exists') {
+      this.matchEmail.set(payload.contact_email);
+      this.matchModalOpen.set(true);
+      return;
+    }
+    if (this.emailStatus() === 'checking') {
+      this.checkError.set('Espera a que termine la verificación del correo.');
+      return;
+    }
     this.saved.emit(payload);
   }
 }

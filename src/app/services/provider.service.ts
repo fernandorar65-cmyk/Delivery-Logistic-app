@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProviderCreate, ProviderListResponse, ProviderResponse } from '../models/provider.model';
 import { environment } from '../../environments/environment';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +29,10 @@ export class ProviderService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/providers/${id}/`);
+  }
+
+  checkProviderEmail(email: string): Observable<unknown> {
+    const params = new HttpParams().set('email', email);
+    return this.http.get<unknown>(`${this.apiUrl}/users/check-provider/`, { params });
   }
 }
