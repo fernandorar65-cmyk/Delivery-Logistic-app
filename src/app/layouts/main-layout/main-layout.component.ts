@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
+import { MatchRequestsPanelComponent } from '../../components/match-requests-panel/match-requests-panel.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, HeroIconComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, HeroIconComponent, MatchRequestsPanelComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css'
 })
