@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, finalize, of } from 'rxjs';
 import { ProviderService } from '../../../services/provider.service';
+import { StorageService } from '../../../services/storage.service';
 
 export interface ProviderCreatePayload {
   company_name: string;
@@ -26,17 +27,20 @@ export interface ProviderCreatePayload {
 export class ProviderCreateModalComponent {
   private fb = inject(FormBuilder);
   private providerService = inject(ProviderService);
+  private storageService = inject(StorageService);
 
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
   @Output() saved = new EventEmitter<ProviderCreatePayload>();
-  @Output() requestMatch = new EventEmitter<string>();
 
   checkLoading = signal(false);
   checkError = signal<string | null>(null);
   emailStatus = signal<'idle' | 'checking' | 'unique' | 'exists' | 'error'>('idle');
   matchModalOpen = signal(false);
   matchEmail = signal<string | null>(null);
+  matchProviderId = signal<string | null>(null);
+  matchLoading = signal(false);
+  matchError = signal<string | null>(null);
 
   form = this.fb.group({
     company_name: ['', [Validators.required, Validators.minLength(2)]],
@@ -78,6 +82,8 @@ export class ProviderCreateModalComponent {
       if (exists) {
         this.emailStatus.set('exists');
         this.matchEmail.set(response?.result?.user_email || emailValue);
+        this.matchProviderId.set(response?.result?.id || null);
+        this.matchError.set(null);
         this.matchModalOpen.set(true);
         return;
       }
@@ -92,14 +98,33 @@ export class ProviderCreateModalComponent {
   closeMatchModal(): void {
     this.matchModalOpen.set(false);
     this.matchEmail.set(null);
+    this.matchProviderId.set(null);
+    this.matchError.set(null);
   }
 
   confirmMatchRequest(): void {
-    const email = this.matchEmail();
-    if (email) {
-      this.requestMatch.emit(email);
+    const providerId = this.matchProviderId();
+    const companyId = this.storageService.getItem('company_id');
+    if (!companyId || !providerId) {
+      console.log("companyId:", companyId,"providerId:", providerId);
+      this.matchError.set('No se pudo enviar la solicitud. Falta información.');
+      return;
     }
-    this.closeMatchModal();
+    this.matchLoading.set(true);
+    this.matchError.set(null);
+    this.providerService.sendCompanyProviderRequest({
+      company_id: companyId,
+      provider_id: providerId
+    }).pipe(
+      finalize(() => this.matchLoading.set(false))
+    ).subscribe({
+      next: () => {
+        this.closeMatchModal();
+      },
+      error: () => {
+        this.matchError.set('No se pudo enviar la solicitud. Intenta nuevamente.');
+      }
+    });
   }
 
   onLogoSelected(event: Event): void {

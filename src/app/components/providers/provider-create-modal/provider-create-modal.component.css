@@ -350,6 +350,19 @@
   flex-wrap: wrap;
 }
 
+.match-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.7rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 0.85rem;
+  justify-content: center;
+}
+
 @media (max-width: 640px) {
   .provider-modal-footer {
     flex-direction: column-reverse;

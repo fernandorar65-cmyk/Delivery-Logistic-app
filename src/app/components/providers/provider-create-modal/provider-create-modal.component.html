@@ -135,9 +135,21 @@
       <p>
         El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
       </p>
+      @if (matchError()) {
+        <div class="match-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ matchError() }}
+        </div>
+      }
       <div class="match-actions">
         <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
-        <button type="button" class="btn primary" (click)="confirmMatchRequest()">Enviar solicitud</button>
+        <button type="button" class="btn primary" (click)="confirmMatchRequest()" [disabled]="matchLoading()">
+          @if (matchLoading()) {
+            Enviando...
+          } @else {
+            Enviar solicitud
+          }
+        </button>
       </div>
     </div>
   </div>

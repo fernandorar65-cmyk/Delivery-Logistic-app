@@ -20,7 +20,7 @@
 
   <!-- Stats Cards -->
   <div class="stats-grid">
-    @for (stat of stats(); track stat.label) {
+    @for (stat of uniqueStats; track $index) {
       <div class="stat-card" [class]="'stat-' + stat.iconColor">
         <div class="stat-header">
           <p class="stat-label">{{ stat.label }}</p>
