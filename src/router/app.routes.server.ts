@@ -19,6 +19,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender
   },
   {
+    path: 'providers',
+    renderMode: RenderMode.Prerender
+  },
+  {
     path: 'allies',
     renderMode: RenderMode.Prerender
   },
