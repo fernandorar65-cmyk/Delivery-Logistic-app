@@ -23,6 +23,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender
   },
   {
+    path: 'clients/matching',
+    renderMode: RenderMode.Prerender
+  },
+  {
     path: 'allies',
     renderMode: RenderMode.Prerender
   },

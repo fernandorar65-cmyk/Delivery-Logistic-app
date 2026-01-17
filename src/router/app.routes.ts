@@ -57,6 +57,11 @@ export const routes: Routes = [
           .then(m => m.ClientFormViewComponent)
       },
       {
+        path: 'clients/matching',
+        loadComponent: () => import('../app/views/clients/client-matching-view/client-matching-view.component')
+          .then(m => m.ClientMatchingViewComponent)
+      },
+      {
         path: 'clients/:id',
         loadComponent: () => import('../app/views/clients/client-detail-view/client-detail-view.component')
           .then(m => m.ClientDetailViewComponent)
