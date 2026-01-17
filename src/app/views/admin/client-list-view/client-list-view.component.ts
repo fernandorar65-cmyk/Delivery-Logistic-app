@@ -31,6 +31,7 @@ export class ClientListViewComponent {
   editingClientId = signal<string | null>(null);
   formLoading = signal(false);
   formError = signal<string | null>(null);
+  showSuccessModal = signal(false);
 
   clientForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -119,9 +120,17 @@ export class ClientListViewComponent {
     this.editingClientId.set(null);
     this.clientForm.reset();
     this.formError.set(null);
+    this.formLoading.set(false);
   }
 
-  onSubmit() {
+  closeSuccessModal() {
+    this.showSuccessModal.set(false);
+  }
+
+  onSubmit(event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
     if (this.clientForm.valid) {
       this.formLoading.set(true);
       this.formError.set(null);
@@ -136,6 +145,7 @@ export class ClientListViewComponent {
       if (this.isEditMode() && this.editingClientId()) {
         this.clientService.update(this.editingClientId()!, formValue).subscribe({
           next: () => {
+            this.formLoading.set(false);
             this.closeModal();
             this.loadClients(this.currentPage());
           },
@@ -161,8 +171,10 @@ export class ClientListViewComponent {
               this.formLoading.set(false);
               return;
             }
+            this.formLoading.set(false);
             this.closeModal();
             this.loadClients(this.currentPage());
+            this.showSuccessModal.set(true);
           },
           error: (err) => {
             this.formLoading.set(false);
