@@ -745,6 +745,64 @@
   color: #9ca3af;
 }
 
+/* Empty state */
+.empty-state {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px dashed #e2e8f0;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.empty-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(19, 127, 236, 0.12);
+  color: #137fec;
+}
+
+.empty-content h3 {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: #0f172a;
+}
+
+.empty-content p {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+}
+
+.empty-action {
+  margin-top: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.7rem;
+  border: 1px solid #dbeafe;
+  background: #ffffff;
+  color: #137fec;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-action:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .ally-list-container {

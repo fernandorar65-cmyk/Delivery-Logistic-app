@@ -106,8 +106,19 @@
           } @else if (paginatedAllies.length === 0) {
             <tr>
               <td colspan="7" class="text-center p-8">
-                <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="mx-auto mb-4 text-gray-400"></app-hero-icon>
-                <p>No se encontraron aliados</p>
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <app-hero-icon name="users" [size]="48" [strokeWidth]="1.5"></app-hero-icon>
+                  </div>
+                  <div class="empty-content">
+                    <h3>No hay providers por el momento</h3>
+                    <p>Cuando registres nuevos aliados aparecerán en esta lista.</p>
+                  </div>
+                  <button class="empty-action" type="button" (click)="openCreateModal()">
+                    <app-hero-icon name="plus" [size]="16"></app-hero-icon>
+                    Crear nuevo aliado
+                  </button>
+                </div>
               </td>
             </tr>
           } @else {

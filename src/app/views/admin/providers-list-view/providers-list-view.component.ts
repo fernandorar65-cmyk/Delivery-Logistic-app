@@ -7,6 +7,7 @@ import { ProviderService } from '../../../services/provider.service';
 import { Provider } from '../../../models/provider.model';
 import { ProviderCreateModalComponent, ProviderCreatePayload } from '../../../components/providers/provider-create-modal/provider-create-modal.component';
 import { StorageService } from '../../../services/storage.service';
+import { finalize } from 'rxjs';
 
 interface StatCard {
   label: string;
@@ -102,11 +103,12 @@ export class AllyListViewComponent implements OnInit {
     this.error.set(null);
     const userType = this.storageService.getItem('user_type') ?? 'admin';
 
-    this.providerService.getAll(userType).subscribe({
+    this.providerService.getAll(userType).pipe(
+      finalize(() => this.loading.set(false))
+    ).subscribe({
       next: (response) => {
         if (response.errors && response.errors.length > 0) {
           this.error.set('Error al cargar los aliados');
-          this.loading.set(false);
           return;
         }
 
@@ -121,12 +123,10 @@ export class AllyListViewComponent implements OnInit {
         // Actualizar estadísticas dinámicamente
         this.updateStats(mappedAllies);
         
-        this.loading.set(false);
       },
       error: (err) => {
         console.error('Error loading providers:', err);
         this.error.set('Error al cargar los aliados. Por favor, intente nuevamente.');
-        this.loading.set(false);
       }
     });
   }
