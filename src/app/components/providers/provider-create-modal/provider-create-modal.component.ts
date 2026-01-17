@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, finalize, of } from 'rxjs';
 import { ProviderService } from '../../../services/provider.service';
 import { StorageService } from '../../../services/storage.service';
+import { UserService } from '../../../services/user.service';
 
 export interface ProviderCreatePayload {
   company_name: string;
@@ -28,6 +29,7 @@ export class ProviderCreateModalComponent {
   private fb = inject(FormBuilder);
   private providerService = inject(ProviderService);
   private storageService = inject(StorageService);
+  private userService = inject(UserService);
 
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
@@ -69,7 +71,7 @@ export class ProviderCreateModalComponent {
     this.checkError.set(null);
     this.emailStatus.set('checking');
     this.checkLoading.set(true);
-    this.providerService.checkProviderEmail(emailValue).pipe(
+    this.userService.CheckUserEmail(emailValue).pipe(
       catchError(() => {
         this.emailStatus.set('error');
         this.checkError.set('No se pudo verificar el correo.');
