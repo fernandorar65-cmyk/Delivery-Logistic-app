@@ -1,0 +1,92 @@
+@if (open) {
+  <div class="provider-modal-overlay" (click)="close()">
+    <div class="provider-modal" (click)="$event.stopPropagation()">
+      <div class="provider-modal-header">
+        <div>
+          <h2>Registrar Nuevo Aliado</h2>
+          <p>Ingresa la información detallada para dar de alta a un nuevo aliado logístico.</p>
+        </div>
+        <button type="button" class="close-btn" (click)="close()" aria-label="Cerrar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="provider-modal-body">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="provider-form">
+          <div class="form-grid">
+            <div class="form-col">
+              <label class="field">
+                <span>Nombre de la Empresa</span>
+                <input type="text" formControlName="company_name" placeholder="Ej: Transportes Rápidos SAS" />
+              </label>
+              <label class="field">
+                <span>NIT / Identificación Fiscal</span>
+                <input type="text" formControlName="tax_id" placeholder="000.000.000-0" />
+              </label>
+              <label class="field">
+                <span>Correo Electrónico de Contacto</span>
+                <input type="email" formControlName="contact_email" placeholder="contacto@empresa.com" />
+              </label>
+              <label class="field">
+                <span>Teléfono</span>
+                <input type="tel" formControlName="phone" placeholder="+57 (000) 000-0000" />
+              </label>
+            </div>
+            <div class="form-col">
+              <label class="field">
+                <span>Nombre del Representante</span>
+                <input type="text" formControlName="representative_name" placeholder="Nombre completo" />
+              </label>
+              <label class="field">
+                <span>Tipo de Flota</span>
+                <select formControlName="fleet_type">
+                  <option value="" disabled>Seleccionar tipo...</option>
+                  <option value="light">Ligera (Motos / Vans)</option>
+                  <option value="heavy">Pesada (Camiones / Tractomulas)</option>
+                  <option value="mixed">Mixta</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Zona de Operación Principal</span>
+                <input type="text" formControlName="operation_zone" placeholder="Ej: Zona Norte / Nacional" />
+              </label>
+              <div class="field">
+                <span>Estado Inicial</span>
+                <div class="radio-group">
+                  <label class="radio-pill">
+                    <input type="radio" formControlName="status" value="active" />
+                    <span>Activo</span>
+                  </label>
+                  <label class="radio-pill">
+                    <input type="radio" formControlName="status" value="inactive" />
+                    <span>Inactivo</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <span>Logo de la Empresa</span>
+            <label class="dropzone">
+              <input type="file" accept=".png,.jpg,.jpeg,.svg" (change)="onLogoSelected($event)" />
+              <div class="dropzone-icon">
+                <span class="material-symbols-outlined">cloud_upload</span>
+              </div>
+              <p>Haz clic para cargar o arrastra el archivo</p>
+              <small>PNG, JPG o SVG (Máx. 2MB)</small>
+            </label>
+          </div>
+        </form>
+      </div>
+
+      <div class="provider-modal-footer">
+        <button type="button" class="btn secondary" (click)="close()">Cancelar</button>
+        <button type="submit" class="btn primary" (click)="submit()">
+          <span class="material-symbols-outlined">save</span>
+          Guardar Aliado
+        </button>
+      </div>
+    </div>
+  </div>
+}

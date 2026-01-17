@@ -5,6 +5,8 @@ import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { ProviderService } from '../../../services/provider.service';
 import { Provider } from '../../../models/provider.model';
+import { ProviderCreateModalComponent, ProviderCreatePayload } from '../../../components/providers/provider-create-modal/provider-create-modal.component';
+import { StorageService } from '../../../services/storage.service';
 
 interface StatCard {
   label: string;
@@ -30,15 +32,17 @@ interface Ally extends Provider {
 @Component({
   selector: 'app-providers-list-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, HeroIconComponent],
+  imports: [CommonModule, FormsModule, RouterLink, HeroIconComponent, ProviderCreateModalComponent],
   templateUrl: './providers-list-view.component.html',
   styleUrl: './providers-list-view.component.css'
 })
 export class AllyListViewComponent implements OnInit {
   private providerService = inject(ProviderService);
+  private storageService = inject(StorageService);
 
   loading = signal(false);
   error = signal<string | null>(null);
+  createOpen = signal(false);
 
   // Datos mock para las tarjetas de estadísticas
   stats = signal<StatCard[]>([
@@ -80,11 +84,25 @@ export class AllyListViewComponent implements OnInit {
     this.loadProviders();
   }
 
+  openCreateModal() {
+    this.createOpen.set(true);
+  }
+
+  closeCreateModal() {
+    this.createOpen.set(false);
+  }
+
+  handleProviderSaved(payload: ProviderCreatePayload) {
+    this.createOpen.set(false);
+    console.log('Provider creado (pendiente API):', payload);
+  }
+
   loadProviders() {
     this.loading.set(true);
     this.error.set(null);
+    const userType = this.storageService.getItem('user_type') ?? 'admin';
 
-    this.providerService.getAll().subscribe({
+    this.providerService.getAll(userType).subscribe({
       next: (response) => {
         if (response.errors && response.errors.length > 0) {
           this.error.set('Error al cargar los aliados');

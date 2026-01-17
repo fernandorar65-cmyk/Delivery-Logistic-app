@@ -1,0 +1,227 @@
+.provider-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+.provider-modal {
+  width: min(58rem, 100%);
+  max-height: min(90vh, 64rem);
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 48px -32px rgba(15, 23, 42, 0.7);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.provider-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 2.8vw, 2rem);
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.provider-modal-header h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.provider-modal-header p {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+}
+
+.close-btn {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  padding: 0.35rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.provider-modal-body {
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  overflow-y: auto;
+}
+
+.provider-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.9rem, 2vw, 1.25rem);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.92rem;
+  color: #0f172a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #137fec;
+  box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.15);
+  background: #ffffff;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.radio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.radio-pill input {
+  accent-color: #137fec;
+}
+
+.dropzone {
+  border: 2px dashed #e2e8f0;
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #64748b;
+  cursor: pointer;
+  background: #f8fafc;
+  gap: 0.35rem;
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropzone-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(19, 127, 236, 0.12);
+  color: #137fec;
+}
+
+.dropzone p {
+  margin: 0.25rem 0 0;
+  font-weight: 600;
+}
+
+.dropzone small {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.provider-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.btn {
+  border-radius: 0.85rem;
+  padding: 0.65rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background: #137fec;
+  color: #ffffff;
+  box-shadow: 0 16px 24px -20px rgba(19, 127, 236, 0.8);
+}
+
+.btn.primary:hover {
+  background: #0f66be;
+}
+
+.btn.secondary {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.btn.secondary:hover {
+  background: #f1f5f9;
+}
+
+@media (max-width: 640px) {
+  .provider-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

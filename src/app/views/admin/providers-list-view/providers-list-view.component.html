@@ -12,7 +12,7 @@
       <h1 class="page-title">Directorio de Aliados</h1>
       <p class="page-subtitle">Gestión centralizada de socios logísticos, flota y conductores.</p>
     </div>
-    <button class="btn-new-ally">
+    <button class="btn-new-ally" (click)="openCreateModal()">
       <app-hero-icon name="plus" [size]="20"></app-hero-icon>
       <span>Nuevo Aliado</span>
     </button>
@@ -218,4 +218,10 @@
       </div>
     </div>
   </div>
+
+  <app-provider-create-modal
+    [open]="createOpen()"
+    (closed)="closeCreateModal()"
+    (saved)="handleProviderSaved($event)"
+  ></app-provider-create-modal>
 </main>
