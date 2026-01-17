@@ -19,14 +19,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender
   },
   {
-    path: 'clients/new',
-    renderMode: RenderMode.Prerender
-  },
-  {
-    path: 'clients/matching',
-    renderMode: RenderMode.Prerender
-  },
-  {
     path: 'allies',
     renderMode: RenderMode.Prerender
   },
@@ -37,10 +29,6 @@ export const serverRoutes: ServerRoute[] = [
   // Rutas dinámicas con parámetros - server-side rendering
   {
     path: 'clients/:id',
-    renderMode: RenderMode.Server
-  },
-  {
-    path: 'clients/:id/edit',
     renderMode: RenderMode.Server
   },
   {

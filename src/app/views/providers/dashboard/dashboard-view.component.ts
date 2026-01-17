@@ -2,7 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
+import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 
 @Component({
   selector: 'app-dashboard-view',

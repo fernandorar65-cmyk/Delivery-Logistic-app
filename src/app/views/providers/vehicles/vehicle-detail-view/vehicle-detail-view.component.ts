@@ -2,9 +2,9 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
-import { VehicleService } from '../../../services/vehicle.service';
-import { Vehicle } from '../../../models/vehicle.model';
+import { HeroIconComponent } from '../../../../components/hero-icon/hero-icon';
+import { VehicleService } from '../../../../services/vehicle.service';
+import { Vehicle } from '../../../../models/vehicle.model';
 
 @Component({
   selector: 'app-vehicle-detail-view',

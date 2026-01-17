@@ -2,9 +2,9 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
-import { VehicleService } from '../../../services/vehicle.service';
-import { Vehicle } from '../../../models/vehicle.model';
+import { HeroIconComponent } from '../../../../components/hero-icon/hero-icon';
+import { VehicleService } from '../../../../services/vehicle.service';
+import { Vehicle } from '../../../../models/vehicle.model';
 
 interface StatCard {
   label: string;
