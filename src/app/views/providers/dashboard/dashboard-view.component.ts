@@ -3,6 +3,8 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
+import { UserService } from '../../../services/user.service';
+import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -12,6 +14,8 @@ import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
   styleUrl: './dashboard-view.component.css'
 })
 export class DashboardViewComponent {
+  private userService = inject(UserService);
+  private storageService = inject(StorageService);
 
   // Estado de tabs
   activeTab = signal<'all' | 'in-route' | 'pending' | 'delivered' | 'incidents'>('all');
@@ -38,9 +42,14 @@ export class DashboardViewComponent {
 
   constructor() {
     this.loadShipments();
+    this.setIdUser();
   }
 
   loadShipments() {
+
+
+
+
     this.loading.set(true);
     // Simular datos según la imagen
     this.shipments.set([
@@ -91,6 +100,27 @@ export class DashboardViewComponent {
       }
     ]);
     this.loading.set(false);
+  }
+
+  setIdUser() {
+    const email = this.storageService.getItem('user_email');
+    if (!email) {
+      return;
+    }
+    this.userService.CheckUserEmail(email).subscribe({
+      next: (userResponse) => {
+        const result = userResponse?.result ?? null;
+        if (result?.id) {
+          this.storageService.setItem('id', result.id);
+        }
+        if (result) {
+          this.storageService.setItem('user_data', JSON.stringify(result));
+        }
+      },
+      error: () => {
+        console.warn('No se pudo obtener el id del usuario.');
+      }
+    });
   }
 
   setActiveTab(tab: 'all' | 'in-route' | 'pending' | 'delivered' | 'incidents') {
