@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { StorageService } from '../../../services/storage.service';
+import { UserService } from '../../../services/user.service';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 
 @Component({
@@ -19,6 +20,7 @@ export class LoginViewComponent {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private storageService = inject(StorageService);
+  private userService = inject(UserService);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -56,6 +58,21 @@ export class LoginViewComponent {
             const emailToStore = credentials.email;
             if (emailToStore) {
               this.storageService.setItem('user_email', emailToStore);
+              this.userService.CheckUserEmail(emailToStore).subscribe({
+                next: (userResponse: any) => {
+                  const result = userResponse?.result ?? null;
+                  if (result?.user_id) {
+                    this.storageService.setItem('user_id', result.user_id);
+                  }
+                  if (result) {
+                    this.storageService.setItem('user_data', JSON.stringify(result));
+                  }
+                },
+                error: () => {
+                  // No bloquea el login si falla el lookup
+                  console.warn('No se pudo obtener datos del usuario por email.');
+                }
+              });
             }
           }
           

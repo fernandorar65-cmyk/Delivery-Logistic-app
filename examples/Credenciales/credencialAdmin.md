@@ -23,3 +23,8 @@ contraseña1234
   "email": "user0101@example.com",
   "password": "Contra123#"
 }
+
+
+
+pumasretail@gmail.com
+https://prologistic-api-dev.up.railway.app/api/v1/users/check-provider/?email=pumasretail%40gmail.com

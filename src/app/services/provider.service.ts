@@ -31,6 +31,11 @@ export class ProviderService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/providers/${id}/`);
   }
+
+  checkProviderEmail(email: string): Observable<unknown> {
+    const params = new HttpParams().set('email', email);
+    return this.http.get<unknown>(`${this.apiUrl}/users/check-provider/`, { params });
+  }
   
   sendCompanyProviderRequest(payload: CompanyProviderMatchRequest): Observable<unknown> {
     return this.http.post<unknown>(`${this.apiUrl}/company-providers/send-request/`, payload);
