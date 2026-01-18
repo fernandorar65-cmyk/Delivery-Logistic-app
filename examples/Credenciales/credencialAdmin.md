@@ -7,6 +7,10 @@ fernandorar65@gmail.com
 contraseña1234
 
 
+-- providers
+pumasretail@gmail.com
+
+
 {
   "company_name": "Alpakas Tour",
   "ruc": "2060070031",
@@ -28,3 +32,11 @@ contraseña1234
 
 pumasretail@gmail.com
 https://prologistic-api-dev.up.railway.app/api/v1/users/check-provider/?email=pumasretail%40gmail.com
+
+
+
+
+
+https://prologistic-api-dev.up.railway.app/api/v1/users/check-user/?email=fernandorar65%40gmail.com
+https://prologistic-api-dev.up.railway.app/api/v1/users/check-provider/?email=fernandorar65@gmail.com
+

@@ -106,7 +106,7 @@ export class ProviderCreateModalComponent {
 
   confirmMatchRequest(): void {
     const providerId = this.matchProviderId();
-    const companyId = this.storageService.getItem('company_id');
+    const companyId = this.storageService.getItem('id');
     if (!companyId || !providerId) {
       console.log("companyId:", companyId,"providerId:", providerId);
       this.matchError.set('No se pudo enviar la solicitud. Falta información.');
