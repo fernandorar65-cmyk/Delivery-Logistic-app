@@ -36,6 +36,13 @@ export const routes: Routes = [
           .then(m => m.AllyListViewComponent)
       },
       {
+        path: 'providers/requests',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'company', 'provider'] },
+        loadComponent: () => import('@app/features/providers/pages/match-requests-view/match-requests-view.component')
+          .then(m => m.MatchRequestsViewComponent)
+      },
+      {
         path: 'allies',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },

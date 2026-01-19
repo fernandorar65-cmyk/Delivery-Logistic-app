@@ -37,7 +37,13 @@
         }
       </div>
 
-      <button class="panel-footer">Ver todas las notificaciones →</button>
+      <a
+        class="panel-footer"
+        [routerLink]="['/providers/requests']"
+        (click)="closePanel()"
+      >
+        Ver todas las notificaciones →
+      </a>
     </div>
   }
 </div>

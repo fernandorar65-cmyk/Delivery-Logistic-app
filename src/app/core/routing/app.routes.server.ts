@@ -23,6 +23,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'providers/requests',
+    renderMode: RenderMode.Server
+  },
+  {
     path: 'allies',
     renderMode: RenderMode.Server
   },

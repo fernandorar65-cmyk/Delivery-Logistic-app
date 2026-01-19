@@ -1,7 +1,7 @@
-import { Component, ElementRef, HostListener, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
+import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 
 interface MatchRequest {
   id: string;
@@ -13,16 +13,14 @@ interface MatchRequest {
 }
 
 @Component({
-  selector: 'app-match-requests-panel',
+  selector: 'app-match-requests-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeroIconComponent],
-  templateUrl: './match-requests-panel.component.html',
-  styleUrl: './match-requests-panel.component.css'
+  imports: [CommonModule, HeroIconComponent, EmptyStateComponent],
+  templateUrl: './match-requests-view.component.html',
+  styleUrl: './match-requests-view.component.css'
 })
-export class MatchRequestsPanelComponent {
-  isOpen = signal(false);
-
-  requests: MatchRequest[] = [
+export class MatchRequestsViewComponent {
+  requests = signal<MatchRequest[]>([
     {
       id: '1',
       company: 'Global Logistics S.A.',
@@ -47,30 +45,13 @@ export class MatchRequestsPanelComponent {
       icon: 'bolt',
       tone: 'tone-purple'
     }
-  ];
+  ]);
 
-  constructor(private elementRef: ElementRef) {}
-
-  togglePanel() {
-    this.isOpen.update(value => !value);
+  acceptRequest(requestId: string) {
+    this.requests.update(items => items.filter(item => item.id !== requestId));
   }
 
-  closePanel() {
-    this.isOpen.set(false);
-  }
-
-  @HostListener('document:click', ['$event'])
-  handleClick(event: MouseEvent) {
-    if (!this.isOpen()) return;
-    const target = event.target as HTMLElement;
-    if (!this.elementRef.nativeElement.contains(target)) {
-      this.isOpen.set(false);
-    }
+  rejectRequest(requestId: string) {
+    this.requests.update(items => items.filter(item => item.id !== requestId));
   }
 }
-
-
-
-
-
-
