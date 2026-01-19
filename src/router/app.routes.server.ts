@@ -12,23 +12,23 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'dashboard',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   {
     path: 'clients',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   {
     path: 'providers',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   {
     path: 'allies',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   {
     path: 'companies',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   // Rutas dinámicas con parámetros - server-side rendering
   {
