@@ -1,0 +1,115 @@
+.provider-companies-page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.provider-companies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.provider-companies-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.provider-companies-subtitle {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.provider-companies-filters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 200px;
+  gap: 1rem;
+}
+
+.filter-input,
+.filter-select {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.provider-companies-table {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.provider-companies-row {
+  display: grid;
+  grid-template-columns: 140px 1.2fr 1fr 140px 160px;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.provider-companies-row.header {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.provider-companies-row:last-child {
+  border-bottom: none;
+}
+
+.company-id {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.company-name {
+  font-weight: 600;
+}
+
+.company-industry {
+  color: #64748b;
+}
+
+.company-status {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.company-status.active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.company-status.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.company-status.inactive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.company-since {
+  color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  .provider-companies-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-companies-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

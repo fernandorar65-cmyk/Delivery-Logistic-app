@@ -107,6 +107,19 @@
           <span>Pedidos</span>
         </a>
 
+        <a *ngIf="canAccess(['provider'])" routerLink="/providers/companies" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="17" rx="2"></rect>
+            <path d="M7 8h3"></path>
+            <path d="M7 12h3"></path>
+            <path d="M7 16h3"></path>
+            <path d="M14 8h3"></path>
+            <path d="M14 12h3"></path>
+            <path d="M14 16h3"></path>
+          </svg>
+          <span>Empresas</span>
+        </a>
+
         <a *ngIf="canAccess(['admin'])" routerLink="/companies" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>

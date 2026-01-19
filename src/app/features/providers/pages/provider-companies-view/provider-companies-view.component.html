@@ -1,0 +1,56 @@
+<section class="provider-companies-page">
+  <header class="provider-companies-header">
+    <div>
+      <p class="provider-companies-title">Empresas Asociadas</p>
+      <p class="provider-companies-subtitle">Relación de empresas vinculadas a tu cuenta.</p>
+    </div>
+  </header>
+
+  <div class="provider-companies-filters">
+    <input
+      type="text"
+      class="filter-input"
+      placeholder="Buscar por nombre o ID"
+      [(ngModel)]="searchQuery"
+    />
+    <select class="filter-select" [(ngModel)]="statusFilter">
+      <option value="">Todos los estados</option>
+      <option value="active">Activo</option>
+      <option value="pending">Pendiente</option>
+      <option value="inactive">Inactivo</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <app-loading-card text="Cargando empresas..." />
+  } @else if (error()) {
+    <app-empty-state title="No se pudo cargar" description="{{ error() }}" icon="exclamation-triangle" />
+  } @else if (filteredCompanies().length === 0) {
+    <app-empty-state
+      title="Sin empresas asociadas"
+      description="Cuando tengas empresas vinculadas aparecerán aquí."
+      icon="building-office-2"
+    ></app-empty-state>
+  } @else {
+    <div class="provider-companies-table">
+      <div class="provider-companies-row header">
+        <span>ID</span>
+        <span>Empresa</span>
+        <span>Industria</span>
+        <span>Estado</span>
+        <span>Relación</span>
+      </div>
+      @for (company of filteredCompanies(); track company.id) {
+        <div class="provider-companies-row">
+          <span class="company-id">{{ company.id }}</span>
+          <span class="company-name">{{ company.name }}</span>
+          <span class="company-industry">{{ company.industry }}</span>
+          <span class="company-status" [ngClass]="company.status">
+            {{ getStatusLabel(company.status) }}
+          </span>
+          <span class="company-since">{{ company.since }}</span>
+        </div>
+      }
+    </div>
+  }
+</section>

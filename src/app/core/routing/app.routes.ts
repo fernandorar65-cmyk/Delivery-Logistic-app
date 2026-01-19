@@ -50,6 +50,13 @@ export const routes: Routes = [
           .then(m => m.ProviderOrdersViewComponent)
       },
       {
+        path: 'providers/companies',
+        canActivate: [roleGuard],
+        data: { roles: ['provider'] },
+        loadComponent: () => import('@app/features/providers/pages/provider-companies-view/provider-companies-view.component')
+          .then(m => m.ProviderCompaniesViewComponent)
+      },
+      {
         path: 'allies',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
