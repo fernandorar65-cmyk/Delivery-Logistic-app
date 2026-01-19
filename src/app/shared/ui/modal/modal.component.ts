@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
+import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 
 export type ModalSize = 'sm' | 'md' | 'lg';
 
@@ -17,3 +17,9 @@ export class ModalComponent {
   @Input() showClose = true;
   @Output() close = new EventEmitter<void>();
 }
+
+
+
+
+
+

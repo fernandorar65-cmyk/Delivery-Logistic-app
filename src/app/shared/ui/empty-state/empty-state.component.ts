@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
+import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 
 @Component({
   selector: 'app-empty-state',
@@ -18,3 +18,9 @@ export class EmptyStateComponent {
   @Input() actionDisabled = false;
   @Output() action = new EventEmitter<void>();
 }
+
+
+
+
+
+
