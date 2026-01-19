@@ -86,13 +86,7 @@
           <span>Providers</span>
         </a>
 
-        <a
-          *ngIf="showProviderVehiclesLink()"
-          [routerLink]="providerVehiclesLink()"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: false}"
-          class="nav-item"
-        >
+        <a *ngIf="canAccess(['admin', 'provider'])" [routerLink]="['/allies', userId(), 'vehicles']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M10 17h4"></path>
             <path d="M3 7h12l3 5h3v5a2 2 0 0 1-2 2h-1"></path>

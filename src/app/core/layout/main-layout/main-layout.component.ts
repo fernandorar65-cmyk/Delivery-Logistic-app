@@ -58,14 +58,6 @@ export class MainLayoutComponent implements OnInit {
   logout(): void {
     this.authService.logout();
   }
-
-  showProviderVehiclesLink(): boolean {
-    return this.canAccess(['provider']) && Boolean(this.userId());
-  }
-
-  providerVehiclesLink(): string[] {
-    return ['/allies', this.userId() ?? '', 'vehicles'];
-  }
 }
 
 

@@ -9,6 +9,8 @@ contraseña1234
 
 -- providers
 pumasretail@gmail.com
+pumasretail07@gmail.com
+Contra1234#
 
 
 {
