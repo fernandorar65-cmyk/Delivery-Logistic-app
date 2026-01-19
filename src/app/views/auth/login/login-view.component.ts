@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { StorageService } from '../../../services/storage.service';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
+import { LocalStorageEnums } from '../../../models/local.storage.enums';
 
 @Component({
   selector: 'app-login-view',
@@ -42,20 +43,19 @@ export class LoginViewComponent {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          // Guardar tokens en localStorage solo si estamos en el navegador
           if (isPlatformBrowser(this.platformId)) {
             if (response.access) {
-              this.storageService.setItem('access_token', response.access);
+              this.storageService.setItem(LocalStorageEnums.ACCESS_TOKEN, response.access);
             }
             if (response.refresh) {
-              this.storageService.setItem('refresh_token', response.refresh);
+              this.storageService.setItem(LocalStorageEnums.REFRESH_TOKEN, response.refresh);
             }
             if (response.user_type) {
-              this.storageService.setItem('user_type', response.user_type);
+              this.storageService.setItem(LocalStorageEnums.USER_TYPE, response.user_type);
             }
             const emailToStore = credentials.email;
             if (emailToStore) {
-              this.storageService.setItem('user_email', emailToStore);
+              this.storageService.setItem(LocalStorageEnums.USER_EMAIL, emailToStore);
             }
           }
           this.router.navigate(['/dashboard']);

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { UserService } from '../../../services/user.service';
 import { StorageService } from '../../../services/storage.service';
+import { LocalStorageEnums } from '../../../models/local.storage.enums';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -103,7 +104,7 @@ export class DashboardViewComponent {
   }
 
   setIdUser() {
-    const email = this.storageService.getItem('user_email');
+    const email = this.storageService.getItem(LocalStorageEnums.USER_EMAIL);
     if (!email) {
       return;
     }
@@ -111,10 +112,10 @@ export class DashboardViewComponent {
       next: (userResponse) => {
         const result = userResponse?.result ?? null;
         if (result?.id) {
-          this.storageService.setItem('id', result.id);
+          this.storageService.setItem(LocalStorageEnums.USER_ID, result.id);
         }
         if (result) {
-          this.storageService.setItem('user_data', JSON.stringify(result));
+          this.storageService.setItem(LocalStorageEnums.USER_DATA, JSON.stringify(result));
         }
       },
       error: () => {

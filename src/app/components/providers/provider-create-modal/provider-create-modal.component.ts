@@ -5,6 +5,7 @@ import { catchError, finalize, of, switchMap } from 'rxjs';
 import { ProviderService } from '../../../services/provider.service';
 import { StorageService } from '../../../services/storage.service';
 import { ProviderCreate, ProviderResponse } from '../../../models/provider.model';
+import { LocalStorageEnums } from '../../../models/local.storage.enums';
 
 @Component({
   selector: 'app-provider-create-modal',
@@ -109,9 +110,8 @@ export class ProviderCreateModalComponent {
 
   confirmMatchRequest(): void {
     const providerId = this.matchProviderId();
-    const companyId = this.storageService.getItem('id');
+    const companyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
     if (!companyId || !providerId) {
-      console.log("companyId:", companyId,"providerId:", providerId);
       this.matchError.set('No se pudo enviar la solicitud. Falta información.');
       return;
     }
@@ -162,7 +162,7 @@ export class ProviderCreateModalComponent {
     this.error.set(null);
     this.providerService.create(payload).pipe(
       switchMap((response: ProviderResponse) => {
-        const companyId = this.storageService.getItem('id');
+        const companyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
         const providerId = response?.result?.id;
 
         if (!companyId || !providerId) {

@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { HeroIconComponent } from '../../components/hero-icon/hero-icon';
 import { MatchRequestsPanelComponent } from '../../components/match-requests-panel/match-requests-panel.component';
 import { StorageService } from '../../services/storage.service';
+import { LocalStorageEnums } from '../../models/local.storage.enums';
 
 @Component({
   selector: 'app-main-layout',
@@ -23,8 +24,8 @@ export class MainLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.userType.set(this.storageService.getItem('user_type'));
-      this.userEmail.set(this.storageService.getItem('user_email'));
+      this.userType.set(this.storageService.getItem(LocalStorageEnums.USER_TYPE));
+      this.userEmail.set(this.storageService.getItem(LocalStorageEnums.USER_EMAIL));
     }
   }
 

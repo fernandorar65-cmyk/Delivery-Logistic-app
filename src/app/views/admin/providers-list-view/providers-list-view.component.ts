@@ -8,6 +8,7 @@ import { Provider, ProviderCreate } from '../../../models/provider.model';
 import { ProviderCreateModalComponent} from '../../../components/providers/provider-create-modal/provider-create-modal.component';
 import { StorageService } from '../../../services/storage.service';
 import { finalize } from 'rxjs';
+import { LocalStorageEnums } from '../../../models/local.storage.enums';
 
 interface StatCard {
   label: string;
@@ -83,7 +84,7 @@ export class AllyListViewComponent implements OnInit {
   loadProviders() {
     this.loading.set(true);
     this.error.set(null);
-    const userType = this.storageService.getItem('user_type') ?? 'admin';
+    const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? 'admin';
 
     this.providerService.getAll(userType).pipe(
       finalize(() => this.loading.set(false))
@@ -113,14 +114,12 @@ export class AllyListViewComponent implements OnInit {
     });
   }
 
-  // Mapea un provider del API a un Ally con campos de diseño mock
   private mapProviderToAlly(provider: Provider, index: number): Ally {
-    // Generar datos mock para campos que no vienen del API
     const mockData = this.generateMockData(provider, index);
 
     return {
       ...provider,
-      name: provider.provider_name, // Alias para mantener compatibilidad con template
+      name: provider.provider_name,
       status: mockData.status,
       trucks: mockData.trucks,
       motorcycles: mockData.motorcycles,
