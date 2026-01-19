@@ -21,11 +21,13 @@ export class MainLayoutComponent implements OnInit {
   protected readonly title = signal('LOGISAAS');
   protected readonly userType = signal<string | null>(null);
   protected readonly userEmail = signal<string | null>(null);
+  protected readonly userId = signal<string | null>(null);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.userType.set(this.storageService.getItem(LocalStorageEnums.USER_TYPE));
       this.userEmail.set(this.storageService.getItem(LocalStorageEnums.USER_EMAIL));
+      this.userId.set(this.storageService.getItem(LocalStorageEnums.USER_ID));
     }
   }
 
@@ -55,6 +57,14 @@ export class MainLayoutComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  showProviderVehiclesLink(): boolean {
+    return this.canAccess(['provider']) && Boolean(this.userId());
+  }
+
+  providerVehiclesLink(): string[] {
+    return ['/allies', this.userId() ?? '', 'vehicles'];
   }
 }
 
