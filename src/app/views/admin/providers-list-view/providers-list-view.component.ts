@@ -1,7 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { ProviderService } from '../../../services/provider.service';
 import { Provider, ProviderCreate } from '../../../models/provider.model';
@@ -9,32 +7,24 @@ import { ProviderCreateModalComponent} from '../../../components/providers/provi
 import { StorageService } from '../../../services/storage.service';
 import { finalize } from 'rxjs';
 import { LocalStorageEnums } from '../../../models/local.storage.enums';
-
-interface StatCard {
-  label: string;
-  value: string | number;
-  subtitle?: string;
-  trend?: string;
-  icon: string;
-  iconColor: string;
-}
-
-// Tipo extendido para mantener campos de diseño que no vienen del API
-interface Ally extends Provider {
-  name: string; // Alias de provider_name para mantener compatibilidad con el template
-  status: 'active' | 'inactive' | 'pending';
-  trucks: number;
-  motorcycles: number;
-  drivers: number;
-  driverAvatars?: string[];
-  zone: string;
-  rating: number | null;
-}
+import { Ally, StatCard } from './providers-list-view.types';
+import { ProvidersStatsCardsComponent } from './components/providers-stats-cards/providers-stats-cards.component';
+import { ProvidersToolbarComponent } from './components/providers-toolbar/providers-toolbar.component';
+import { ProvidersTableComponent } from './components/providers-table/providers-table.component';
+import { ProvidersPaginationComponent } from './components/providers-pagination/providers-pagination.component';
 
 @Component({
   selector: 'app-providers-list-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, HeroIconComponent, ProviderCreateModalComponent],
+  imports: [
+    CommonModule,
+    HeroIconComponent,
+    ProviderCreateModalComponent,
+    ProvidersStatsCardsComponent,
+    ProvidersToolbarComponent,
+    ProvidersTableComponent,
+    ProvidersPaginationComponent
+  ],
   templateUrl: './providers-list-view.component.html',
   styleUrl: './providers-list-view.component.css'
 })
@@ -255,32 +245,5 @@ export class AllyListViewComponent implements OnInit {
     }
   }
 
-  // Método para obtener el estado del aliado
-  getStatusClass(status?: string): string {
-    if (!status) return '';
-    switch (status) {
-      case 'active':
-        return 'status-active';
-      case 'inactive':
-        return 'status-inactive';
-      case 'pending':
-        return 'status-pending';
-      default:
-        return '';
-    }
-  }
-
-  getStatusLabel(status?: string): string {
-    if (!status) return 'Desconocido';
-    switch (status) {
-      case 'active':
-        return 'Activo';
-      case 'inactive':
-        return 'Inactivo';
-      case 'pending':
-        return 'Pendiente';
-      default:
-        return status;
-    }
-  }
+  // Estado y etiquetas se calculan en el componente de tabla.
 }

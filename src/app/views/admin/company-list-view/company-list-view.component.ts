@@ -4,11 +4,21 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CompanyService } from '../../../services/company.service';
 import { Company, CompanyCreate } from '../../../models/company.model';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
+import { CompaniesToolbarComponent } from './components/companies-toolbar/companies-toolbar.component';
+import { CompaniesTableComponent } from './components/companies-table/companies-table.component';
+import { CompaniesPaginationComponent } from './components/companies-pagination/companies-pagination.component';
 
 @Component({
   selector: 'app-company-list-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HeroIconComponent,
+    CompaniesToolbarComponent,
+    CompaniesTableComponent,
+    CompaniesPaginationComponent
+  ],
   templateUrl: './company-list-view.component.html',
   styleUrl: './company-list-view.component.css'
 })

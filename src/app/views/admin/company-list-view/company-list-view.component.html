@@ -21,56 +21,19 @@
       <p>{{ error() }}</p>
     </div>
   } @else {
-    <!-- Search and Filters Bar -->
-    <div class="search-filters-bar">
-      <div class="search-container">
-        <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
-        <input 
-          type="text" 
-          class="search-input" 
-          placeholder="Buscar por nombre de empresa o NIT..."
-          [value]="searchQuery()"
-          (input)="onSearchChange($event)"
-        />
-      </div>
-
-      @if (activeFilters().length > 0) {
-        <div class="active-filters">
-          @for (filter of activeFilters(); track filter.type) {
-            <span class="filter-tag">
-              @if (filter.type === 'status') {
-                Estado: {{ filter.value }}
-              } @else if (filter.type === 'sector') {
-                Sector: {{ filter.value }}
-              } @else if (filter.type === 'city') {
-                Ciudad: {{ filter.value }}
-              }
-              <button type="button" class="filter-remove" (click)="removeFilter(filter.type)">
-                <app-hero-icon name="x-mark" [size]="14"></app-hero-icon>
-              </button>
-            </span>
-          }
-          <button type="button" class="clear-filters-btn" (click)="clearAllFilters()">
-            Limpiar filtros
-          </button>
-        </div>
-      }
-
-      <div class="filter-dropdowns">
-        <select class="filter-select" [value]="selectedSector()" (change)="onSectorChange($event)">
-          <option value="all">Sector: Todos</option>
-          @for (sector of sectors(); track sector) {
-            <option [value]="sector">Sector: {{ sector }}</option>
-          }
-        </select>
-        <select class="filter-select" [value]="selectedCity()" (change)="onCityChange($event)">
-          <option value="all">Ciudad: Todas</option>
-          @for (city of cities(); track city) {
-            <option [value]="city">Ciudad: {{ city }}</option>
-          }
-        </select>
-      </div>
-    </div>
+    <app-companies-toolbar
+      [searchQuery]="searchQuery()"
+      [activeFilters]="activeFilters()"
+      [sectors]="sectors()"
+      [cities]="cities()"
+      [selectedSector]="selectedSector()"
+      [selectedCity]="selectedCity()"
+      (searchChange)="searchQuery.set($event); applyFilters()"
+      (removeFilter)="removeFilter($event)"
+      (clearFilters)="clearAllFilters()"
+      (sectorChange)="selectedSector.set($event); applyFilters()"
+      (cityChange)="selectedCity.set($event); applyFilters()"
+    ></app-companies-toolbar>
 
     @if (!filteredCompanies() || filteredCompanies().length === 0) {
       <div class="card empty-state-card">
@@ -79,102 +42,28 @@
         <p>Intenta ajustar los filtros de búsqueda</p>
       </div>
     } @else {
-      <div class="card table-card">
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>LOGO & NOMBRE</th>
-                <th>NIT/ID FISCAL</th>
-                <th>SECTOR</th>
-                <th>CIUDAD</th>
-                <th>SEDES</th>
-                <th>ESTADO</th>
-                <th class="actions-header">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (company of paginatedCompanies; track company.id) {
-                <tr>
-                  <td class="logo-name-cell">
-                    <div class="company-logo-name">
-                      <div class="company-logo" [style.background-color]="getCompanyColor(company.company_name)">
-                        {{ getCompanyInitials(company.company_name) }}
-                      </div>
-                      <div class="company-info">
-                        <strong class="company-name">{{ company.company_name }}</strong>
-                        <span class="company-subtitle">{{ company.description || 'Sin descripción' }}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="nit-cell">{{ company.ruc }}</td>
-                  <td>
-                    <span class="sector-badge" [class]="getSectorClass(company.sector)">
-                      {{ company.sector || '-' }}
-                    </span>
-                  </td>
-                  <td>{{ company.city || '-' }}</td>
-                  <td class="branches-cell">{{ company.branches || 0 }}</td>
-                  <td>
-                    <div class="status-indicator">
-                      <span class="status-dot" [class]="getStatusClass(company.status)"></span>
-                      <span>{{ getStatusLabel(company.status) }}</span>
-                    </div>
-                  </td>
-                  <td class="actions-cell">
-                    <div class="action-buttons">
-                      <button (click)="openEditCompanyModal(company)" class="action-btn edit-btn" title="Editar">
-                        <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
-                      </button>
-                      <button (click)="deleteCompany(company.id!)" class="action-btn delete-btn" title="Eliminar">
-                        <app-hero-icon name="trash" [size]="16"></app-hero-icon>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+      <app-companies-table
+        [companies]="paginatedCompanies"
+        [getCompanyColor]="getCompanyColor.bind(this)"
+        [getCompanyInitials]="getCompanyInitials.bind(this)"
+        [getSectorClass]="getSectorClass.bind(this)"
+        [getStatusClass]="getStatusClass.bind(this)"
+        [getStatusLabel]="getStatusLabel.bind(this)"
+        (edit)="openEditCompanyModal($event)"
+        (remove)="deleteCompany($event)"
+      ></app-companies-table>
 
-        <!-- Paginación -->
-        <div class="pagination">
-          <div class="pagination-info">
-            Mostrando {{ startItem }}-{{ endItem }} de {{ filteredCompanies().length }} compañía{{ filteredCompanies().length !== 1 ? 's' : '' }}
-          </div>
-          <div class="pagination-controls">
-            <button 
-              class="pagination-btn" 
-              [disabled]="currentPage() === 1"
-              (click)="previousPage()"
-            >
-              Anterior
-            </button>
-            <div class="pagination-numbers">
-              @for (page of getPageNumbers(); track $index) {
-                @if (page === '...') {
-                  <span class="pagination-ellipsis">...</span>
-                } @else {
-                  <button 
-                    class="pagination-number"
-                    [class.active]="currentPage() === page"
-                    (click)="goToPageFromTemplate(page)"
-                  >
-                    {{ page }}
-                  </button>
-                }
-              }
-            </div>
-            <button 
-              class="pagination-btn" 
-              [disabled]="currentPage() === totalPages"
-              (click)="nextPage()"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-companies-pagination
+        [startItem]="startItem"
+        [endItem]="endItem"
+        [totalItems]="filteredCompanies().length"
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages"
+        [pages]="getPageNumbers()"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+        (goTo)="goToPage($event)"
+      ></app-companies-pagination>
     }
   }
 

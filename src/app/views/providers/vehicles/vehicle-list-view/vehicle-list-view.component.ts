@@ -1,25 +1,29 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../../components/hero-icon/hero-icon';
 import { VehicleService } from '../../../../services/vehicle.service';
 import { Vehicle } from '../../../../models/vehicle.model';
-
-interface StatCard {
-  label: string;
-  value: string | number;
-  subtitle?: string;
-  trend?: string;
-  trendValue?: string;
-  icon: string;
-  iconColor: string;
-}
+import { StatCard } from './vehicle-list-view.types';
+import { VehiclesStatsComponent } from './components/vehicles-stats/vehicles-stats.component';
+import { VehiclesFiltersComponent } from './components/vehicles-filters/vehicles-filters.component';
+import { VehiclesTableComponent } from './components/vehicles-table/vehicles-table.component';
+import { VehiclesPaginationComponent } from './components/vehicles-pagination/vehicles-pagination.component';
 
 @Component({
   selector: 'app-vehicle-list-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, HeroIconComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    HeroIconComponent,
+    VehiclesStatsComponent,
+    VehiclesFiltersComponent,
+    VehiclesTableComponent,
+    VehiclesPaginationComponent
+  ],
   templateUrl: './vehicle-list-view.component.html',
   styleUrl: './vehicle-list-view.component.css'
 })
@@ -456,54 +460,7 @@ export class VehicleListViewComponent implements OnInit {
     }
   }
 
-  // Métodos para obtener el estado del vehículo
-  getStatusClass(status?: string): string {
-    if (!status) return '';
-    switch (status) {
-      case 'in_route':
-        return 'status-in-route';
-      case 'available':
-        return 'status-available';
-      case 'maintenance':
-        return 'status-maintenance';
-      case 'inactive':
-        return 'status-inactive';
-      default:
-        return '';
-    }
-  }
-
-  getStatusLabel(status?: string): string {
-    if (!status) return 'Desconocido';
-    switch (status) {
-      case 'in_route':
-        return 'En Ruta';
-      case 'available':
-        return 'Disponible';
-      case 'maintenance':
-        return 'En Taller';
-      case 'inactive':
-        return 'Inactivo';
-      default:
-        return status;
-    }
-  }
-
-  getVehicleTypeLabel(type?: string): string {
-    if (!type) return '';
-    switch (type) {
-      case 'truck':
-        return 'Camión Pesado';
-      case 'van':
-        return 'Van Mediana';
-      case 'tractor-trailer':
-        return 'Tractor-remolque';
-      case 'motorcycle':
-        return 'Motocicleta Cargo';
-      default:
-        return type;
-    }
-  }
+  // Etiquetas y estados se resuelven en el componente de tabla.
 
   // Obtener array de páginas para la paginación
   get pages(): number[] {

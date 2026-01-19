@@ -1,0 +1,29 @@
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">
+      <app-hero-icon name="user-group" [size]="20"></app-hero-icon>
+    </div>
+    <div>
+      <p>Clientes Totales</p>
+      <strong>{{ totalCount || currentCount }}</strong>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <app-hero-icon name="clipboard-document-list" [size]="20"></app-hero-icon>
+    </div>
+    <div>
+      <p>Total Pedidos Mes</p>
+      <strong>—</strong>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon orange">
+      <app-hero-icon name="sparkles" [size]="20"></app-hero-icon>
+    </div>
+    <div>
+      <p>Nuevos (Últimos 30d)</p>
+      <strong>—</strong>
+    </div>
+  </div>
+</div>

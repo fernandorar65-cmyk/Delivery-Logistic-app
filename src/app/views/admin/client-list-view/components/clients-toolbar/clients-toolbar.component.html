@@ -1,0 +1,22 @@
+<div class="filter-bar">
+  <label class="search-field">
+    <app-hero-icon name="magnifying-glass" [size]="18"></app-hero-icon>
+    <input type="text" placeholder="Buscar cliente por nombre, RUC o email..." />
+  </label>
+  <div class="filter-actions">
+    <button class="filter-chip">
+      <app-hero-icon name="adjustments-horizontal" [size]="18"></app-hero-icon>
+      Todos los estados
+      <app-hero-icon name="chevron-down" [size]="16"></app-hero-icon>
+    </button>
+    <button class="filter-chip">
+      <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
+      Ciudad
+      <app-hero-icon name="chevron-down" [size]="16"></app-hero-icon>
+    </button>
+    <button class="filter-reset">
+      <app-hero-icon name="x-mark" [size]="18"></app-hero-icon>
+      Limpiar
+    </button>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="card table-card">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>LOGO & NOMBRE</th>
+          <th>NIT/ID FISCAL</th>
+          <th>SECTOR</th>
+          <th>CIUDAD</th>
+          <th>SEDES</th>
+          <th>ESTADO</th>
+          <th class="actions-header">ACCIONES</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (company of companies; track company.id) {
+          <tr>
+            <td class="logo-name-cell">
+              <div class="company-logo-name">
+                <div class="company-logo" [style.background-color]="getCompanyColor(company.company_name)">
+                  {{ getCompanyInitials(company.company_name) }}
+                </div>
+                <div class="company-info">
+                  <strong class="company-name">{{ company.company_name }}</strong>
+                  <span class="company-subtitle">{{ company.description || 'Sin descripción' }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="nit-cell">{{ company.ruc }}</td>
+            <td>
+              <span class="sector-badge" [class]="getSectorClass(company.sector)">
+                {{ company.sector || '-' }}
+              </span>
+            </td>
+            <td>{{ company.city || '-' }}</td>
+            <td class="branches-cell">{{ company.branches || 0 }}</td>
+            <td>
+              <div class="status-indicator">
+                <span class="status-dot" [class]="getStatusClass(company.status)"></span>
+                <span>{{ getStatusLabel(company.status) }}</span>
+              </div>
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button (click)="edit.emit(company)" class="action-btn edit-btn" title="Editar">
+                  <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
+                </button>
+                @if (company.id) {
+                  <button (click)="remove.emit(company.id!)" class="action-btn delete-btn" title="Eliminar">
+                    <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

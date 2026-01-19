@@ -1,0 +1,7 @@
+<div class="table-footer">
+  <span>Mostrando {{ currentCount }} de {{ totalCount }} clientes</span>
+  <div class="pagination-actions">
+    <button class="page-btn" (click)="previous.emit()" [disabled]="!hasPrevious">Anterior</button>
+    <button class="page-btn" (click)="next.emit()" [disabled]="!hasNext">Siguiente</button>
+  </div>
+</div>

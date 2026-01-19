@@ -1,0 +1,22 @@
+<div class="pagination">
+  <span class="pagination-info">
+    Mostrando {{ startItem }} a {{ endItem }} de {{ totalItems }} resultados
+  </span>
+  <div class="pagination-controls">
+    <button class="pagination-btn" [disabled]="currentPage === 1" (click)="previous.emit()">
+      Anterior
+    </button>
+    @for (page of pages; track page) {
+      <button
+        class="pagination-btn"
+        [class.pagination-btn-active]="currentPage === page"
+        (click)="goTo.emit(page)"
+      >
+        {{ page }}
+      </button>
+    }
+    <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="next.emit()">
+      Siguiente
+    </button>
+  </div>
+</div>

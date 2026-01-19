@@ -10,138 +10,37 @@
     </button>
   </div>
 
-  @if (loading()) {
-    <div class="card loading-card">
-      <div class="loading-spinner"></div>
-      <p>Cargando clientes...</p>
-    </div>
-  } @else if (error()) {
-    <div class="card error-card">
-      <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-      <p>{{ error() }}</p>
-    </div>
-  } @else if (clients().length === 0) {
-    <div class="card empty-state-card">
-      <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
-      <h3>No hay clientes registrados</h3>
-      <p>Comienza agregando tu primer cliente al sistema</p>
-      <button (click)="openNewClientModal()" class="btn btn-primary">Crear Primer Cliente</button>
-    </div>
+  @if (loading() || error() || clients().length === 0) {
+    <app-clients-table
+      [loading]="loading()"
+      [error]="error()"
+      [clients]="clients()"
+      (createRequested)="openNewClientModal()"
+      (edit)="openEditClientModal($event)"
+      (remove)="deleteClient($event)"
+    ></app-clients-table>
   } @else {
-    <div class="filter-bar">
-      <label class="search-field">
-        <app-hero-icon name="magnifying-glass" [size]="18"></app-hero-icon>
-        <input type="text" placeholder="Buscar cliente por nombre, RUC o email..." />
-      </label>
-      <div class="filter-actions">
-        <button class="filter-chip">
-          <app-hero-icon name="adjustments-horizontal" [size]="18"></app-hero-icon>
-          Todos los estados
-          <app-hero-icon name="chevron-down" [size]="16"></app-hero-icon>
-        </button>
-        <button class="filter-chip">
-          <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
-          Ciudad
-          <app-hero-icon name="chevron-down" [size]="16"></app-hero-icon>
-        </button>
-        <button class="filter-reset">
-          <app-hero-icon name="x-mark" [size]="18"></app-hero-icon>
-          Limpiar
-        </button>
-      </div>
-    </div>
+    <app-clients-toolbar></app-clients-toolbar>
 
-    <div class="card table-card">
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Logo</th>
-              <th>Cliente</th>
-              <th>RUC</th>
-              <th>Descripción</th>
-              <th>Email</th>
-              <th>Estado</th>
-              <th class="actions-header">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (client of clients(); track client.id) {
-              <tr>
-                <td class="logo-cell">
-                  <div class="logo-badge" [ngStyle]="getAvatarStyle(client.client_name)">
-                    {{ getInitials(client.client_name) }}
-                  </div>
-                </td>
-                <td>
-                  <div class="client-name">
-                    <strong>{{ client.client_name }}</strong>
-                    <span>{{ client.description || 'Sin descripción' }}</span>
-                  </div>
-                </td>
-                <td class="mono">{{ client.ruc }}</td>
-                <td class="truncate">{{ client.description || '-' }}</td>
-                <td>{{ client.email }}</td>
-                <td>
-                  <span class="status-badge status-neutral">Sin estado</span>
-                </td>
-                <td class="actions-cell">
-                  <div class="action-buttons">
-                    <a [routerLink]="['/clients', client.id]" class="action-link">
-                      <app-hero-icon name="eye" [size]="16"></app-hero-icon>
-                      Ver detalle
-                    </a>
-                    <button (click)="openEditClientModal(client)" class="icon-btn edit-btn" title="Editar">
-                      <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
-                    </button>
-                    <button (click)="deleteClient(client.id)" class="icon-btn delete-btn" title="Eliminar">
-                      <app-hero-icon name="trash" [size]="16"></app-hero-icon>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      <div class="table-footer">
-        <span>Mostrando {{ clients().length }} de {{ totalCount() }} clientes</span>
-        <div class="pagination-actions">
-          <button class="page-btn" (click)="previousPage()" [disabled]="!hasPrevious()">Anterior</button>
-          <button class="page-btn" (click)="nextPage()" [disabled]="!hasNext()">Siguiente</button>
-        </div>
-      </div>
-    </div>
+    <app-clients-table
+      [clients]="clients()"
+      (edit)="openEditClientModal($event)"
+      (remove)="deleteClient($event)"
+    ></app-clients-table>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <app-hero-icon name="user-group" [size]="20"></app-hero-icon>
-        </div>
-        <div>
-          <p>Clientes Totales</p>
-          <strong>{{ totalCount() || clients().length }}</strong>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon blue">
-          <app-hero-icon name="clipboard-document-list" [size]="20"></app-hero-icon>
-        </div>
-        <div>
-          <p>Total Pedidos Mes</p>
-          <strong>—</strong>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon orange">
-          <app-hero-icon name="sparkles" [size]="20"></app-hero-icon>
-        </div>
-        <div>
-          <p>Nuevos (Últimos 30d)</p>
-          <strong>—</strong>
-        </div>
-      </div>
-    </div>
+    <app-clients-pagination
+      [currentCount]="clients().length"
+      [totalCount]="totalCount()"
+      [hasPrevious]="hasPrevious()"
+      [hasNext]="hasNext()"
+      (previous)="previousPage()"
+      (next)="nextPage()"
+    ></app-clients-pagination>
+
+    <app-clients-stats
+      [totalCount]="totalCount()"
+      [currentCount]="clients().length"
+    ></app-clients-stats>
   }
 
   <!-- Modal Flotante -->
