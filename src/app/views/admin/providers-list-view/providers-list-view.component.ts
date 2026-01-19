@@ -45,38 +45,8 @@ export class AllyListViewComponent implements OnInit {
   error = signal<string | null>(null);
   createOpen = signal(false);
 
-  // Datos mock para las tarjetas de estadísticas
-  stats = signal<StatCard[]>([
-    {
-      label: 'Aliados Activos',
-      value: 32,
-      subtitle: 'Activos hoy',
-      trend: 'up',
-      icon: 'hexagon',
-      iconColor: 'blue'
-    },
-    {
-      label: 'Vehículos Disp.',
-      value: 120,
-      subtitle: 'de 145 totales',
-      icon: 'truck',
-      iconColor: 'emerald'
-    },
-    {
-      label: 'Conductores',
-      value: 89,
-      subtitle: 'Activos hoy',
-      icon: 'user',
-      iconColor: 'purple'
-    },
-    {
-      label: 'En Ruta',
-      value: 34,
-      subtitle: 'Alta demanda',
-      icon: 'map-pin',
-      iconColor: 'orange'
-    }
-  ]);
+  // Tarjetas de estadísticas (se setean con updateStats)
+  stats = signal<StatCard[]>([]);
 
   // Aliados (providers) desde la API
   allies = signal<Ally[]>([]);
@@ -93,6 +63,7 @@ export class AllyListViewComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.updateStats([]);
     this.loadProviders();
   }
 
