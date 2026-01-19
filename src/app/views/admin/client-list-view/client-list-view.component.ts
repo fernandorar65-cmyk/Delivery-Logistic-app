@@ -56,8 +56,7 @@ export class ClientListViewComponent {
           this.loading.set(false);
           return;
         }
-
-        const results = response.result || [];
+        const results = response.result;
         this.clients.set(results);
         this.totalCount.set(response.pagination?.count ?? results.length);
         this.hasNext.set(!!response.pagination?.next);
