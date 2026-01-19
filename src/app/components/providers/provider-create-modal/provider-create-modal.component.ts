@@ -38,7 +38,7 @@ export class ProviderCreateModalComponent {
 
   form = this.fb.group({
     company_name: ['', [Validators.required, Validators.minLength(2)]],
-    tax_id: ['', [Validators.required, Validators.minLength(6)]],
+    ruc: ['', [Validators.required, Validators.minLength(6)]],
     contact_email: ['', [Validators.required, Validators.email]],
     description: [''],
     password: ['', [Validators.required, Validators.minLength(6)]]
@@ -61,7 +61,13 @@ export class ProviderCreateModalComponent {
     this.emailStatus.set('checking');
     this.checkLoading.set(true);
     this.userService.CheckUserEmail(emailValue).pipe(
-      catchError(() => {
+      catchError((err) => {
+        if (err?.status === 404) {
+          this.emailStatus.set('unique');
+          this.checkError.set(null);
+          this.checkSuccess.set('Correo disponible.');
+          return of({ result: null });
+        }
         this.emailStatus.set('error');
         this.checkError.set('No se pudo verificar el correo.');
         this.checkSuccess.set(null);
@@ -132,7 +138,7 @@ export class ProviderCreateModalComponent {
     this.checkSuccess.set(null);
     const payload: ProviderCreate = {
       provider_name: this.form.value.company_name ?? '',
-      ruc: this.form.value.tax_id ?? '',
+      ruc: this.form.value.ruc ?? '',
       description: this.form.value.description || undefined,
       email: this.form.value.contact_email ?? '',
       password: this.form.value.password ?? ''
