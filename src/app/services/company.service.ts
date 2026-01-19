@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Company, CompanyCreate, CompanyUpdate, CompanyListResponse } from '../models/company.model';
+import { Company, CompanyCreate, CompanyUpdate, CompanyListResponse, CompanyResponse } from '../models/company.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -15,20 +15,20 @@ export class CompanyService {
     return this.http.get<CompanyListResponse>(`${this.apiUrl}/`);
   }
 
-  getById(id: string): Observable<Company> {
-    return this.http.get<Company>(`${this.apiUrl}/${id}/`);
+  getById(id: string): Observable<CompanyResponse> {
+    return this.http.get<CompanyResponse>(`${this.apiUrl}/${id}/`);
   }
 
-  create(company: CompanyCreate): Observable<Company> {
-    return this.http.post<Company>(`${this.apiUrl}/`, company);
+  create(company: CompanyCreate): Observable<CompanyResponse> {
+    return this.http.post<CompanyResponse>(`${this.apiUrl}/`, company);
   }
 
-  update(id: string, company: CompanyUpdate): Observable<Company> {
-    return this.http.put<Company>(`${this.apiUrl}/${id}/`, company);
+  update(id: string, company: CompanyUpdate): Observable<CompanyResponse> {
+    return this.http.put<CompanyResponse>(`${this.apiUrl}/${id}/`, company);
   }
 
-  partialUpdate(id: string, company: CompanyUpdate): Observable<Company> {
-    return this.http.patch<Company>(`${this.apiUrl}/${id}/`, company);
+  partialUpdate(id: string, company: CompanyUpdate): Observable<CompanyResponse> {
+    return this.http.patch<CompanyResponse>(`${this.apiUrl}/${id}/`, company);
   }
 
   delete(id: string): Observable<void> {

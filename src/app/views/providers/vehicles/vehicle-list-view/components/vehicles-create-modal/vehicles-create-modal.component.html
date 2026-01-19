@@ -1,0 +1,144 @@
+<app-modal
+  title="Registro de Nuevo Vehículo"
+  size="lg"
+  (close)="close.emit()"
+>
+  <form [formGroup]="createForm" (ngSubmit)="submit.emit()" class="vehicle-modal-form">
+    <p class="vehicle-modal-subtitle">Complete los detalles técnicos y de propiedad de la unidad.</p>
+        <section class="vehicle-modal-section">
+          <div class="vehicle-modal-section-title">
+            <app-hero-icon name="information-circle" [size]="18"></app-hero-icon>
+            <h3>Información Básica</h3>
+          </div>
+          <div class="vehicle-form-grid vehicle-form-grid--three">
+            <div class="vehicle-form-field">
+              <label>Placa / Matrícula</label>
+              <input formControlName="license_plate" placeholder="Ej: ABC-123" type="text" />
+              @if (createForm.get('license_plate')?.touched && createForm.get('license_plate')?.invalid) {
+                <span class="vehicle-form-error">Ingresa una placa válida.</span>
+              }
+            </div>
+            <div class="vehicle-form-field">
+              <label>Marca</label>
+              <input formControlName="brand" placeholder="Ej: Volvo" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Modelo</label>
+              <input formControlName="model" placeholder="Ej: FH16" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Año</label>
+              <input formControlName="year" type="number" />
+            </div>
+            <div class="vehicle-form-field span-2">
+              <label>Tipo de Vehículo</label>
+              <select formControlName="vehicle_type">
+                @for (type of vehicleTypes; track type.value) {
+                  <option [value]="type.value">{{ type.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="vehicle-modal-section">
+          <div class="vehicle-modal-section-title">
+            <app-hero-icon name="wrench-screwdriver" [size]="18"></app-hero-icon>
+            <h3>Especificaciones Técnicas</h3>
+          </div>
+          <div class="vehicle-form-grid vehicle-form-grid--three">
+            <div class="vehicle-form-field">
+              <label>Capacidad neta (kg)</label>
+              <input formControlName="net_capacity_kg" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Volumen (m³)</label>
+              <input formControlName="volume_m3" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Combustible</label>
+              <input formControlName="fuel_type" placeholder="Ej: Diésel" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Peso tara (kg)</label>
+              <input formControlName="tara_kg" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Peso bruto (kg)</label>
+              <input formControlName="gross_weight_kg" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Color</label>
+              <input formControlName="color" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Largo (m)</label>
+              <input formControlName="length_m" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Ancho (m)</label>
+              <input formControlName="width_m" type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Alto (m)</label>
+              <input formControlName="height_m" type="text" />
+            </div>
+          </div>
+        </section>
+
+        <section class="vehicle-modal-section">
+          <div class="vehicle-modal-section-title">
+            <app-hero-icon name="user" [size]="18"></app-hero-icon>
+            <h3>Asignación y Estado</h3>
+          </div>
+          <div class="vehicle-form-grid vehicle-form-grid--two">
+            <div class="vehicle-form-field">
+              <label>Aliado Propietario</label>
+              <div class="vehicle-form-static">{{ allyLabel }}</div>
+            </div>
+            <div class="vehicle-form-field">
+              <label>Estado</label>
+              <select formControlName="status">
+                @for (status of statusOptions; track status.value) {
+                  <option [value]="status.value">{{ status.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="vehicle-modal-section">
+          <div class="vehicle-modal-section-title">
+            <app-hero-icon name="folder" [size]="18"></app-hero-icon>
+            <h3>Documentos y Foto</h3>
+          </div>
+          <div class="vehicle-form-grid vehicle-form-grid--two">
+            <div class="vehicle-form-field">
+              <label>Tarjeta de Propiedad (URL)</label>
+              <input formControlName="owner_document" placeholder="https://..." type="text" />
+            </div>
+            <div class="vehicle-form-field">
+              <label>Foto del Vehículo (URL)</label>
+              <input formControlName="photo_url" placeholder="https://..." type="text" />
+            </div>
+          </div>
+        </section>
+
+        @if (createError) {
+          <div class="vehicle-form-alert">
+            {{ createError }}
+          </div>
+        }
+
+        <div class="vehicle-modal-actions">
+          <button type="button" class="vehicle-btn" (click)="close.emit()">Cancelar</button>
+          <button type="submit" [disabled]="createLoading" class="vehicle-btn vehicle-btn-primary">
+            @if (createLoading) {
+              Guardando...
+            } @else {
+              Guardar Vehículo
+            }
+          </button>
+        </div>
+  </form>
+</app-modal>

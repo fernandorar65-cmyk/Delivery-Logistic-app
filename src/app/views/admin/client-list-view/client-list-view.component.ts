@@ -8,6 +8,8 @@ import { ClientsToolbarComponent } from './components/clients-toolbar/clients-to
 import { ClientsTableComponent } from './components/clients-table/clients-table.component';
 import { ClientsPaginationComponent } from './components/clients-pagination/clients-pagination.component';
 import { ClientsStatsComponent } from './components/clients-stats/clients-stats.component';
+import { ClientsFormModalComponent } from './components/clients-form-modal/clients-form-modal.component';
+import { ClientsSuccessModalComponent } from './components/clients-success-modal/clients-success-modal.component';
 
 @Component({
   selector: 'app-client-list-view',
@@ -19,7 +21,9 @@ import { ClientsStatsComponent } from './components/clients-stats/clients-stats.
     ClientsToolbarComponent,
     ClientsTableComponent,
     ClientsPaginationComponent,
-    ClientsStatsComponent
+    ClientsStatsComponent,
+    ClientsFormModalComponent,
+    ClientsSuccessModalComponent
   ],
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
@@ -154,7 +158,12 @@ export class ClientListViewComponent {
 
       if (this.isEditMode() && this.editingClientId()) {
         this.clientService.update(this.editingClientId()!, formValue).subscribe({
-          next: () => {
+          next: (response) => {
+            if (response.errors && response.errors.length > 0) {
+              this.formError.set('Error al actualizar el cliente.');
+              this.formLoading.set(false);
+              return;
+            }
             this.formLoading.set(false);
             this.closeModal();
             this.loadClients(this.currentPage());
@@ -207,20 +216,6 @@ export class ClientListViewComponent {
     } else {
       this.clientForm.markAllAsTouched();
     }
-  }
-
-  getFieldError(fieldName: string): string {
-    const field = this.clientForm.get(fieldName);
-    if (field?.hasError('required')) {
-      return 'Este campo es requerido';
-    }
-    if (field?.hasError('email')) {
-      return 'Email inválido';
-    }
-    if (field?.hasError('minlength')) {
-      return `Mínimo ${field.errors!['minlength'].requiredLength} caracteres`;
-    }
-    return '';
   }
 
   // Helpers movidos al componente de tabla.

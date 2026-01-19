@@ -3,6 +3,7 @@ import { Router, CanActivateFn } from '@angular/router';
 import { StorageService } from '../services/storage.service';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { LocalStorageEnums } from '../models/local.storage.enums';
 
 // Función para decodificar JWT sin verificar la firma (solo para obtener el payload)
 function decodeJWT(token: string): any {
@@ -47,7 +48,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  const accessToken = storageService.getItem('access_token');
+  const accessToken = storageService.getItem(LocalStorageEnums.ACCESS_TOKEN);
 
   // Si no hay token o está expirado, redirigir al login
   if (!accessToken || isTokenExpired(accessToken)) {

@@ -1,75 +1,13 @@
-.provider-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 2.5vw, 2rem);
-}
-
-.provider-modal {
-  width: min(58rem, 100%);
-  max-height: min(90vh, 64rem);
-  background: #ffffff;
-  border-radius: 1.25rem;
-  box-shadow: 0 24px 48px -32px rgba(15, 23, 42, 0.7);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.provider-modal-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: clamp(1.25rem, 2.8vw, 2rem);
-  border-bottom: 1px solid #e5e7eb;
-  background: #ffffff;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.provider-modal-header h2 {
-  margin: 0;
-  font-size: clamp(1.3rem, 2.5vw, 1.75rem);
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.provider-modal-header p {
-  margin: 0.35rem 0 0;
-  color: #64748b;
-  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
-}
-
-.close-btn {
-  border: none;
-  background: transparent;
-  color: #94a3b8;
-  padding: 0.35rem;
-  border-radius: 0.6rem;
-  cursor: pointer;
-}
-
-.close-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-.provider-modal-body {
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  overflow-y: auto;
-}
-
 .provider-form {
   display: flex;
   flex-direction: column;
   gap: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.provider-subtitle {
+  margin: 0;
+  color: #64748b;
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
 }
 
 .form-grid {
@@ -177,9 +115,8 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  padding: clamp(1rem, 2.5vw, 1.75rem);
+  padding-top: 0.75rem;
   border-top: 1px solid #e5e7eb;
-  background: #f8fafc;
 }
 
 .field-with-status {
@@ -306,31 +243,6 @@
   font-size: 0.9rem;
 }
 
-.match-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1300;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 3vw, 2rem);
-}
-
-.match-modal {
-  width: min(28rem, 100%);
-  background: #ffffff;
-  border-radius: 1.25rem;
-  padding: clamp(1.5rem, 3vw, 2rem);
-  box-shadow: 0 24px 48px -32px rgba(15, 23, 42, 0.7);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
 .match-icon {
   width: 3rem;
   height: 3rem;
@@ -343,13 +255,8 @@
   color: #137fec;
 }
 
-.match-modal h3 {
-  margin: 0;
-  font-size: clamp(1rem, 2.4vw, 1.2rem);
-  color: #0f172a;
-}
-
-.match-modal p {
+.match-modal p,
+.match-actions + p {
   margin: 0;
   color: #64748b;
   font-size: clamp(0.85rem, 2vw, 0.95rem);

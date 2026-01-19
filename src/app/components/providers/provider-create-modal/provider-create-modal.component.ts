@@ -4,13 +4,15 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, finalize, of, switchMap } from 'rxjs';
 import { ProviderService } from '../../../services/provider.service';
 import { StorageService } from '../../../services/storage.service';
-import { ProviderCreate, ProviderResponse } from '../../../models/provider.model';
+import { ProviderCheckResponse, ProviderCreate, ProviderResponse } from '../../../models/provider.model';
+import { CompanyProviderMatchResponse } from '../../../models/company-provider-match.model';
 import { LocalStorageEnums } from '../../../models/local.storage.enums';
+import { ModalComponent } from '../../../shared/ui/modal/modal.component';
 
 @Component({
   selector: 'app-provider-create-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
   templateUrl: './provider-create-modal.component.html',
   styleUrl: './provider-create-modal.component.css'
 })
@@ -65,7 +67,7 @@ export class ProviderCreateModalComponent {
           this.emailStatus.set('unique');
           this.checkError.set(null);
           this.checkSuccess.set('Correo disponible.');
-          return of({ result: null });
+          return of<ProviderCheckResponse>({ errors: [], result: null });
         }
         if (err?.status === 400) {
           this.emailStatus.set('error');
@@ -79,13 +81,19 @@ export class ProviderCreateModalComponent {
         return of(null);
       }),
       finalize(() => this.checkLoading.set(false))
-    ).subscribe((response: any) => {
+    ).subscribe((response: ProviderCheckResponse | null) => {
       if (!response) return;
-      const exists = Boolean(response?.result?.id);
+      if (response.errors && response.errors.length > 0) {
+        this.emailStatus.set('error');
+        this.checkError.set('No se pudo verificar el correo.');
+        this.checkSuccess.set(null);
+        return;
+      }
+      const exists = Boolean(response.result?.id);
       if (exists) {
         this.emailStatus.set('exists');
-        this.matchEmail.set(response?.result?.user_email || emailValue);
-        this.matchProviderId.set(response?.result?.id || null);
+        this.matchEmail.set(response.result?.user_email || emailValue);
+        this.matchProviderId.set(response.result?.id || null);
         this.matchError.set(null);
         this.checkSuccess.set(null);
         this.matchModalOpen.set(true);
@@ -123,7 +131,11 @@ export class ProviderCreateModalComponent {
     }).pipe(
       finalize(() => this.matchLoading.set(false))
     ).subscribe({
-      next: () => {
+      next: (response: CompanyProviderMatchResponse) => {
+        if (response.errors && response.errors.length > 0) {
+          this.matchError.set('No se pudo enviar la solicitud. Intenta nuevamente.');
+          return;
+        }
         this.closeMatchModal();
       },
       error: () => {
@@ -162,6 +174,10 @@ export class ProviderCreateModalComponent {
     this.error.set(null);
     this.providerService.create(payload).pipe(
       switchMap((response: ProviderResponse) => {
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al crear el aliado. Por favor, intenta nuevamente.');
+          return of(null);
+        }
         const companyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
         const providerId = response?.result?.id;
 
@@ -174,6 +190,13 @@ export class ProviderCreateModalComponent {
           company_id: companyId,
           provider_id: providerId
         }).pipe(
+          switchMap((matchResponse) => {
+            if (matchResponse?.errors && matchResponse.errors.length > 0) {
+              this.error.set('Aliado creado, pero no se pudo enviar la solicitud de match.');
+              return of(null);
+            }
+            return of(matchResponse);
+          }),
           catchError(() => {
             this.error.set('Aliado creado, pero no se pudo enviar la solicitud de match.');
             return of(null);

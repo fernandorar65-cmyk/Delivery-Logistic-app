@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProviderCreate, ProviderListResponse, ProviderResponse } from '../models/provider.model';
-import { CompanyProviderMatchRequest } from '../models/company-provider-match.model';
+import { ProviderCheckResponse, ProviderCreate, ProviderListResponse, ProviderResponse } from '../models/provider.model';
+import { CompanyProviderMatchRequest, CompanyProviderMatchResponse } from '../models/company-provider-match.model';
 import { environment } from '../../environments/environment';
 import { HttpParams } from '@angular/common/http';
 
@@ -32,12 +32,12 @@ export class ProviderService {
     return this.http.delete<void>(`${this.apiUrl}/providers/${id}/`);
   }
 
-  checkProviderEmail(email: string): Observable<unknown> {
+  checkProviderEmail(email: string): Observable<ProviderCheckResponse> {
     const params = new HttpParams().set('email', email);
-    return this.http.get<unknown>(`${this.apiUrl}/users/check-provider/`, { params });
+    return this.http.get<ProviderCheckResponse>(`${this.apiUrl}/users/check-provider/`, { params });
   }
   
-  sendCompanyProviderRequest(payload: CompanyProviderMatchRequest): Observable<unknown> {
-    return this.http.post<unknown>(`${this.apiUrl}/company-providers/send-request/`, payload);
+  sendCompanyProviderRequest(payload: CompanyProviderMatchRequest): Observable<CompanyProviderMatchResponse> {
+    return this.http.post<CompanyProviderMatchResponse>(`${this.apiUrl}/company-providers/send-request/`, payload);
   }
 }

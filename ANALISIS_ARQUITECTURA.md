@@ -45,6 +45,38 @@ Objetivo: identificar debilidades estructurales y proponer pasos claros para mej
 - Tests de integracion para flujos criticos (login, create, delete).
 - Pipeline con lint + test + build.
 
+## Plan paso a paso (sugerido)
+
+### Paso 1: Estabilizar UI y separar vistas
+- Terminar segregacion de `dashboard` y `vehicle-list-view` (en curso).
+- Extraer modales grandes a componentes dedicados.
+- Verificar que no existan rutas/links rotos.
+
+### Paso 2: Normalizar DTOs y respuestas
+- Definir modelos de respuesta por entidad (`ClientResponse`, `CompanyResponse`, etc.).
+- Mapear campos inconsistentes en servicios (ej: `user_email` vs `email`).
+- Centralizar validaciones de payload en servicios.
+
+### Paso 3: Crear UI shared basica
+- Componentes compartidos para estados vacios y loading.
+- Paginacion y toolbar genericas reutilizables.
+- Unificar estilos de botones/inputs comunes.
+
+### Paso 4: Separar logica de negocio
+- Mover flujos (create + match, etc.) a services o facades.
+- Reducir logica en componentes de UI.
+- Evitar llamados API directos desde modales.
+
+### Paso 5: Reorganizar estructura por feature
+- Crear carpetas `features/clients`, `features/providers`, etc.
+- Mover vistas y componentes relacionados a su feature.
+- Mantener `shared/` para UI y utilidades comunes.
+
+### Paso 6: Calidad y seguridad
+- Agregar tests de login, create, delete y permisos.
+- Revisar SSR para rutas privadas (ya iniciado).
+- Auditar errores silenciosos y limpiar logs.
+
 ## Estructura propuesta (si el proyecto crece)
 src/
   app/

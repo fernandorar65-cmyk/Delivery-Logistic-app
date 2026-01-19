@@ -1,0 +1,82 @@
+<div class="table-card">
+  <div class="table-wrapper">
+    <table class="shipments-table">
+      <thead>
+        <tr>
+          <th>ID ENVÍO</th>
+          <th>CLIENTE</th>
+          <th>DESTINO / ETA</th>
+          <th>VEHÍCULO</th>
+          <th>ESTADO</th>
+          <th class="actions-header">ACCIONES</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading) {
+          <tr>
+            <td colspan="6" class="loading-cell">
+              <div class="loading-spinner"></div>
+              <p>Cargando envíos...</p>
+            </td>
+          </tr>
+        } @else {
+          @for (shipment of shipments; track shipment.id) {
+            <tr>
+              <td class="id-cell">#{{ shipment.id }}</td>
+              <td class="client-cell">
+                <div class="client-info">
+                  <div class="client-avatar" [class]="'avatar-' + shipment.client.avatar.toLowerCase()">
+                    {{ shipment.client.avatar }}
+                  </div>
+                  <div>
+                    <div class="client-name">{{ shipment.client.name }}</div>
+                    @if (shipment.client.type) {
+                      <div class="client-type">{{ shipment.client.type }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="destination-cell">
+                <div class="destination-address">{{ shipment.destination }}</div>
+                <div class="destination-eta" [class.delayed]="shipment.eta.includes('Retrasado')" [class.delivered]="shipment.eta.includes('Entregado')">
+                  {{ shipment.eta }}
+                </div>
+              </td>
+              <td class="vehicle-cell">
+                @if (shipment.vehicle) {
+                  <div>
+                    <div class="vehicle-name">{{ shipment.vehicle.name }}</div>
+                    @if (shipment.vehicle.plate) {
+                      <div class="vehicle-plate">Placa: {{ shipment.vehicle.plate }}</div>
+                    }
+                  </div>
+                } @else {
+                  <a href="#" class="assign-link">Asignar</a>
+                }
+              </td>
+              <td>
+                <span [class]="'status-badge status-' + shipment.status">
+                  @if (shipment.status === 'in-route') {
+                    <span class="status-dot"></span>
+                  } @else if (shipment.status === 'incident') {
+                    <app-hero-icon name="exclamation-triangle" [size]="12"></app-hero-icon>
+                  } @else if (shipment.status === 'delivered') {
+                    <app-hero-icon name="check" [size]="12"></app-hero-icon>
+                  } @else {
+                    <span class="status-dot"></span>
+                  }
+                  {{ shipment.statusText }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button class="action-btn">
+                  <app-hero-icon name="ellipsis-vertical" [size]="16"></app-hero-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

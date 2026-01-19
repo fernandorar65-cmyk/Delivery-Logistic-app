@@ -1,16 +1,26 @@
 import { Component, signal, inject } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
+import { CommonModule } from '@angular/common';
 import { UserService } from '../../../services/user.service';
 import { StorageService } from '../../../services/storage.service';
 import { LocalStorageEnums } from '../../../models/local.storage.enums';
+import { Shipment } from './dashboard-view.types';
+import { DashboardMetricsComponent } from './components/dashboard-metrics/dashboard-metrics.component';
+import { DashboardShipmentsHeaderComponent } from './components/dashboard-shipments-header/dashboard-shipments-header.component';
+import { DashboardShipmentsTabsComponent, DashboardTab } from './components/dashboard-shipments-tabs/dashboard-shipments-tabs.component';
+import { DashboardShipmentsTableComponent } from './components/dashboard-shipments-table/dashboard-shipments-table.component';
+import { DashboardPaginationComponent } from './components/dashboard-pagination/dashboard-pagination.component';
 
 @Component({
   selector: 'app-dashboard-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, DecimalPipe, HeroIconComponent],
+  imports: [
+    CommonModule,
+    DashboardMetricsComponent,
+    DashboardShipmentsHeaderComponent,
+    DashboardShipmentsTabsComponent,
+    DashboardShipmentsTableComponent,
+    DashboardPaginationComponent
+  ],
   templateUrl: './dashboard-view.component.html',
   styleUrl: './dashboard-view.component.css'
 })
@@ -19,8 +29,7 @@ export class DashboardViewComponent {
   private storageService = inject(StorageService);
 
   // Estado de tabs
-  activeTab = signal<'all' | 'in-route' | 'pending' | 'delivered' | 'incidents'>('all');
-  searchQuery = signal('');
+  activeTab = signal<DashboardTab>('all');
 
   // Métricas del dashboard según la imagen
   totalShipments = signal(1240);
@@ -30,13 +39,11 @@ export class DashboardViewComponent {
   deliveredSuccessChange = signal({ value: 2, isPositive: true });
   
   awaitingAssignment = signal(45);
-  awaitingAssignmentAlert = signal(true);
-  
   activeIncidents = signal(3);
   activeIncidentsChange = signal({ value: 10, isPositive: false });
 
   // Datos de envíos
-  shipments = signal<any[]>([]);
+  shipments = signal<Shipment[]>([]);
   loading = signal(false);
   currentPage = signal(1);
   totalShipmentsCount = signal(128);
@@ -110,6 +117,10 @@ export class DashboardViewComponent {
     }
     this.userService.CheckUserEmail(email).subscribe({
       next: (userResponse) => {
+        if (userResponse.errors && userResponse.errors.length > 0) {
+          console.warn('No se pudo obtener el id del usuario.');
+          return;
+        }
         const result = userResponse?.result ?? null;
         if (result?.id) {
           this.storageService.setItem(LocalStorageEnums.USER_ID, result.id);
@@ -124,7 +135,7 @@ export class DashboardViewComponent {
     });
   }
 
-  setActiveTab(tab: 'all' | 'in-route' | 'pending' | 'delivered' | 'incidents') {
+  setActiveTab(tab: DashboardTab) {
     this.activeTab.set(tab);
     this.loadShipments();
   }
@@ -139,6 +150,18 @@ export class DashboardViewComponent {
 
   getIncidentsCount() {
     return this.shipments().filter(s => s.status === 'incident').length;
+  }
+
+  goToPreviousPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+    }
+  }
+
+  goToNextPage() {
+    if (this.currentPage() * 5 < this.totalShipmentsCount()) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
   }
 }
 

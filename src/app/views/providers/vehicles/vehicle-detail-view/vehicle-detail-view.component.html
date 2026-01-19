@@ -14,18 +14,22 @@
 
   @if (loading()) {
     <div class="vehicle-card vehicle-state">
-      <div class="loading-spinner"></div>
-      <p>Cargando vehículo...</p>
+      <app-loading-card message="Cargando vehículo..."></app-loading-card>
     </div>
   } @else if (error()) {
     <div class="vehicle-card vehicle-state error">
-      <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-      <p>{{ error() }}</p>
+      <app-empty-state
+        icon="exclamation-triangle"
+        title="No se pudo cargar el vehículo"
+        [description]="error()"
+      ></app-empty-state>
     </div>
   } @else if (!vehicle()) {
     <div class="vehicle-card vehicle-state">
-      <app-hero-icon name="truck" [size]="48"></app-hero-icon>
-      <p>No se encontró el vehículo.</p>
+      <app-empty-state
+        icon="truck"
+        title="No se encontró el vehículo"
+      ></app-empty-state>
     </div>
   } @else {
     <div class="vehicle-summary-card">
@@ -181,139 +185,22 @@
 </div>
 
 @if (editOpen()) {
-  <div class="vehicle-edit-overlay" (click)="closeEditModal()">
-    <div class="vehicle-edit-modal" (click)="$event.stopPropagation()">
-      <div class="vehicle-edit-header">
-        <div>
-          <h2>Editar Vehículo</h2>
-          <p>Actualiza la información principal de la unidad.</p>
-        </div>
-        <button class="vehicle-edit-close" (click)="closeEditModal()" aria-label="Cerrar">
-          <app-hero-icon name="x-mark" [size]="20"></app-hero-icon>
-        </button>
-      </div>
-      <form [formGroup]="editForm" (ngSubmit)="submitEditVehicle()" class="vehicle-edit-body">
-        <div class="vehicle-edit-grid vehicle-edit-grid--three">
-          <div class="vehicle-edit-field">
-            <label>Placa / Matrícula</label>
-            <input formControlName="license_plate" type="text" placeholder="Ej: ABC-123" />
-            @if (editForm.get('license_plate')?.touched && editForm.get('license_plate')?.invalid) {
-              <span class="vehicle-edit-error">Ingresa una placa válida.</span>
-            }
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Marca</label>
-            <input formControlName="brand" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Modelo</label>
-            <input formControlName="model" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Año</label>
-            <input formControlName="year" type="number" />
-          </div>
-          <div class="vehicle-edit-field span-2">
-            <label>Tipo de Vehículo</label>
-            <select formControlName="vehicle_type">
-              @for (type of vehicleTypes; track type.value) {
-                <option [value]="type.value">{{ type.label }}</option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="vehicle-edit-grid vehicle-edit-grid--three">
-          <div class="vehicle-edit-field">
-            <label>Color</label>
-            <input formControlName="color" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Tipo de Carrocería</label>
-            <input formControlName="body_type" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Capacidad neta (kg)</label>
-            <input formControlName="net_capacity_kg" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Peso tara (kg)</label>
-            <input formControlName="tara_kg" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Peso bruto (kg)</label>
-            <input formControlName="gross_weight_kg" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Estado</label>
-            <select formControlName="status">
-              @for (status of statusOptions; track status.value) {
-                <option [value]="status.value">{{ status.label }}</option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="vehicle-edit-grid vehicle-edit-grid--three">
-          <div class="vehicle-edit-field">
-            <label>Largo (m)</label>
-            <input formControlName="length_m" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Ancho (m)</label>
-            <input formControlName="width_m" type="text" />
-          </div>
-          <div class="vehicle-edit-field">
-            <label>Alto (m)</label>
-            <input formControlName="height_m" type="text" />
-          </div>
-        </div>
-
-        @if (editError()) {
-          <div class="vehicle-edit-alert">{{ editError() }}</div>
-        }
-
-        <div class="vehicle-edit-actions">
-          <button type="button" class="vehicle-edit-btn" (click)="closeEditModal()">Cancelar</button>
-          <button type="submit" class="vehicle-edit-btn primary" [disabled]="editLoading()">
-            @if (editLoading()) {
-              Guardando...
-            } @else {
-              Guardar Cambios
-            }
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-vehicles-edit-modal
+    [editForm]="editForm"
+    [vehicleTypes]="vehicleTypes"
+    [statusOptions]="statusOptions"
+    [editLoading]="editLoading()"
+    [editError]="editError()"
+    (close)="closeEditModal()"
+    (submit)="submitEditVehicle()"
+  ></app-vehicles-edit-modal>
 }
 
 @if (deleteOpen()) {
-  <div class="vehicle-delete-overlay" (click)="closeDeleteModal()">
-    <div class="vehicle-delete-modal" (click)="$event.stopPropagation()">
-      <div class="vehicle-delete-icon">
-        <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-      </div>
-      <h2>Confirmar Baja de Vehículo</h2>
-      <p>¿Estás seguro de que deseas dar de baja este vehículo?</p>
-      <span class="vehicle-delete-warning">ESTA ACCIÓN ES IRREVERSIBLE.</span>
-
-      @if (deleteError()) {
-        <div class="vehicle-delete-error">{{ deleteError() }}</div>
-      }
-
-      <div class="vehicle-delete-actions">
-        <button class="vehicle-delete-btn danger" (click)="confirmDelete()" [disabled]="deleteLoading()">
-          @if (deleteLoading()) {
-            Procesando...
-          } @else {
-            Confirmar Baja
-          }
-        </button>
-        <button class="vehicle-delete-btn" (click)="closeDeleteModal()" type="button">
-          Mantener Vehículo
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-vehicles-delete-modal
+    [deleteLoading]="deleteLoading()"
+    [deleteError]="deleteError()"
+    (close)="closeDeleteModal()"
+    (confirm)="confirmDelete()"
+  ></app-vehicles-delete-modal>
 }

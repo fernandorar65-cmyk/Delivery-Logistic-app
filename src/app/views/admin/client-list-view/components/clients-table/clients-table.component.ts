@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../../../components/hero-icon/hero-icon';
 import { Client } from '../../../../../models/client.model';
+import { EmptyStateComponent } from '../../../../../shared/ui/empty-state/empty-state.component';
+import { LoadingCardComponent } from '../../../../../shared/ui/loading-card/loading-card.component';
 
 @Component({
   selector: 'app-clients-table',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeroIconComponent],
+  imports: [CommonModule, RouterLink, HeroIconComponent, EmptyStateComponent, LoadingCardComponent],
   templateUrl: './clients-table.component.html',
   styleUrl: './clients-table.component.css'
 })

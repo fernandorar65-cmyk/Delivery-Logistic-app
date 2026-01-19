@@ -16,26 +16,29 @@
         @if (loading) {
           <tr>
             <td colspan="7" class="text-center p-8">
-              <div class="loading-spinner"></div>
-              <p>Cargando clientes...</p>
+              <app-loading-card message="Cargando clientes..."></app-loading-card>
             </td>
           </tr>
         } @else if (error) {
           <tr>
             <td colspan="7" class="text-center p-8">
-              <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-              <p>{{ error }}</p>
+              <app-empty-state
+                icon="exclamation-triangle"
+                title="No se pudieron cargar los clientes"
+                [description]="error"
+              ></app-empty-state>
             </td>
           </tr>
         } @else if (clients.length === 0) {
           <tr>
             <td colspan="7" class="text-center p-8">
-              <div class="empty-state-card">
-                <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
-                <h3>No hay clientes registrados</h3>
-                <p>Comienza agregando tu primer cliente al sistema</p>
-                <button (click)="createRequested.emit()" class="btn btn-primary">Crear Primer Cliente</button>
-              </div>
+              <app-empty-state
+                icon="users"
+                title="No hay clientes registrados"
+                description="Comienza agregando tu primer cliente al sistema"
+                actionLabel="Crear Primer Cliente"
+                (action)="createRequested.emit()"
+              ></app-empty-state>
             </td>
           </tr>
         } @else {

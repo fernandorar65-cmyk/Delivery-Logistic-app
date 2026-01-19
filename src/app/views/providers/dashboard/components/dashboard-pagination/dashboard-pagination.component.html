@@ -1,0 +1,9 @@
+<div class="pagination">
+  <span class="pagination-info">
+    Mostrando {{ startItem }}-{{ endItem }} de {{ totalItems }} envíos
+  </span>
+  <div class="pagination-buttons">
+    <button class="pagination-btn" [disabled]="isFirstPage" (click)="previous.emit()">Anterior</button>
+    <button class="pagination-btn" [disabled]="isLastPage" (click)="next.emit()">Siguiente</button>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="app-modal-overlay" (click)="close.emit()">
+  <div class="app-modal-container" [class]="'app-modal-container ' + size" (click)="$event.stopPropagation()">
+    <div class="app-modal-header">
+      <h2 class="app-modal-title">{{ title }}</h2>
+      @if (showClose) {
+        <button class="app-modal-close" type="button" (click)="close.emit()">
+          <app-hero-icon name="x-mark" [size]="20"></app-hero-icon>
+        </button>
+      }
+    </div>
+    <div class="app-modal-body">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

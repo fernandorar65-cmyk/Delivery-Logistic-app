@@ -1,0 +1,29 @@
+<app-modal
+  title="Confirmar Baja de Vehículo"
+  size="sm"
+  [showClose]="false"
+  (close)="close.emit()"
+>
+  <div class="vehicle-delete-icon">
+    <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+  </div>
+  <p class="vehicle-delete-text">¿Estás seguro de que deseas dar de baja este vehículo?</p>
+  <span class="vehicle-delete-warning">ESTA ACCIÓN ES IRREVERSIBLE.</span>
+
+  @if (deleteError) {
+    <div class="vehicle-delete-error">{{ deleteError }}</div>
+  }
+
+  <div class="vehicle-delete-actions">
+    <button class="vehicle-delete-btn danger" (click)="confirm.emit()" [disabled]="deleteLoading">
+      @if (deleteLoading) {
+        Procesando...
+      } @else {
+        Confirmar Baja
+      }
+    </button>
+    <button class="vehicle-delete-btn" (click)="close.emit()" type="button">
+      Mantener Vehículo
+    </button>
+  </div>
+</app-modal>

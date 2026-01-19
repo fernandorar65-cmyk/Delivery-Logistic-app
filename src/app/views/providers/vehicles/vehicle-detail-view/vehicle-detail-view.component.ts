@@ -3,13 +3,26 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HeroIconComponent } from '../../../../components/hero-icon/hero-icon';
+import { VehiclesEditModalComponent } from './components/vehicles-edit-modal/vehicles-edit-modal.component';
+import { VehiclesDeleteModalComponent } from './components/vehicles-delete-modal/vehicles-delete-modal.component';
 import { VehicleService } from '../../../../services/vehicle.service';
 import { Vehicle } from '../../../../models/vehicle.model';
+import { EmptyStateComponent } from '../../../../shared/ui/empty-state/empty-state.component';
+import { LoadingCardComponent } from '../../../../shared/ui/loading-card/loading-card.component';
 
 @Component({
   selector: 'app-vehicle-detail-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, HeroIconComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    ReactiveFormsModule,
+    HeroIconComponent,
+    VehiclesEditModalComponent,
+    VehiclesDeleteModalComponent,
+    EmptyStateComponent,
+    LoadingCardComponent
+  ],
   templateUrl: './vehicle-detail-view.component.html',
   styleUrl: './vehicle-detail-view.component.css'
 })
@@ -172,6 +185,11 @@ export class VehicleDetailViewComponent implements OnInit {
       status: status ? (status as Vehicle['status']) : undefined
     }).subscribe({
       next: response => {
+        if (response.errors && response.errors.length > 0) {
+          this.editLoading.set(false);
+          this.editError.set('No se pudo actualizar el vehículo.');
+          return;
+        }
         this.vehicle.set(response.result);
         this.editLoading.set(false);
         this.closeEditModal();

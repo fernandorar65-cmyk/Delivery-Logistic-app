@@ -32,6 +32,11 @@ export interface CompanyListResponse {
   };
 }
 
+export interface CompanyResponse {
+  errors: any[];
+  result: Company;
+}
+
 export interface CompanyUpdate {
   company_name?: string;
   ruc?: string;

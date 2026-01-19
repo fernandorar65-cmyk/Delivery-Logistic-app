@@ -12,13 +12,15 @@
 
   @if (loading()) {
     <div class="card loading-card">
-      <div class="loading-spinner"></div>
-      <p>Cargando empresas...</p>
+      <app-loading-card message="Cargando empresas..."></app-loading-card>
     </div>
   } @else if (error()) {
     <div class="card error-card">
-      <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-      <p>{{ error() }}</p>
+      <app-empty-state
+        icon="exclamation-triangle"
+        title="No se pudieron cargar las empresas"
+        [description]="error()"
+      ></app-empty-state>
     </div>
   } @else {
     <app-companies-toolbar
@@ -37,9 +39,11 @@
 
     @if (!filteredCompanies() || filteredCompanies().length === 0) {
       <div class="card empty-state-card">
-        <app-hero-icon name="users" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
-        <h3>No se encontraron empresas</h3>
-        <p>Intenta ajustar los filtros de búsqueda</p>
+        <app-empty-state
+          icon="users"
+          title="No se encontraron empresas"
+          description="Intenta ajustar los filtros de búsqueda"
+        ></app-empty-state>
       </div>
     } @else {
       <app-companies-table
@@ -69,118 +73,13 @@
 
   <!-- Modal Flotante -->
   @if (showModal()) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2 class="modal-title">{{ isEditMode() ? 'Editar Empresa' : 'Nueva Empresa' }}</h2>
-          <button class="modal-close" (click)="closeModal()" type="button">
-            <app-hero-icon name="x-mark" [size]="24"></app-hero-icon>
-          </button>
-        </div>
-
-        <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="modal-form">
-          @if (formError()) {
-            <div class="form-error-message">
-              <app-hero-icon name="exclamation-circle" [size]="20"></app-hero-icon>
-              <span>{{ formError() }}</span>
-            </div>
-          }
-
-          <div class="form-section">
-            <h3 class="section-title">Información Básica</h3>
-            
-            <div class="form-group">
-              <label for="company_name">
-                Nombre de Empresa <span class="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="company_name"
-                formControlName="company_name"
-                placeholder="Ingrese el nombre de la empresa"
-                [class.invalid]="companyForm.get('company_name')?.invalid && companyForm.get('company_name')?.touched"
-              />
-              @if (companyForm.get('company_name')?.invalid && companyForm.get('company_name')?.touched) {
-                <span class="error-text">{{ getFieldError('company_name') }}</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="ruc">
-                RUC <span class="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="ruc"
-                formControlName="ruc"
-                placeholder="Ingrese el RUC"
-                [class.invalid]="companyForm.get('ruc')?.invalid && companyForm.get('ruc')?.touched"
-              />
-              @if (companyForm.get('ruc')?.invalid && companyForm.get('ruc')?.touched) {
-                <span class="error-text">{{ getFieldError('ruc') }}</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="email">
-                Email <span class="required">*</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                formControlName="email"
-                placeholder="correo@ejemplo.com"
-                [class.invalid]="companyForm.get('email')?.invalid && companyForm.get('email')?.touched"
-              />
-              @if (companyForm.get('email')?.invalid && companyForm.get('email')?.touched) {
-                <span class="error-text">{{ getFieldError('email') }}</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="description">
-                Descripción
-              </label>
-              <textarea
-                id="description"
-                formControlName="description"
-                placeholder="Ingrese una descripción de la empresa"
-                rows="3"
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="password">
-                Contraseña 
-                @if (!isEditMode()) {
-                  <span class="required">*</span>
-                } @else {
-                  <span class="optional">(opcional - dejar en blanco para no cambiar)</span>
-                }
-              </label>
-              <input
-                type="password"
-                id="password"
-                formControlName="password"
-                [placeholder]="isEditMode() ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
-                [class.invalid]="companyForm.get('password')?.invalid && companyForm.get('password')?.touched"
-              />
-              @if (companyForm.get('password')?.invalid && companyForm.get('password')?.touched) {
-                <span class="error-text">{{ getFieldError('password') }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="formLoading()">
-              Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="companyForm.invalid || formLoading()">
-              {{ isEditMode() ? 'Guardar Cambios' : 'Crear Empresa' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <app-companies-form-modal
+      [companyForm]="companyForm"
+      [isEditMode]="isEditMode()"
+      [formLoading]="formLoading()"
+      [formError]="formError()"
+      (close)="closeModal()"
+      (submit)="onSubmit($event)"
+    ></app-companies-form-modal>
   }
 </div>

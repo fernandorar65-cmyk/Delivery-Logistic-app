@@ -68,7 +68,6 @@ export class AllyListViewComponent implements OnInit {
 
   handleProviderSaved(payload: ProviderCreate) {
     this.createOpen.set(false);
-    console.log('Provider creado (pendiente API):', payload);
   }
 
   loadProviders() {

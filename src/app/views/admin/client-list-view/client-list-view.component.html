@@ -45,157 +45,19 @@
 
   <!-- Modal Flotante -->
   @if (showModal()) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2 class="modal-title">{{ isEditMode() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
-          <button class="modal-close" (click)="closeModal()" type="button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-
-        <form [formGroup]="clientForm" (ngSubmit)="onSubmit($event)" class="modal-form">
-          @if (formError()) {
-            <div class="form-error-message">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <span>{{ formError() }}</span>
-            </div>
-          }
-
-          <div class="form-section">
-            <h3 class="section-title">Información Básica</h3>
-            
-            <div class="form-group">
-              <label for="client_name">
-                Nombre del Cliente <span class="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="client_name"
-                formControlName="client_name"
-                placeholder="Ingrese el nombre del cliente"
-                [class.invalid]="clientForm.get('client_name')?.invalid && clientForm.get('client_name')?.touched"
-              />
-              @if (clientForm.get('client_name')?.invalid && clientForm.get('client_name')?.touched) {
-                <span class="error-text">{{ getFieldError('client_name') }}</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="ruc">
-                RUC <span class="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="ruc"
-                formControlName="ruc"
-                placeholder="Ingrese el RUC"
-                [class.invalid]="clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched"
-              />
-              @if (clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched) {
-                <span class="error-text">{{ getFieldError('ruc') }}</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="description">
-                Descripción
-              </label>
-              <textarea
-                id="description"
-                formControlName="description"
-                placeholder="Describe brevemente al cliente"
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="email">
-                Email <span class="required">*</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                formControlName="email"
-                placeholder="correo@ejemplo.com"
-                [class.invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
-              />
-              @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
-                <span class="error-text">{{ getFieldError('email') }}</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="password">
-                Contraseña 
-                @if (!isEditMode()) {
-                  <span class="required">*</span>
-                } @else {
-                  <span class="optional">(opcional - dejar en blanco para no cambiar)</span>
-                }
-              </label>
-              <input
-                type="password"
-                id="password"
-                formControlName="password"
-                [placeholder]="isEditMode() ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
-                [class.invalid]="clientForm.get('password')?.invalid && clientForm.get('password')?.touched"
-              />
-              @if (clientForm.get('password')?.invalid && clientForm.get('password')?.touched) {
-                <span class="error-text">{{ getFieldError('password') }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="modal-actions">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              (click)="closeModal()"
-              [disabled]="formLoading()"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="clientForm.invalid || formLoading()"
-            >
-              @if (formLoading()) {
-                <div class="btn-spinner"></div>
-                Guardando...
-              } @else {
-                {{ isEditMode() ? 'Guardar Cambios' : 'Crear Cliente' }}
-              }
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <app-clients-form-modal
+      [clientForm]="clientForm"
+      [isEditMode]="isEditMode()"
+      [formLoading]="formLoading()"
+      [formError]="formError()"
+      (close)="closeModal()"
+      (submit)="onSubmit($event)"
+    ></app-clients-form-modal>
   }
 
   @if (showSuccessModal()) {
-    <div class="success-overlay" (click)="closeSuccessModal()">
-      <div class="success-modal" (click)="$event.stopPropagation()">
-        <div class="success-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 6 9 17l-5-5"></path>
-          </svg>
-        </div>
-        <div class="success-content">
-          <h3>Cliente creado correctamente</h3>
-          <p>El registro fue guardado con éxito.</p>
-        </div>
-        <button class="btn btn-primary" type="button" (click)="closeSuccessModal()">
-          Entendido
-        </button>
-      </div>
-    </div>
+    <app-clients-success-modal
+      (close)="closeSuccessModal()"
+    ></app-clients-success-modal>
   }
 </div>

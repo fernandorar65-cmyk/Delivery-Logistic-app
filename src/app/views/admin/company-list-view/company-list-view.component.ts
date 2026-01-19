@@ -7,6 +7,9 @@ import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { CompaniesToolbarComponent } from './components/companies-toolbar/companies-toolbar.component';
 import { CompaniesTableComponent } from './components/companies-table/companies-table.component';
 import { CompaniesPaginationComponent } from './components/companies-pagination/companies-pagination.component';
+import { CompaniesFormModalComponent } from './components/companies-form-modal/companies-form-modal.component';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
+import { LoadingCardComponent } from '../../../shared/ui/loading-card/loading-card.component';
 
 @Component({
   selector: 'app-company-list-view',
@@ -17,7 +20,10 @@ import { CompaniesPaginationComponent } from './components/companies-pagination/
     HeroIconComponent,
     CompaniesToolbarComponent,
     CompaniesTableComponent,
-    CompaniesPaginationComponent
+    CompaniesPaginationComponent,
+    CompaniesFormModalComponent,
+    EmptyStateComponent,
+    LoadingCardComponent
   ],
   templateUrl: './company-list-view.component.html',
   styleUrl: './company-list-view.component.css'
@@ -72,6 +78,13 @@ export class CompanyListViewComponent {
     
     this.companyService.getAll().subscribe({
       next: (response) => {
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al cargar las empresas. Por favor, intente nuevamente.');
+          this.companies.set([]);
+          this.filteredCompanies.set([]);
+          this.loading.set(false);
+          return;
+        }
         // Asegurar que siempre sea un array
         const companiesArray = Array.isArray(response?.result) ? response.result : [];
         // Agregar datos mock para sector, ciudad, sedes y estado si no existen
@@ -323,7 +336,12 @@ export class CompanyListViewComponent {
 
       if (this.isEditMode() && this.editingCompanyId()) {
         this.companyService.update(this.editingCompanyId()!, formValue).subscribe({
-          next: () => {
+          next: (response) => {
+            if (response.errors && response.errors.length > 0) {
+              this.formError.set('Error al actualizar la empresa.');
+              this.formLoading.set(false);
+              return;
+            }
             this.formLoading.set(false);
             this.closeModal();
             this.loadCompanies();
@@ -344,7 +362,12 @@ export class CompanyListViewComponent {
         };
 
         this.companyService.create(companyPayload).subscribe({
-          next: () => {
+          next: (response) => {
+            if (response.errors && response.errors.length > 0) {
+              this.formError.set('Error al crear la empresa. Por favor, intenta nuevamente.');
+              this.formLoading.set(false);
+              return;
+            }
             this.formLoading.set(false);
             this.closeModal();
             this.loadCompanies();
@@ -381,20 +404,6 @@ export class CompanyListViewComponent {
         }
       });
     }
-  }
-
-  getFieldError(fieldName: string): string {
-    const field = this.companyForm.get(fieldName);
-    if (field?.hasError('required')) {
-      return 'Este campo es requerido';
-    }
-    if (field?.hasError('email')) {
-      return 'Email inválido';
-    }
-    if (field?.hasError('minlength')) {
-      return `Mínimo ${field.errors!['minlength'].requiredLength} caracteres`;
-    }
-    return '';
   }
 
   getPageNumbers(): (number | string)[] {

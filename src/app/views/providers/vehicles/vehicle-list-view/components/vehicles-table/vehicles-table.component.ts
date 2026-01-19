@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../../../../components/hero-icon/hero-icon';
 import { Vehicle } from '../../../../../../models/vehicle.model';
+import { EmptyStateComponent } from '../../../../../../shared/ui/empty-state/empty-state.component';
+import { LoadingCardComponent } from '../../../../../../shared/ui/loading-card/loading-card.component';
 
 @Component({
   selector: 'app-vehicles-table',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeroIconComponent],
+  imports: [CommonModule, RouterLink, HeroIconComponent, EmptyStateComponent, LoadingCardComponent],
   templateUrl: './vehicles-table.component.html',
   styleUrl: './vehicles-table.component.css'
 })

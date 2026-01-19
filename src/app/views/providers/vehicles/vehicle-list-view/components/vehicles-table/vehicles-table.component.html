@@ -6,18 +6,22 @@
 
   @if (loading) {
     <div class="table-loading">
-      <div class="loading-spinner"></div>
-      <p>Cargando vehículos...</p>
+      <app-loading-card message="Cargando vehículos..."></app-loading-card>
     </div>
   } @else if (error) {
     <div class="table-error">
-      <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-      <p>{{ error }}</p>
+      <app-empty-state
+        icon="exclamation-triangle"
+        title="No se pudieron cargar los vehículos"
+        [description]="error"
+      ></app-empty-state>
     </div>
   } @else if (vehicles.length === 0) {
     <div class="table-empty">
-      <app-hero-icon name="truck" [size]="64" [strokeWidth]="1.5" class="empty-icon"></app-hero-icon>
-      <p>No se encontraron vehículos</p>
+      <app-empty-state
+        icon="truck"
+        title="No se encontraron vehículos"
+      ></app-empty-state>
     </div>
   } @else {
     <div class="table-wrapper">

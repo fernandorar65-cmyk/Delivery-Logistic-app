@@ -43,6 +43,11 @@ export interface ProviderResponse {
   result: Provider;
 }
 
+export interface ProviderCheckResponse {
+  errors: any[];
+  result: Provider | null;
+}
+
 export interface ProviderUpdate {
   provider_name?: string;
   ruc?: string;

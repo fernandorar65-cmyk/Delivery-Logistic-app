@@ -10,6 +10,7 @@ import { VehiclesStatsComponent } from './components/vehicles-stats/vehicles-sta
 import { VehiclesFiltersComponent } from './components/vehicles-filters/vehicles-filters.component';
 import { VehiclesTableComponent } from './components/vehicles-table/vehicles-table.component';
 import { VehiclesPaginationComponent } from './components/vehicles-pagination/vehicles-pagination.component';
+import { VehiclesCreateModalComponent } from './components/vehicles-create-modal/vehicles-create-modal.component';
 
 @Component({
   selector: 'app-vehicle-list-view',
@@ -22,7 +23,8 @@ import { VehiclesPaginationComponent } from './components/vehicles-pagination/ve
     VehiclesStatsComponent,
     VehiclesFiltersComponent,
     VehiclesTableComponent,
-    VehiclesPaginationComponent
+    VehiclesPaginationComponent,
+    VehiclesCreateModalComponent
   ],
   templateUrl: './vehicle-list-view.component.html',
   styleUrl: './vehicle-list-view.component.css'
@@ -205,7 +207,12 @@ export class VehicleListViewComponent implements OnInit {
       height_m: height_m ?? undefined,
       status: status ? (status as Vehicle['status']) : undefined
     }).subscribe({
-      next: () => {
+      next: (response) => {
+        if (response.errors && response.errors.length > 0) {
+          this.createLoading.set(false);
+          this.createError.set('No se pudo registrar el vehículo. Intenta nuevamente.');
+          return;
+        }
         this.createLoading.set(false);
         this.closeCreateModal();
         this.loadVehicles();

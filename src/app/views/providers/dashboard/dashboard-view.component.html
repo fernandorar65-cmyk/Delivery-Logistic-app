@@ -1,237 +1,40 @@
 <div class="dashboard-container">
 
   <!-- Cards de Métricas -->
-  <div class="metrics-grid">
-    <div class="metric-card metric-card-orders" style="animation-delay: 0.1s">
-      <div class="metric-header">
-        <div class="metric-icon orders">
-          <app-hero-icon name="squares-2x2" [size]="24"></app-hero-icon>
-        </div>
-        <span class="metric-badge positive">
-          <app-hero-icon name="arrow-trending-up" [size]="12"></app-hero-icon>
-          +{{ totalShipmentsChange().value }}%
-        </span>
-      </div>
-      <div class="metric-content">
-        <h3 class="metric-value">{{ totalShipments() | number }}</h3>
-        <p class="metric-label">Total Envíos</p>
-        <p class="metric-description">Comparado con semana anterior</p>
-      </div>
-      <div class="metric-hover-effect"></div>
-    </div>
-
-    <div class="metric-card metric-card-success" style="animation-delay: 0.2s">
-      <div class="metric-header">
-        <div class="metric-icon success">
-          <app-hero-icon name="check" [size]="24" [strokeWidth]="3"></app-hero-icon>
-        </div>
-        <span class="metric-badge positive">
-          <app-hero-icon name="arrow-trending-up" [size]="12" [strokeWidth]="2.5"></app-hero-icon>
-          +{{ deliveredSuccessChange().value }}%
-        </span>
-      </div>
-      <div class="metric-content success-content">
-        <h3 class="metric-value">{{ deliveredSuccess() }}%</h3>
-        <p class="metric-label">Entregados (Éxito)</p>
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="deliveredSuccess()"></div>
-        </div>
-      </div>
-      <div class="metric-hover-effect"></div>
-    </div>
-
-    <div class="metric-card metric-card-alert" style="animation-delay: 0.3s">
-      <div class="metric-header">
-        <div class="metric-icon alert">
-          <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-        </div>
-        <span class="metric-badge alert-badge">
-          <app-hero-icon name="hexagon" [size]="12"></app-hero-icon>
-          Alert
-        </span>
-      </div>
-      <div class="metric-content alert-content">
-        <h3 class="metric-value">{{ awaitingAssignment() }}</h3>
-        <p class="metric-label">En Espera de Asignación</p>
-        <p class="metric-description alert-description">Requieren vehículo</p>
-      </div>
-      <div class="metric-hover-effect"></div>
-    </div>
-
-    <div class="metric-card metric-card-incidents" style="animation-delay: 0.4s">
-      <div class="metric-header">
-        <p class="metric-label-top">Incidentes Activos</p>
-        <div class="metric-icon incidents">
-          <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-        </div>
-      </div>
-      <div class="metric-content">
-        <div class="metric-value-row">
-          <h3 class="metric-value">{{ activeIncidents() }}</h3>
-          <span class="metric-badge negative">
-            <app-hero-icon name="arrow-trending-down" [size]="12" [strokeWidth]="2.5"></app-hero-icon>
-            -{{ activeIncidentsChange().value }}%
-          </span>
-        </div>
-        <p class="metric-description incidents-description">Atención inmediata requerida</p>
-      </div>
-      <div class="metric-hover-effect"></div>
-    </div>
-  </div>
+  <app-dashboard-metrics
+    [totalShipments]="totalShipments()"
+    [totalShipmentsChange]="totalShipmentsChange()"
+    [deliveredSuccess]="deliveredSuccess()"
+    [deliveredSuccessChange]="deliveredSuccessChange()"
+    [awaitingAssignment]="awaitingAssignment()"
+    [activeIncidents]="activeIncidents()"
+    [activeIncidentsChange]="activeIncidentsChange()"
+  ></app-dashboard-metrics>
 
   <!-- Gestión de Envíos -->
   <div class="shipments-section">
-    <div class="shipments-header">
-      <div>
-        <h2 class="shipments-title">Gestión de Envíos</h2>
-        <p class="shipments-subtitle">Visualiza y gestiona el estado de todos los pedidos.</p>
-      </div>
-      <div class="shipments-actions">
-        <button class="btn btn-secondary">
-          <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
-          Filtros
-        </button>
-        <a routerLink="/orders/new" class="btn btn-primary">
-          <app-hero-icon name="plus" [size]="18"></app-hero-icon>
-          Nuevo Envío
-        </a>
-      </div>
-    </div>
+    <app-dashboard-shipments-header></app-dashboard-shipments-header>
 
     <!-- Tabs -->
-    <div class="tabs-container">
-      <button 
-        class="tab" 
-        [class.active]="activeTab() === 'all'"
-        (click)="setActiveTab('all')"
-      >
-        Todos
-      </button>
-      <button 
-        class="tab" 
-        [class.active]="activeTab() === 'in-route'"
-        (click)="setActiveTab('in-route')"
-      >
-        En Ruta
-      </button>
-      <button 
-        class="tab" 
-        [class.active]="activeTab() === 'pending'"
-        (click)="setActiveTab('pending')"
-      >
-        Pendientes
-      </button>
-      <button 
-        class="tab" 
-        [class.active]="activeTab() === 'delivered'"
-        (click)="setActiveTab('delivered')"
-      >
-        Entregados
-      </button>
-      <button 
-        class="tab" 
-        [class.active]="activeTab() === 'incidents'"
-        (click)="setActiveTab('incidents')"
-      >
-        Incidentes
-        @if (getIncidentsCount() > 0) {
-          <span class="tab-badge">{{ getIncidentsCount() }}</span>
-        }
-      </button>
-    </div>
+    <app-dashboard-shipments-tabs
+      [activeTab]="activeTab()"
+      [incidentsCount]="getIncidentsCount()"
+      (tabChange)="setActiveTab($event)"
+    ></app-dashboard-shipments-tabs>
 
     <!-- Tabla de Envíos -->
-    <div class="table-card">
-      <div class="table-wrapper">
-        <table class="shipments-table">
-          <thead>
-            <tr>
-              <th>ID ENVÍO</th>
-              <th>CLIENTE</th>
-              <th>DESTINO / ETA</th>
-              <th>VEHÍCULO</th>
-              <th>ESTADO</th>
-              <th class="actions-header">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (loading()) {
-              <tr>
-                <td colspan="6" class="loading-cell">
-                  <div class="loading-spinner"></div>
-                  <p>Cargando envíos...</p>
-                </td>
-              </tr>
-            } @else {
-              @for (shipment of getFilteredShipments(); track shipment.id) {
-                <tr>
-                  <td class="id-cell">#{{ shipment.id }}</td>
-                  <td class="client-cell">
-                    <div class="client-info">
-                      <div class="client-avatar" [class]="'avatar-' + shipment.client.avatar.toLowerCase()">
-                        {{ shipment.client.avatar }}
-                      </div>
-                      <div>
-                        <div class="client-name">{{ shipment.client.name }}</div>
-                        @if (shipment.client.type) {
-                          <div class="client-type">{{ shipment.client.type }}</div>
-                        }
-                      </div>
-                    </div>
-                  </td>
-                  <td class="destination-cell">
-                    <div class="destination-address">{{ shipment.destination }}</div>
-                    <div class="destination-eta" [class.delayed]="shipment.eta.includes('Retrasado')" [class.delivered]="shipment.eta.includes('Entregado')">
-                      {{ shipment.eta }}
-                    </div>
-                  </td>
-                  <td class="vehicle-cell">
-                    @if (shipment.vehicle) {
-                      <div>
-                        <div class="vehicle-name">{{ shipment.vehicle.name }}</div>
-                        @if (shipment.vehicle.plate) {
-                          <div class="vehicle-plate">Placa: {{ shipment.vehicle.plate }}</div>
-                        }
-                      </div>
-                    } @else {
-                      <a href="#" class="assign-link">Asignar</a>
-                    }
-                  </td>
-                  <td>
-                    <span [class]="'status-badge status-' + shipment.status">
-                      @if (shipment.status === 'in-route') {
-                        <span class="status-dot"></span>
-                      } @else if (shipment.status === 'incident') {
-                        <app-hero-icon name="exclamation-triangle" [size]="12"></app-hero-icon>
-                      } @else if (shipment.status === 'delivered') {
-                        <app-hero-icon name="check" [size]="12"></app-hero-icon>
-                      } @else {
-                        <span class="status-dot"></span>
-                      }
-                      {{ shipment.statusText }}
-                    </span>
-                  </td>
-                  <td class="actions-cell">
-                    <button class="action-btn">
-                      <app-hero-icon name="ellipsis-vertical" [size]="16"></app-hero-icon>
-                    </button>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
+    <app-dashboard-shipments-table
+      [shipments]="getFilteredShipments()"
+      [loading]="loading()"
+    ></app-dashboard-shipments-table>
 
-      <!-- Paginación -->
-      <div class="pagination">
-        <span class="pagination-info">Mostrando 1-5 de {{ totalShipmentsCount() }} envíos</span>
-        <div class="pagination-buttons">
-          <button class="pagination-btn" [disabled]="currentPage() === 1">Anterior</button>
-          <button class="pagination-btn" [disabled]="currentPage() * 5 >= totalShipmentsCount()">Siguiente</button>
-        </div>
-      </div>
-    </div>
+    <!-- Paginación -->
+    <app-dashboard-pagination
+      [totalItems]="totalShipmentsCount()"
+      [currentPage]="currentPage()"
+      (previous)="goToPreviousPage()"
+      (next)="goToNextPage()"
+    ></app-dashboard-pagination>
   </div>
 </div>
 

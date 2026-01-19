@@ -1,83 +1,74 @@
 @if (open) {
-  <div class="provider-modal-overlay" (click)="close()">
-    <div class="provider-modal" (click)="$event.stopPropagation()">
-      <div class="provider-modal-header">
-        <div>
-          <h2>Registrar Nuevo Aliado</h2>
-          <p>Ingresa la información detallada para dar de alta a un nuevo aliado logístico.</p>
+  <app-modal
+    title="Registrar Nuevo Aliado"
+    size="lg"
+    (close)="close()"
+  >
+    <form [formGroup]="form" (ngSubmit)="submit()" class="provider-form">
+      <p class="provider-subtitle">Ingresa la información detallada para dar de alta a un nuevo aliado logístico.</p>
+      @if (checkError()) {
+        <div class="check-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ checkError() }}
         </div>
-        <button type="button" class="close-btn" (click)="close()" aria-label="Cerrar">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-
-      <div class="provider-modal-body">
-        <form [formGroup]="form" (ngSubmit)="submit()" class="provider-form">
-          @if (checkError()) {
-            <div class="check-error">
-              <span class="material-symbols-outlined">error</span>
-              {{ checkError() }}
+      }
+      @if (checkSuccess()) {
+        <div class="check-success">
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ checkSuccess() }}
+        </div>
+      }
+      <div class="form-grid">
+        <div class="form-col">
+          <label class="field">
+            <span>Correo Electrónico de Contacto</span>
+            <div class="field-with-status">
+              <input type="email" formControlName="contact_email" placeholder="contacto@empresa.com" />
+              <button
+                type="button"
+                class="email-check-btn"
+                (click)="verifyEmail()"
+                [disabled]="checkLoading()"
+              >
+                Verificar
+              </button>
+              @if (emailStatus() === 'checking') {
+                <span class="email-status pending" title="Verificando">
+                  <span class="material-symbols-outlined">progress_activity</span>
+                </span>
+              } @else if (emailStatus() === 'unique') {
+                <span class="email-status success" title="Email disponible">
+                  <span class="material-symbols-outlined">check_circle</span>
+                </span>
+              } @else if (emailStatus() === 'exists') {
+                <span class="email-status danger" title="Email ya registrado">
+                  <span class="material-symbols-outlined">error</span>
+                </span>
+              }
             </div>
-          }
-          @if (checkSuccess()) {
-            <div class="check-success">
-              <span class="material-symbols-outlined">check_circle</span>
-              {{ checkSuccess() }}
-            </div>
-          }
-          <div class="form-grid">
-            <div class="form-col">
-              <label class="field">
-                <span>Correo Electrónico de Contacto</span>
-                <div class="field-with-status">
-                  <input type="email" formControlName="contact_email" placeholder="contacto@empresa.com" />
-                  <button
-                    type="button"
-                    class="email-check-btn"
-                    (click)="verifyEmail()"
-                    [disabled]="checkLoading()"
-                  >
-                    Verificar
-                  </button>
-                  @if (emailStatus() === 'checking') {
-                    <span class="email-status pending" title="Verificando">
-                      <span class="material-symbols-outlined">progress_activity</span>
-                    </span>
-                  } @else if (emailStatus() === 'unique') {
-                    <span class="email-status success" title="Email disponible">
-                      <span class="material-symbols-outlined">check_circle</span>
-                    </span>
-                  } @else if (emailStatus() === 'exists') {
-                    <span class="email-status danger" title="Email ya registrado">
-                      <span class="material-symbols-outlined">error</span>
-                    </span>
-                  }
-                </div>
-              </label>
-              <label class="field">
-                <span>Nombre de la Empresa</span>
-                <input type="text" formControlName="company_name" placeholder="Ej: Transportes Rápidos SAS" />
-              </label>
-              <label class="field">
-                <span>Ruc del proveedor</span>
-                <input type="text" formControlName="ruc" placeholder="00-000-000-000" />
-              </label>
-              <label class="field">
-                <span>Descripción</span>
-                <textarea formControlName="description" rows="3" placeholder="Describe brevemente al aliado."></textarea>
-              </label>
-              <label class="field">
-                <span>Contraseña temporal</span>
-                <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
-              </label>
-            </div>
-          </div>
-        </form>
+          </label>
+          <label class="field">
+            <span>Nombre de la Empresa</span>
+            <input type="text" formControlName="company_name" placeholder="Ej: Transportes Rápidos SAS" />
+          </label>
+          <label class="field">
+            <span>Ruc del proveedor</span>
+            <input type="text" formControlName="ruc" placeholder="00-000-000-000" />
+          </label>
+          <label class="field">
+            <span>Descripción</span>
+            <textarea formControlName="description" rows="3" placeholder="Describe brevemente al aliado."></textarea>
+          </label>
+          <label class="field">
+            <span>Contraseña temporal</span>
+            <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
+          </label>
+        </div>
       </div>
 
       <div class="provider-modal-footer">
         <button type="button" class="btn secondary" (click)="close()">Cancelar</button>
-        <button type="submit" class="btn primary" (click)="submit()" [disabled]="checkLoading()">
+        <button type="submit" class="btn primary" [disabled]="checkLoading()">
           @if (checkLoading()) {
             <span class="material-symbols-outlined">hourglass_top</span>
             Verificando correo...
@@ -87,36 +78,38 @@
           }
         </button>
       </div>
-    </div>
-  </div>
+    </form>
+  </app-modal>
 }
 
 @if (matchModalOpen()) {
-  <div class="match-overlay" (click)="closeMatchModal()">
-    <div class="match-modal" (click)="$event.stopPropagation()">
-      <div class="match-icon">
-        <span class="material-symbols-outlined">hub</span>
-      </div>
-      <h3>Proveedor ya registrado</h3>
-      <p>
-        El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
-      </p>
-      @if (matchError()) {
-        <div class="match-error">
-          <span class="material-symbols-outlined">error</span>
-          {{ matchError() }}
-        </div>
-      }
-      <div class="match-actions">
-        <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
-        <button type="button" class="btn primary" (click)="confirmMatchRequest()" [disabled]="matchLoading()">
-          @if (matchLoading()) {
-            Enviando...
-          } @else {
-            Enviar solicitud
-          }
-        </button>
-      </div>
+  <app-modal
+    title="Proveedor ya registrado"
+    size="sm"
+    [showClose]="false"
+    (close)="closeMatchModal()"
+  >
+    <div class="match-icon">
+      <span class="material-symbols-outlined">hub</span>
     </div>
-  </div>
+    <p>
+      El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
+    </p>
+    @if (matchError()) {
+      <div class="match-error">
+        <span class="material-symbols-outlined">error</span>
+        {{ matchError() }}
+      </div>
+    }
+    <div class="match-actions">
+      <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
+      <button type="button" class="btn primary" (click)="confirmMatchRequest()" [disabled]="matchLoading()">
+        @if (matchLoading()) {
+          Enviando...
+        } @else {
+          Enviar solicitud
+        }
+      </button>
+    </div>
+  </app-modal>
 }

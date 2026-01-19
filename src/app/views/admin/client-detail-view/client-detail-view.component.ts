@@ -1,13 +1,14 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ClientService } from '../../../services/client.service';
 import { Client } from '../../../models/client.model';
+import { ClientDetailCardComponent } from './components/client-detail-card/client-detail-card.component';
 
 @Component({
   selector: 'app-client-detail-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe],
+  imports: [CommonModule, RouterLink, ClientDetailCardComponent],
   templateUrl: './client-detail-view.component.html',
   styleUrl: './client-detail-view.component.css'
 })

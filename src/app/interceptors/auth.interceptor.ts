@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
+import { LocalStorageEnums } from '../models/local.storage.enums';
 
 // Función para decodificar JWT sin verificar la firma (solo para obtener el payload)
 function decodeJWT(token: string): any {
@@ -73,8 +74,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   let refreshToken: string | null = null;
   
   if (isPlatformBrowser(platformId)) {
-    accessToken = storageService.getItem('access_token');
-    refreshToken = storageService.getItem('refresh_token');
+    accessToken = storageService.getItem(LocalStorageEnums.ACCESS_TOKEN);
+    refreshToken = storageService.getItem(LocalStorageEnums.REFRESH_TOKEN);
   }
   
   if (!accessToken) {
@@ -94,7 +95,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           switchMap((response) => {
             // Guardar el nuevo access token
             if (response.access) {
-              storageService.setItem('access_token', response.access);
+              storageService.setItem(LocalStorageEnums.ACCESS_TOKEN, response.access);
             }
             
             // Clonar la petición original con el nuevo token
@@ -129,7 +130,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       switchMap((response) => {
         // Guardar el nuevo access token
         if (isPlatformBrowser(platformId) && response.access) {
-          storageService.setItem('access_token', response.access);
+          storageService.setItem(LocalStorageEnums.ACCESS_TOKEN, response.access);
         }
         
         // Clonar la petición original con el nuevo token
@@ -166,7 +167,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return authService.refreshToken({ refresh: refreshToken }).pipe(
           switchMap((response) => {
             // Guardar el nuevo access token
-            storageService.setItem('access_token', response.access);
+            storageService.setItem(LocalStorageEnums.ACCESS_TOKEN, response.access);
             
             // Reintentar la petición original con el nuevo token
             const retryRequest = req.clone({
