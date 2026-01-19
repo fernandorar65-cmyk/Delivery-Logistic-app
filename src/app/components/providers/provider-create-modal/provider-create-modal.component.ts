@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { catchError, finalize, of } from 'rxjs';
+import { catchError, finalize, of, switchMap } from 'rxjs';
 import { ProviderService } from '../../../services/provider.service';
 import { StorageService } from '../../../services/storage.service';
 import { UserService } from '../../../services/user.service';
-import { ProviderCreate } from '../../../models/provider.model';
+import { ProviderCreate, ProviderResponse } from '../../../models/provider.model';
 
 @Component({
   selector: 'app-provider-create-modal',
@@ -157,6 +157,25 @@ export class ProviderCreateModalComponent {
     this.loading.set(true);
     this.error.set(null);
     this.providerService.create(payload).pipe(
+      switchMap((response: ProviderResponse) => {
+        const companyId = this.storageService.getItem('id');
+        const providerId = response?.result?.id;
+
+        if (!companyId || !providerId) {
+          this.error.set('Aliado creado, pero no se pudo enviar la solicitud de match.');
+          return of(null);
+        }
+
+        return this.providerService.sendCompanyProviderRequest({
+          company_id: companyId,
+          provider_id: providerId
+        }).pipe(
+          catchError(() => {
+            this.error.set('Aliado creado, pero no se pudo enviar la solicitud de match.');
+            return of(null);
+          })
+        );
+      }),
       finalize(() => this.loading.set(false))
     ).subscribe({
       next: () => {
