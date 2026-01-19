@@ -43,6 +43,13 @@ export const routes: Routes = [
           .then(m => m.MatchRequestsViewComponent)
       },
       {
+        path: 'providers/orders',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'provider'] },
+        loadComponent: () => import('@app/features/providers/pages/provider-orders-view/provider-orders-view.component')
+          .then(m => m.ProviderOrdersViewComponent)
+      },
+      {
         path: 'allies',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },

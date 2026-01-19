@@ -1,0 +1,38 @@
+<section class="provider-orders-page">
+  <header class="provider-orders-header">
+    <div>
+      <p class="provider-orders-title">Pedidos de Providers</p>
+      <p class="provider-orders-subtitle">Seguimiento de órdenes asignadas a aliados.</p>
+    </div>
+    <div class="provider-orders-count">
+      <app-hero-icon name="clipboard-document-list" [size]="18"></app-hero-icon>
+      <span>{{ orders().length }}</span>
+    </div>
+  </header>
+
+  @if (orders().length === 0) {
+    <app-empty-state
+      title="No hay pedidos asignados"
+      description="Cuando se asignen nuevas órdenes, aparecerán aquí."
+      icon="clipboard-document-list"
+    ></app-empty-state>
+  } @else {
+    <div class="provider-orders-list">
+      @for (order of orders(); track order.id) {
+        <article class="provider-order-card">
+          <div>
+            <p class="provider-order-id">{{ order.id }}</p>
+            <p class="provider-order-client">{{ order.client }}</p>
+            <p class="provider-order-route">{{ order.route }}</p>
+          </div>
+          <div class="provider-order-meta">
+            <span class="provider-order-status" [ngClass]="order.status">
+              {{ getStatusLabel(order.status) }}
+            </span>
+            <span class="provider-order-time">{{ order.time }}</span>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
