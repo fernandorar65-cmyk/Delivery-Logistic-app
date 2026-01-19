@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from '../../../components/hero-icon/hero-icon';
 import { ProviderService } from '../../../services/provider.service';
-import { Provider } from '../../../models/provider.model';
-import { ProviderCreateModalComponent, ProviderCreatePayload } from '../../../components/providers/provider-create-modal/provider-create-modal.component';
+import { Provider, ProviderCreate } from '../../../models/provider.model';
+import { ProviderCreateModalComponent} from '../../../components/providers/provider-create-modal/provider-create-modal.component';
 import { StorageService } from '../../../services/storage.service';
 import { finalize } from 'rxjs';
 
@@ -75,7 +75,7 @@ export class AllyListViewComponent implements OnInit {
     this.createOpen.set(false);
   }
 
-  handleProviderSaved(payload: ProviderCreatePayload) {
+  handleProviderSaved(payload: ProviderCreate) {
     this.createOpen.set(false);
     console.log('Provider creado (pendiente API):', payload);
   }

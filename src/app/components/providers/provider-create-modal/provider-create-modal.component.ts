@@ -5,18 +5,7 @@ import { catchError, finalize, of } from 'rxjs';
 import { ProviderService } from '../../../services/provider.service';
 import { StorageService } from '../../../services/storage.service';
 import { UserService } from '../../../services/user.service';
-
-export interface ProviderCreatePayload {
-  company_name: string;
-  tax_id: string;
-  contact_email: string;
-  phone: string;
-  representative_name: string;
-  fleet_type: string;
-  operation_zone: string;
-  status: 'active' | 'inactive';
-  logo_file?: File | null;
-}
+import { ProviderCreate } from '../../../models/provider.model';
 
 @Component({
   selector: 'app-provider-create-modal',
@@ -33,27 +22,26 @@ export class ProviderCreateModalComponent {
 
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<ProviderCreatePayload>();
+  @Output() saved = new EventEmitter<ProviderCreate>();
 
   checkLoading = signal(false);
   checkError = signal<string | null>(null);
+  checkSuccess = signal<string | null>(null);
   emailStatus = signal<'idle' | 'checking' | 'unique' | 'exists' | 'error'>('idle');
   matchModalOpen = signal(false);
   matchEmail = signal<string | null>(null);
   matchProviderId = signal<string | null>(null);
   matchLoading = signal(false);
   matchError = signal<string | null>(null);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   form = this.fb.group({
     company_name: ['', [Validators.required, Validators.minLength(2)]],
     tax_id: ['', [Validators.required, Validators.minLength(6)]],
     contact_email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.minLength(6)]],
-    representative_name: ['', [Validators.required, Validators.minLength(2)]],
-    fleet_type: ['', Validators.required],
-    operation_zone: ['', [Validators.required, Validators.minLength(2)]],
-    status: ['active', Validators.required],
-    logo_file: [null as File | null]
+    description: [''],
+    password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
   verifyEmail(): void {
@@ -69,12 +57,14 @@ export class ProviderCreateModalComponent {
     }
 
     this.checkError.set(null);
+    this.checkSuccess.set(null);
     this.emailStatus.set('checking');
     this.checkLoading.set(true);
     this.userService.CheckUserEmail(emailValue).pipe(
       catchError(() => {
         this.emailStatus.set('error');
         this.checkError.set('No se pudo verificar el correo.');
+        this.checkSuccess.set(null);
         return of(null);
       }),
       finalize(() => this.checkLoading.set(false))
@@ -86,10 +76,13 @@ export class ProviderCreateModalComponent {
         this.matchEmail.set(response?.result?.user_email || emailValue);
         this.matchProviderId.set(response?.result?.id || null);
         this.matchError.set(null);
+        this.checkSuccess.set(null);
         this.matchModalOpen.set(true);
         return;
       }
       this.emailStatus.set('unique');
+      this.checkError.set(null);
+      this.checkSuccess.set('Correo disponible.');
     });
   }
 
@@ -129,12 +122,6 @@ export class ProviderCreateModalComponent {
     });
   }
 
-  onLogoSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-    this.form.patchValue({ logo_file: file });
-  }
-
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -142,20 +129,17 @@ export class ProviderCreateModalComponent {
     }
 
     this.checkError.set(null);
-    const payload: ProviderCreatePayload = {
-      company_name: this.form.value.company_name ?? '',
-      tax_id: this.form.value.tax_id ?? '',
-      contact_email: this.form.value.contact_email ?? '',
-      phone: this.form.value.phone ?? '',
-      representative_name: this.form.value.representative_name ?? '',
-      fleet_type: this.form.value.fleet_type ?? '',
-      operation_zone: this.form.value.operation_zone ?? '',
-      status: (this.form.value.status ?? 'active') as 'active' | 'inactive',
-      logo_file: this.form.value.logo_file ?? null
+    this.checkSuccess.set(null);
+    const payload: ProviderCreate = {
+      provider_name: this.form.value.company_name ?? '',
+      ruc: this.form.value.tax_id ?? '',
+      description: this.form.value.description || undefined,
+      email: this.form.value.contact_email ?? '',
+      password: this.form.value.password ?? ''
     };
 
     if (this.emailStatus() === 'exists') {
-      this.matchEmail.set(payload.contact_email);
+      this.matchEmail.set(payload.email);
       this.matchModalOpen.set(true);
       return;
     }
@@ -163,6 +147,19 @@ export class ProviderCreateModalComponent {
       this.checkError.set('Espera a que termine la verificación del correo.');
       return;
     }
-    this.saved.emit(payload);
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.providerService.create(payload).pipe(
+      finalize(() => this.loading.set(false))
+    ).subscribe({
+      next: () => {
+        this.close();
+        this.saved.emit(payload);
+      },
+      error: () => {
+        this.error.set('Error al crear el aliado. Por favor, intenta nuevamente.');
+      }
+    });
   }
 }
