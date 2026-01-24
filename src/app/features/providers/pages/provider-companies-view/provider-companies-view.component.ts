@@ -73,4 +73,12 @@ export class ProviderCompaniesViewComponent {
         return status;
     }
   }
+
+  getStatusFilterLabel(): string {
+    const status = this.statusFilter();
+    if (!status) {
+      return 'Todos';
+    }
+    return this.getStatusLabel(status as ProviderCompany['status']);
+  }
 }
