@@ -1,0 +1,49 @@
+<div class="search-filters-bar">
+  <div class="search-container">
+    <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Buscar por nombre de empresa o NIT..."
+      [value]="searchQuery"
+      (input)="onSearchInput($event)"
+    />
+  </div>
+
+  @if (activeFilters.length > 0) {
+    <div class="active-filters">
+      @for (filter of activeFilters; track filter.type) {
+        <span class="filter-tag">
+          @if (filter.type === 'status') {
+            Estado: {{ filter.value }}
+          } @else if (filter.type === 'sector') {
+            Sector: {{ filter.value }}
+          } @else if (filter.type === 'city') {
+            Ciudad: {{ filter.value }}
+          }
+          <button type="button" class="filter-remove" (click)="removeFilter.emit(filter.type)">
+            <app-hero-icon name="x-mark" [size]="14"></app-hero-icon>
+          </button>
+        </span>
+      }
+      <button type="button" class="clear-filters-btn" (click)="clearFilters.emit()">
+        Limpiar filtros
+      </button>
+    </div>
+  }
+
+  <div class="filter-dropdowns">
+    <select class="filter-select" [value]="selectedSector" (change)="onSectorSelect($event)">
+      <option value="all">Sector: Todos</option>
+      @for (sector of sectors; track sector) {
+        <option [value]="sector">Sector: {{ sector }}</option>
+      }
+    </select>
+    <select class="filter-select" [value]="selectedCity" (change)="onCitySelect($event)">
+      <option value="all">Ciudad: Todas</option>
+      @for (city of cities; track city) {
+        <option [value]="city">Ciudad: {{ city }}</option>
+      }
+    </select>
+  </div>
+</div>

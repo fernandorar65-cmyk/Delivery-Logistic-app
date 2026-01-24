@@ -1,0 +1,18 @@
+<app-modal
+  title="Cliente creado correctamente"
+  size="sm"
+  [showClose]="false"
+  (close)="close.emit()"
+>
+  <div class="success-icon">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20 6 9 17l-5-5"></path>
+    </svg>
+  </div>
+  <div class="success-content">
+    <p>El registro fue guardado con éxito.</p>
+  </div>
+  <button class="btn btn-primary" type="button" (click)="close.emit()">
+    Entendido
+  </button>
+</app-modal>

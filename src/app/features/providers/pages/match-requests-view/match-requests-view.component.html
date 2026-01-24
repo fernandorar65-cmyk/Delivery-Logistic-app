@@ -1,0 +1,47 @@
+<section class="match-requests-page">
+  <header class="match-requests-header">
+    <div>
+      <p class="match-requests-title">Solicitudes de Match</p>
+      <p class="match-requests-subtitle">Gestiona las propuestas pendientes de aliados.</p>
+    </div>
+    <div class="match-requests-count">
+      <app-hero-icon name="bell" [size]="18"></app-hero-icon>
+      <span>{{ requests().length }}</span>
+    </div>
+  </header>
+
+  @if (requests().length === 0) {
+    <app-empty-state
+      title="Sin solicitudes pendientes"
+      description="Cuando lleguen nuevas propuestas, aparecerán aquí."
+      icon="bell"
+    ></app-empty-state>
+  } @else {
+    <div class="match-requests-list">
+      @for (request of requests(); track request.id) {
+        <article class="match-request-card">
+          <div class="match-request-main">
+            <div class="match-request-icon" [ngClass]="request.tone">
+              <app-hero-icon [name]="request.icon" [size]="20"></app-hero-icon>
+            </div>
+            <div>
+              <p class="match-request-company">{{ request.company }}</p>
+              <p class="match-request-detail">{{ request.detail }}</p>
+            </div>
+          </div>
+          <div class="match-request-actions">
+            <span class="match-request-time">{{ request.time }}</span>
+            <div class="match-request-buttons">
+              <button class="action-btn action-primary" type="button" (click)="acceptRequest(request.id)">
+                Aceptar
+              </button>
+              <button class="action-btn action-outline" type="button" (click)="rejectRequest(request.id)">
+                Rechazar
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

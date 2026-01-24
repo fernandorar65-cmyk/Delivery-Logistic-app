@@ -1,0 +1,63 @@
+<div class="clients-page">
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">Listado de Clientes Finales</h1>
+      <p class="page-subtitle">Gestiona y visualiza la información centralizada de tus clientes corporativos.</p>
+    </div>
+    <button (click)="openNewClientModal()" class="btn btn-primary">
+      <app-hero-icon name="user-plus" [size]="18"></app-hero-icon>
+      Nuevo Cliente
+    </button>
+  </div>
+
+  @if (loading() || error() || clients().length === 0) {
+    <app-clients-table
+      [loading]="loading()"
+      [error]="error()"
+      [clients]="clients()"
+      (createRequested)="openNewClientModal()"
+      (edit)="openEditClientModal($event)"
+      (remove)="deleteClient($event)"
+    ></app-clients-table>
+  } @else {
+    <app-clients-toolbar></app-clients-toolbar>
+
+    <app-clients-table
+      [clients]="clients()"
+      (edit)="openEditClientModal($event)"
+      (remove)="deleteClient($event)"
+    ></app-clients-table>
+
+    <app-clients-pagination
+      [currentCount]="clients().length"
+      [totalCount]="totalCount()"
+      [hasPrevious]="hasPrevious()"
+      [hasNext]="hasNext()"
+      (previous)="previousPage()"
+      (next)="nextPage()"
+    ></app-clients-pagination>
+
+    <app-clients-stats
+      [totalCount]="totalCount()"
+      [currentCount]="clients().length"
+    ></app-clients-stats>
+  }
+
+  <!-- Modal Flotante -->
+  @if (showModal()) {
+    <app-clients-form-modal
+      [clientForm]="clientForm"
+      [isEditMode]="isEditMode()"
+      [formLoading]="formLoading()"
+      [formError]="formError()"
+      (close)="closeModal()"
+      (submit)="onSubmit($event)"
+    ></app-clients-form-modal>
+  }
+
+  @if (showSuccessModal()) {
+    <app-clients-success-modal
+      (close)="closeSuccessModal()"
+    ></app-clients-success-modal>
+  }
+</div>

@@ -1,0 +1,27 @@
+<div class="toolbar">
+  <div class="search-container">
+    <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Buscar por nombre, ID o empresa..."
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="searchQueryChange.emit($event)"
+    />
+  </div>
+  <div class="toolbar-actions">
+    <button class="filter-btn">
+      <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
+      <span>Estado</span>
+    </button>
+    <button class="filter-btn">
+      <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
+      <span>Zona</span>
+    </button>
+    <div class="toolbar-divider"></div>
+    <button class="filter-btn">
+      <app-hero-icon name="download" [size]="18"></app-hero-icon>
+      <span>Exportar</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<section class="provider-companies-page">
+  <div class="provider-companies-breadcrumbs">
+    <span>Dashboard</span>
+    <span class="breadcrumb-separator">›</span>
+    <span>Mis Clientes</span>
+  </div>
+
+  <header class="provider-companies-header">
+    <div>
+      <h2 class="provider-companies-title">Mis Compañías Asociadas</h2>
+      <p class="provider-companies-subtitle">
+        Gestiona tus relaciones comerciales y vínculos activos con clientes corporativos.
+      </p>
+    </div>
+  </header>
+
+  <div class="provider-companies-filters">
+    <label class="filter-search">
+      <span class="filter-search-icon">🔍</span>
+      <input
+        type="text"
+        class="filter-input"
+        placeholder="Buscar por nombre de compañía o ID..."
+        [(ngModel)]="searchQuery"
+      />
+    </label>
+    <div class="filter-chips">
+      <button type="button" class="filter-chip">
+        Estado: {{ getStatusFilterLabel() }}
+        <span class="filter-chip-icon">▾</span>
+      </button>
+      <select class="filter-select" [(ngModel)]="statusFilter">
+        <option value="">Todos los estados</option>
+        <option value="active">Activo</option>
+        <option value="pending">Pendiente</option>
+        <option value="inactive">Inactivo</option>
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <app-loading-card text="Cargando empresas..." />
+  } @else if (error()) {
+    <app-empty-state title="No se pudo cargar" description="{{ error() }}" icon="exclamation-triangle" />
+  } @else if (filteredCompanies().length === 0) {
+    <app-empty-state
+      title="Sin empresas asociadas"
+      description="Cuando tengas empresas vinculadas aparecerán aquí."
+      icon="building-office-2"
+    ></app-empty-state>
+  } @else {
+    <div class="provider-companies-table">
+      <table class="companies-table">
+        <thead>
+          <tr>
+            <th>Compañía</th>
+            <th>ID</th>
+            <th>Rubro</th>
+            <th>Estado</th>
+            <th>Relación</th>
+            <th class="text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (company of filteredCompanies(); track company.id) {
+            <tr>
+              <td>
+                <div class="company-cell">
+                  <div class="company-avatar">{{ company.name.slice(0, 2) }}</div>
+                  <div>
+                    <p class="company-name">{{ company.name }}</p>
+                    <p class="company-subtitle">{{ company.industry }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="company-id">{{ company.id }}</td>
+              <td class="company-industry">{{ company.industry }}</td>
+              <td>
+                <span class="company-status" [ngClass]="company.status">
+                  <span class="status-dot"></span>
+                  {{ getStatusLabel(company.status) }}
+                </span>
+              </td>
+              <td class="company-since">{{ company.since }}</td>
+              <td class="text-right">
+                <div class="company-actions">
+                  <button type="button" class="action-link">Ver detalles</button>
+                  <button type="button" class="action-link danger">Finalizar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="provider-companies-footer">
+      <p>
+        Mostrando
+        <span class="footer-strong">{{ filteredCompanies().length }}</span>
+        de
+        <span class="footer-strong">{{ companies().length }}</span>
+        compañías asociadas
+      </p>
+      <div class="footer-actions">
+        <button type="button" class="footer-button" disabled>Anterior</button>
+        <button type="button" class="footer-button">Siguiente</button>
+      </div>
+    </div>
+  }
+</section>

@@ -1,0 +1,305 @@
+.provider-companies-page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.provider-companies-breadcrumbs {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.breadcrumb-separator {
+  color: #cbd5f5;
+}
+
+.provider-companies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.provider-companies-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.provider-companies-subtitle {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.provider-companies-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 220px;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  background: #fff;
+}
+
+.filter-search-icon {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.filter-input {
+  flex: 1;
+  padding: 0.7rem 0;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+}
+
+.filter-input:focus {
+  outline: none;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.filter-chip-icon {
+  color: #94a3b8;
+}
+
+.filter-select {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  background: #fff;
+}
+
+.provider-companies-table {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.companies-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.companies-table thead {
+  background: #f8fafc;
+}
+
+.companies-table th {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-align: left;
+  padding: 1rem 1.5rem;
+}
+
+.companies-table td {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.companies-table tr:hover {
+  background: #f8fafc;
+}
+
+.company-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.company-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #137fec, #2563eb);
+  color: #fff;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.company-id {
+  font-weight: 600;
+  color: #0f172a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.company-name {
+  font-weight: 600;
+  margin: 0;
+}
+
+.company-industry {
+  color: #64748b;
+}
+
+.company-subtitle {
+  margin: 0.25rem 0 0;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.company-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.company-status.active {
+  background: #ecfdf3;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.company-status.pending {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.company-status.inactive {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.company-since {
+  color: #94a3b8;
+}
+
+.company-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.action-link {
+  border: none;
+  background: transparent;
+  color: #137fec;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  border-radius: 0.4rem;
+}
+
+.action-link:hover {
+  background: #e0f2fe;
+}
+
+.action-link.danger {
+  color: #ef4444;
+}
+
+.action-link.danger:hover {
+  background: #fee2e2;
+}
+
+.provider-companies-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.footer-strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.footer-button {
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.7rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.footer-button:not(:disabled):hover {
+  background: #f8fafc;
+}
+
+@media (max-width: 900px) {
+  .provider-companies-filters {
+    flex-direction: column;
+  }
+
+  .filter-chips {
+    width: 100%;
+  }
+
+  .companies-table th,
+  .companies-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .provider-companies-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

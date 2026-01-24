@@ -1,0 +1,161 @@
+<main class="login-main">
+  <!-- Left Side: Login Form -->
+  <section class="login-form-section">
+    <div class="form-wrapper">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <app-hero-icon name="shield-check" [size]="24"></app-hero-icon>
+        </div>
+        <span class="logo-text">LOGISAAS <span class="logo-accent">PREMIUM</span></span>
+      </div>
+
+      <div class="form-header">
+        <h1 class="form-title">Acceso Seguro</h1>
+        <p class="form-subtitle">
+          Gestione su cadena de suministro con los más altos estándares de seguridad y eficiencia.
+        </p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        @if (error()) {
+          <div class="error-message">
+            <app-hero-icon name="exclamation-circle" [size]="20"></app-hero-icon>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email" class="form-label">Correo Corporativo</label>
+          <div class="input-wrapper group">
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="nombre@compania.com"
+              class="login-input"
+              [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+              required
+            />
+            <div class="input-check-icon" [class.visible]="loginForm.get('email')?.valid && loginForm.get('email')?.touched">
+              <app-hero-icon name="check-circle" [size]="20"></app-hero-icon>
+            </div>
+          </div>
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <span class="error-text">{{ getFieldError('email') }}</span>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="password-label-row">
+            <label for="password" class="form-label">Contraseña</label>
+            <a href="#" class="forgot-password">¿Olvidó sus datos?</a>
+          </div>
+          <div class="input-wrapper">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="••••••••"
+              class="login-input"
+              [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              required
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+            >
+              <app-hero-icon name="eye" [size]="20"></app-hero-icon>
+            </button>
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <span class="error-text">{{ getFieldError('password') }}</span>
+          }
+        </div>
+
+        <!-- Remember me -->
+        <div class="remember-me-group">
+          <label class="remember-label-wrapper">
+            <input
+              type="checkbox"
+              id="remember"
+              class="remember-checkbox"
+              [checked]="rememberMe()"
+              (change)="rememberMe.set($any($event.target).checked)"
+            />
+            <span class="remember-label">Mantener sesión activa</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-premium"
+          [disabled]="loginForm.invalid || loading()"
+        >
+          @if (loading()) {
+            <div class="btn-spinner"></div>
+            Iniciando sesión...
+          } @else {
+            Ingresar al Sistema
+            <app-hero-icon name="arrow-right" [size]="20" class="btn-icon"></app-hero-icon>
+          }
+        </button>
+      </form>
+
+      <div class="form-footer">
+        <div class="features-badges">
+          <div class="badge-item">
+            <app-hero-icon name="verified" [size]="14"></app-hero-icon>
+            <span>Aliados</span>
+          </div>
+          <div class="badge-item">
+            <app-hero-icon name="location-on" [size]="14"></app-hero-icon>
+            <span>Global</span>
+          </div>
+          <div class="badge-item">
+            <app-hero-icon name="support" [size]="14"></app-hero-icon>
+            <span>24/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right Side: Visual Hero Area -->
+  <section class="login-hero-section">
+    <div class="hero-background"></div>
+    <div class="gradient-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Sistema Operativo Live
+      </div>
+      <h2 class="hero-title">Infraestructura Tecnológica de Clase Mundial</h2>
+      <p class="hero-description">
+        Nuestra red logística premium utiliza inteligencia artificial para garantizar que cada entrega llegue a su destino con precisión quirúrgica y máxima seguridad.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <p class="stat-value">99.9%</p>
+          <p class="stat-label">Uptime del Sistema</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-value">Encriptado</p>
+          <p class="stat-label">AES-256 Bit Security</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero-footer-text">
+      Premium Logistics Hub // v4.0.2
+    </div>
+  </section>
+</main>
+
+<!-- Floating Support Button -->
+<button class="floating-support-btn">
+  <app-hero-icon name="headset-mic" [size]="24"></app-hero-icon>
+</button>

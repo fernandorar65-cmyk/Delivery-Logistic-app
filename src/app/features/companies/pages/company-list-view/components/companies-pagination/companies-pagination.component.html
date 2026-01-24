@@ -1,0 +1,28 @@
+<div class="pagination">
+  <div class="pagination-info">
+    Mostrando {{ startItem }}-{{ endItem }} de {{ totalItems }} compañía{{ totalItems !== 1 ? 's' : '' }}
+  </div>
+  <div class="pagination-controls">
+    <button class="pagination-btn" [disabled]="currentPage === 1" (click)="previous.emit()">
+      Anterior
+    </button>
+    <div class="pagination-numbers">
+      @for (page of pages; track $index) {
+        @if (page === '...') {
+          <span class="pagination-ellipsis">...</span>
+        } @else if (isPageNumber(page)) {
+          <button
+            class="pagination-number"
+            [class.active]="currentPage === page"
+            (click)="goTo.emit(page)"
+          >
+            {{ page }}
+          </button>
+        }
+      }
+    </div>
+    <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="next.emit()">
+      Siguiente
+    </button>
+  </div>
+</div>

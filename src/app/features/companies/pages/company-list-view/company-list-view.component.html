@@ -1,0 +1,85 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">Administración de Compañías Clientes</h1>
+      <p class="page-subtitle">Gestione sus clientes finales y sus entidades operativas.</p>
+    </div>
+    <button (click)="openNewCompanyModal()" class="btn btn-primary">
+      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
+      Agregar Nueva Compañía
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="card loading-card">
+      <app-loading-card message="Cargando empresas..."></app-loading-card>
+    </div>
+  } @else if (error()) {
+    <div class="card error-card">
+      <app-empty-state
+        icon="exclamation-triangle"
+        title="No se pudieron cargar las empresas"
+        [description]="error()"
+      ></app-empty-state>
+    </div>
+  } @else {
+    <app-companies-toolbar
+      [searchQuery]="searchQuery()"
+      [activeFilters]="activeFilters()"
+      [sectors]="sectors()"
+      [cities]="cities()"
+      [selectedSector]="selectedSector()"
+      [selectedCity]="selectedCity()"
+      (searchChange)="searchQuery.set($event); applyFilters()"
+      (removeFilter)="removeFilter($event)"
+      (clearFilters)="clearAllFilters()"
+      (sectorChange)="selectedSector.set($event); applyFilters()"
+      (cityChange)="selectedCity.set($event); applyFilters()"
+    ></app-companies-toolbar>
+
+    @if (!filteredCompanies() || filteredCompanies().length === 0) {
+      <div class="card empty-state-card">
+        <app-empty-state
+          icon="users"
+          title="No se encontraron empresas"
+          description="Intenta ajustar los filtros de búsqueda"
+        ></app-empty-state>
+      </div>
+    } @else {
+      <app-companies-table
+        [companies]="paginatedCompanies"
+        [getCompanyColor]="getCompanyColor.bind(this)"
+        [getCompanyInitials]="getCompanyInitials.bind(this)"
+        [getSectorClass]="getSectorClass.bind(this)"
+        [getStatusClass]="getStatusClass.bind(this)"
+        [getStatusLabel]="getStatusLabel.bind(this)"
+        (edit)="openEditCompanyModal($event)"
+        (remove)="deleteCompany($event)"
+      ></app-companies-table>
+
+      <app-companies-pagination
+        [startItem]="startItem"
+        [endItem]="endItem"
+        [totalItems]="filteredCompanies().length"
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages"
+        [pages]="getPageNumbers()"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+        (goTo)="goToPage($event)"
+      ></app-companies-pagination>
+    }
+  }
+
+  <!-- Modal Flotante -->
+  @if (showModal()) {
+    <app-companies-form-modal
+      [companyForm]="companyForm"
+      [isEditMode]="isEditMode()"
+      [formLoading]="formLoading()"
+      [formError]="formError()"
+      (close)="closeModal()"
+      (submit)="onSubmit($event)"
+    ></app-companies-form-modal>
+  }
+</div>

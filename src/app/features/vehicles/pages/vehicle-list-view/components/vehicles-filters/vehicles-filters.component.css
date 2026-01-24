@@ -1,0 +1,122 @@
+.filters-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
+  border: 1px solid #dbe0e6;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+@media (min-width: 1024px) {
+  .filters-container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .search-wrapper {
+    flex: 1;
+  }
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+  background: #f9fafb;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  color: #111827;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  background: white;
+  box-shadow: 0 0 0 2px rgba(19, 127, 236, 0.2);
+}
+
+.search-input::placeholder {
+  color: #6b7280;
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .filters-row {
+    width: auto;
+  }
+}
+
+.filter-select {
+  background: #f9fafb;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  color: #111827;
+  outline: none;
+  transition: all 0.2s;
+  min-width: 140px;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  background: white;
+  box-shadow: 0 0 0 2px rgba(19, 127, 236, 0.2);
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  background: #e5e7eb;
+}
+
+@media (max-width: 640px) {
+  .filters-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

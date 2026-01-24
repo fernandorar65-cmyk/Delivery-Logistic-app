@@ -1,0 +1,131 @@
+<div class="table-container">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Aliado / Empresa</th>
+          <th>Estado</th>
+          <th>Flota</th>
+          <th>Conductores</th>
+          <th>Zona / Cobertura</th>
+          <th>Calif.</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading) {
+          <tr>
+            <td colspan="7" class="text-center p-8">
+              <app-loading-card message="Cargando aliados..."></app-loading-card>
+            </td>
+          </tr>
+        } @else if (error) {
+          <tr>
+            <td colspan="7" class="text-center p-8 text-red-600">
+              <app-empty-state
+                icon="exclamation-triangle"
+                title="No se pudieron cargar los aliados"
+                [description]="error"
+              ></app-empty-state>
+            </td>
+          </tr>
+        } @else if (allies.length === 0) {
+          <tr>
+            <td colspan="7" class="text-center p-8">
+              <app-empty-state
+                icon="users"
+                title="No hay providers por el momento"
+                description="Cuando registres nuevos aliados aparecerán en esta lista."
+                actionLabel="Crear nuevo aliado"
+                (action)="createRequested.emit()"
+              ></app-empty-state>
+            </td>
+          </tr>
+        } @else {
+          @for (ally of allies; track ally.id) {
+          <tr class="table-row">
+            <td class="ally-info">
+              <div class="ally-avatar">
+                @if (ally.logo) {
+                  <img [src]="ally.logo" [alt]="ally.name" />
+                } @else if (ally.initials) {
+                  <div class="ally-initials">{{ ally.initials }}</div>
+                } @else {
+                  <div class="ally-initials">{{ ally.name.charAt(0) }}</div>
+                }
+              </div>
+              <div class="ally-details">
+                <p class="ally-name">{{ ally.name }}</p>
+                <p class="ally-id">ID: #{{ ally.id }}</p>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [class]="getStatusClass(ally.status)">
+                <span class="status-dot"></span>
+                {{ getStatusLabel(ally.status) }}
+              </span>
+            </td>
+            <td>
+              <div class="fleet-info">
+                <div class="fleet-item">
+                  <app-hero-icon name="truck" [size]="18" class="fleet-icon"></app-hero-icon>
+                  <span class="fleet-count">{{ ally.trucks }}</span>
+                </div>
+                <div class="fleet-item" [class.opacity-40]="ally.motorcycles === 0">
+                  <app-hero-icon name="user" [size]="18" class="fleet-icon"></app-hero-icon>
+                  <span class="fleet-count">{{ ally.motorcycles }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              @if (ally.driverAvatars && ally.driverAvatars.length > 0) {
+                <div class="drivers-avatars">
+                  @for (avatar of ally.driverAvatars.slice(0, 3); track $index) {
+                    <img [src]="avatar" [alt]="'Driver ' + ($index + 1)" class="driver-avatar" />
+                  }
+                  @if (ally.drivers > ally.driverAvatars.length) {
+                    <div class="driver-avatar-more">+{{ ally.drivers - ally.driverAvatars.length }}</div>
+                  }
+                </div>
+              } @else {
+                <span class="drivers-text">{{ ally.drivers }} Conductores</span>
+              }
+            </td>
+            <td>
+              <span class="zone-text">{{ ally.zone }}</span>
+            </td>
+            <td>
+              @if (ally.rating !== null) {
+                <div class="rating">
+                  <app-hero-icon name="star" [size]="16" class="star-icon"></app-hero-icon>
+                  <span class="rating-value">{{ ally.rating }}</span>
+                </div>
+              } @else {
+                <div class="rating">
+                  <app-hero-icon name="star" [size]="16" class="star-icon-empty"></app-hero-icon>
+                  <span class="rating-empty">-</span>
+                </div>
+              }
+            </td>
+            <td class="text-right">
+              @if (ally.id) {
+                <a
+                  class="action-btn"
+                  [routerLink]="['/allies', ally.id, 'vehicles']"
+                  [queryParams]="{ name: ally.name }"
+                  title="Ver vehículos"
+                >
+                  <app-hero-icon name="truck" [size]="20"></app-hero-icon>
+                </a>
+              }
+              <button class="action-btn" title="Más acciones">
+                <app-hero-icon name="ellipsis-vertical" [size]="20"></app-hero-icon>
+              </button>
+            </td>
+          </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

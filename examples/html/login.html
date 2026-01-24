@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Acceso Seguro Premium - LogiSaaS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f172a",
+                        "accent": "#2563eb",
+                        "surface": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "sans": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply font-sans text-slate-900 antialiased;
+            }
+        }
+        .login-input {
+            @apply w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl transition-all duration-300 outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent placeholder:text-slate-400;
+        }
+        .btn-premium {
+            @apply relative overflow-hidden bg-primary text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-5px_rgba(15,23,42,0.3)] active:translate-y-0;
+        }
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(37, 99, 235, 0.4) 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-white">
+<main class="flex min-h-screen">
+<section class="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center px-8 md:px-16 lg:px-24 bg-white z-10">
+<div class="max-w-md w-full mx-auto space-y-10">
+<div class="flex items-center gap-2 mb-12">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg shadow-lg">
+<span class="material-symbols-outlined text-white text-2xl">shield_with_heart</span>
+</div>
+<span class="text-xl font-extrabold tracking-tight text-primary">LOGISAAS <span class="text-accent">PREMIUM</span></span>
+</div>
+<div class="space-y-3">
+<h1 class="text-4xl font-extrabold tracking-tight text-slate-900">Acceso Seguro</h1>
+<p class="text-slate-500 text-lg leading-relaxed">Gestione su cadena de suministro con los más altos estándares de seguridad y eficiencia.</p>
+</div>
+<form class="space-y-6" onsubmit="return false">
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-700 ml-1">Correo Corporativo</label>
+<div class="relative group">
+<input class="login-input" placeholder="nombre@compania.com" required="" type="email"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none">
+<span class="material-symbols-outlined text-emerald-500 text-xl">check_circle</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="text-sm font-semibold text-slate-700">Contraseña</label>
+<a class="text-sm font-medium text-accent hover:text-blue-700 transition-colors" href="#">¿Olvidó sus datos?</a>
+</div>
+<div class="relative group">
+<input class="login-input" placeholder="••••••••" required="" type="password"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-600">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between py-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-slate-300 text-accent focus:ring-accent/20 transition-all cursor-pointer" type="checkbox"/>
+<span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Mantener sesión activa</span>
+</label>
+</div>
+<button class="w-full btn-premium flex items-center justify-center gap-2 group" type="submit">
+                        Ingresar al Sistema
+                        <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</form>
+<div class="pt-8 border-t border-slate-100">
+<div class="flex flex-wrap gap-6 justify-center">
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">verified</span> Aliados
+                        </div>
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">location_on</span> Global
+                        </div>
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">support</span> 24/7
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<section class="hidden lg:block lg:flex-1 relative overflow-hidden bg-slate-900">
+<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAP55B0oyc3h29fhJbJVnZvWnQ9VYtS2OyiSJcshL-E-o4IytPumNO_k7UJQKiWPiIK68--Psf7_OICLm0TaSzXn6EBvhl2YONKYBxcmf11wCrNntw9W5JC6oalQRFTKG7mhCXWOM8NpNbk2pn2dpfG3CIOElQUv7o9-cQE3l3DZwQ02_SG1b_4Xl_di3av8ZENTnpP3fz3iXOfxClTsh0c8Nk9yAfNdn02-SK0kuq2gKDy0zwGWX3F_JGdP7edEBrQF_QRB3CTb6Hc');"></div>
+<div class="absolute inset-0 gradient-overlay"></div>
+<div class="relative h-full flex flex-col justify-end p-20 text-white">
+<div class="max-w-xl space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Sistema Operativo Live
+                    </div>
+<h2 class="text-5xl font-bold leading-tight">Infraestructura Tecnológica de Clase Mundial</h2>
+<p class="text-white/80 text-lg leading-relaxed">
+                        Nuestra red logística premium utiliza inteligencia artificial para garantizar que cada entrega llegue a su destino con precisión quirúrgica y máxima seguridad.
+                    </p>
+<div class="grid grid-cols-2 gap-8 pt-8">
+<div class="space-y-1">
+<p class="text-3xl font-bold">99.9%</p>
+<p class="text-white/60 text-sm uppercase tracking-wider font-semibold">Uptime del Sistema</p>
+</div>
+<div class="space-y-1">
+<p class="text-3xl font-bold">Encritpado</p>
+<p class="text-white/60 text-sm uppercase tracking-wider font-semibold">AES-256 Bit Security</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-10 right-10 text-white/20 font-mono text-xs tracking-widest uppercase">
+                Premium Logistics Hub // v4.0.2
+            </div>
+</section>
+</main>
+<button class="fixed bottom-6 right-6 lg:left-6 lg:right-auto w-12 h-12 bg-white text-slate-900 border border-slate-200 rounded-full shadow-xl flex items-center justify-center hover:bg-slate-50 transition-colors z-50">
+<span class="material-symbols-outlined">headset_mic</span>
+</button>
+
+</body></html>

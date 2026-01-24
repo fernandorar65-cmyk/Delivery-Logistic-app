@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Administración de Flota de Vehículos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111418] dark:text-white">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-b-slate-800 bg-white dark:bg-slate-900 px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 45.8096C19.6865 45.8096 15.4698 44.5305 11.8832 42.134C8.29667 39.7376 5.50128 36.3314 3.85056 32.3462C2.19985 28.361 1.76794 23.9758 2.60947 19.7452C3.451 15.5145 5.52816 11.6284 8.57829 8.5783C11.6284 5.52817 15.5145 3.45101 19.7452 2.60948C23.9758 1.76795 28.361 2.19986 32.3462 3.85057C36.3314 5.50129 39.7376 8.29668 42.134 11.8833C44.5305 15.4698 45.8096 19.6865 45.8096 24L24 24L24 45.8096Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Logística Premium</h2>
+</div>
+<div class="hidden lg:flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary pb-1" href="#">Flota</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Rutas</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Mantenimiento</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Reportes</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f4] dark:bg-slate-800 text-[#111418] dark:text-white hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f4] dark:bg-slate-800 text-[#111418] dark:text-white hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full border-2 border-primary bg-cover bg-center" data-alt="User profile avatar photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCdAMDBNd0PPQps448pUShSlHQr2xoOgWUtnrmz1AorbMID28XdGZDrOEcRrJj-2Rz7JaVIcMlotoxewIncMlLphrU_eNyACTe86qFDlawFQ2sE-Js-EutizTmaNDgh9E6Y1qYYBV9fTc7C50nuzCS9lGEhPhzo1bE3ZMuFKk5fCYpu6ETHStqt-dxYMWFyach6W8lMm7sImOsBE2q_mWD_K3ro4iGXguTicMfKhgN84K7nXjZsYuqkZrsDvNeprJRswdYouq1tMXba");'></div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8">
+<div class="max-w-[1200px] w-full flex flex-col px-6">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 py-2 mb-2">
+<a class="text-[#617589] dark:text-slate-400 text-sm font-medium leading-normal flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm">home</span> Inicio
+                    </a>
+<span class="text-[#617589] dark:text-slate-500 text-sm font-medium leading-normal">/</span>
+<span class="text-[#111418] dark:text-slate-200 text-sm font-medium leading-normal">Administración de Flota</span>
+</div>
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between items-end gap-3 mb-8">
+<div class="flex min-w-72 flex-col gap-2">
+<h1 class="text-[#111418] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Administración de Flota</h1>
+<p class="text-[#617589] dark:text-slate-400 text-base font-normal leading-normal">Supervisión operativa y asignación técnica de unidades.</p>
+</div>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+<span class="truncate">Registrar Vehículo</span>
+</button>
+</div>
+<!-- Stats Summary -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-[#dbe0e6] dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="text-primary bg-primary/10 p-2 rounded-lg material-symbols-outlined">local_shipping</span>
+<p class="text-[#078838] text-xs font-bold leading-normal bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">+5.2%</p>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">Total Vehículos</p>
+<p class="text-[#111418] dark:text-white tracking-light text-3xl font-bold leading-tight">124</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-[#dbe0e6] dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="text-blue-500 bg-blue-500/10 p-2 rounded-lg material-symbols-outlined">route</span>
+<p class="text-[#078838] text-xs font-bold leading-normal bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">+2.1%</p>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">En Ruta</p>
+<p class="text-[#111418] dark:text-white tracking-light text-3xl font-bold leading-tight">82</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-[#dbe0e6] dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="text-orange-500 bg-orange-500/10 p-2 rounded-lg material-symbols-outlined">build</span>
+<p class="text-[#e73908] text-xs font-bold leading-normal bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded">-1.4%</p>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">En Mantenimiento</p>
+<p class="text-[#111418] dark:text-white tracking-light text-3xl font-bold leading-tight">12</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-[#dbe0e6] dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="text-green-600 bg-green-600/10 p-2 rounded-lg material-symbols-outlined">check_circle</span>
+<p class="text-[#e73908] text-xs font-bold leading-normal bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded">-3.0%</p>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">Disponibles</p>
+<p class="text-[#111418] dark:text-white tracking-light text-3xl font-bold leading-tight">30</p>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-4 mb-6 shadow-sm">
+<div class="flex flex-col lg:flex-row gap-4 items-center">
+<div class="w-full lg:flex-1">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-background-light dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary dark:text-white dark:placeholder-slate-500" placeholder="Buscar por placa, modelo o aliado..." type="text"/>
+</div>
+</div>
+<div class="flex flex-wrap gap-3 w-full lg:w-auto">
+<select class="bg-background-light dark:bg-slate-800 border-none rounded-lg text-sm px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white min-w-[140px]">
+<option>Tipo de Vehículo</option>
+<option>Camión</option>
+<option>Van</option>
+<option>Moto</option>
+</select>
+<select class="bg-background-light dark:bg-slate-800 border-none rounded-lg text-sm px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white min-w-[140px]">
+<option>Aliado Propietario</option>
+<option>Transportes Express</option>
+<option>Logística Global</option>
+<option>Independiente</option>
+</select>
+<button class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span> Filtrar
+                            </button>
+</div>
+</div>
+</div>
+<!-- Fleet Table Section -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-lg font-bold text-[#111418] dark:text-white">Listado de Vehículos</h2>
+<span class="text-xs font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-2 py-1 rounded">Mostrando 10 de 124</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Vehículo</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tipo / Modelo</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aliado</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Capacidad</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Estado</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-14 bg-slate-100 dark:bg-slate-800 rounded-md bg-cover bg-center overflow-hidden" data-alt="Photo of a white commercial truck" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlXz1CXYYmU1xDZZxYQXm98XL0wFtU8Y0XwOJTJ8aLIeFqVSlE5S5Ot_zPnkgjTabJsH-TV7OzjJH1GHnjn5FXlpuOcMkKtxEJoMY-dO4rGHxHOB4Sk6XSvu8_RjI77snqzV4unQ2vOW6949WV8doD3qL3SCXjsOrbLiag7TJOxguPMzIOgnlyQgPOV-3f_365oo9pmxEjx45e4Mw1q7XI4eNf80Y4kIa-c586Mf5FReE-QFtUVrYgA6jB7B5_oGLOL6LCn8e09ryU");'></div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">ABC-1234</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">ID: #00124</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Camión Pesado</p>
+<p class="text-xs text-slate-500">Volvo FH16</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-700 dark:text-slate-300">Transportes Express</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">15 Toneladas</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                            En Ruta
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-lg">history</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Reportar Incidente">
+<span class="material-symbols-outlined text-lg">error_outline</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-14 bg-slate-100 dark:bg-slate-800 rounded-md bg-cover bg-center overflow-hidden" data-alt="Photo of a delivery van" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNQig2tQsdoMXblotzEDaRfhbfoyzlyF1EWtJ12UXc5vN8iXzxR6SMlzZM2ZBehI8P7ADftEJaaElhtiIs_ELI3kMeLRSM-UQ-VLbtQ1PH6Bj5TlJOO7BAAl8x7dwrJ7r_2kN--Dn-wFQhMACKENGQdavTTvoBiZsMih_Gy-Eugr9kXDCO_r-Rhx4D8H0ds3__t_Wl5JoD2XkKDYBg4pJ-wbPU4vfOgrfnSwyjpTPCm9RI51BmpkvSTtkJ4vVoh_xz4t4DHO_Pq8rB");'></div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">XYZ-5678</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">ID: #00125</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Van Mediana</p>
+<p class="text-xs text-slate-500">Mercedes Sprinter</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-700 dark:text-slate-300">Logística Global</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">3.5 Toneladas</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                                            Disponible
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-lg">history</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Reportar Incidente">
+<span class="material-symbols-outlined text-lg">error_outline</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-14 bg-slate-100 dark:bg-slate-800 rounded-md bg-cover bg-center overflow-hidden" data-alt="Photo of a semi-truck in a garage" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBdSeww3QfTsXKTpC72EZt1bRvWtSISMl9wnQHDSqlWHc1CQgQ_5pcYfkMCVnJgHgS0I1Ds-QSSI2XCzegk-zgqSIErfqp-1MCueBQXccytYkMxzS5nVN86W2I3fYhUV0D001yQOymNRXevPIJZn5h2Yh4f1S4xzecdJ98DGfLyZC5jATfhFtNC6_W3r6oSB8jv8ZTSxC7kvj3HnsMV1fnnCICiAxrdh230Oovg_91GgRhujb7AN-dee5w5xEPET5VyOMPL9J1zV6KK");'></div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">TRK-9900</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">ID: #00128</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Tractor-remolque</p>
+<p class="text-xs text-slate-500">Kenworth T680</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-700 dark:text-slate-300">Propietario Aliado SA</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">30 Toneladas</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
+                                            En Taller
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-lg">history</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Reportar Incidente">
+<span class="material-symbols-outlined text-lg">error_outline</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-14 bg-slate-100 dark:bg-slate-800 rounded-md bg-cover bg-center overflow-hidden" data-alt="Photo of a cargo motorcycle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdEHW4znSnlcWXiuRz0nJ1P1HIWn3UnsCgfspfQ_WBPoddjzIjTg8DaqsC0lhT5mvhY0SHQ_Nkdbp3uOlqzz4kn7-yRkYrcYLbZTpdfaUfg2Rz1JOFdZ001IN2S9RXGWbUkFB-EvolCJtw4oMRT5dzwulQeTFwQtPI-WIlpWXIC8elj8cmTmE67VwscHwImD_FRy-ZRQ-LEb2A24k_23S71B3e2F36bpzFpWuQ7xt-r5rSXiMoGpPPiH0A5rCo_79n76MYoPoGpEDm");'></div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">MOT-4422</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">ID: #00130</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Motocicleta Cargo</p>
+<p class="text-xs text-slate-500">Yamaha FZ-S</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-700 dark:text-slate-300">Independiente</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-slate-900 dark:text-white">0.5 Toneladas</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                            En Ruta
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Ver Historial">
+<span class="material-symbols-outlined text-lg">history</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Editar">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Reportar Incidente">
+<span class="material-symbols-outlined text-lg">error_outline</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+<p class="text-sm text-slate-500 dark:text-slate-400">Mostrando 1 a 4 de 124 resultados</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors disabled:opacity-50" disabled="">Anterior</button>
+<button class="px-3 py-1 bg-primary text-white rounded text-sm font-bold">1</button>
+<button class="px-3 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors">2</button>
+<button class="px-3 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors">Siguiente</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-6">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-slate-500 dark:text-slate-400 text-sm">© 2024 Logística Premium S.A. Todos los derechos reservados.</p>
+<div class="flex gap-6">
+<a class="text-slate-500 hover:text-primary text-sm transition-colors" href="#">Privacidad</a>
+<a class="text-slate-500 hover:text-primary text-sm transition-colors" href="#">Términos</a>
+<a class="text-slate-500 hover:text-primary text-sm transition-colors" href="#">Soporte</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

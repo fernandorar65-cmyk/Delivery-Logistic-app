@@ -1,0 +1,193 @@
+.table-card {
+  overflow: hidden;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: #f9fafb;
+}
+
+.data-table th {
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+  text-align: left;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table td {
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+  border-bottom: 1px solid #f3f4f6;
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+}
+
+.data-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.logo-name-cell {
+  min-width: clamp(12rem, 30vw, 18rem);
+}
+
+.company-logo-name {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.company-logo {
+  width: clamp(2.5rem, 6vw, 3rem);
+  height: clamp(2.5rem, 6vw, 3rem);
+  border-radius: clamp(0.375rem, 1vw, 0.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  flex-shrink: 0;
+}
+
+.company-info {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.125rem, 0.5vw, 0.25rem);
+}
+
+.company-name {
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.company-subtitle {
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  color: #6b7280;
+}
+
+.nit-cell {
+  font-family: monospace;
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+  color: #374151;
+}
+
+.branches-cell {
+  text-align: center;
+  font-weight: 500;
+  color: #374151;
+}
+
+.sector-badge {
+  display: inline-block;
+  padding: clamp(0.25rem, 1vw, 0.375rem) clamp(0.75rem, 2vw, 1rem);
+  border-radius: clamp(0.75rem, 2vw, 1rem);
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 500;
+}
+
+.sector-manufactura {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.sector-salud {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.sector-tecnologia {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.sector-retail {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sector-servicios {
+  background: #f0f9ff;
+  color: #0c4a6e;
+}
+
+.sector-default {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.375rem, 1vw, 0.5rem);
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+  color: #374151;
+}
+
+.status-dot {
+  width: clamp(0.5rem, 1.5vw, 0.625rem);
+  height: clamp(0.5rem, 1.5vw, 0.625rem);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-active {
+  background: #10b981;
+}
+
+.status-inactive {
+  background: #9ca3af;
+}
+
+.actions-header {
+  text-align: right;
+}
+
+.actions-cell {
+  text-align: right;
+}
+
+.action-buttons {
+  display: flex;
+  gap: clamp(0.25rem, 1vw, 0.5rem);
+  justify-content: flex-end;
+}
+
+.action-btn {
+  padding: clamp(0.375rem, 1vw, 0.5rem);
+  border: none;
+  border-radius: clamp(0.25rem, 1vw, 0.375rem);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn {
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.edit-btn:hover {
+  background: #e0f2fe;
+}
+
+.delete-btn {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+}

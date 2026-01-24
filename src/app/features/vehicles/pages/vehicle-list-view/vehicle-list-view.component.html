@@ -1,0 +1,71 @@
+<div class="page-container">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">
+      <app-hero-icon name="squares-2x2" [size]="16"></app-hero-icon>
+      <span>Inicio</span>
+    </a>
+    <span class="breadcrumb-separator">/</span>
+    <a routerLink="/allies" class="breadcrumb-link">Aliados</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Vehículos de {{ allyLabel }}</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">{{ pageTitle }}</h1>
+      <p class="page-subtitle">{{ pageSubtitle }}</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateModal()" [disabled]="!allyId()">
+      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
+      Registrar Vehículo
+    </button>
+  </div>
+
+  <!-- Stats Summary -->
+  <app-vehicles-stats [stats]="stats()"></app-vehicles-stats>
+
+  <!-- Filters & Search -->
+  <app-vehicles-filters
+    [searchQuery]="searchQuery()"
+    [vehicleTypeFilter]="vehicleTypeFilter()"
+    (searchQueryChange)="searchQuery.set($event); currentPage.set(1)"
+    (vehicleTypeChange)="vehicleTypeFilter.set($event); currentPage.set(1)"
+  ></app-vehicles-filters>
+
+  <!-- Fleet Table Section -->
+  <app-vehicles-table
+    [loading]="loading()"
+    [error]="error()"
+    [vehicles]="paginatedVehicles"
+    [totalFiltered]="filteredVehicles.length"
+    [allyId]="allyId()"
+    [allyName]="allyName()"
+  ></app-vehicles-table>
+
+  <app-vehicles-pagination
+    [startItem]="startItem"
+    [endItem]="endItem"
+    [totalItems]="filteredVehicles.length"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages"
+    [pages]="pages"
+    (previous)="previousPage()"
+    (next)="nextPage()"
+    (goTo)="goToPage($event)"
+  ></app-vehicles-pagination>
+</div>
+
+@if (createOpen()) {
+  <app-vehicles-create-modal
+    [createForm]="createForm"
+    [vehicleTypes]="vehicleTypes"
+    [statusOptions]="statusOptions"
+    [allyLabel]="allyLabel"
+    [createLoading]="createLoading()"
+    [createError]="createError()"
+    (close)="closeCreateModal()"
+    (submit)="submitCreateVehicle()"
+  ></app-vehicles-create-modal>
+}

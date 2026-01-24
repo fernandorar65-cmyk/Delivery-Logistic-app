@@ -1,0 +1,206 @@
+<div class="vehicle-detail-page">
+  <div class="breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">
+      <app-hero-icon name="squares-2x2" [size]="16"></app-hero-icon>
+      <span>Inicio</span>
+    </a>
+    <span class="breadcrumb-separator">/</span>
+    <a routerLink="/allies" class="breadcrumb-link">Aliados</a>
+    <span class="breadcrumb-separator">/</span>
+    <a [routerLink]="['/allies', allyId(), 'vehicles']" class="breadcrumb-link">Vehículos</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Detalle</span>
+  </div>
+
+  @if (loading()) {
+    <div class="vehicle-card vehicle-state">
+      <app-loading-card message="Cargando vehículo..."></app-loading-card>
+    </div>
+  } @else if (error()) {
+    <div class="vehicle-card vehicle-state error">
+      <app-empty-state
+        icon="exclamation-triangle"
+        title="No se pudo cargar el vehículo"
+        [description]="error()"
+      ></app-empty-state>
+    </div>
+  } @else if (!vehicle()) {
+    <div class="vehicle-card vehicle-state">
+      <app-empty-state
+        icon="truck"
+        title="No se encontró el vehículo"
+      ></app-empty-state>
+    </div>
+  } @else {
+    <div class="vehicle-summary-card">
+      <div class="vehicle-summary-media">
+        <div
+          class="vehicle-summary-image"
+          [style.background-image]="vehicle()?.image ? 'url(' + vehicle()!.image + ')' : 'none'"
+        >
+          @if (!vehicle()?.image) {
+            <app-hero-icon name="truck" [size]="28"></app-hero-icon>
+          }
+        </div>
+        <span class="vehicle-status-pill" [class]="getStatusClass(vehicle()?.status)">
+          {{ getStatusLabel(vehicle()?.status) }}
+        </span>
+      </div>
+      <div class="vehicle-summary-content">
+        <div class="vehicle-summary-header">
+          <div>
+            <h1>{{ vehicle()?.license_plate }}</h1>
+            <p>{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }} • {{ vehicle()?.year || '-' }}</p>
+          </div>
+          <div class="vehicle-summary-actions">
+            <button class="primary-btn" (click)="openEditModal()">
+              <app-hero-icon name="pencil" [size]="18"></app-hero-icon>
+              Editar Información
+            </button>
+            <button class="danger-btn" (click)="openDeleteModal()">
+              <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
+              Dar de Baja
+            </button>
+          </div>
+        </div>
+        <div class="vehicle-summary-meta">
+          <div class="meta-item">
+            <span class="meta-label">Aliado</span>
+            <span class="meta-value">{{ vehicle()?.provider_name || allyLabel }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Tipo</span>
+            <span class="meta-value">{{ getVehicleTypeLabel(vehicle()?.vehicle_type) }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Capacidad</span>
+            <span class="meta-value">{{ vehicle()?.capacity || (vehicle()?.net_capacity_kg ? vehicle()?.net_capacity_kg + ' kg' : '-') }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Carrocería</span>
+            <span class="meta-value">{{ vehicle()?.body_type || '-' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vehicle-detail-grid">
+      <section class="vehicle-card">
+        <div class="card-header">
+          <h3>Detalles Técnicos</h3>
+          <app-hero-icon name="information-circle" [size]="18" class="muted-icon"></app-hero-icon>
+        </div>
+        <div class="card-grid">
+          <div class="card-item">
+            <span class="card-label">Marca / Modelo</span>
+            <span class="card-value">{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }}</span>
+          </div>
+          <div class="card-item">
+            <span class="card-label">Capacidad de Carga</span>
+            <span class="card-value">{{ vehicle()?.net_capacity_kg || '-' }} kg</span>
+          </div>
+          <div class="card-item">
+            <span class="card-label">Color</span>
+            <span class="card-value">{{ vehicle()?.color || '-' }}</span>
+          </div>
+          <div class="card-item">
+            <span class="card-label">Tipo de Carrocería</span>
+            <span class="card-value">{{ vehicle()?.body_type || '-' }}</span>
+          </div>
+          <div class="card-item">
+            <span class="card-label">Dimensiones</span>
+            <span class="card-value">
+              {{ vehicle()?.length_m || '-' }} x {{ vehicle()?.width_m || '-' }} x {{ vehicle()?.height_m || '-' }} m
+            </span>
+          </div>
+          <div class="card-item">
+            <span class="card-label">Peso bruto</span>
+            <span class="card-value">{{ vehicle()?.gross_weight_kg || '-' }} kg</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="vehicle-card">
+        <div class="card-header">
+          <h3>Documentación Vigente</h3>
+          <button class="link-btn">Gestionar Todo</button>
+        </div>
+        <div class="card-list">
+          <div class="doc-item">
+            <div class="doc-icon">
+              <app-hero-icon name="folder" [size]="18"></app-hero-icon>
+            </div>
+            <div>
+              <p>SOAT - Seguro Obligatorio</p>
+              <span>Póliza #{{ vehicle()?.id || '0000' }}</span>
+            </div>
+            <div class="doc-status ok">VIGENTE</div>
+          </div>
+          <div class="doc-item warning">
+            <div class="doc-icon warn">
+              <app-hero-icon name="exclamation-triangle" [size]="18"></app-hero-icon>
+            </div>
+            <div>
+              <p>Revisión Técnico Mecánica</p>
+              <span>Certificado #{{ vehicle()?.id || '0000' }}</span>
+            </div>
+            <div class="doc-status warn">POR VENCER</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="vehicle-card metrics-card">
+        <div class="card-header">
+          <h3>Métricas de Rendimiento</h3>
+        </div>
+        <div class="metric-item">
+          <div class="metric-row">
+            <span>Consumo de Combustible</span>
+            <strong>32.5 L/100km</strong>
+          </div>
+          <div class="metric-bar">
+            <span class="metric-bar-fill" style="width: 65%;"></span>
+          </div>
+          <span class="metric-footnote">Promedio mensual: 31.2 L</span>
+        </div>
+        <div class="metric-highlight">
+          <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
+          <div>
+            <p>Km Recorridos</p>
+            <strong>12,450</strong>
+            <span>Este mes</span>
+          </div>
+        </div>
+        <div class="metric-highlight alert">
+          <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
+          <div>
+            <p>Incidentes Reportados</p>
+            <strong>2</strong>
+            <span>Total</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+</div>
+
+@if (editOpen()) {
+  <app-vehicles-edit-modal
+    [editForm]="editForm"
+    [vehicleTypes]="vehicleTypes"
+    [statusOptions]="statusOptions"
+    [editLoading]="editLoading()"
+    [editError]="editError()"
+    (close)="closeEditModal()"
+    (submit)="submitEditVehicle()"
+  ></app-vehicles-edit-modal>
+}
+
+@if (deleteOpen()) {
+  <app-vehicles-delete-modal
+    [deleteLoading]="deleteLoading()"
+    [deleteError]="deleteError()"
+    (close)="closeDeleteModal()"
+    (confirm)="confirmDelete()"
+  ></app-vehicles-delete-modal>
+}

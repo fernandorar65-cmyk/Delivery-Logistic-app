@@ -1,0 +1,77 @@
+<div class="metrics-grid">
+  <div class="metric-card metric-card-orders" style="animation-delay: 0.1s">
+    <div class="metric-header">
+      <div class="metric-icon orders">
+        <app-hero-icon name="squares-2x2" [size]="24"></app-hero-icon>
+      </div>
+      <span class="metric-badge positive">
+        <app-hero-icon name="arrow-trending-up" [size]="12"></app-hero-icon>
+        +{{ totalShipmentsChange.value }}%
+      </span>
+    </div>
+    <div class="metric-content">
+      <h3 class="metric-value">{{ totalShipments | number }}</h3>
+      <p class="metric-label">Total Envíos</p>
+      <p class="metric-description">Comparado con semana anterior</p>
+    </div>
+    <div class="metric-hover-effect"></div>
+  </div>
+
+  <div class="metric-card metric-card-success" style="animation-delay: 0.2s">
+    <div class="metric-header">
+      <div class="metric-icon success">
+        <app-hero-icon name="check" [size]="24" [strokeWidth]="3"></app-hero-icon>
+      </div>
+      <span class="metric-badge positive">
+        <app-hero-icon name="arrow-trending-up" [size]="12" [strokeWidth]="2.5"></app-hero-icon>
+        +{{ deliveredSuccessChange.value }}%
+      </span>
+    </div>
+    <div class="metric-content success-content">
+      <h3 class="metric-value">{{ deliveredSuccess }}%</h3>
+      <p class="metric-label">Entregados (Éxito)</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="deliveredSuccess"></div>
+      </div>
+    </div>
+    <div class="metric-hover-effect"></div>
+  </div>
+
+  <div class="metric-card metric-card-alert" style="animation-delay: 0.3s">
+    <div class="metric-header">
+      <div class="metric-icon alert">
+        <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+      </div>
+      <span class="metric-badge alert-badge">
+        <app-hero-icon name="hexagon" [size]="12"></app-hero-icon>
+        Alert
+      </span>
+    </div>
+    <div class="metric-content alert-content">
+      <h3 class="metric-value">{{ awaitingAssignment }}</h3>
+      <p class="metric-label">En Espera de Asignación</p>
+      <p class="metric-description alert-description">Requieren vehículo</p>
+    </div>
+    <div class="metric-hover-effect"></div>
+  </div>
+
+  <div class="metric-card metric-card-incidents" style="animation-delay: 0.4s">
+    <div class="metric-header">
+      <p class="metric-label-top">Incidentes Activos</p>
+      <div class="metric-icon incidents">
+        <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+      </div>
+    </div>
+    <div class="metric-content">
+      <div class="metric-value-row">
+        <h3 class="metric-value">{{ activeIncidents }}</h3>
+        <span class="metric-badge negative">
+          <app-hero-icon name="arrow-trending-down" [size]="12" [strokeWidth]="2.5"></app-hero-icon>
+          -{{ activeIncidentsChange.value }}%
+        </span>
+      </div>
+      <p class="metric-description incidents-description">Atención inmediata requerida</p>
+    </div>
+    <div class="metric-hover-effect"></div>
+  </div>
+</div>

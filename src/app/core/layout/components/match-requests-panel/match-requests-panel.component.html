@@ -1,0 +1,49 @@
+<div class="match-requests">
+  <button class="match-requests-trigger" type="button" (click)="togglePanel()">
+    <app-hero-icon name="bell" [size]="18"></app-hero-icon>
+    <span class="match-requests-dot"></span>
+  </button>
+
+  @if (isOpen()) {
+    <div class="match-requests-panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-title">Solicitudes de Match</p>
+          <p class="panel-subtitle">Revisa nuevas propuestas</p>
+        </div>
+        <button class="panel-clear">Limpiar</button>
+      </div>
+
+      <div class="panel-list">
+        @for (request of requests; track request.id) {
+          <div class="panel-item">
+            <div class="panel-item-main">
+              <div class="panel-icon" [ngClass]="request.tone">
+                <app-hero-icon [name]="request.icon" [size]="18"></app-hero-icon>
+              </div>
+              <div>
+                <p class="panel-company">{{ request.company }}</p>
+                <p class="panel-detail">{{ request.detail }}</p>
+              </div>
+            </div>
+            <div class="panel-item-actions">
+              <span class="panel-time">{{ request.time }}</span>
+              <div class="panel-actions">
+                <button class="action-btn action-primary">Aceptar</button>
+                <button class="action-btn action-outline">Rechazar</button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <a
+        class="panel-footer"
+        [routerLink]="['/providers/requests']"
+        (click)="closePanel()"
+      >
+        Ver todas las notificaciones →
+      </a>
+    </div>
+  }
+</div>

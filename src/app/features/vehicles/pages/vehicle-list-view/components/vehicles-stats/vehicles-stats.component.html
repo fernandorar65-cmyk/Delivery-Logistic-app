@@ -1,0 +1,18 @@
+<div class="stats-grid">
+  @for (stat of stats; track stat.label) {
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon" [class]="'stat-icon-' + stat.iconColor">
+          <app-hero-icon [name]="stat.icon" [size]="24"></app-hero-icon>
+        </div>
+        @if (stat.trendValue) {
+          <span class="stat-trend" [class]="'stat-trend-' + stat.trend">
+            {{ stat.trendValue }}
+          </span>
+        }
+      </div>
+      <p class="stat-label">{{ stat.label }}</p>
+      <p class="stat-value">{{ stat.value }}</p>
+    </div>
+  }
+</div>

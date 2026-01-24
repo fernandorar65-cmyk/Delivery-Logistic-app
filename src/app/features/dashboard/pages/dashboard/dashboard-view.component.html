@@ -1,0 +1,40 @@
+<div class="dashboard-container">
+
+  <!-- Cards de Métricas -->
+  <app-dashboard-metrics
+    [totalShipments]="totalShipments()"
+    [totalShipmentsChange]="totalShipmentsChange()"
+    [deliveredSuccess]="deliveredSuccess()"
+    [deliveredSuccessChange]="deliveredSuccessChange()"
+    [awaitingAssignment]="awaitingAssignment()"
+    [activeIncidents]="activeIncidents()"
+    [activeIncidentsChange]="activeIncidentsChange()"
+  ></app-dashboard-metrics>
+
+  <!-- Gestión de Envíos -->
+  <div class="shipments-section">
+    <app-dashboard-shipments-header></app-dashboard-shipments-header>
+
+    <!-- Tabs -->
+    <app-dashboard-shipments-tabs
+      [activeTab]="activeTab()"
+      [incidentsCount]="getIncidentsCount()"
+      (tabChange)="setActiveTab($event)"
+    ></app-dashboard-shipments-tabs>
+
+    <!-- Tabla de Envíos -->
+    <app-dashboard-shipments-table
+      [shipments]="getFilteredShipments()"
+      [loading]="loading()"
+    ></app-dashboard-shipments-table>
+
+    <!-- Paginación -->
+    <app-dashboard-pagination
+      [totalItems]="totalShipmentsCount()"
+      [currentPage]="currentPage()"
+      (previous)="goToPreviousPage()"
+      (next)="goToNextPage()"
+    ></app-dashboard-pagination>
+  </div>
+</div>
+

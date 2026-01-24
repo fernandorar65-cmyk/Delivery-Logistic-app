@@ -1,0 +1,19 @@
+<div class="pagination">
+  <span class="pagination-info">Mostrando {{ startItem }}-{{ endItem }} de {{ totalItems }} aliados</span>
+  <div class="pagination-controls">
+    <button
+      class="pagination-btn"
+      [disabled]="currentPage === 1"
+      (click)="previous.emit()"
+    >
+      Anterior
+    </button>
+    <button
+      class="pagination-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="next.emit()"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

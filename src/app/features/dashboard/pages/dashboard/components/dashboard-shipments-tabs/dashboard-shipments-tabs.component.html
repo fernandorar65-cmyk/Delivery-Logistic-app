@@ -1,0 +1,40 @@
+<div class="tabs-container">
+  <button 
+    class="tab" 
+    [class.active]="activeTab === 'all'"
+    (click)="setTab('all')"
+  >
+    Todos
+  </button>
+  <button 
+    class="tab" 
+    [class.active]="activeTab === 'in-route'"
+    (click)="setTab('in-route')"
+  >
+    En Ruta
+  </button>
+  <button 
+    class="tab" 
+    [class.active]="activeTab === 'pending'"
+    (click)="setTab('pending')"
+  >
+    Pendientes
+  </button>
+  <button 
+    class="tab" 
+    [class.active]="activeTab === 'delivered'"
+    (click)="setTab('delivered')"
+  >
+    Entregados
+  </button>
+  <button 
+    class="tab" 
+    [class.active]="activeTab === 'incident'"
+    (click)="setTab('incident')"
+  >
+    Incidentes
+    @if (incidentsCount > 0) {
+      <span class="tab-badge">{{ incidentsCount }}</span>
+    }
+  </button>
+</div>

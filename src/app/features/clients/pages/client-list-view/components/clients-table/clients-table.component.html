@@ -1,0 +1,86 @@
+<div class="card table-card">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Cliente</th>
+          <th>RUC</th>
+          <th>Descripción</th>
+          <th>Email</th>
+          <th>Estado</th>
+          <th class="actions-header">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading) {
+          <tr>
+            <td colspan="7" class="text-center p-8">
+              <app-loading-card message="Cargando clientes..."></app-loading-card>
+            </td>
+          </tr>
+        } @else if (error) {
+          <tr>
+            <td colspan="7" class="text-center p-8">
+              <app-empty-state
+                icon="exclamation-triangle"
+                title="No se pudieron cargar los clientes"
+                [description]="error"
+              ></app-empty-state>
+            </td>
+          </tr>
+        } @else if (clients.length === 0) {
+          <tr>
+            <td colspan="7" class="text-center p-8">
+              <app-empty-state
+                icon="users"
+                title="No hay clientes registrados"
+                description="Comienza agregando tu primer cliente al sistema"
+                actionLabel="Crear Primer Cliente"
+                (action)="createRequested.emit()"
+              ></app-empty-state>
+            </td>
+          </tr>
+        } @else {
+          @for (client of clients; track client.id) {
+            <tr>
+              <td class="logo-cell">
+                <div class="logo-badge" [ngStyle]="getAvatarStyle(client.client_name)">
+                  {{ getInitials(client.client_name) }}
+                </div>
+              </td>
+              <td>
+                <div class="client-name">
+                  <strong>{{ client.client_name }}</strong>
+                  <span>{{ client.description || 'Sin descripción' }}</span>
+                </div>
+              </td>
+              <td class="mono">{{ client.ruc }}</td>
+              <td class="truncate">{{ client.description || '-' }}</td>
+              <td>{{ client.email }}</td>
+              <td>
+                <span class="status-badge status-neutral">Sin estado</span>
+              </td>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  <a [routerLink]="['/clients', client.id]" class="action-link">
+                    <app-hero-icon name="eye" [size]="16"></app-hero-icon>
+                    Ver detalle
+                  </a>
+                  <button (click)="edit.emit(client)" class="icon-btn edit-btn" title="Editar">
+                    <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
+                  </button>
+                  @if (client.id) {
+                    <button (click)="remove.emit(client.id)" class="icon-btn delete-btn" title="Eliminar">
+                      <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

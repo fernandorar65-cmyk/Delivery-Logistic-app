@@ -1,0 +1,53 @@
+<main class="ally-list-container">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs">
+    <a href="#" class="breadcrumb-link">Inicio</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Gestión de Aliados</span>
+  </div>
+
+  <!-- Page Heading -->
+  <div class="page-header">
+    <div class="page-title-section">
+      <h1 class="page-title">Directorio de Aliados</h1>
+      <p class="page-subtitle">Gestión centralizada de socios logísticos, flota y conductores.</p>
+    </div>
+    <button class="btn-new-ally" (click)="openCreateModal()">
+      <app-hero-icon name="plus" [size]="20"></app-hero-icon>
+      <span>Nuevo Aliado</span>
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <app-providers-stats-cards [stats]="uniqueStats"></app-providers-stats-cards>
+
+  <!-- Toolbar: Search & Filters -->
+  <app-providers-toolbar
+    [searchQuery]="searchQuery()"
+    (searchQueryChange)="searchQuery.set($event)"
+  ></app-providers-toolbar>
+
+  <!-- Data Table -->
+  <app-providers-table
+    [loading]="loading()"
+    [error]="error()"
+    [allies]="paginatedAllies"
+    (createRequested)="openCreateModal()"
+  ></app-providers-table>
+
+  <app-providers-pagination
+    [startItem]="startItem"
+    [endItem]="endItem"
+    [totalItems]="filteredAllies.length"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages"
+    (previous)="previousPage()"
+    (next)="nextPage()"
+  ></app-providers-pagination>
+
+  <app-provider-create-modal
+    [open]="createOpen()"
+    (closed)="closeCreateModal()"
+    (saved)="handleProviderSaved($event)"
+  ></app-provider-create-modal>
+</main>
