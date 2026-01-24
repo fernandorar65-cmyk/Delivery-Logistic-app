@@ -22,43 +22,55 @@
     <app-empty-state title="No hay usuarios internos" description="Cuando agregues usuarios internos aparecerán aquí."
       icon="users"></app-empty-state>
     } @else {
-    <div class="internal-users-table">
-      <table>
+    <div class="internal-users-table-wrapper">
+      <table class="internal-users-table">
         <thead>
           <tr>
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Registro</th>
-            <th class="text-right">Acciones</th>
+            <th class="table-header">Nombre completo</th>
+            <th class="table-header">Correo electrónico</th>
+            <th class="table-header">Estado</th>
+            <th class="table-header">Registro</th>
+            <th class="table-header text-right">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @for (user of users(); track user.id) {
-          <tr>
-            <td>
+          <tr class="table-row">
+            <td class="table-cell">
               <div class="user-cell">
                 <div class="user-avatar">
                   {{ (getUserDisplayName(user) || 'U').slice(0, 2) }}
                 </div>
-                <div>
+                <div class="user-meta">
                   <p class="user-name">{{ getUserDisplayName(user) }}</p>
                 </div>
               </div>
             </td>
-                <td>{{ getUserEmail(user) }}</td>
-                <td>{{ getUserCreatedAtDisplay(user) }}</td>
-            <td class="text-right">
+            <td class="table-cell">
+              <span class="cell-muted">{{ getUserEmail(user) }}</span>
+            </td>
+            <td class="table-cell">
+              <label class="status-toggle">
+                <input type="checkbox" checked />
+                <span class="toggle-track"></span>
+                <span class="toggle-label">Activo</span>
+              </label>
+            </td>
+            <td class="table-cell">
+              <span class="cell-muted">{{ getUserCreatedAtDisplay(user) }}</span>
+            </td>
+            <td class="table-cell text-right">
               <div class="row-actions">
-                    <button
-                      type="button"
-                      class="action-link"
-                      title="Editar (próximamente)"
-                      disabled
-                    >
-                      <app-hero-icon name="pencil-square" [size]="16"></app-hero-icon>
-                    </button>
-                <button type="button" class="action-link danger" (click)="remove(user)">
-                      <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+                <button
+                  type="button"
+                  class="action-icon"
+                  title="Editar (próximamente)"
+                  disabled
+                >
+                  <app-hero-icon name="pencil-square" [size]="16"></app-hero-icon>
+                </button>
+                <button type="button" class="action-icon danger" (click)="remove(user)">
+                  <app-hero-icon name="trash" [size]="16"></app-hero-icon>
                 </button>
               </div>
             </td>

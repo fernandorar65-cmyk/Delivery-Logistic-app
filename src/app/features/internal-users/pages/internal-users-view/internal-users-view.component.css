@@ -35,30 +35,43 @@
 
 .internal-users-card {
   background: #ffffff;
-  border-radius: 1.25rem;
-  padding: 1.5rem;
+  border-radius: 1rem;
+  padding: 1.25rem;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.25);
 }
 
-.internal-users-table table {
+.internal-users-table-wrapper {
+  overflow-x: auto;
+}
+
+.internal-users-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 720px;
 }
 
-.internal-users-table thead th {
+.table-header {
   text-align: left;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: #64748b;
-  padding: 0.85rem 0.75rem;
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #f8f9fb;
 }
 
-.internal-users-table tbody td {
-  padding: 1rem 0.75rem;
+.table-cell {
+  padding: 1.1rem 1.25rem;
   border-bottom: 1px solid #f1f5f9;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: #111418;
+}
+
+.table-row:hover {
+  background: #f8f9fb;
 }
 
 .internal-users-table tbody tr:last-child td {
@@ -72,31 +85,81 @@
 .user-cell {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.9rem;
 }
 
 .user-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 0.85rem;
-  background: #e0f2fe;
-  color: #0284c7;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #e8f1ff;
+  color: #1d4ed8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .user-name {
   margin: 0;
   font-weight: 600;
+  color: #111418;
 }
 
-.user-username {
-  margin: 0.2rem 0 0;
-  font-size: 0.8rem;
-  color: #94a3b8;
+.cell-muted {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.status-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.status-toggle input {
+  display: none;
+}
+
+.toggle-track {
+  position: relative;
+  width: 42px;
+  height: 22px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.status-toggle input:checked + .toggle-track {
+  background: #137fec;
+}
+
+.status-toggle input:checked + .toggle-track::after {
+  transform: translateX(20px);
 }
 
 .status-badge {
@@ -120,28 +183,34 @@
 
 .row-actions {
   display: inline-flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 0.5rem;
   justify-content: flex-end;
 }
 
-.action-link {
-  background: none;
+.action-icon {
   border: none;
-  padding: 0;
-  color: #2563eb;
-  font-weight: 600;
-  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  padding: 0.45rem;
+  border-radius: 0.65rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.action-link.danger {
+.action-icon:hover:not(:disabled) {
+  color: #1d4ed8;
+  background: #e0f2fe;
+}
+
+.action-icon.danger:hover:not(:disabled) {
   color: #dc2626;
+  background: #fee2e2;
 }
 
-.action-link:disabled {
+.action-icon:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -298,6 +367,10 @@
   .internal-users-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .internal-users-table {
+    min-width: 640px;
   }
 
   .form-grid {
