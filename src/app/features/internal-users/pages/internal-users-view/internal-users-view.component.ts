@@ -12,13 +12,14 @@ import { InternalUsersService } from '@app/features/internal-users/services/inte
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
+import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 
 @Component({
   selector: 'app-internal-users-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent, HeroIconComponent],
   templateUrl: './internal-users-view.component.html',
   styleUrl: './internal-users-view.component.css'
 })
@@ -121,14 +122,14 @@ export class InternalUsersViewComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.errors && response.errors.length > 0) {
-            this.error.set('No se pudieron cargar los usuarios internos.');
+            this.error.set(this.formatApiErrors(response.errors));
             return;
           }
           const result = response.result;
           this.users.set(Array.isArray(result) ? result : []);
         },
-        error: () => {
-          this.error.set('No se pudieron cargar los usuarios internos.');
+        error: (err) => {
+          this.error.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         }
       });
   }
@@ -178,14 +179,14 @@ export class InternalUsersViewComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.errors && response.errors.length > 0) {
-            this.formError.set('No se pudo crear el usuario interno.');
+            this.formError.set(this.formatApiErrors(response.errors));
             return;
           }
           this.modalOpen.set(false);
           this.loadUsers();
         },
-        error: () => {
-          this.formError.set('No se pudo crear el usuario interno.');
+        error: (err) => {
+          this.formError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         }
       });
   }
@@ -206,15 +207,36 @@ export class InternalUsersViewComponent implements OnInit {
         next: () => {
           this.users.update(items => items.filter(item => item.id !== user.id));
         },
-        error: () => {
-          this.error.set('No se pudo eliminar el usuario interno.');
+        error: (err) => {
+          this.error.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         }
       });
   }
 
+  private formatApiErrors(errors: unknown): string {
+    if (Array.isArray(errors)) {
+      return errors.filter(Boolean).join(' ');
+    }
+    if (typeof errors === 'string') {
+      return errors;
+    }
+    return 'Ocurrió un error al procesar la solicitud.';
+  }
+
   getUserDisplayName(user: InternalUser): string {
-    const fullName = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-    return fullName || user.email;
+    const firstName = user.user?.first_name ?? user.first_name ?? '';
+    const lastName = user.user?.last_name ?? user.last_name ?? '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    return fullName || this.getUserEmail(user);
+  }
+
+  getUserEmail(user: InternalUser): string {
+    return user.user?.email ?? user.email ?? '';
+  }
+
+  getUserCreatedAtDisplay(user: InternalUser): string {
+    const rawDate = user.user?.created_at ?? user.created_at;
+    return this.formatDate(rawDate);
   }
 
   getFieldError(fieldName: string): string {
@@ -229,5 +251,21 @@ export class InternalUsersViewComponent implements OnInit {
       return `Mínimo ${field.errors?.['minlength']?.requiredLength ?? 0} caracteres`;
     }
     return '';
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) {
+      return '—';
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '—';
+    }
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    const hours = `${date.getHours()}`.padStart(2, '0');
+    const minutes = `${date.getMinutes()}`.padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 }

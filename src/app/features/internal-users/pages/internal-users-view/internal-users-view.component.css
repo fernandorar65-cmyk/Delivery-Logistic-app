@@ -132,10 +132,18 @@
   color: #2563eb;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-link.danger {
   color: #dc2626;
+}
+
+.action-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .modal-form {

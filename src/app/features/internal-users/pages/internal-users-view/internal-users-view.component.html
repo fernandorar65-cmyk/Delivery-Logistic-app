@@ -45,12 +45,20 @@
                 </div>
               </div>
             </td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.created_at || '—' }}</td>
+                <td>{{ getUserEmail(user) }}</td>
+                <td>{{ getUserCreatedAtDisplay(user) }}</td>
             <td class="text-right">
               <div class="row-actions">
+                    <button
+                      type="button"
+                      class="action-link"
+                      title="Editar (próximamente)"
+                      disabled
+                    >
+                      <app-hero-icon name="pencil-square" [size]="16"></app-hero-icon>
+                    </button>
                 <button type="button" class="action-link danger" (click)="remove(user)">
-                  Eliminar
+                      <app-hero-icon name="trash" [size]="16"></app-hero-icon>
                 </button>
               </div>
             </td>
@@ -115,11 +123,14 @@
       <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="formLoading()">
         Cancelar
       </button>
-      <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid || formLoading()">
-        <div class="btn-spinner"></div>
-        Guardando...
-        Guardar interno
-      </button>
+        <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid || formLoading()">
+          @if (formLoading()) {
+            <div class="btn-spinner"></div>
+            Guardando...
+          } @else {
+            Guardar interno
+          }
+        </button>
     </div>
   </form>
 </app-modal>

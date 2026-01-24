@@ -2,10 +2,20 @@ export type InternalUserOwnerType = 'company' | 'provider' | 'client';
 
 export interface InternalUser {
   id?: string | number;
-  email: string;
+  email?: string;
   first_name?: string;
   last_name?: string;
+  user?: InternalUserProfile;
   is_active?: boolean;
+  created_at?: string;
+}
+
+export interface InternalUserProfile {
+  id?: string | number;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  user_type?: string;
   created_at?: string;
 }
 
