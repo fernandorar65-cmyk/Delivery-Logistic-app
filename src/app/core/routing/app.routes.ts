@@ -57,6 +57,13 @@ export const routes: Routes = [
           .then(m => m.ProviderCompaniesViewComponent)
       },
       {
+        path: 'providers/usuarios-internos',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'provider'], ownerType: 'provider' },
+        loadComponent: () => import('@app/features/internal-users/pages/internal-users-view/internal-users-view.component')
+          .then(m => m.InternalUsersViewComponent)
+      },
+      {
         path: 'allies',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
@@ -85,6 +92,13 @@ export const routes: Routes = [
           .then(m => m.CompanyListViewComponent)
       },
       {
+        path: 'companies/:id/usuarios-internos',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'company'], ownerType: 'company' },
+        loadComponent: () => import('@app/features/internal-users/pages/internal-users-view/internal-users-view.component')
+          .then(m => m.InternalUsersViewComponent)
+      },
+      {
         path: 'clients',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
@@ -96,6 +110,13 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
         component: ClientDetailViewComponent
+      },
+      {
+        path: 'clients/:id/usuarios-internos',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'company'], ownerType: 'client' },
+        loadComponent: () => import('@app/features/internal-users/pages/internal-users-view/internal-users-view.component')
+          .then(m => m.InternalUsersViewComponent)
       },
       {
         path: '',
