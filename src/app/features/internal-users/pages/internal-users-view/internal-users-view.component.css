@@ -11,6 +11,14 @@
   gap: 1rem;
 }
 
+.header-card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 20px -16px rgba(15, 23, 42, 0.2);
+}
+
 .internal-users-eyebrow {
   font-size: 0.85rem;
   font-weight: 600;
