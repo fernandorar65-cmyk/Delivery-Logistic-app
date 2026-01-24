@@ -24,6 +24,10 @@ export class ClientService {
     return this.http.post<ClientResponse>(`${this.apiUrl}/`, client);
   }
 
+  getMe(): Observable<ClientResponse> {
+    return this.http.get<ClientResponse>(`${this.apiUrl}/me/`);
+  }
+
   update(id: string, client: ClientUpdate): Observable<ClientResponse> {
     return this.http.put<ClientResponse>(`${this.apiUrl}/${id}/`, client);
   }

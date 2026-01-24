@@ -1,6 +1,8 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '@app/shared/services/user.service';
+import { ProviderService } from '@app/features/providers/services/provider.service';
+import { CompanyService } from '@app/features/companies/services/company.service';
+import { ClientService } from '@app/features/clients/services/client.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { Shipment } from './dashboard-view.types';
@@ -25,7 +27,9 @@ import { DashboardPaginationComponent } from './components/dashboard-pagination/
   styleUrl: './dashboard-view.component.css'
 })
 export class DashboardViewComponent {
-  private userService = inject(UserService);
+  private providerService = inject(ProviderService);
+  private companyService = inject(CompanyService);
+  private clientService = inject(ClientService);
   private storageService = inject(StorageService);
 
   // Estado de tabs
@@ -34,10 +38,10 @@ export class DashboardViewComponent {
   // Métricas del dashboard según la imagen
   totalShipments = signal(1240);
   totalShipmentsChange = signal({ value: 5, isPositive: true });
-  
+
   deliveredSuccess = signal(85);
   deliveredSuccessChange = signal({ value: 2, isPositive: true });
-  
+
   awaitingAssignment = signal(45);
   activeIncidents = signal(3);
   activeIncidentsChange = signal({ value: 10, isPositive: false });
@@ -111,28 +115,62 @@ export class DashboardViewComponent {
   }
 
   setIdUser() {
-    const email = this.storageService.getItem(LocalStorageEnums.USER_EMAIL);
-    if (!email) {
+    const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
+    if (!userType) {
       return;
     }
-    this.userService.CheckUserEmail(email).subscribe({
-      next: (userResponse) => {
-        if (userResponse.errors && userResponse.errors.length > 0) {
+
+    const normalizedType = userType === 'platform' ? 'admin' : userType;
+
+    if (normalizedType === 'provider') {
+      this.providerService.getMe().subscribe({
+        next: (response) => this.handleMeResponse(response),
+        error: () => {
           console.warn('No se pudo obtener el id del usuario.');
-          return;
         }
-        const result = userResponse?.result ?? null;
-        if (result?.id) {
-          this.storageService.setItem(LocalStorageEnums.USER_ID, result.id);
+      });
+      return;
+    }
+
+    if (normalizedType === 'company') {
+      this.companyService.getMe().subscribe({
+        next: (response) => this.handleMeResponse(response),
+        error: () => {
+          console.warn('No se pudo obtener el id del usuario.');
         }
-        if (result) {
-          this.storageService.setItem(LocalStorageEnums.USER_DATA, JSON.stringify(result));
+      });
+      return;
+    }
+
+    if (normalizedType === 'client') {
+      this.clientService.getMe().subscribe({
+        next: (response) => this.handleMeResponse(response),
+        error: () => {
+          console.warn('No se pudo obtener el id del usuario.');
         }
-      },
-      error: () => {
-        console.warn('No se pudo obtener el id del usuario.');
-      }
-    });
+      });
+    }
+  }
+
+  private handleMeResponse(response: { errors: any[]; result: any }) {
+    if (response.errors && response.errors.length > 0) {
+      console.warn('No se pudo obtener el id del usuario.');
+      return;
+    }
+    const result = response?.result ?? null;
+    if (result?.id) {
+      this.storageService.setItem(LocalStorageEnums.USER_ID, result.user_id);
+      this.storageService.setItem(LocalStorageEnums.ID, result.id);
+    }
+    if (result?.user_type) {
+      this.storageService.setItem(LocalStorageEnums.USER_TYPE, result.user_type);
+    }
+    if (result?.user_email) {
+      this.storageService.setItem(LocalStorageEnums.USER_EMAIL, result.user_email);
+    }
+    if (result) {
+      this.storageService.setItem(LocalStorageEnums.USER_DATA, JSON.stringify(result));
+    }
   }
 
   setActiveTab(tab: DashboardTab) {

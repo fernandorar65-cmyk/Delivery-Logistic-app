@@ -5,6 +5,7 @@ export enum LocalStorageEnums {
   USER_EMAIL = 'user_email',
   USER_DATA = 'user_data',
   USER_ID = 'user_id',
+  ID = 'id',
 }
 
 

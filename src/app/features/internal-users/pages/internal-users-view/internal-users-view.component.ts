@@ -94,7 +94,7 @@ export class InternalUsersViewComponent implements OnInit {
     }
 
     if (this.ownerType() === 'provider') {
-      const providerId = this.storageService.getItem(LocalStorageEnums.USER_ID);
+      const providerId = this.storageService.getItem(LocalStorageEnums.ID);
       if (providerId) {
         this.ownerId.set(providerId);
         return;
@@ -124,7 +124,8 @@ export class InternalUsersViewComponent implements OnInit {
             this.error.set('No se pudieron cargar los usuarios internos.');
             return;
           }
-          this.users.set(response.result ?? []);
+          const result = response.result;
+          this.users.set(Array.isArray(result) ? result : []);
         },
         error: () => {
           this.error.set('No se pudieron cargar los usuarios internos.');

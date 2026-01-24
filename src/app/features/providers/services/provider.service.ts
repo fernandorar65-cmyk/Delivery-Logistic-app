@@ -28,6 +28,10 @@ export class ProviderService {
     return this.http.post<ProviderResponse>(`${this.apiUrl}/providers/`, provider);
   }
 
+  getMe(): Observable<ProviderResponse> {
+    return this.http.get<ProviderResponse>(`${this.apiUrl}/providers/me/`);
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/providers/${id}/`);
   }

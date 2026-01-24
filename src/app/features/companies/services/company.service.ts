@@ -23,6 +23,10 @@ export class CompanyService {
     return this.http.post<CompanyResponse>(`${this.apiUrl}/`, company);
   }
 
+  getMe(): Observable<CompanyResponse> {
+    return this.http.get<CompanyResponse>(`${this.apiUrl}/me/`);
+  }
+
   update(id: string, company: CompanyUpdate): Observable<CompanyResponse> {
     return this.http.put<CompanyResponse>(`${this.apiUrl}/${id}/`, company);
   }
