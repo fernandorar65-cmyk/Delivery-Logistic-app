@@ -239,7 +239,7 @@ export class VehicleListViewComponent implements OnInit {
   loadVehicles() {
     this.loading.set(true);
     this.error.set(null);
-    const allyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
+    const allyId = this.getProviderId();
 
     if (!allyId) {
       this.error.set('No se encontró el aliado para cargar vehículos.');
@@ -273,12 +273,10 @@ export class VehicleListViewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading vehicles:', err);
-        // Si el API no existe aún, usar datos mock
-        const mockVehicles = this.generateMockVehicles();
-        this.vehicles.set(mockVehicles);
-        this.totalItems.set(mockVehicles.length);
-        this.syncAllyName(mockVehicles);
-        this.updateStats(this.scopedVehicles);
+        this.error.set('Error al cargar los vehículos');
+        this.vehicles.set([]);
+        this.totalItems.set(0);
+        this.updateStats([]);
         this.loading.set(false);
       }
     });
@@ -307,32 +305,6 @@ export class VehicleListViewComponent implements OnInit {
       image: vehicleImages[index % vehicleImages.length],
       year: 2020 + (index % 5)
     };
-  }
-
-  // Genera vehículos mock si el API no está disponible
-  private generateMockVehicles(): Vehicle[] {
-    const providers = ['Transportes Express', 'Logística Global', 'Propietario Aliado SA', 'Independiente'];
-    const providerIds = ['1', '2', '3', '4'];
-    const forcedProviderId = this.allyId();
-    const forcedProviderName = this.allyName();
-    const types: Vehicle['vehicle_type'][] = ['truck', 'van', 'tractor-trailer', 'motorcycle'];
-    const statuses: Vehicle['status'][] = ['in_route', 'available', 'maintenance', 'in_route'];
-    const models = ['Volvo FH16', 'Mercedes Sprinter', 'Kenworth T680', 'Yamaha FZ-S'];
-    const capacities = ['15 Toneladas', '3.5 Toneladas', '30 Toneladas', '0.5 Toneladas'];
-    const plates = ['ABC-1234', 'XYZ-5678', 'TRK-9900', 'MOT-4422'];
-
-    return Array.from({ length: 4 }, (_, i) => ({
-      id: `#0012${4 + i}`,
-      license_plate: plates[i],
-      vehicle_type: types[i],
-      model: models[i],
-      brand: models[i].split(' ')[0],
-      capacity: capacities[i],
-      provider_id: forcedProviderId ?? providerIds[i],
-      provider_name: forcedProviderName ?? providers[i],
-      status: statuses[i],
-      ...this.generateVehicleMockData({} as Vehicle, i)
-    }));
   }
 
   // Actualiza las estadísticas basadas en los datos reales
