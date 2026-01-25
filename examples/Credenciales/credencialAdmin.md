@@ -1,6 +1,10 @@
-https://prologistic-api-dev.up.railway.app/api/docs/
+-- ADMIN
 admin-1@gmail.com
 Contra1234#
+
+
+
+
 
 -- CLIENTE
 fernandorar65@gmail.com
@@ -8,9 +12,14 @@ contraseña1234
 
 
 -- providers
-pumasretail@gmail.com
-pumasretail07@gmail.com
-Contra1234#
+  pumasretail07@gmail.com
+  Contra1234#
+
+
+  AquinosRetail@gmail.com
+  Contra123#
+
+
 
 
 {

@@ -11,6 +11,8 @@ import { VehiclesFiltersComponent } from './components/vehicles-filters/vehicles
 import { VehiclesTableComponent } from './components/vehicles-table/vehicles-table.component';
 import { VehiclesPaginationComponent } from './components/vehicles-pagination/vehicles-pagination.component';
 import { VehiclesCreateModalComponent } from './components/vehicles-create-modal/vehicles-create-modal.component';
+import { StorageService } from '@app/core/storage/storage.service';
+import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 
 @Component({
   selector: 'app-vehicle-list-view',
@@ -33,6 +35,7 @@ export class VehicleListViewComponent implements OnInit {
   private vehicleService = inject(VehicleService);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
+  private storageService = inject(StorageService);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -124,10 +127,15 @@ export class VehicleListViewComponent implements OnInit {
     this.route.queryParamMap.subscribe(params => {
       this.allyName.set(params.get('name'));
     });
+
+    if (!this.allyId()) {
+      this.allyId.set(this.getProviderId());
+    }
   }
 
   openCreateModal() {
-    if (!this.allyId()) {
+    const allyId = this.getProviderId();
+    if (!allyId) {
       this.createError.set('No se encontró el aliado para registrar el vehículo.');
       return;
     }
@@ -165,7 +173,7 @@ export class VehicleListViewComponent implements OnInit {
       return;
     }
 
-    const allyId = this.allyId();
+    const allyId = this.getProviderId();
     if (!allyId) {
       this.createError.set('No se encontró el aliado para registrar el vehículo.');
       return;
@@ -224,10 +232,14 @@ export class VehicleListViewComponent implements OnInit {
     });
   }
 
+  private getProviderId(): string | null {
+    return this.storageService.getItem(LocalStorageEnums.ID);
+  }
+
   loadVehicles() {
     this.loading.set(true);
     this.error.set(null);
-    const allyId = this.allyId();
+    const allyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
 
     if (!allyId) {
       this.error.set('No se encontró el aliado para cargar vehículos.');
