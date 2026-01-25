@@ -1,6 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
+import { ModalComponent } from '@app/shared/ui/modal/modal.component';
+import { StatusGroupsService } from '@app/features/companies/services/status-groups.service';
+import { StorageService } from '@app/core/storage/storage.service';
+import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 
 type StatusTag = {
   label: string;
@@ -21,11 +27,23 @@ type StatusGroup = {
 @Component({
   selector: 'app-company-status-groups-view',
   standalone: true,
-  imports: [CommonModule, HeroIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent, ModalComponent],
   templateUrl: './company-status-groups-view.component.html',
   styleUrl: './company-status-groups-view.component.css'
 })
 export class CompanyStatusGroupsViewComponent {
+  private fb = inject(FormBuilder);
+  private statusGroupsService = inject(StatusGroupsService);
+  private storageService = inject(StorageService);
+
+  createOpen = signal(false);
+  createLoading = signal(false);
+  createError = signal<string | null>(null);
+
+  createForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]]
+  });
+
   groups: StatusGroup[] = [
     {
       title: 'Flujo Estándar Nacional',
@@ -103,5 +121,63 @@ export class CompanyStatusGroupsViewComponent {
       default:
         return 'icon-badge icon-primary';
     }
+  }
+
+  openCreateModal(): void {
+    this.createError.set(null);
+    this.createForm.reset();
+    this.createOpen.set(true);
+  }
+
+  closeCreateModal(): void {
+    this.createOpen.set(false);
+    this.createError.set(null);
+  }
+
+  submitCreate(): void {
+    if (this.createForm.invalid) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+
+    const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (!companyId) {
+      this.createError.set('No se pudo identificar la compañía.');
+      return;
+    }
+
+    this.createLoading.set(true);
+    this.createError.set(null);
+
+    const name = this.createForm.getRawValue().name ?? '';
+    this.statusGroupsService.create(companyId, { name })
+      .pipe(finalize(() => this.createLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response.errors && response.errors.length > 0) {
+            this.createError.set('No se pudo crear el grupo.');
+            return;
+          }
+          if (response.result?.name) {
+            this.groups = [
+              {
+                title: response.result.name,
+                description: 'Grupo personalizado',
+                icon: 'hexagon',
+                iconTone: 'primary',
+                statuses: [],
+                shipments: '0',
+                updatedAt: 'Ahora',
+                members: []
+              },
+              ...this.groups
+            ];
+          }
+          this.closeCreateModal();
+        },
+        error: () => {
+          this.createError.set('No se pudo crear el grupo.');
+        }
+      });
   }
 }
