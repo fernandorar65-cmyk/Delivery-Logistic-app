@@ -17,10 +17,29 @@ export class ClientsTableComponent {
   @Input() loading = false;
   @Input() error: string | null = null;
   @Input() clients: Client[] = [];
+  @Input() emptyTitle = 'No hay clientes registrados';
+  @Input() emptyDescription = 'Comienza agregando tu primer cliente al sistema';
+  @Input() emptyActionLabel?: string = 'Crear Primer Cliente';
 
   @Output() createRequested = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Client>();
   @Output() remove = new EventEmitter<string>();
+
+  getStatusLabel(client: Client): string {
+    const status = (client.match_status ?? '').toLowerCase();
+    if (status === 'pending') {
+      return 'Pendiente';
+    }
+    return 'Sin estado';
+  }
+
+  getStatusClass(client: Client): string {
+    const status = (client.match_status ?? '').toLowerCase();
+    if (status === 'pending') {
+      return 'status-pending';
+    }
+    return 'status-neutral';
+  }
 
   getInitials(name: string): string {
     const words = name?.trim().split(/\s+/) ?? [];

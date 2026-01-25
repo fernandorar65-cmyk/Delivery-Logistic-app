@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientService } from '@app/features/clients/services/client.service';
@@ -10,6 +10,9 @@ import { ClientsPaginationComponent } from './components/clients-pagination/clie
 import { ClientsStatsComponent } from './components/clients-stats/clients-stats.component';
 import { ClientsFormModalComponent } from './components/clients-form-modal/clients-form-modal.component';
 import { ClientsSuccessModalComponent } from './components/clients-success-modal/clients-success-modal.component';
+import { StorageService } from '@app/core/storage/storage.service';
+import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { CompanyClientMatch } from '@app/features/clients/models/company-client-match.model';
 
 @Component({
   selector: 'app-client-list-view',
@@ -28,9 +31,10 @@ import { ClientsSuccessModalComponent } from './components/clients-success-modal
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
 })
-export class ClientListViewComponent {
+export class ClientListViewComponent implements OnInit {
   private clientService = inject(ClientService);
   private fb = inject(FormBuilder);
+  private storageService = inject(StorageService);
   
   clients = signal<Client[]>([]);
   loading = signal(false);
@@ -39,6 +43,9 @@ export class ClientListViewComponent {
   totalCount = signal(0);
   hasNext = signal(false);
   hasPrevious = signal(false);
+  isCompanyUser = signal(false);
+  showPending = signal(false);
+  pendingCount = signal(0);
   
   // Modal state
   showModal = signal(false);
@@ -56,13 +63,16 @@ export class ClientListViewComponent {
     description: ['']
   });
 
-  constructor() {
+  ngOnInit(): void {
+    const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
+    this.isCompanyUser.set((userType ?? '').toLowerCase() === 'company');
     this.loadClients(1);
   }
 
   loadClients(page: number = 1) {
     this.loading.set(true);
     this.error.set(null);
+    this.showPending.set(false);
     
     this.clientService.getAll(page).subscribe({
       next: (response) => {
@@ -87,13 +97,61 @@ export class ClientListViewComponent {
     });
   }
 
+  loadPendingClients() {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.clientService.getPendingCompanyClients().subscribe({
+      next: (response) => {
+        if (response.errors && response.errors.length > 0) {
+          this.error.set('Error al cargar los clientes pendientes.');
+          this.loading.set(false);
+          return;
+        }
+        const results = response.result || [];
+        const mapped = results.map((match) => this.mapPendingToClient(match));
+        this.clients.set(mapped);
+        this.pendingCount.set(response.pagination?.count ?? mapped.length);
+        this.totalCount.set(response.pagination?.count ?? mapped.length);
+        this.hasNext.set(!!response.pagination?.next);
+        this.hasPrevious.set(!!response.pagination?.previous);
+        this.currentPage.set(1);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Error al cargar los clientes pendientes.');
+        this.loading.set(false);
+        console.error('Error loading pending clients:', err);
+      }
+    });
+  }
+
+  togglePending() {
+    if (!this.isCompanyUser()) {
+      return;
+    }
+    const next = !this.showPending();
+    this.showPending.set(next);
+    if (next) {
+      this.loadPendingClients();
+    } else {
+      this.loadClients(1);
+    }
+  }
+
   nextPage() {
+    if (this.showPending()) {
+      return;
+    }
     if (this.hasNext()) {
       this.loadClients(this.currentPage() + 1);
     }
   }
 
   previousPage() {
+    if (this.showPending()) {
+      return;
+    }
     if (this.hasPrevious()) {
       this.loadClients(this.currentPage() - 1);
     }
@@ -236,6 +294,17 @@ export class ClientListViewComponent {
         }
       });
     }
+  }
+
+  private mapPendingToClient(match: CompanyClientMatch): Client {
+    return {
+      id: match.client_id,
+      client_name: match.client_name,
+      ruc: '-',
+      description: 'Solicitud pendiente',
+      email: '-',
+      match_status: match.status
+    };
   }
 }
 

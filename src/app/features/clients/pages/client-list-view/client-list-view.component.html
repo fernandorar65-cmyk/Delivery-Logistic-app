@@ -10,24 +10,36 @@
     </button>
   </div>
 
+  <app-clients-toolbar
+    [showPendingToggle]="isCompanyUser()"
+    [pendingActive]="showPending()"
+    [pendingCount]="pendingCount()"
+    (pendingToggle)="togglePending()"
+  ></app-clients-toolbar>
+
   @if (loading() || error() || clients().length === 0) {
     <app-clients-table
       [loading]="loading()"
       [error]="error()"
       [clients]="clients()"
+      [emptyTitle]="showPending() ? 'No hay clientes pendientes' : 'No hay clientes registrados'"
+      [emptyDescription]="showPending() ? 'No hay solicitudes pendientes de match.' : 'Comienza agregando tu primer cliente al sistema'"
+      [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
       (createRequested)="openNewClientModal()"
       (edit)="openEditClientModal($event)"
       (remove)="deleteClient($event)"
     ></app-clients-table>
   } @else {
-    <app-clients-toolbar></app-clients-toolbar>
-
     <app-clients-table
       [clients]="clients()"
+      [emptyTitle]="showPending() ? 'No hay clientes pendientes' : 'No hay clientes registrados'"
+      [emptyDescription]="showPending() ? 'No hay solicitudes pendientes de match.' : 'Comienza agregando tu primer cliente al sistema'"
+      [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
       (edit)="openEditClientModal($event)"
       (remove)="deleteClient($event)"
     ></app-clients-table>
 
+    @if (!showPending()) {
     <app-clients-pagination
       [currentCount]="clients().length"
       [totalCount]="totalCount()"
@@ -41,6 +53,7 @@
       [totalCount]="totalCount()"
       [currentCount]="clients().length"
     ></app-clients-stats>
+    }
   }
 
   <!-- Modal Flotante -->

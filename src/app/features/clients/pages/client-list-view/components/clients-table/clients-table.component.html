@@ -34,9 +34,9 @@
             <td colspan="7" class="text-center p-8">
               <app-empty-state
                 icon="users"
-                title="No hay clientes registrados"
-                description="Comienza agregando tu primer cliente al sistema"
-                actionLabel="Crear Primer Cliente"
+                [title]="emptyTitle"
+                [description]="emptyDescription"
+                [actionLabel]="emptyActionLabel"
                 (action)="createRequested.emit()"
               ></app-empty-state>
             </td>
@@ -59,7 +59,9 @@
               <td class="truncate">{{ client.description || '-' }}</td>
               <td>{{ client.email }}</td>
               <td>
-                <span class="status-badge status-neutral">Sin estado</span>
+                <span class="status-badge" [class]="getStatusClass(client)">
+                  {{ getStatusLabel(client) }}
+                </span>
               </td>
               <td class="actions-cell">
                 <div class="action-buttons">

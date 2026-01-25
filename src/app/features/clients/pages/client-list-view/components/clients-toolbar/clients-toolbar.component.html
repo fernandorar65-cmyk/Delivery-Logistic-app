@@ -4,6 +4,19 @@
     <input type="text" placeholder="Buscar cliente por nombre, RUC o email..." />
   </label>
   <div class="filter-actions">
+    @if (showPendingToggle) {
+      <button class="filter-chip" [class.active]="pendingActive" (click)="pendingToggle.emit()">
+        <app-hero-icon name="clock" [size]="18"></app-hero-icon>
+        @if (pendingActive) {
+          Ver todos
+        } @else {
+          Pendientes
+          @if (pendingCount > 0) {
+            ({{ pendingCount }})
+          }
+        }
+      </button>
+    }
     <button class="filter-chip">
       <app-hero-icon name="adjustments-horizontal" [size]="18"></app-hero-icon>
       Todos los estados

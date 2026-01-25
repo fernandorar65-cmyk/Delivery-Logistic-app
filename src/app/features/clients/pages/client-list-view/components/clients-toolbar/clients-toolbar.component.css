@@ -63,6 +63,11 @@
   background: #e2e5e9;
 }
 
+.filter-chip.active {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
 .filter-reset {
   border: none;
   background: transparent;

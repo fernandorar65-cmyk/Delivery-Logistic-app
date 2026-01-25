@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClientCreate, ClientListResponse, ClientResponse, ClientUpdate } from '@app/features/clients/models/client.model';
+import { CompanyClientMatchListResponse } from '@app/features/clients/models/company-client-match.model';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -14,6 +15,10 @@ export class ClientService {
   getAll(page: number = 1): Observable<ClientListResponse> {
     const params = new HttpParams().set('page', page.toString());
     return this.http.get<ClientListResponse>(`${this.apiUrl}/`, { params });
+  }
+
+  getPendingCompanyClients(): Observable<CompanyClientMatchListResponse> {
+    return this.http.get<CompanyClientMatchListResponse>(`${environment.apiUrl}/company-clients/pending/`);
   }
 
   getById(id: string): Observable<ClientResponse> {
