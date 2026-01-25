@@ -1,0 +1,106 @@
+<section class="status-groups-page">
+  <div class="page-breadcrumb">
+    <span class="breadcrumb-muted">Configuración</span>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Grupos de Estados</span>
+  </div>
+
+  <header class="page-header">
+    <div class="page-title">
+      <h1>Administración de Grupos de Estados</h1>
+      <p>Defina y gestione los flujos de estados personalizados para sus operaciones logísticas.</p>
+    </div>
+    <button class="btn btn-primary">
+      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
+      Crear Nuevo Grupo
+    </button>
+  </header>
+
+  <div class="filters-card">
+    <label class="search-field">
+      <app-hero-icon name="magnifying-glass" [size]="18"></app-hero-icon>
+      <input type="text" placeholder="Buscar grupos..." />
+    </label>
+    <label class="search-field">
+      <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
+      <input type="text" placeholder="Filtrar por nombre o estado..." />
+    </label>
+    <select class="select-field">
+      <option>Todas las Compañías</option>
+      <option>Global Logística</option>
+      <option>Express S.A.</option>
+    </select>
+    <select class="select-field">
+      <option>Más recientes</option>
+      <option>A-Z</option>
+      <option>Z-A</option>
+    </select>
+  </div>
+
+  <div class="groups-list">
+    @for (group of groups; track group.title) {
+      <article class="group-card">
+        <div class="group-header">
+          <div class="group-info">
+            <div [class]="getIconToneClass(group.iconTone)">
+              <app-hero-icon [name]="group.icon" [size]="24"></app-hero-icon>
+            </div>
+            <div>
+              <h3>{{ group.title }}</h3>
+              <p>{{ group.description }}</p>
+            </div>
+          </div>
+          <div class="group-actions">
+            <button class="icon-btn" title="Editar">
+              <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
+            </button>
+            <button class="icon-btn" title="Duplicar">
+              <app-hero-icon name="download" [size]="16"></app-hero-icon>
+            </button>
+            <button class="icon-btn danger" title="Eliminar">
+              <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="group-statuses">
+          @for (status of group.statuses; track status.label) {
+            <span [class]="getToneClass(status.tone)">
+              <span class="dot"></span>
+              {{ status.label }}
+            </span>
+            @if (status !== group.statuses[group.statuses.length - 1]) {
+              <app-hero-icon name="arrow_forward" [size]="14" class="status-arrow"></app-hero-icon>
+            }
+          }
+        </div>
+
+        <div class="group-footer">
+          <div class="group-metrics">
+            <div>
+              <span class="metric-label">Envíos activos</span>
+              <span class="metric-value">{{ group.shipments }}</span>
+            </div>
+            <div>
+              <span class="metric-label">Última modificación</span>
+              <span class="metric-value">{{ group.updatedAt }}</span>
+            </div>
+          </div>
+          <div class="group-members">
+            @for (member of group.members; track member) {
+              <span class="member-badge">{{ member }}</span>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="pagination-bar">
+    <p>Mostrando <strong>{{ groups.length }}</strong> de <strong>12</strong> grupos de estados</p>
+    <div class="pagination-actions">
+      <button class="btn btn-secondary" disabled>Anterior</button>
+      <button class="btn btn-secondary">Siguiente</button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Administración de Grupos de Estados - Logística Premium</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside
+            class="w-72 bg-white dark:bg-[#1a2632] border-r border-[#f0f2f4] dark:border-[#2d3a4b] flex flex-col shrink-0">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-primary rounded-lg size-10 flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">local_shipping</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-[#111418] dark:text-white text-base font-bold leading-tight">Logística Premium
+                        </h1>
+                        <p class="text-[#617589] dark:text-gray-400 text-xs font-normal">Portal de Administración</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] dark:text-gray-400 hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] dark:text-gray-400 hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">package_2</span>
+                        <span class="text-sm font-medium">Envíos</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined"
+                            style="font-variation-settings: 'FILL' 1">fact_check</span>
+                        <span class="text-sm font-semibold">Grupos de Estados</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] dark:text-gray-400 hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">corporate_fare</span>
+                        <span class="text-sm font-medium">Compañías</span>
+                    </a>
+                    <div
+                        class="mt-4 mb-2 px-3 text-[10px] font-bold uppercase tracking-wider text-[#617589] dark:text-gray-500">
+                        Sistema</div>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] dark:text-gray-400 hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="text-sm font-medium">Configuración</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#617589] dark:text-gray-400 hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">help</span>
+                        <span class="text-sm font-medium">Soporte</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="mt-auto p-6 border-t border-[#f0f2f4] dark:border-[#2d3a4b]">
+                <div class="flex items-center gap-3">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-white dark:border-[#2d3a4b]"
+                        data-alt="User profile picture of an administrator"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-60pon1sw_yCEs-PsOQ9gn7_CRJ2ollHOoaz1dpQwgzWhrfH__DhpIV55ugN7d-4ozAD4dJzRJfaXFVy07ayemgVcojOdIjHRpIQjWsrPFpm4VxQcGTrkpCt1dFmbYGKM_RIR4Tvh9ve20a7Qm0kHs9O7G6PDd6Yc6UXZOcXRF_jMroqoTnrMcCoWEh05GZZoxgSKoN1SFbpdSvJ4-iTwVneWyHzCHBOJ87NA09csRGgB1663ayeQXnIjno86PVNLB8WtqVpPbGZF");'>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-[#111418] dark:text-white text-sm font-semibold">Carlos Méndez</p>
+                        <p class="text-[#617589] dark:text-gray-400 text-xs">Admin Corporativo</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Navigation -->
+            <header
+                class="h-16 flex items-center justify-between px-8 bg-white dark:bg-[#1a2632] border-b border-[#f0f2f4] dark:border-[#2d3a4b] shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-[#617589] dark:text-gray-400 text-sm font-medium">
+                        <a class="hover:text-primary transition-colors" href="#">Configuración</a>
+                        <span class="material-symbols-outlined text-xs">chevron_right</span>
+                        <span class="text-[#111418] dark:text-white">Grupos de Estados</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="relative w-64">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#617589] text-xl">search</span>
+                        <input
+                            class="w-full bg-[#f0f2f4] dark:bg-[#2d3a4b] border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white placeholder:text-[#617589]"
+                            placeholder="Buscar grupos..." type="text" />
+                    </div>
+                    <button
+                        class="relative p-2 text-[#617589] dark:text-gray-400 hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-2xl">notifications</span>
+                        <span
+                            class="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-[#1a2632]"></span>
+                    </button>
+                </div>
+            </header>
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-8">
+                <!-- Page Heading -->
+                <div class="flex flex-wrap items-end justify-between gap-6 mb-8">
+                    <div class="flex flex-col gap-2 max-w-2xl">
+                        <h2 class="text-3xl font-black tracking-tight text-[#111418] dark:text-white">Administración de
+                            Grupos de Estados</h2>
+                        <p class="text-[#617589] dark:text-gray-400 text-base">Defina y gestione los flujos de estados
+                            personalizados para los diferentes tipos de operaciones logísticas de su compañía.</p>
+                    </div>
+                    <button
+                        class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold text-sm shadow-lg shadow-primary/20 transition-all transform active:scale-95">
+                        <span class="material-symbols-outlined">add_circle</span>
+                        <span>Crear Nuevo Grupo</span>
+                    </button>
+                </div>
+                <!-- Filters & Search -->
+                <div
+                    class="bg-white dark:bg-[#1a2632] p-4 rounded-xl border border-[#f0f2f4] dark:border-[#2d3a4b] mb-6 flex gap-4">
+                    <div class="flex-1 relative">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#617589]">filter_list</span>
+                        <input
+                            class="w-full bg-background-light dark:bg-background-dark border-none rounded-lg pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-primary dark:text-white"
+                            placeholder="Filtrar por nombre o estado..." type="text" />
+                    </div>
+                    <select
+                        class="bg-background-light dark:bg-background-dark border-none rounded-lg px-4 py-2.5 text-sm dark:text-white focus:ring-2 focus:ring-primary min-w-[160px]">
+                        <option>Todas las Compañías</option>
+                        <option>Global Logística</option>
+                        <option>Express S.A.</option>
+                    </select>
+                    <select
+                        class="bg-background-light dark:bg-background-dark border-none rounded-lg px-4 py-2.5 text-sm dark:text-white focus:ring-2 focus:ring-primary min-w-[140px]">
+                        <option>Más recientes</option>
+                        <option>A-Z</option>
+                        <option>Z-A</option>
+                    </select>
+                </div>
+                <!-- Groups Grid -->
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- Group Item 1 -->
+                    <div
+                        class="group bg-white dark:bg-[#1a2632] border border-[#f0f2f4] dark:border-[#2d3a4b] rounded-xl p-6 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-black/20 transition-all duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex gap-4">
+                                <div
+                                    class="size-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined text-3xl">inventory_2</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-[#111418] dark:text-white">Flujo Estándar Nacional
+                                    </h3>
+                                    <p class="text-sm text-[#617589] dark:text-gray-400 mt-1">Configuración base para
+                                        entregas terrestres en territorio nacional.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center flex-wrap gap-2">
+                                <span
+                                    class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200 dark:border-green-800 flex items-center gap-1.5">
+                                    <span class="size-1.5 rounded-full bg-green-500"></span>
+                                    Recogido
+                                </span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-blue-100 dark:bg-blue-900/30 text-primary dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-200 dark:border-blue-800 flex items-center gap-1.5">
+                                    <span class="size-1.5 rounded-full bg-primary"></span>
+                                    En Almacén
+                                </span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-800 flex items-center gap-1.5">
+                                    <span class="size-1.5 rounded-full bg-amber-500"></span>
+                                    En Tránsito
+                                </span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
+                                    <span class="size-1.5 rounded-full bg-indigo-500"></span>
+                                    Entregado
+                                </span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#f0f2f4] dark:border-[#2d3a4b]">
+                                <div class="flex gap-6">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-[#617589] dark:text-gray-500 tracking-wider">Envíos
+                                            Activos</span>
+                                        <span class="text-sm font-bold text-[#111418] dark:text-white">1,245</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-[#617589] dark:text-gray-500 tracking-wider">Última
+                                            Modificación</span>
+                                        <span class="text-sm font-medium text-[#111418] dark:text-white">Hace 2
+                                            días</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center -space-x-2">
+                                    <div
+                                        class="size-7 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-[#1a2632] flex items-center justify-center text-[10px] font-bold">
+                                        JD</div>
+                                    <div
+                                        class="size-7 rounded-full bg-primary/20 text-primary border-2 border-white dark:border-[#1a2632] flex items-center justify-center text-[10px] font-bold">
+                                        AL</div>
+                                    <div
+                                        class="size-7 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-[#1a2632] flex items-center justify-center text-[10px] font-bold text-gray-400">
+                                        +3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Group Item 2 -->
+                    <div
+                        class="group bg-white dark:bg-[#1a2632] border border-[#f0f2f4] dark:border-[#2d3a4b] rounded-xl p-6 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-black/20 transition-all duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex gap-4">
+                                <div
+                                    class="size-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600">
+                                    <span class="material-symbols-outlined text-3xl">thermometer</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-[#111418] dark:text-white">Cadena de Frío /
+                                        Perecederos</h3>
+                                    <p class="text-sm text-[#617589] dark:text-gray-400 mt-1">Control de temperatura
+                                        estricto y priorización de entrega rápida.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center flex-wrap gap-2">
+                                <span
+                                    class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200 dark:border-green-800 flex items-center gap-1.5">Recogido</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 text-xs font-bold px-3 py-1.5 rounded-full border border-cyan-200 dark:border-cyan-800 flex items-center gap-1.5">Control
+                                    Temp OK</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-800 flex items-center gap-1.5">Despacho
+                                    Prioritario</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-bold px-3 py-1.5 rounded-full border border-orange-200 dark:border-orange-800 flex items-center gap-1.5">Última
+                                    Milla</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">Entregado</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#f0f2f4] dark:border-[#2d3a4b]">
+                                <div class="flex gap-6">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-[#617589] dark:text-gray-500 tracking-wider">Envíos
+                                            Activos</span>
+                                        <span class="text-sm font-bold text-[#111418] dark:text-white">86</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-[#617589] dark:text-gray-500 tracking-wider">Última
+                                            Modificación</span>
+                                        <span class="text-sm font-medium text-[#111418] dark:text-white">Ayer,
+                                            18:45</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center -space-x-2">
+                                    <div
+                                        class="size-7 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 border-2 border-white dark:border-[#1a2632] flex items-center justify-center text-[10px] font-bold">
+                                        CM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Group Item 3 -->
+                    <div
+                        class="group bg-white dark:bg-[#1a2632] border border-[#f0f2f4] dark:border-[#2d3a4b] rounded-xl p-6 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-black/20 transition-all duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex gap-4">
+                                <div
+                                    class="size-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600">
+                                    <span class="material-symbols-outlined text-3xl">public</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-[#111418] dark:text-white">Internacional
+                                        (Multimodal)</h3>
+                                    <p class="text-sm text-[#617589] dark:text-gray-400 mt-1">Estados específicos para
+                                        procesos de aduana y transporte marítimo/aéreo.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                                <button
+                                    class="p-2 text-[#617589] dark:text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center flex-wrap gap-2">
+                                <span
+                                    class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400 text-xs font-bold px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">Origen</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-200 dark:border-red-800">Trámites
+                                    Aduana</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-200 dark:border-blue-800">En
+                                    Tránsito Marítimo</span>
+                                <span
+                                    class="material-symbols-outlined text-[#617589] dark:text-gray-600 text-sm">arrow_forward</span>
+                                <span
+                                    class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800">Entregado</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#f0f2f4] dark:border-[#2d3a4b]">
+                                <div class="flex gap-6">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-[#617589] dark:text-gray-500 tracking-wider">Envíos
+                                            Activos</span>
+                                        <span class="text-sm font-bold text-[#111418] dark:text-white">432</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase font-bold text-[#617589] dark:text-gray-500 tracking-wider">Última
+                                            Modificación</span>
+                                        <span class="text-sm font-medium text-[#111418] dark:text-white">Hace 1
+                                            mes</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center -space-x-2">
+                                    <div
+                                        class="size-7 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 border-2 border-white dark:border-[#1a2632] flex items-center justify-center text-[10px] font-bold">
+                                        GL</div>
+                                    <div
+                                        class="size-7 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-[#1a2632] flex items-center justify-center text-[10px] font-bold text-gray-400">
+                                        EX</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pagination -->
+                <div class="mt-8 flex items-center justify-between">
+                    <p class="text-sm text-[#617589] dark:text-gray-400">Mostrando <span
+                            class="font-bold text-[#111418] dark:text-white">3</span> de <span
+                            class="font-bold text-[#111418] dark:text-white">12</span> grupos de estados</p>
+                    <div class="flex gap-2">
+                        <button
+                            class="px-4 py-2 bg-white dark:bg-[#1a2632] border border-[#f0f2f4] dark:border-[#2d3a4b] rounded-lg text-sm font-medium hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors disabled:opacity-50"
+                            disabled="">Anterior</button>
+                        <button
+                            class="px-4 py-2 bg-white dark:bg-[#1a2632] border border-[#f0f2f4] dark:border-[#2d3a4b] rounded-lg text-sm font-medium hover:bg-[#f0f2f4] dark:hover:bg-[#2d3a4b] transition-colors">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
