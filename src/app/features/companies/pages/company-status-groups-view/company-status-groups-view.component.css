@@ -365,6 +365,18 @@
   margin-top: 0.5rem;
 }
 
+.delete-name {
+  margin: 0;
+  font-weight: 700;
+  color: #111418;
+}
+
+.btn.danger {
+  background: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 10px 20px -12px rgba(220, 38, 38, 0.5);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

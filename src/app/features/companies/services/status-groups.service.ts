@@ -22,4 +22,8 @@ export class StatusGroupsService {
   update(companyId: string, groupId: string, payload: StatusGroupCreate): Observable<StatusGroupResponse> {
     return this.http.put<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`, payload);
   }
+
+  delete(companyId: string, groupId: string): Observable<StatusGroupResponse> {
+    return this.http.delete<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`);
+  }
 }

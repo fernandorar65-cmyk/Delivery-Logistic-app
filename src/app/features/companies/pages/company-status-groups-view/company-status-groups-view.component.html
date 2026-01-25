@@ -64,7 +64,7 @@
               <button class="icon-btn" title="Duplicar">
                 <app-hero-icon name="download" [size]="16"></app-hero-icon>
               </button>
-              <button class="icon-btn danger" title="Eliminar">
+              <button class="icon-btn danger" title="Eliminar" (click)="openDeleteModal(group)">
                 <app-hero-icon name="trash" [size]="16"></app-hero-icon>
               </button>
             </div>
@@ -160,5 +160,30 @@
         </button>
       </div>
     </form>
+  </app-modal>
+}
+
+@if (deleteOpen()) {
+  <app-modal title="Eliminar grupo" size="sm" (close)="closeDeleteModal()">
+    <div class="modal-form">
+      <p class="form-label">¿Seguro que deseas eliminar este grupo?</p>
+      <p class="form-error">Esta acción no se puede deshacer.</p>
+      @if (deletingGroupName()) {
+        <p class="delete-name">{{ deletingGroupName() }}</p>
+      }
+      @if (deleteError()) {
+        <p class="form-error">{{ deleteError() }}</p>
+      }
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()" [disabled]="deleteLoading()">Cancelar</button>
+        <button type="button" class="btn btn-primary danger" (click)="submitDelete()" [disabled]="deleteLoading()">
+          @if (deleteLoading()) {
+            Eliminando...
+          } @else {
+            Eliminar
+          }
+        </button>
+      </div>
+    </div>
   </app-modal>
 }

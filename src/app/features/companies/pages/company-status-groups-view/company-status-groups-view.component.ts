@@ -47,6 +47,11 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
   editLoading = signal(false);
   editError = signal<string | null>(null);
   editingGroupId = signal<string | null>(null);
+  deleteOpen = signal(false);
+  deleteLoading = signal(false);
+  deleteError = signal<string | null>(null);
+  deletingGroupId = signal<string | null>(null);
+  deletingGroupName = signal<string | null>(null);
 
   createForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]]
@@ -139,6 +144,20 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
     this.editingGroupId.set(null);
   }
 
+  openDeleteModal(group: StatusGroupView): void {
+    this.deleteError.set(null);
+    this.deletingGroupId.set(group.id);
+    this.deletingGroupName.set(group.title);
+    this.deleteOpen.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.deleteOpen.set(false);
+    this.deleteError.set(null);
+    this.deletingGroupId.set(null);
+    this.deletingGroupName.set(null);
+  }
+
   submitCreate(): void {
     if (this.createForm.invalid) {
       this.createForm.markAllAsTouched();
@@ -202,6 +221,34 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
         },
         error: () => {
           this.editError.set('No se pudo actualizar el grupo.');
+        }
+      });
+  }
+
+  submitDelete(): void {
+    const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+    const groupId = this.deletingGroupId();
+    if (!companyId || !groupId) {
+      this.deleteError.set('No se pudo identificar el grupo.');
+      return;
+    }
+
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
+
+    this.statusGroupsService.delete(companyId, groupId)
+      .pipe(finalize(() => this.deleteLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response.errors && response.errors.length > 0) {
+            this.deleteError.set('No se pudo eliminar el grupo.');
+            return;
+          }
+          this.closeDeleteModal();
+          this.loadGroups();
+        },
+        error: () => {
+          this.deleteError.set('No se pudo eliminar el grupo.');
         }
       });
   }
