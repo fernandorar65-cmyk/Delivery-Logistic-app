@@ -6,6 +6,7 @@ import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { MatchRequestsPanelComponent } from '@app/core/layout/components/match-requests-panel/match-requests-panel.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { UserTypes } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-main-layout',
@@ -22,6 +23,7 @@ export class MainLayoutComponent implements OnInit {
   protected readonly userType = signal<string | null>(null);
   protected readonly userEmail = signal<string | null>(null);
   protected readonly userId = signal<string | null>(null);
+  protected readonly UserTypes = UserTypes;
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
