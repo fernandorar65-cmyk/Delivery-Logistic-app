@@ -18,4 +18,8 @@ export class StatusGroupsService {
   list(companyId: string): Observable<StatusGroupListResponse> {
     return this.http.get<StatusGroupListResponse>(`${this.apiUrl}/${companyId}/status-groups/`);
   }
+
+  update(companyId: string, groupId: string, payload: StatusGroupCreate): Observable<StatusGroupResponse> {
+    return this.http.put<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`, payload);
+  }
 }

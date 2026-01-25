@@ -15,6 +15,7 @@ type StatusTag = {
 };
 
 type StatusGroupView = {
+  id: string;
   title: string;
   description: string;
   icon: string;
@@ -42,8 +43,16 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
   createOpen = signal(false);
   createLoading = signal(false);
   createError = signal<string | null>(null);
+  editOpen = signal(false);
+  editLoading = signal(false);
+  editError = signal<string | null>(null);
+  editingGroupId = signal<string | null>(null);
 
   createForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]]
+  });
+
+  editForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]]
   });
 
@@ -117,6 +126,19 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
     this.createError.set(null);
   }
 
+  openEditModal(group: StatusGroupView): void {
+    this.editError.set(null);
+    this.editingGroupId.set(group.id);
+    this.editForm.reset({ name: group.title });
+    this.editOpen.set(true);
+  }
+
+  closeEditModal(): void {
+    this.editOpen.set(false);
+    this.editError.set(null);
+    this.editingGroupId.set(null);
+  }
+
   submitCreate(): void {
     if (this.createForm.invalid) {
       this.createForm.markAllAsTouched();
@@ -146,6 +168,40 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
         },
         error: () => {
           this.createError.set('No se pudo crear el grupo.');
+        }
+      });
+  }
+
+  submitEdit(): void {
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+
+    const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+    const groupId = this.editingGroupId();
+    if (!companyId || !groupId) {
+      this.editError.set('No se pudo identificar el grupo.');
+      return;
+    }
+
+    this.editLoading.set(true);
+    this.editError.set(null);
+
+    const name = this.editForm.getRawValue().name ?? '';
+    this.statusGroupsService.update(companyId, groupId, { name })
+      .pipe(finalize(() => this.editLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response.errors && response.errors.length > 0) {
+            this.editError.set('No se pudo actualizar el grupo.');
+            return;
+          }
+          this.closeEditModal();
+          this.loadGroups();
+        },
+        error: () => {
+          this.editError.set('No se pudo actualizar el grupo.');
         }
       });
   }
@@ -181,6 +237,7 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
   private mapToViewModel(group: StatusGroup, index: number): StatusGroupView {
     const template = this.statusTemplates[index % this.statusTemplates.length] ?? [];
     return {
+      id: group.id ?? `${index}`,
       title: group.name ?? 'Grupo sin nombre',
       description: group.company_name
         ? `Flujo personalizado para ${group.company_name}.`

@@ -45,7 +45,7 @@
     <div class="state-card">No hay grupos de estados registrados.</div>
   } @else {
     <div class="groups-list">
-      @for (group of groups; track group.title) {
+      @for (group of groups; track group.id) {
         <article class="group-card">
           <div class="group-header">
             <div class="group-info">
@@ -58,7 +58,7 @@
               </div>
             </div>
             <div class="group-actions">
-              <button class="icon-btn" title="Editar">
+              <button class="icon-btn" title="Editar" (click)="openEditModal(group)">
                 <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
               </button>
               <button class="icon-btn" title="Duplicar">
@@ -131,6 +131,31 @@
             Guardando...
           } @else {
             Crear grupo
+          }
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (editOpen()) {
+  <app-modal title="Editar grupo" size="md" (close)="closeEditModal()">
+    <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="modal-form">
+      <label class="form-label">Nombre del grupo</label>
+      <input class="form-input" type="text" formControlName="name" placeholder="Ej: Flujo estándar" />
+      @if (editForm.get('name')?.touched && editForm.get('name')?.invalid) {
+        <p class="form-error">Ingresa un nombre válido.</p>
+      }
+      @if (editError()) {
+        <p class="form-error">{{ editError() }}</p>
+      }
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()" [disabled]="editLoading()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || editLoading()">
+          @if (editLoading()) {
+            Guardando...
+          } @else {
+            Guardar cambios
           }
         </button>
       </div>
