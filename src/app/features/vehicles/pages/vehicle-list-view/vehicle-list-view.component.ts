@@ -240,6 +240,13 @@ export class VehicleListViewComponent implements OnInit {
     return this.storageService.getItem(LocalStorageEnums.ID);
   }
 
+  get effectiveAllyId(): string | null {
+    if (this.isProviderUser()) {
+      return this.getProviderId();
+    }
+    return this.allyId() || this.getProviderId();
+  }
+
   loadVehicles() {
     this.loading.set(true);
     this.error.set(null);

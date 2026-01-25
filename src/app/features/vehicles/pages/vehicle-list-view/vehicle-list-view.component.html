@@ -17,7 +17,7 @@
       <h1 class="page-title">{{ pageTitle }}</h1>
       <p class="page-subtitle">{{ pageSubtitle }}</p>
     </div>
-    <button class="btn btn-primary" (click)="openCreateModal()" [disabled]="!allyId()">
+    <button class="btn btn-primary" (click)="openCreateModal()" [disabled]="!effectiveAllyId">
       <app-hero-icon name="plus" [size]="18"></app-hero-icon>
       Registrar Vehículo
     </button>
@@ -40,7 +40,7 @@
     [error]="error()"
     [vehicles]="paginatedVehicles"
     [totalFiltered]="filteredVehicles.length"
-    [allyId]="allyId()"
+    [allyId]="effectiveAllyId"
     [allyName]="allyName()"
   ></app-vehicles-table>
 
