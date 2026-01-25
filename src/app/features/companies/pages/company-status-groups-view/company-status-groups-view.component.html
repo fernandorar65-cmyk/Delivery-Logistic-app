@@ -37,67 +37,75 @@
     </select>
   </div>
 
-  <div class="groups-list">
-    @for (group of groups; track group.title) {
-      <article class="group-card">
-        <div class="group-header">
-          <div class="group-info">
-            <div [class]="getIconToneClass(group.iconTone)">
-              <app-hero-icon [name]="group.icon" [size]="24"></app-hero-icon>
+  @if (loading()) {
+    <div class="state-card">Cargando grupos...</div>
+  } @else if (error()) {
+    <div class="state-card state-error">{{ error() }}</div>
+  } @else if (groups.length === 0) {
+    <div class="state-card">No hay grupos de estados registrados.</div>
+  } @else {
+    <div class="groups-list">
+      @for (group of groups; track group.title) {
+        <article class="group-card">
+          <div class="group-header">
+            <div class="group-info">
+              <div [class]="getIconToneClass(group.iconTone)">
+                <app-hero-icon [name]="group.icon" [size]="24"></app-hero-icon>
+              </div>
+              <div>
+                <h3>{{ group.title }}</h3>
+                <p>{{ group.description }}</p>
+              </div>
             </div>
-            <div>
-              <h3>{{ group.title }}</h3>
-              <p>{{ group.description }}</p>
+            <div class="group-actions">
+              <button class="icon-btn" title="Editar">
+                <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
+              </button>
+              <button class="icon-btn" title="Duplicar">
+                <app-hero-icon name="download" [size]="16"></app-hero-icon>
+              </button>
+              <button class="icon-btn danger" title="Eliminar">
+                <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+              </button>
             </div>
           </div>
-          <div class="group-actions">
-            <button class="icon-btn" title="Editar">
-              <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
-            </button>
-            <button class="icon-btn" title="Duplicar">
-              <app-hero-icon name="download" [size]="16"></app-hero-icon>
-            </button>
-            <button class="icon-btn danger" title="Eliminar">
-              <app-hero-icon name="trash" [size]="16"></app-hero-icon>
-            </button>
-          </div>
-        </div>
 
-        <div class="group-statuses">
-          @for (status of group.statuses; track status.label) {
-            <span [class]="getToneClass(status.tone)">
-              <span class="dot"></span>
-              {{ status.label }}
-            </span>
-            @if (status !== group.statuses[group.statuses.length - 1]) {
-              <app-hero-icon name="arrow_forward" [size]="14" class="status-arrow"></app-hero-icon>
-            }
-          }
-        </div>
-
-        <div class="group-footer">
-          <div class="group-metrics">
-            <div>
-              <span class="metric-label">Envíos activos</span>
-              <span class="metric-value">{{ group.shipments }}</span>
-            </div>
-            <div>
-              <span class="metric-label">Última modificación</span>
-              <span class="metric-value">{{ group.updatedAt }}</span>
-            </div>
-          </div>
-          <div class="group-members">
-            @for (member of group.members; track member) {
-              <span class="member-badge">{{ member }}</span>
+          <div class="group-statuses">
+            @for (status of group.statuses; track status.label) {
+              <span [class]="getToneClass(status.tone)">
+                <span class="dot"></span>
+                {{ status.label }}
+              </span>
+              @if (status !== group.statuses[group.statuses.length - 1]) {
+                <app-hero-icon name="arrow_forward" [size]="14" class="status-arrow"></app-hero-icon>
+              }
             }
           </div>
-        </div>
-      </article>
-    }
-  </div>
+
+          <div class="group-footer">
+            <div class="group-metrics">
+              <div>
+                <span class="metric-label">Envíos activos</span>
+                <span class="metric-value">{{ group.shipments }}</span>
+              </div>
+              <div>
+                <span class="metric-label">Última modificación</span>
+                <span class="metric-value">{{ group.updatedAt }}</span>
+              </div>
+            </div>
+            <div class="group-members">
+              @for (member of group.members; track member) {
+                <span class="member-badge">{{ member }}</span>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
 
   <div class="pagination-bar">
-    <p>Mostrando <strong>{{ groups.length }}</strong> de <strong>12</strong> grupos de estados</p>
+    <p>Mostrando <strong>{{ groups.length }}</strong> de <strong>{{ totalCount() }}</strong> grupos de estados</p>
     <div class="pagination-actions">
       <button class="btn btn-secondary" disabled>Anterior</button>
       <button class="btn btn-secondary">Siguiente</button>

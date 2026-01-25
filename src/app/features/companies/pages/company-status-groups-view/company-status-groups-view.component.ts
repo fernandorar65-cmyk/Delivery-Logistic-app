@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -7,13 +7,14 @@ import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 import { StatusGroupsService } from '@app/features/companies/services/status-groups.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { StatusGroup } from '@app/features/companies/models/status-group.model';
 
 type StatusTag = {
   label: string;
   tone: 'green' | 'blue' | 'amber' | 'indigo' | 'cyan' | 'orange' | 'gray';
 };
 
-type StatusGroup = {
+type StatusGroupView = {
   title: string;
   description: string;
   icon: string;
@@ -31,11 +32,13 @@ type StatusGroup = {
   templateUrl: './company-status-groups-view.component.html',
   styleUrl: './company-status-groups-view.component.css'
 })
-export class CompanyStatusGroupsViewComponent {
+export class CompanyStatusGroupsViewComponent implements OnInit {
   private fb = inject(FormBuilder);
   private statusGroupsService = inject(StatusGroupsService);
   private storageService = inject(StorageService);
 
+  loading = signal(false);
+  error = signal<string | null>(null);
   createOpen = signal(false);
   createLoading = signal(false);
   createError = signal<string | null>(null);
@@ -44,54 +47,34 @@ export class CompanyStatusGroupsViewComponent {
     name: ['', [Validators.required, Validators.minLength(2)]]
   });
 
-  groups: StatusGroup[] = [
-    {
-      title: 'Flujo Estándar Nacional',
-      description: 'Configuración base para entregas terrestres en territorio nacional.',
-      icon: 'truck',
-      iconTone: 'primary',
-      statuses: [
-        { label: 'Recogido', tone: 'green' },
-        { label: 'En Almacén', tone: 'blue' },
-        { label: 'En Tránsito', tone: 'amber' },
-        { label: 'Entregado', tone: 'indigo' }
-      ],
-      shipments: '1,245',
-      updatedAt: 'Hace 2 días',
-      members: ['JD', 'AL', '+3']
-    },
-    {
-      title: 'Cadena de Frío / Perecederos',
-      description: 'Control de temperatura estricto y priorización de entrega rápida.',
-      icon: 'bolt',
-      iconTone: 'purple',
-      statuses: [
-        { label: 'Recogido', tone: 'green' },
-        { label: 'Control Temp OK', tone: 'cyan' },
-        { label: 'Despacho Prioritario', tone: 'amber' },
-        { label: 'Última Milla', tone: 'orange' },
-        { label: 'Entregado', tone: 'indigo' }
-      ],
-      shipments: '86',
-      updatedAt: 'Ayer, 18:45',
-      members: ['CM']
-    },
-    {
-      title: 'Internacional (Multimodal)',
-      description: 'Estados específicos para procesos de aduana y transporte marítimo/aéreo.',
-      icon: 'chart-bar',
-      iconTone: 'orange',
-      statuses: [
-        { label: 'Origen', tone: 'gray' },
-        { label: 'Trámites Aduana', tone: 'orange' },
-        { label: 'En Tránsito Marítimo', tone: 'blue' },
-        { label: 'Entregado', tone: 'indigo' }
-      ],
-      shipments: '432',
-      updatedAt: 'Hace 1 mes',
-      members: ['GL', 'EX']
-    }
+  groups: StatusGroupView[] = [];
+  totalCount = signal(0);
+
+  private readonly statusTemplates: StatusTag[][] = [
+    [
+      { label: 'Recogido', tone: 'green' },
+      { label: 'En Almacén', tone: 'blue' },
+      { label: 'En Tránsito', tone: 'amber' },
+      { label: 'Entregado', tone: 'indigo' }
+    ],
+    [
+      { label: 'Recogido', tone: 'green' },
+      { label: 'Control Temp OK', tone: 'cyan' },
+      { label: 'Despacho Prioritario', tone: 'amber' },
+      { label: 'Última Milla', tone: 'orange' },
+      { label: 'Entregado', tone: 'indigo' }
+    ],
+    [
+      { label: 'Origen', tone: 'gray' },
+      { label: 'Trámites Aduana', tone: 'orange' },
+      { label: 'En Tránsito Marítimo', tone: 'blue' },
+      { label: 'Entregado', tone: 'indigo' }
+    ]
   ];
+
+  ngOnInit(): void {
+    this.loadGroups();
+  }
 
   getToneClass(tone: StatusTag['tone']): string {
     switch (tone) {
@@ -112,7 +95,7 @@ export class CompanyStatusGroupsViewComponent {
     }
   }
 
-  getIconToneClass(tone: StatusGroup['iconTone']): string {
+  getIconToneClass(tone: StatusGroupView['iconTone']): string {
     switch (tone) {
       case 'purple':
         return 'icon-badge icon-purple';
@@ -158,26 +141,63 @@ export class CompanyStatusGroupsViewComponent {
             this.createError.set('No se pudo crear el grupo.');
             return;
           }
-          if (response.result?.name) {
-            this.groups = [
-              {
-                title: response.result.name,
-                description: 'Grupo personalizado',
-                icon: 'hexagon',
-                iconTone: 'primary',
-                statuses: [],
-                shipments: '0',
-                updatedAt: 'Ahora',
-                members: []
-              },
-              ...this.groups
-            ];
-          }
           this.closeCreateModal();
+          this.loadGroups();
         },
         error: () => {
           this.createError.set('No se pudo crear el grupo.');
         }
       });
+  }
+
+  private loadGroups(): void {
+    const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (!companyId) {
+      this.error.set('No se pudo identificar la compañía.');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.statusGroupsService.list(companyId)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response.errors && response.errors.length > 0) {
+            this.error.set('No se pudieron cargar los grupos.');
+            return;
+          }
+          const results = response.result ?? [];
+          this.totalCount.set(response.pagination?.count ?? results.length);
+          this.groups = results.map((group, index) => this.mapToViewModel(group, index));
+        },
+        error: () => {
+          this.error.set('No se pudieron cargar los grupos.');
+        }
+      });
+  }
+
+  private mapToViewModel(group: StatusGroup, index: number): StatusGroupView {
+    const template = this.statusTemplates[index % this.statusTemplates.length] ?? [];
+    return {
+      title: group.name ?? 'Grupo sin nombre',
+      description: group.company_name
+        ? `Flujo personalizado para ${group.company_name}.`
+        : 'Flujo personalizado para su operación logística.',
+      icon: index % 3 === 1 ? 'bolt' : index % 3 === 2 ? 'chart-bar' : 'truck',
+      iconTone: index % 3 === 1 ? 'purple' : index % 3 === 2 ? 'orange' : 'primary',
+      statuses: template,
+      shipments: String(group.statuses_count ?? 0),
+      updatedAt: this.formatDate(group.updated_at ?? group.created_at),
+      members: ['GL']
+    };
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) return 'Sin fecha';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Sin fecha';
+    return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
   }
 }

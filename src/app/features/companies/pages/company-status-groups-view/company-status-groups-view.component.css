@@ -88,6 +88,21 @@
   gap: 1rem;
 }
 
+.state-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: #617589;
+  font-weight: 600;
+}
+
+.state-card.state-error {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
 .group-card {
   background: #ffffff;
   border-radius: 1rem;
