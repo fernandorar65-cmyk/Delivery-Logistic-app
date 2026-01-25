@@ -81,7 +81,8 @@ export interface VehicleApi {
   id?: string;
   provider_id?: string;
   provider_name?: string;
-  plate_number: string;
+  plate_number?: string;
+  license_plate?: string;
   brand?: string;
   model?: string;
   color?: string;

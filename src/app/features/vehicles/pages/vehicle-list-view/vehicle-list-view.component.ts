@@ -39,6 +39,7 @@ export class VehicleListViewComponent implements OnInit {
 
   loading = signal(false);
   error = signal<string | null>(null);
+  isProviderUser = signal(false);
   allyId = signal<string | null>(null);
   allyName = signal<string | null>(null);
   createOpen = signal(false);
@@ -118,6 +119,9 @@ export class VehicleListViewComponent implements OnInit {
   });
 
   ngOnInit() {
+    const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
+    this.isProviderUser.set((userType ?? '').toLowerCase() === 'provider');
+
     this.route.paramMap.subscribe(params => {
       this.allyId.set(params.get('allyId'));
       this.currentPage.set(1);
@@ -287,8 +291,8 @@ export class VehicleListViewComponent implements OnInit {
     const mockData = this.generateVehicleMockData(vehicle, index);
     return {
       ...vehicle,
-      image: mockData.image,
-      year: mockData.year
+      image: vehicle.image ?? mockData.image,
+      year: vehicle.year ?? mockData.year
     };
   }
 
@@ -361,16 +365,23 @@ export class VehicleListViewComponent implements OnInit {
   get allyLabel(): string {
     const name = this.allyName();
     if (name) return name;
+    if (this.isProviderUser()) return 'Flota';
     const id = this.allyId();
     return id ? `Aliado #${id}` : 'Flota';
   }
 
   get pageTitle(): string {
-    return this.allyId() ? `Vehículos de ${this.allyLabel}` : 'Administración de Flota';
+    return this.isProviderUser()
+      ? 'Vehículos'
+      : this.allyId()
+        ? `Vehículos de ${this.allyLabel}`
+        : 'Administración de Flota';
   }
 
   get pageSubtitle(): string {
-    return this.allyId()
+    return this.isProviderUser()
+      ? 'Supervisión operativa de tu flota.'
+      : this.allyId()
       ? 'Supervisión operativa de la flota asignada al aliado.'
       : 'Supervisión operativa y asignación técnica de unidades.';
   }
@@ -379,15 +390,17 @@ export class VehicleListViewComponent implements OnInit {
   get scopedVehicles(): Vehicle[] {
     const allyId = this.allyId();
     const allyName = this.allyName();
+    const items = this.vehicles();
     if (!allyId && !allyName) {
-      return this.vehicles();
+      return items;
     }
 
-    return this.vehicles().filter(vehicle => {
+    const filtered = items.filter(vehicle => {
       const matchesId = allyId && vehicle.provider_id ? vehicle.provider_id === allyId : false;
       const matchesName = allyName && vehicle.provider_name ? vehicle.provider_name === allyName : false;
       return matchesId || matchesName;
     });
+    return filtered.length > 0 ? filtered : items;
   }
 
   // Filtrar vehículos según búsqueda y filtros

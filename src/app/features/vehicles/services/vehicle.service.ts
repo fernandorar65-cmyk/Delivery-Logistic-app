@@ -58,10 +58,11 @@ export class VehicleService {
   }
 
   private mapListResponse(response: VehicleApiListResponse): VehicleListResponse {
+    const items = Array.isArray(response.result) ? response.result : [];
     return {
-      errors: response.errors,
-      result: (response.result || []).map(vehicle => this.mapVehicleFromApi(vehicle)),
-      pagination: response.pagination ?? { count: response.result?.length ?? 0, next: null, previous: null }
+      errors: response.errors ?? [],
+      result: items.map(vehicle => this.mapVehicleFromApi(vehicle)),
+      pagination: response.pagination ?? { count: items.length, next: null, previous: null }
     };
   }
 
@@ -73,11 +74,12 @@ export class VehicleService {
   }
 
   private mapVehicleFromApi(vehicle: VehicleApi): Vehicle {
+    const plate = vehicle.plate_number ?? vehicle.license_plate ?? '';
     return {
       id: vehicle.id,
       provider_id: vehicle.provider_id,
       provider_name: vehicle.provider_name,
-      license_plate: vehicle.plate_number,
+      license_plate: plate,
       brand: vehicle.brand,
       model: vehicle.model,
       color: vehicle.color,
