@@ -12,7 +12,7 @@ import { ClientsFormModalComponent } from './components/clients-form-modal/clien
 import { ClientsSuccessModalComponent } from './components/clients-success-modal/clients-success-modal.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
-import { CompanyClientMatch } from '@app/features/clients/models/company-client-match.model';
+import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
 
 @Component({
   selector: 'app-client-list-view',
@@ -296,7 +296,7 @@ export class ClientListViewComponent implements OnInit {
     }
   }
 
-  private mapPendingToClient(match: CompanyClientMatch): Client {
+  private mapPendingToClient(match: CompanyRequestPending): Client {
     return {
       id: match.client_id,
       client_name: match.client_name,

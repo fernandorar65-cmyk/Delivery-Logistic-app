@@ -1,4 +1,4 @@
-export interface CompanyClientMatch {
+export interface CompanyRequestPending {
   id: string;
   company_id: string;
   company_name: string;
@@ -9,9 +9,9 @@ export interface CompanyClientMatch {
   updated_at?: string;
 }
 
-export interface CompanyClientMatchListResponse {
+export interface CompanyRequestPendingListResponse {
   errors: any[];
-  result: CompanyClientMatch[];
+  result: CompanyRequestPending[];
   pagination?: {
     count: number;
     next: string | null;
