@@ -6,7 +6,7 @@ Contra1234#
 
 
 
--- CLIENTE
+-- COMPANY
 fernandorar65@gmail.com
 contraseña1234
 
@@ -18,6 +18,9 @@ contraseña1234
 
   AquinosRetail@gmail.com
   Contra123#
+    -- INTERNOS
+       interno-02-provider@gmail.com
+       Contra1234#
 
 
 

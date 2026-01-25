@@ -94,17 +94,9 @@ export class InternalUsersViewComponent implements OnInit {
       return;
     }
 
-    if (this.ownerType() === 'provider') {
-      const providerId = this.storageService.getItem(LocalStorageEnums.ID);
-      if (providerId) {
-        this.ownerId.set(providerId);
-        return;
-      }
-    }
-
-    const userId = this.storageService.getItem(LocalStorageEnums.USER_ID);
-    if (userId) {
-      this.ownerId.set(userId);
+    const entityId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (entityId) {
+      this.ownerId.set(entityId);
     }
   }
 

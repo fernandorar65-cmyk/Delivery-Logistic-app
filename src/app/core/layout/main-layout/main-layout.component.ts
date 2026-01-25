@@ -27,7 +27,7 @@ export class MainLayoutComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.userType.set(this.storageService.getItem(LocalStorageEnums.USER_TYPE));
       this.userEmail.set(this.storageService.getItem(LocalStorageEnums.USER_EMAIL));
-      this.userId.set(this.storageService.getItem(LocalStorageEnums.USER_ID));
+      this.userId.set(this.storageService.getItem(LocalStorageEnums.ID));
     }
   }
 

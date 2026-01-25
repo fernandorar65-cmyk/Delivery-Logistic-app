@@ -118,7 +118,7 @@ export class ProviderCreateModalComponent {
 
   confirmMatchRequest(): void {
     const providerId = this.matchProviderId();
-    const companyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
+    const companyId = this.storageService.getItem(LocalStorageEnums.ID);
     if (!companyId || !providerId) {
       this.matchError.set('No se pudo enviar la solicitud. Falta información.');
       return;
@@ -178,7 +178,7 @@ export class ProviderCreateModalComponent {
           this.error.set('Error al crear el aliado. Por favor, intenta nuevamente.');
           return of(null);
         }
-        const companyId = this.storageService.getItem(LocalStorageEnums.USER_ID);
+        const companyId = this.storageService.getItem(LocalStorageEnums.ID);
         const providerId = response?.result?.id;
 
         if (!companyId || !providerId) {
