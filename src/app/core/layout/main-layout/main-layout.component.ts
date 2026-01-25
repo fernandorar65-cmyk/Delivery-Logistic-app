@@ -38,7 +38,9 @@ export class MainLayoutComponent implements OnInit {
     if (!currentRole) {
       return false;
     }
-    const normalizedRole = currentRole === 'platform' ? 'admin' : currentRole;
+    const normalizedRole = currentRole.toLowerCase() === 'platform'
+      ? 'admin'
+      : currentRole.toLowerCase();
     return roles.includes(normalizedRole);
   }
 
@@ -47,7 +49,9 @@ export class MainLayoutComponent implements OnInit {
     if (!currentRole) {
       return 'Usuario';
     }
-    const normalizedRole = currentRole === 'platform' ? 'admin' : currentRole;
+    const normalizedRole = currentRole.toLowerCase() === 'platform'
+      ? 'admin'
+      : currentRole.toLowerCase();
     const labels: Record<string, string> = {
       admin: 'Admin',
       company: 'Company',

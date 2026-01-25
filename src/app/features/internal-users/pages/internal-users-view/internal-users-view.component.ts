@@ -62,26 +62,16 @@ export class InternalUsersViewComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const ownerId = this.route.snapshot.paramMap.get('id');
     const ownerType = this.route.snapshot.data['ownerType'] as InternalUserOwnerType | undefined;
 
-    if (ownerId) {
-      this.ownerId.set(ownerId);
-    }
     if (ownerType) {
       this.ownerType.set(ownerType);
     }
 
-    if (!ownerId) {
-      this.loadOwnerIdFromStorage();
-    }
+    this.resolveOwnerId();
 
-    if (this.ownerType() !== 'provider') {
-      this.error.set('Esta sección solo está disponible para providers.');
-      return;
-    }
-
-    if (!this.ownerId()) {
+    const resolvedOwnerId = this.ownerId();
+    if (!resolvedOwnerId || resolvedOwnerId === 'null') {
       this.error.set('No se pudo identificar la entidad.');
       return;
     }
@@ -100,8 +90,18 @@ export class InternalUsersViewComponent implements OnInit {
     }
   }
 
+  private resolveOwnerId(): void {
+    const ownerId = this.route.snapshot.paramMap.get('id');
+    if (ownerId && ownerId !== 'null') {
+      this.ownerId.set(ownerId);
+      return;
+    }
+    this.loadOwnerIdFromStorage();
+  }
+
   loadUsers(): void {
     const ownerId = this.ownerId();
+    const ownerType = this.ownerType();
     if (!ownerId) {
       return;
     }
@@ -109,7 +109,7 @@ export class InternalUsersViewComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.usersService.list(ownerId)
+    this.usersService.list(ownerType, ownerId)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (response) => {
@@ -146,6 +146,7 @@ export class InternalUsersViewComponent implements OnInit {
     }
 
     const ownerId = this.ownerId();
+    const ownerType = this.ownerType();
     if (!ownerId) {
       this.formError.set('No se pudo identificar la entidad.');
       return;
@@ -166,7 +167,7 @@ export class InternalUsersViewComponent implements OnInit {
       password: formValue.password ?? ''
     };
 
-    this.usersService.create(ownerId, createPayload)
+    this.usersService.create(ownerType, ownerId, createPayload)
       .pipe(finalize(() => this.formLoading.set(false)))
       .subscribe({
         next: (response) => {
@@ -185,6 +186,7 @@ export class InternalUsersViewComponent implements OnInit {
 
   remove(user: InternalUser): void {
     const ownerId = this.ownerId();
+    const ownerType = this.ownerType();
     if (!ownerId || !user.id) {
       return;
     }
@@ -194,7 +196,7 @@ export class InternalUsersViewComponent implements OnInit {
       return;
     }
 
-    this.usersService.remove(ownerId, String(user.id))
+    this.usersService.remove(ownerType, ownerId, String(user.id))
       .subscribe({
         next: () => {
           this.users.update(items => items.filter(item => item.id !== user.id));

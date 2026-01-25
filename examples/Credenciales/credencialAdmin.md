@@ -18,3 +18,7 @@ contraseña1234
 -- Clients
    Cliente03@gmail.com
    Contra1234#
+
+  -- INTERNOS
+    interno-cliente-01@gmail.com
+    Contra1234#

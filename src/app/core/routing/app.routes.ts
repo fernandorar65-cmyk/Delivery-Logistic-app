@@ -121,7 +121,7 @@ export const routes: Routes = [
       {
         path: 'clients/:id/usuarios-internos',
         canActivate: [roleGuard],
-        data: { roles: ['admin', 'company'], ownerType: 'client' },
+        data: { roles: ['admin', 'company', 'client'], ownerType: 'client' },
         loadComponent: () => import('@app/features/internal-users/pages/internal-users-view/internal-users-view.component')
           .then(m => m.InternalUsersViewComponent)
       },

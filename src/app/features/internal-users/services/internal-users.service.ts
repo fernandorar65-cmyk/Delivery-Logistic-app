@@ -16,24 +16,24 @@ export class InternalUsersService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
-  list(providerId: string): Observable<InternalUserListResponse> {
-    return this.http.get<InternalUserListResponse>(`${this.getBasePath(providerId)}/`);
+  list(ownerType: InternalUserOwnerType, ownerId: string): Observable<InternalUserListResponse> {
+    return this.http.get<InternalUserListResponse>(`${this.getBasePath(ownerType, ownerId)}/`);
   }
 
-  create(providerId: string, payload: InternalUserCreate): Observable<InternalUserResponse> {
-    return this.http.post<InternalUserResponse>(`${this.getBasePath(providerId)}/`, payload);
+  create(ownerType: InternalUserOwnerType, ownerId: string, payload: InternalUserCreate): Observable<InternalUserResponse> {
+    return this.http.post<InternalUserResponse>(`${this.getBasePath(ownerType, ownerId)}/`, payload);
   }
 
-  remove(providerId: string, userId: string): Observable<void> {
-    return this.http.delete<void>(`${this.getBasePath(providerId)}/${userId}/`);
+  remove(ownerType: InternalUserOwnerType, ownerId: string, userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.getBasePath(ownerType, ownerId)}/${userId}/`);
   }
 
   getMe(ownerType: InternalUserOwnerType): Observable<InternalUserResponse> {
     return this.http.get<InternalUserResponse>(`${this.getOwnerBasePath(ownerType)}/internal-users/me/`);
   }
 
-  private getBasePath(providerId: string): string {
-    return `${this.apiUrl}/providers/${providerId}/internal-users`;
+  private getBasePath(ownerType: InternalUserOwnerType, ownerId: string): string {
+    return `${this.getOwnerBasePath(ownerType)}/${ownerId}/internal-users`;
   }
 
   private getOwnerBasePath(ownerType: InternalUserOwnerType): string {
