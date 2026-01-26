@@ -26,3 +26,32 @@ export interface StatusGroupListResponse {
     previous: string | null;
   };
 }
+
+export interface StatusGroupStateCreate {
+  name: string;
+  code: string;
+  order: number;
+  is_initial: boolean;
+  is_final: boolean;
+  is_visible_to_client: boolean;
+  is_visible_to_provider: boolean;
+}
+
+export interface StatusGroupState {
+  id?: string;
+  status_group_id?: string;
+  name?: string;
+  code?: string;
+  order?: number;
+  is_initial?: boolean;
+  is_final?: boolean;
+  is_visible_to_client?: boolean;
+  is_visible_to_provider?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface StatusGroupStateResponse {
+  errors: any[];
+  result: StatusGroupState | null;
+}

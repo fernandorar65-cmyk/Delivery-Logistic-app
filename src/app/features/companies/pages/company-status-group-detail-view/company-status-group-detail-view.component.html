@@ -58,8 +58,11 @@
 
       <section class="detail-card">
         <div class="detail-card-header">
-          <h2>Estados del flujo</h2>
-          <span class="detail-badge">Vista previa</span>
+          <h2>Añadir Estados</h2>
+          <button class="add-action" type="button" (click)="openCreateState()">
+            <app-hero-icon name="plus" [size]="16"></app-hero-icon>
+            Añadir nuevo
+          </button>
         </div>
         <div class="detail-card-body">
           @if (steps().length === 0) {
@@ -71,17 +74,106 @@
                   <div class="step-index">{{ i + 1 }}</div>
                   <div class="step-content">
                     <span class="step-label">{{ step.label }}</span>
-                    <span [class]="getToneClass(step.tone)">
-                      <span class="dot"></span>
-                      {{ step.tone }}
-                    </span>
+                  </div>
+                  <div class="step-actions">
+                    <div class="color-pill">
+                      <span class="color-dot" [style.background]="getStepColor(step)"></span>
+                      <span class="color-label">{{ step.tone }}</span>
+                    </div>
+                    <button type="button" class="icon-action" title="Cambiar color" (click)="openColorPicker(i)">
+                      <app-hero-icon name="palette" [size]="16"></app-hero-icon>
+                    </button>
+                    <button type="button" class="icon-action danger" title="Eliminar" (click)="removeStep(i)">
+                      <app-hero-icon name="trash" [size]="16"></app-hero-icon>
+                    </button>
                   </div>
                 </div>
               }
             </div>
+            <div class="add-placeholder">Añadir más estados pulsando el botón superior</div>
           }
         </div>
       </section>
     </div>
   }
 </section>
+
+@if (createOpen()) {
+  <app-modal title="Crear estado" size="md" (close)="closeCreateState()">
+    <form [formGroup]="createStateForm" (ngSubmit)="submitCreateState()" class="modal-form">
+      <label class="form-label">Nombre del estado</label>
+      <input class="form-input" type="text" formControlName="name" placeholder="Ej: En tránsito" />
+      @if (createStateForm.get('name')?.touched && createStateForm.get('name')?.invalid) {
+        <p class="form-error">Ingresa un nombre válido.</p>
+      }
+
+      <label class="form-label">Código</label>
+      <input class="form-input" type="text" formControlName="code" placeholder="Ej: EN_TRANSITO" />
+      @if (createStateForm.get('code')?.touched && createStateForm.get('code')?.invalid) {
+        <p class="form-error">Ingresa un código válido.</p>
+      }
+
+      <label class="form-label">Orden</label>
+      <input class="form-input" type="number" min="1" formControlName="order" />
+      @if (createStateForm.get('order')?.touched && createStateForm.get('order')?.invalid) {
+        <p class="form-error">Ingresa un orden válido.</p>
+      }
+
+      <div class="toggle-grid">
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_initial" />
+          <span>Estado inicial</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_final" />
+          <span>Estado final</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_visible_to_client" />
+          <span>Visible para cliente</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_visible_to_provider" />
+          <span>Visible para proveedor</span>
+        </label>
+      </div>
+
+      @if (createError()) {
+        <p class="form-error">{{ createError() }}</p>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeCreateState()" [disabled]="createLoading()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="createStateForm.invalid || createLoading()">
+          @if (createLoading()) {
+            Guardando...
+          } @else {
+            Crear estado
+          }
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (colorOpen()) {
+  <app-modal title="Seleccionar color" size="sm" (close)="closeColorPicker()">
+    <div class="modal-form">
+      <p class="form-label">Elige un color para el estado</p>
+      <div class="color-grid">
+        @for (option of colorOptions; track option.hex) {
+          <button type="button" class="color-option" (click)="applyColor(option)">
+            <span class="color-dot" [style.background]="option.hex"></span>
+            <span>{{ option.label }}</span>
+          </button>
+        }
+      </div>
+      @if (colorError()) {
+        <p class="form-error">{{ colorError() }}</p>
+      }
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeColorPicker()" [disabled]="colorLoading()">Cerrar</button>
+      </div>
+    </div>
+  </app-modal>
+}

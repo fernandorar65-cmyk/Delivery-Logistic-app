@@ -2,7 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
-import { StatusGroupCreate, StatusGroupListResponse, StatusGroupResponse } from '@app/features/companies/models/status-group.model';
+import {
+  StatusGroupCreate,
+  StatusGroupListResponse,
+  StatusGroupResponse,
+  StatusGroupStateCreate,
+  StatusGroupStateResponse
+} from '@app/features/companies/models/status-group.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +31,10 @@ export class StatusGroupsService {
 
   getById(companyId: string, groupId: string): Observable<StatusGroupResponse> {
     return this.http.get<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`);
+  }
+
+  createStatus(groupId: string, payload: StatusGroupStateCreate): Observable<StatusGroupStateResponse> {
+    return this.http.post<StatusGroupStateResponse>(`${environment.apiUrl}/status-groups/${groupId}/statuses/`, payload);
   }
 
   delete(companyId: string, groupId: string): Observable<StatusGroupResponse> {
