@@ -6,6 +6,9 @@ Contra1234#
 -- COMPANY
 fernandorar65@gmail.com
 contraseña1234
+  INTERNO
+  interno-company@gmail.com
+  Contra1234#
 
 
 -- providers

@@ -57,6 +57,9 @@ export class MainLayoutComponent implements OnInit {
       company: 'Company',
       provider: 'Provider',
       client: 'Client',
+      internal_company: 'Internal Company',
+      internal_provider: 'Internal Provider',
+      internal_client: 'Internal Client',
     };
     return labels[normalizedRole] ?? normalizedRole;
   }
