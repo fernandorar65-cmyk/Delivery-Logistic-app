@@ -46,6 +46,10 @@ export class StatusGroupsService {
     return this.http.put<StatusGroupStateResponse>(`${environment.apiUrl}/status-groups/${groupId}/statuses/${statusId}/`, payload);
   }
 
+  deleteStatus(groupId: string, statusId: string): Observable<StatusGroupStateResponse> {
+    return this.http.delete<StatusGroupStateResponse>(`${environment.apiUrl}/status-groups/${groupId}/statuses/${statusId}/`);
+  }
+
   delete(companyId: string, groupId: string): Observable<StatusGroupResponse> {
     return this.http.delete<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`);
   }

@@ -86,7 +86,7 @@
                     <button type="button" class="icon-action" title="Cambiar color" (click)="openColorPicker(i)">
                       <app-hero-icon name="palette" [size]="16"></app-hero-icon>
                     </button>
-                    <button type="button" class="icon-action danger" title="Eliminar" (click)="removeStep(i)">
+                    <button type="button" class="icon-action danger" title="Eliminar" (click)="openDeleteState(i)">
                       <app-hero-icon name="trash" [size]="16"></app-hero-icon>
                     </button>
                   </div>
@@ -234,6 +234,28 @@
       }
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" (click)="closeColorPicker()" [disabled]="colorLoading()">Cerrar</button>
+      </div>
+    </div>
+  </app-modal>
+}
+
+@if (deleteOpen()) {
+  <app-modal title="Eliminar estado" size="sm" (close)="closeDeleteState()">
+    <div class="modal-form">
+      <p class="form-label">¿Seguro que deseas eliminar este estado?</p>
+      <p class="form-error">Esta acción no se puede deshacer.</p>
+      @if (deleteError()) {
+        <p class="form-error">{{ deleteError() }}</p>
+      }
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteState()" [disabled]="deleteLoading()">Cancelar</button>
+        <button type="button" class="btn btn-primary danger" (click)="submitDeleteState()" [disabled]="deleteLoading()">
+          @if (deleteLoading()) {
+            Eliminando...
+          } @else {
+            Eliminar
+          }
+        </button>
       </div>
     </div>
   </app-modal>

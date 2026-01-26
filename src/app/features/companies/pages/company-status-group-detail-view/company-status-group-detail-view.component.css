@@ -343,6 +343,12 @@
   box-shadow: 0 10px 20px -12px rgba(19, 127, 236, 0.6);
 }
 
+.btn-primary.danger {
+  background: #dc2626;
+  color: #fff;
+  box-shadow: 0 10px 20px -12px rgba(220, 38, 38, 0.5);
+}
+
 .btn-secondary {
   background: #ffffff;
   border: 1px solid #e5e7eb;

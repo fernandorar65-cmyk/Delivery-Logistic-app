@@ -46,6 +46,9 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
   editOpen = signal(false);
   editLoading = signal(false);
   editError = signal<string | null>(null);
+  deleteOpen = signal(false);
+  deleteLoading = signal(false);
+  deleteError = signal<string | null>(null);
   colorOpen = signal(false);
   colorLoading = signal(false);
   colorError = signal<string | null>(null);
@@ -53,6 +56,7 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
   private groupId: string | null = null;
   private colorIndex: number | null = null;
   private editingIndex: number | null = null;
+  private deletingIndex: number | null = null;
 
   private readonly toneHex: Record<StatusStep['tone'], string> = {
     green: '#16a34a',
@@ -204,6 +208,20 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
     this.editingIndex = null;
   }
 
+  openDeleteState(index: number): void {
+    const step = this.steps()[index];
+    if (!step) return;
+    this.deleteError.set(null);
+    this.deletingIndex = index;
+    this.deleteOpen.set(true);
+  }
+
+  closeDeleteState(): void {
+    this.deleteOpen.set(false);
+    this.deleteError.set(null);
+    this.deletingIndex = null;
+  }
+
   openColorPicker(index: number): void {
     this.colorError.set(null);
     this.colorIndex = index;
@@ -327,6 +345,40 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
         },
         error: () => {
           this.editError.set('No se pudo actualizar el estado.');
+        }
+      });
+  }
+
+  submitDeleteState(): void {
+    if (!this.groupId || this.deletingIndex === null) {
+      this.deleteError.set('No se pudo identificar el estado.');
+      return;
+    }
+    const step = this.steps()[this.deletingIndex];
+    if (!step?.id) {
+      this.deleteError.set('No se pudo identificar el estado.');
+      return;
+    }
+
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
+
+    this.statusGroupsService.deleteStatus(this.groupId, step.id)
+      .pipe(finalize(() => this.deleteLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response?.errors?.length) {
+            this.deleteError.set('No se pudo eliminar el estado.');
+            return;
+          }
+          const index = this.deletingIndex ?? -1;
+          this.closeDeleteState();
+          if (index >= 0) {
+            this.removeStep(index);
+          }
+        },
+        error: () => {
+          this.deleteError.set('No se pudo eliminar el estado.');
         }
       });
   }
