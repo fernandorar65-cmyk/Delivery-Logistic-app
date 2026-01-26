@@ -7,7 +7,7 @@ import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
-import { StatusGroup, StatusGroupStateCreate } from '@app/features/companies/models/status-group.model';
+import { StatusGroup, StatusGroupState, StatusGroupStateCreate } from '@app/features/companies/models/status-group.model';
 import { StatusGroupsService } from '@app/features/companies/services/status-groups.service';
 
 type StatusStep = {
@@ -101,6 +101,7 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
       return;
     }
     this.loadGroup(this.groupId);
+    this.loadStatuses(this.groupId);
   }
 
   getToneClass(tone: StatusStep['tone']): string {
@@ -263,6 +264,30 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
       });
   }
 
+  private loadStatuses(groupId: string): void {
+    this.statusGroupsService.listStatuses(groupId)
+      .subscribe({
+        next: (response) => {
+          if (response?.errors?.length) {
+            return;
+          }
+          const items = Array.isArray(response?.result) ? response.result : [];
+          if (items.length === 0) {
+            this.steps.set(this.getTemplateFor(groupId));
+            return;
+          }
+          const mapped = items
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((item) => this.mapStateToStep(item));
+          this.steps.set(mapped);
+        },
+        error: () => {
+          // fallback to template to keep UI filled
+          this.steps.set(this.getTemplateFor(groupId));
+        }
+      });
+  }
+
   private getTemplateFor(groupId: string): StatusStep[] {
     const index = this.getTemplateIndex(groupId);
     return this.statusTemplates[index] ?? [];
@@ -286,5 +311,18 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
     if (payload.is_final) return 'green';
     if (payload.is_initial) return 'amber';
     return 'blue';
+  }
+
+  private mapStateToStep(state: StatusGroupState): StatusStep {
+    const tone = state.is_final
+      ? 'green'
+      : state.is_initial
+        ? 'amber'
+        : 'blue';
+    return {
+      label: state.name ?? 'Estado sin nombre',
+      tone,
+      color: this.toneHex[tone]
+    };
   }
 }

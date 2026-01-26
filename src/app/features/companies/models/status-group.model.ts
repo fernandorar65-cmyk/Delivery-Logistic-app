@@ -55,3 +55,13 @@ export interface StatusGroupStateResponse {
   errors: any[];
   result: StatusGroupState | null;
 }
+
+export interface StatusGroupStateListResponse {
+  errors: any[];
+  result: StatusGroupState[];
+  pagination?: {
+    count: number;
+    next: string | null;
+    previous: string | null;
+  };
+}

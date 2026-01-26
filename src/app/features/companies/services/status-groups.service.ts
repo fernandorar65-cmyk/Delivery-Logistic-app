@@ -7,6 +7,7 @@ import {
   StatusGroupListResponse,
   StatusGroupResponse,
   StatusGroupStateCreate,
+  StatusGroupStateListResponse,
   StatusGroupStateResponse
 } from '@app/features/companies/models/status-group.model';
 
@@ -35,6 +36,10 @@ export class StatusGroupsService {
 
   createStatus(groupId: string, payload: StatusGroupStateCreate): Observable<StatusGroupStateResponse> {
     return this.http.post<StatusGroupStateResponse>(`${environment.apiUrl}/status-groups/${groupId}/statuses/`, payload);
+  }
+
+  listStatuses(groupId: string): Observable<StatusGroupStateListResponse> {
+    return this.http.get<StatusGroupStateListResponse>(`${environment.apiUrl}/status-groups/${groupId}/statuses/`);
   }
 
   delete(companyId: string, groupId: string): Observable<StatusGroupResponse> {
