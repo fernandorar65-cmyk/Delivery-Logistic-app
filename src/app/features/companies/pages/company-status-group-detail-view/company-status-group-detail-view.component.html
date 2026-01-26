@@ -80,6 +80,9 @@
                       <span class="color-dot" [style.background]="getStepColor(step)"></span>
                       <span class="color-label">{{ step.tone }}</span>
                     </div>
+                    <button type="button" class="icon-action" title="Actualizar" (click)="openEditState(i)">
+                      <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
+                    </button>
                     <button type="button" class="icon-action" title="Cambiar color" (click)="openColorPicker(i)">
                       <app-hero-icon name="palette" [size]="16"></app-hero-icon>
                     </button>
@@ -149,6 +152,64 @@
             Guardando...
           } @else {
             Crear estado
+          }
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (editOpen()) {
+  <app-modal title="Actualizar estado" size="md" (close)="closeEditState()">
+    <form [formGroup]="editStateForm" (ngSubmit)="submitEditState()" class="modal-form">
+      <label class="form-label">Nombre del estado</label>
+      <input class="form-input" type="text" formControlName="name" placeholder="Ej: En tránsito" />
+      @if (editStateForm.get('name')?.touched && editStateForm.get('name')?.invalid) {
+        <p class="form-error">Ingresa un nombre válido.</p>
+      }
+
+      <label class="form-label">Código</label>
+      <input class="form-input" type="text" formControlName="code" placeholder="Ej: EN_TRANSITO" />
+      @if (editStateForm.get('code')?.touched && editStateForm.get('code')?.invalid) {
+        <p class="form-error">Ingresa un código válido.</p>
+      }
+
+      <label class="form-label">Orden</label>
+      <input class="form-input" type="number" min="1" formControlName="order" />
+      @if (editStateForm.get('order')?.touched && editStateForm.get('order')?.invalid) {
+        <p class="form-error">Ingresa un orden válido.</p>
+      }
+
+      <div class="toggle-grid">
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_initial" />
+          <span>Estado inicial</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_final" />
+          <span>Estado final</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_visible_to_client" />
+          <span>Visible para cliente</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" formControlName="is_visible_to_provider" />
+          <span>Visible para proveedor</span>
+        </label>
+      </div>
+
+      @if (editError()) {
+        <p class="form-error">{{ editError() }}</p>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeEditState()" [disabled]="editLoading()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editStateForm.invalid || editLoading()">
+          @if (editLoading()) {
+            Guardando...
+          } @else {
+            Actualizar estado
           }
         </button>
       </div>

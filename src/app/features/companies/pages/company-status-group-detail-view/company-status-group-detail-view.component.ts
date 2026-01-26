@@ -11,9 +11,16 @@ import { StatusGroup, StatusGroupState, StatusGroupStateCreate } from '@app/feat
 import { StatusGroupsService } from '@app/features/companies/services/status-groups.service';
 
 type StatusStep = {
+  id?: string;
   label: string;
   tone: 'green' | 'blue' | 'amber' | 'indigo' | 'cyan' | 'orange' | 'gray';
   color?: string;
+  code?: string;
+  order?: number;
+  is_initial?: boolean;
+  is_final?: boolean;
+  is_visible_to_client?: boolean;
+  is_visible_to_provider?: boolean;
 };
 
 @Component({
@@ -36,12 +43,16 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
   createOpen = signal(false);
   createLoading = signal(false);
   createError = signal<string | null>(null);
+  editOpen = signal(false);
+  editLoading = signal(false);
+  editError = signal<string | null>(null);
   colorOpen = signal(false);
   colorLoading = signal(false);
   colorError = signal<string | null>(null);
 
   private groupId: string | null = null;
   private colorIndex: number | null = null;
+  private editingIndex: number | null = null;
 
   private readonly toneHex: Record<StatusStep['tone'], string> = {
     green: '#16a34a',
@@ -64,6 +75,16 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
   ];
 
   createStateForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    code: ['', [Validators.required, Validators.minLength(2)]],
+    order: [1, [Validators.required, Validators.min(1)]],
+    is_initial: [false, [Validators.required]],
+    is_final: [false, [Validators.required]],
+    is_visible_to_client: [true, [Validators.required]],
+    is_visible_to_provider: [true, [Validators.required]]
+  });
+
+  editStateForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     code: ['', [Validators.required, Validators.minLength(2)]],
     order: [1, [Validators.required, Validators.min(1)]],
@@ -160,6 +181,29 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
     this.createError.set(null);
   }
 
+  openEditState(index: number): void {
+    const step = this.steps()[index];
+    if (!step) return;
+    this.editError.set(null);
+    this.editingIndex = index;
+    this.editStateForm.reset({
+      name: step.label ?? '',
+      code: step.code ?? '',
+      order: step.order ?? index + 1,
+      is_initial: step.is_initial ?? false,
+      is_final: step.is_final ?? false,
+      is_visible_to_client: step.is_visible_to_client ?? true,
+      is_visible_to_provider: step.is_visible_to_provider ?? true
+    });
+    this.editOpen.set(true);
+  }
+
+  closeEditState(): void {
+    this.editOpen.set(false);
+    this.editError.set(null);
+    this.editingIndex = null;
+  }
+
   openColorPicker(index: number): void {
     this.colorError.set(null);
     this.colorIndex = index;
@@ -220,7 +264,7 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
             return;
           }
           this.closeCreateState();
-          this.appendStep(payload);
+          this.appendStep(payload, response?.result?.id);
           const current = this.group();
           if (current) {
             const updated = {
@@ -232,6 +276,57 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
         },
         error: () => {
           this.createError.set('No se pudo crear el estado.');
+        }
+      });
+  }
+
+  submitEditState(): void {
+    if (this.editStateForm.invalid) {
+      this.editStateForm.markAllAsTouched();
+      return;
+    }
+    if (!this.groupId || this.editingIndex === null) {
+      this.editError.set('No se pudo identificar el estado.');
+      return;
+    }
+    const step = this.steps()[this.editingIndex];
+    if (!step?.id) {
+      this.editError.set('No se pudo identificar el estado.');
+      return;
+    }
+
+    this.editLoading.set(true);
+    this.editError.set(null);
+
+    const payload = this.editStateForm.getRawValue() as StatusGroupStateCreate;
+    this.statusGroupsService.updateStatus(this.groupId, step.id, payload)
+      .pipe(finalize(() => this.editLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response?.errors?.length) {
+            this.editError.set('No se pudo actualizar el estado.');
+            return;
+          }
+          this.steps.update((items) => items.map((item, idx) => {
+            if (idx !== this.editingIndex) return item;
+            const tone = this.getToneFromFlags(payload);
+            return {
+              ...item,
+              label: payload.name,
+              code: payload.code,
+              order: payload.order,
+              is_initial: payload.is_initial,
+              is_final: payload.is_final,
+              is_visible_to_client: payload.is_visible_to_client,
+              is_visible_to_provider: payload.is_visible_to_provider,
+              tone,
+              color: this.toneHex[tone]
+            };
+          }));
+          this.closeEditState();
+        },
+        error: () => {
+          this.editError.set('No se pudo actualizar el estado.');
         }
       });
   }
@@ -298,12 +393,23 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
     return this.statusTemplates.length > 0 ? sum % this.statusTemplates.length : 0;
   }
 
-  private appendStep(payload: StatusGroupStateCreate): void {
+  private appendStep(payload: StatusGroupStateCreate, id?: string): void {
     const tone = this.getToneFromFlags(payload);
     const color = this.toneHex[tone];
     this.steps.update((items) => [
       ...items,
-      { label: payload.name, tone, color }
+      {
+        id,
+        label: payload.name,
+        tone,
+        color,
+        code: payload.code,
+        order: payload.order,
+        is_initial: payload.is_initial,
+        is_final: payload.is_final,
+        is_visible_to_client: payload.is_visible_to_client,
+        is_visible_to_provider: payload.is_visible_to_provider
+      }
     ]);
   }
 
@@ -320,9 +426,16 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
         ? 'amber'
         : 'blue';
     return {
+      id: state.id,
       label: state.name ?? 'Estado sin nombre',
       tone,
-      color: this.toneHex[tone]
+      color: this.toneHex[tone],
+      code: state.code ?? '',
+      order: state.order ?? 0,
+      is_initial: state.is_initial ?? false,
+      is_final: state.is_final ?? false,
+      is_visible_to_client: state.is_visible_to_client ?? true,
+      is_visible_to_provider: state.is_visible_to_provider ?? true
     };
   }
 }
