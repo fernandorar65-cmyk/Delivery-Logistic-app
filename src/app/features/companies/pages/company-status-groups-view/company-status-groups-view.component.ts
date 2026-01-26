@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
@@ -37,6 +38,7 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
   private fb = inject(FormBuilder);
   private statusGroupsService = inject(StatusGroupsService);
   private storageService = inject(StorageService);
+  private router = inject(Router);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -156,6 +158,11 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
     this.deleteError.set(null);
     this.deletingGroupId.set(null);
     this.deletingGroupName.set(null);
+  }
+
+  goToDetail(group: StatusGroupView): void {
+    if (!group?.id) return;
+    this.router.navigate(['/companies/status-groups', group.id]);
   }
 
   submitCreate(): void {

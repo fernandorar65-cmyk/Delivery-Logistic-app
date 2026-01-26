@@ -1,0 +1,87 @@
+<section class="status-group-detail">
+  <nav class="page-breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">Inicio</a>
+    <span class="breadcrumb-separator">/</span>
+    <a routerLink="/companies/status-groups" class="breadcrumb-link">Grupos de Estados</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">{{ pageTitle }}</span>
+  </nav>
+
+  <header class="page-header">
+    <div class="page-title">
+      <h1>{{ pageTitle }}</h1>
+      <p>{{ pageSubtitle }}</p>
+    </div>
+    <a class="btn btn-secondary" routerLink="/companies/status-groups">
+      <app-hero-icon name="arrow-right" [size]="18" class="icon-back"></app-hero-icon>
+      Volver
+    </a>
+  </header>
+
+  @if (loading()) {
+    <div class="state-card">Cargando detalles...</div>
+  } @else if (error()) {
+    <div class="state-card state-error">{{ error() }}</div>
+  } @else if (!group()) {
+    <div class="state-card">No se encontró información del grupo.</div>
+  } @else {
+    <div class="detail-grid">
+      <section class="detail-card">
+        <div class="detail-card-header">
+          <h2>Información general</h2>
+        </div>
+        <div class="detail-card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">Nombre del grupo</span>
+              <span class="info-value">{{ group()?.name ?? 'Sin nombre' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Compañía</span>
+              <span class="info-value">{{ group()?.company_name ?? 'No asignada' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Estados configurados</span>
+              <span class="info-value">{{ group()?.statuses_count ?? 0 }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Creado</span>
+              <span class="info-value">{{ formatDate(group()?.created_at) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Última actualización</span>
+              <span class="info-value">{{ formatDate(group()?.updated_at) }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="detail-card">
+        <div class="detail-card-header">
+          <h2>Estados del flujo</h2>
+          <span class="detail-badge">Vista previa</span>
+        </div>
+        <div class="detail-card-body">
+          @if (steps().length === 0) {
+            <div class="empty-state">No hay estados definidos para este grupo.</div>
+          } @else {
+            <div class="steps-list">
+              @for (step of steps(); track step.label; let i = $index) {
+                <div class="step-item">
+                  <div class="step-index">{{ i + 1 }}</div>
+                  <div class="step-content">
+                    <span class="step-label">{{ step.label }}</span>
+                    <span [class]="getToneClass(step.tone)">
+                      <span class="dot"></span>
+                      {{ step.tone }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  }
+</section>

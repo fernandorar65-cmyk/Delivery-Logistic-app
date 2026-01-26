@@ -46,7 +46,7 @@
   } @else {
     <div class="groups-list">
       @for (group of groups; track group.id) {
-        <article class="group-card">
+        <article class="group-card is-clickable" (click)="goToDetail(group)">
           <div class="group-header">
             <div class="group-info">
               <div [class]="getIconToneClass(group.iconTone)">
@@ -58,13 +58,13 @@
               </div>
             </div>
             <div class="group-actions">
-              <button class="icon-btn" title="Editar" (click)="openEditModal(group)">
+              <button class="icon-btn" title="Editar" (click)="openEditModal(group); $event.stopPropagation()">
                 <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
               </button>
-              <button class="icon-btn" title="Duplicar">
+              <button class="icon-btn" title="Duplicar" (click)="$event.stopPropagation()">
                 <app-hero-icon name="download" [size]="16"></app-hero-icon>
               </button>
-              <button class="icon-btn danger" title="Eliminar" (click)="openDeleteModal(group)">
+              <button class="icon-btn danger" title="Eliminar" (click)="openDeleteModal(group); $event.stopPropagation()">
                 <app-hero-icon name="trash" [size]="16"></app-hero-icon>
               </button>
             </div>

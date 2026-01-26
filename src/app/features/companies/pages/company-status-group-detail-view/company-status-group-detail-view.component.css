@@ -1,0 +1,289 @@
+.status-group-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+}
+
+.page-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.breadcrumb-link {
+  color: #64748b;
+  text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+  color: #137fec;
+}
+
+.breadcrumb-separator {
+  color: #cbd5f5;
+}
+
+.breadcrumb-current {
+  color: #111418;
+  font-weight: 600;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title h1 {
+  margin: 0 0 0.4rem;
+  font-size: 2rem;
+}
+
+.page-title p {
+  margin: 0;
+  color: #617589;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.detail-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+}
+
+.detail-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.detail-card-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.detail-badge {
+  background: #e8f1ff;
+  color: #137fec;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-card-body {
+  padding: 1.5rem;
+}
+
+.info-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px dashed #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.info-value {
+  color: #111418;
+  font-weight: 600;
+  text-align: right;
+}
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.step-item:hover {
+  box-shadow: 0 10px 20px -18px rgba(15, 23, 42, 0.35);
+  transform: translateY(-1px);
+}
+
+.step-index {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #e8f1ff;
+  color: #137fec;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.step-label {
+  font-weight: 600;
+  color: #111418;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  text-transform: capitalize;
+}
+
+.tag .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.tag-green {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.tag-blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.tag-amber {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.tag-indigo {
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+.tag-cyan {
+  background: #cffafe;
+  color: #0e7490;
+  border-color: #a5f3fc;
+}
+
+.tag-orange {
+  background: #ffedd5;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.tag-gray {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.state-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: #617589;
+  font-weight: 600;
+}
+
+.state-card.state-error {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.empty-state {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.65rem 1.2rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111418;
+}
+
+.icon-back {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-value {
+    text-align: left;
+  }
+}

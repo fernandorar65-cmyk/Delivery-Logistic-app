@@ -23,6 +23,10 @@ export class StatusGroupsService {
     return this.http.put<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`, payload);
   }
 
+  getById(companyId: string, groupId: string): Observable<StatusGroupResponse> {
+    return this.http.get<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`);
+  }
+
   delete(companyId: string, groupId: string): Observable<StatusGroupResponse> {
     return this.http.delete<StatusGroupResponse>(`${this.apiUrl}/${companyId}/status-groups/${groupId}/`);
   }

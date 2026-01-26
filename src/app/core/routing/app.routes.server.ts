@@ -46,6 +46,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'companies/status-groups',
     renderMode: RenderMode.Server
   },
+  {
+    path: 'companies/status-groups/:groupId',
+    renderMode: RenderMode.Server
+  },
   // Rutas dinámicas con parámetros - server-side rendering
   {
     path: 'clients/:id',

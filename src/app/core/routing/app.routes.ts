@@ -99,6 +99,13 @@ export const routes: Routes = [
           .then(m => m.CompanyStatusGroupsViewComponent)
       },
       {
+        path: 'companies/status-groups/:groupId',
+        canActivate: [roleGuard],
+        data: { roles: ['company'] },
+        loadComponent: () => import('@app/features/companies/pages/company-status-group-detail-view/company-status-group-detail-view.component')
+          .then(m => m.CompanyStatusGroupDetailViewComponent)
+      },
+      {
         path: 'companies/:id/usuarios-internos',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'], ownerType: 'company' },
