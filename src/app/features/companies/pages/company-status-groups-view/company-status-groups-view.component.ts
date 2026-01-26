@@ -240,12 +240,14 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
       .pipe(finalize(() => this.deleteLoading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.errors && response.errors.length > 0) {
+          const hasErrors = Array.isArray(response?.errors) && response.errors.length > 0;
+          if (hasErrors) {
             this.deleteError.set('No se pudo eliminar el grupo.');
             return;
           }
           this.closeDeleteModal();
-          this.loadGroups();
+          this.groups = this.groups.filter(group => group.id !== groupId);
+          this.totalCount.set(Math.max(this.totalCount() - 1, 0));
         },
         error: () => {
           this.deleteError.set('No se pudo eliminar el grupo.');
