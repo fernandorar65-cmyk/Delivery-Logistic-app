@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Logística Inteligente - Plataforma SaaS Premium (Dark Mode)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2563eb", // Azul Eléctrico
+                        "accent-green": "#39ff14", // Verde Neón
+                        "background-dark": "#0a0f1a", // Azul Marino Muy Profundo
+                        "surface-dark": "#161e2e", // Fondo de tarjetas ligeramente más claro
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-background-dark text-white antialiased;
+            }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(22, 30, 46, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-display">
+<header class="sticky top-0 z-50 bg-background-dark/80 backdrop-blur-md border-b border-white/5">
+<div class="max-w-[1280px] mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl text-primary">rocket_launch</span>
+</div>
+<h2 class="text-white text-lg font-black leading-tight tracking-tight uppercase">Logística <span class="text-primary">Inteligente</span></h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold text-gray-300 hover:text-accent-green transition-colors" href="#caracteristicas">Características</a>
+<a class="text-sm font-semibold text-gray-300 hover:text-accent-green transition-colors" href="#proceso">Cómo funciona</a>
+<a class="text-sm font-semibold text-gray-300 hover:text-accent-green transition-colors" href="#planes">Planes</a>
+<a class="text-sm font-semibold text-gray-300 hover:text-accent-green transition-colors" href="#nosotros">Nosotros</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-white/5 text-white text-sm font-bold transition-all hover:bg-white/10 border border-white/10">
+                Login
+            </button>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:brightness-110 transition-all">
+                Solicitar Demo
+            </button>
+</div>
+</div>
+</header>
+<main>
+<section class="relative overflow-hidden pt-10 pb-20 lg:pt-24 lg:pb-32">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-green/10 blur-[100px] rounded-full"></div>
+</div>
+<div class="max-w-[1280px] mx-auto px-6 lg:px-10">
+<div class="@container">
+<div class="flex flex-col gap-12 @[864px]:flex-row items-center">
+<div class="flex flex-col gap-8 @[864px]:w-1/2">
+<div class="flex flex-col gap-6 text-left">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 w-fit">
+<span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
+<span class="text-xs font-bold text-gray-300 uppercase tracking-widest">Nueva Generación SaaS</span>
+</div>
+<h1 class="text-white text-5xl font-black leading-[1.1] tracking-tight @[480px]:text-7xl">
+                                Optimiza tu <br/><span class="text-primary">Cadena de Suministro</span>
+</h1>
+<p class="text-gray-400 text-lg font-normal leading-relaxed max-w-[540px]">
+                                La plataforma premium diseñada para líderes del transporte. Reduce costos operativos con inteligencia artificial y visibilidad total 360°.
+                            </p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-primary text-white text-base font-bold shadow-[0_0_25px_rgba(37,99,235,0.3)] hover:scale-105 transition-all">
+                                Solicitar Demo
+                            </button>
+<button class="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-surface-dark border border-white/10 text-white text-base font-bold hover:bg-white/5 transition-all">
+                                Ver Planes
+                            </button>
+</div>
+<div class="flex items-center gap-4 py-2">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full bg-surface-dark border-2 border-background-dark flex items-center justify-center overflow-hidden">
+<img alt="user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlNSHU1cWibBwRcsVqBkymV0SbNEpiyV97ja4RtVayR7v4wiIyJtRhntnG67CbNKLSehLBjIw6uiOIWKjQDLF4TLAyKnI92XelQsuzzYqdmJNDhGyMYVk6okD4-8Wz-BCoQpakAfXGVhWVYNSQaU-DFzwbl0AsyYYY8QnBaXFr4BYu-yjSgNOst2decgZCMC0gsgniqG9IgqIMsfZdJgRYLFFhBAfodGgCFFoSxrWuFf6L68I9Ta2wq388BMHb5fw-W9y2t5Cs8lqJ"/>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-dark border-2 border-background-dark flex items-center justify-center overflow-hidden">
+<img alt="user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhACh3CH_uR_8MLq3kwiArrdfOjh2Ia3U3LoyUOXjFKs7wzVhMoWw-JrAFKw3-eMGPEVKZqUnuFs-I8FKkc-phEcqki2mVZBgyK2Xf1I04-GKaAvencXXkl2fBL6dnREbbrs_hdB8TvG3VMlRioaXVDLus8fGtow2XY8ONQGi39E0j_ItW48oQqfCQW6QEF0lsVPqSjAX4AExqx1qYhtV0xVfzIr9c6qVClyxDwK9YTn7aPPUHd30PrPeruQEGwkzruT7OO3uno-9X"/>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-dark border-2 border-background-dark flex items-center justify-center overflow-hidden">
+<img alt="user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN917QNaP_iKRTualgSbWH8y4mOfFwWv6I1bk6m5IpbsilfO_osW-bk3dZvWhDF3unl4a9uM5khY69oz71eR5XIICGiJ8T_PcLiLh7lIxS1Qrnpsdd9_0MO2ib7IiycKJ9ab5hqgJflBpYHz7c23qdefN5qjsYW1thEQP_FPnqDRf92nzVJyeTLVKe5SiN4pYK3XzYTbncf3Zf9G5w9C6X8m9AQrUoZglutiAFlm7_l5wl-bzDx5h06kydxENAJVZPYFiZafuau4w_"/>
+</div>
+</div>
+<p class="text-sm text-gray-400">
+<span class="font-bold text-white">+500 corporaciones</span> confían en nuestra tecnología.
+                            </p>
+</div>
+</div>
+<div class="w-full @[864px]:w-1/2 relative group">
+<div class="absolute inset-0 bg-primary/20 blur-[80px] group-hover:bg-primary/30 transition-all"></div>
+<div class="w-full aspect-video md:aspect-square bg-cover bg-center rounded-2xl shadow-2xl border border-white/10 overflow-hidden relative grayscale-[0.2] contrast-[1.1]" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAOvf3pdHnEo0cPsfPiSN-HGW_m1fnaK9qnfq9U_e2eHONS8B0mG7DfRbHNvAsyng08JDx3hw1fxbBn0dAfoDyiRu6QceTUO-DODdkqwRGo7VJy33Dm6Tk447vVjwLp64V4WIGLc_bu1W0CYisgtzcRdSMKmNjuaOBLeKbde-Gwh09eb8Bl3ZanbXkTDOHbtX7Nwy-j_FE_PQHOgzBVGef1HABI3cFiIVgxRsJC_mhlT562dHAgBogwz9lOsz8wNJok2wXeLqXxw8SG");'>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/60 to-transparent"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-surface-dark/30 border-y border-white/5" id="caracteristicas">
+<div class="max-w-[1280px] mx-auto px-6 lg:px-10">
+<div class="flex flex-col gap-16 @container">
+<div class="flex flex-col gap-4 text-center items-center">
+<h2 class="text-accent-green text-sm font-bold uppercase tracking-[0.3em]">Características Premium</h2>
+<h3 class="text-white text-3xl font-black leading-tight sm:text-5xl max-w-[800px] text-gradient">
+                        Transformación Digital para Logística de Alto Rendimiento
+                    </h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="group flex flex-col gap-8 rounded-2xl border border-white/5 bg-surface-dark p-10 shadow-lg hover:border-primary/50 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-[0_0_15px_rgba(37,99,235,0.1)]">
+<span class="material-symbols-outlined text-3xl">local_shipping</span>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-white text-xl font-bold">Gestión de Flota</h4>
+<p class="text-gray-400 text-base font-normal leading-relaxed">
+                                Control total mediante telemetría avanzada y alertas preventivas. Minimiza el tiempo de inactividad de tus activos.
+                            </p>
+</div>
+</div>
+<div class="group flex flex-col gap-8 rounded-2xl border border-white/5 bg-surface-dark p-10 shadow-lg hover:border-accent-green/50 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 rounded-xl bg-accent-green/10 border border-accent-green/20 flex items-center justify-center text-accent-green group-hover:bg-accent-green group-hover:text-background-dark transition-all shadow-[0_0_15px_rgba(57,255,20,0.1)]">
+<span class="material-symbols-outlined text-3xl">groups</span>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-white text-xl font-bold">CRM Logístico</h4>
+<p class="text-gray-400 text-base font-normal leading-relaxed">
+                                Visibilidad end-to-end para tus clientes. Automatiza comunicaciones y estados de entrega con precisión quirúrgica.
+                            </p>
+</div>
+</div>
+<div class="group flex flex-col gap-8 rounded-2xl border border-white/5 bg-surface-dark p-10 shadow-lg hover:border-primary/50 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-[0_0_15px_rgba(37,99,235,0.1)]">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-white text-xl font-bold">IA de Matching</h4>
+<p class="text-gray-400 text-base font-normal leading-relaxed">
+                                Optimización neuronal de rutas y carga. Reduce el consumo de combustible y maximiza el margen por cada kilómetro recorrido.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-background-dark" id="proceso">
+<div class="max-w-[1000px] mx-auto px-6 lg:px-10">
+<div class="flex flex-col gap-12">
+<div class="flex flex-col gap-3">
+<h2 class="text-primary text-sm font-bold uppercase tracking-[0.2em]">Metodología</h2>
+<h3 class="text-white text-4xl font-black">Tu camino a la eficiencia</h3>
+</div>
+<div class="grid grid-cols-[64px_1fr] gap-x-8">
+<div class="flex flex-col items-center gap-2">
+<div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-dark border border-white/10 text-accent-green shadow-xl">
+<span class="material-symbols-outlined text-3xl">upload_file</span>
+</div>
+<div class="w-[2px] bg-gradient-to-b from-accent-green/50 to-primary/50 h-24 grow opacity-30"></div>
+</div>
+<div class="flex flex-1 flex-col pb-16 pt-3">
+<p class="text-white text-2xl font-bold leading-normal">1. Ingesta de Datos</p>
+<p class="text-gray-400 text-lg font-normal leading-relaxed mt-3">
+                            Conectamos vía API segura con tu infraestructura actual o mediante nuestro importador inteligente de última generación.
+                        </p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-dark border border-white/10 text-primary shadow-xl">
+<span class="material-symbols-outlined text-3xl">memory</span>
+</div>
+<div class="w-[2px] bg-gradient-to-b from-primary/50 to-accent-green/50 h-24 grow opacity-30"></div>
+</div>
+<div class="flex flex-1 flex-col pb-16 pt-3">
+<p class="text-white text-2xl font-bold leading-normal">2. Procesamiento Predictivo</p>
+<p class="text-gray-400 text-lg font-normal leading-relaxed mt-3">
+                            Nuestros algoritmos de IA analizan millones de variables en segundos para diseñar el plan de ejecución más eficiente posible.
+                        </p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-dark border border-white/10 text-accent-green shadow-xl">
+<span class="material-symbols-outlined text-3xl">pin_drop</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col pt-3">
+<p class="text-white text-2xl font-bold leading-normal">3. Operación Inteligente</p>
+<p class="text-gray-400 text-lg font-normal leading-relaxed mt-3">
+                            Ejecución con monitoreo constante y ajustes dinámicos. Recibe confirmaciones digitales (POD) en tiempo real.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 overflow-hidden relative">
+<div class="absolute inset-0 bg-primary opacity-5"></div>
+<div class="max-w-[1280px] mx-auto px-6 lg:px-10 relative">
+<div class="flex flex-col lg:flex-row items-center gap-16">
+<div class="lg:w-1/2 flex flex-col gap-8">
+<h2 class="text-4xl sm:text-5xl font-black leading-tight">Visibilidad Global <span class="text-accent-green">Sin Fronteras</span></h2>
+<p class="text-gray-400 text-lg leading-relaxed">
+                        Accede a un centro de control unificado. Monitorea cada envío, predice retrasos y comunica proactivamente con todos los stakeholders desde una única interfaz oscura y minimalista.
+                    </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+<span class="material-symbols-outlined text-accent-green bg-accent-green/10 p-2 rounded-lg">speed</span>
+<div class="flex flex-col">
+<span class="text-white font-bold">25% Más Rápido</span>
+<span class="text-xs text-gray-500">En tiempos de entrega</span>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">savings</span>
+<div class="flex flex-col">
+<span class="text-white font-bold">18% Ahorro</span>
+<span class="text-xs text-gray-500">En gastos de flota</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 w-full h-[500px] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative border border-white/10">
+<div class="absolute inset-0 bg-cover bg-center grayscale brightness-50 contrast-125" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5cHJtNMDhS1C-LqWP2EmGtLq3O8SZg5ri6MKvyYEwJ5mVYAJevd14DQOjnCTlltJefjG4kht1QDkSbtWPuqiLP62t4uKrm3xZU31EHIJfLPWCP8tMhRc-vZ8pPMDUPM9lGpaRLISw0W4UVIcskrqztWQIIhBG1NzmkHN8UBbHzXPfCFsEHucUp69npICUf7e_vBPEviwXvIkoUJWot1JrGhN451LNOYkEH-o29w-8-qZI2tprh0X_Ku3CwzAFkByVbptSXN2LTWsz");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-tr from-background-dark/80 via-transparent to-primary/20"></div>
+<div class="absolute bottom-8 left-8 right-8 glass-card p-6 rounded-2xl flex justify-between items-center">
+<div class="flex flex-col gap-1">
+<p class="text-[10px] font-bold text-accent-green uppercase tracking-widest">En Tránsito</p>
+<p class="text-2xl font-black text-white">1,248 Unidades</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+<span class="text-xs font-bold text-gray-300">Live Sync</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 relative">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3 h-2/3 bg-primary/10 blur-[150px] -z-10 rounded-full"></div>
+<div class="max-w-[800px] mx-auto px-6 text-center">
+<h2 class="text-4xl sm:text-6xl font-black mb-8 leading-tight">¿Dominamos juntos el <span class="text-primary">futuro logístico</span>?</h2>
+<p class="text-gray-400 text-xl mb-12 leading-relaxed">Únete a la élite del transporte. Una plataforma robusta, segura y diseñada para el crecimiento exponencial.</p>
+<div class="flex flex-wrap justify-center gap-6">
+<button class="flex min-w-[240px] cursor-pointer items-center justify-center rounded-xl h-16 px-10 bg-primary text-white text-lg font-bold shadow-[0_10px_30px_rgba(37,99,235,0.4)] hover:scale-105 transition-all">
+                    Agenda una Demo Gratis
+                </button>
+<button class="flex min-w-[240px] cursor-pointer items-center justify-center rounded-xl h-16 px-10 bg-surface-dark border border-white/10 text-white text-lg font-bold hover:bg-white/5 transition-all">
+                    Explorar Tarifas
+                </button>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-background-dark border-t border-white/5 pt-20 pb-10">
+<div class="max-w-[1280px] mx-auto px-6 lg:px-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl">rocket_launch</span>
+<h2 class="text-xl font-black text-white uppercase tracking-tighter">Logística <span class="text-primary">Inteligente</span></h2>
+</div>
+<p class="text-gray-400 text-sm leading-relaxed">
+                    Elevando los estándares de la cadena de suministro mediante inteligencia artificial de grado industrial.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-lg bg-surface-dark border border-white/5 flex items-center justify-center text-gray-400 hover:text-accent-green transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 rounded-lg bg-surface-dark border border-white/5 flex items-center justify-center text-gray-400 hover:text-accent-green transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">share</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold text-sm uppercase tracking-[0.2em] mb-8">Plataforma</h5>
+<ul class="flex flex-col gap-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Seguimiento Real</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Gestión de Rutas</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API Developers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Terminales IoT</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold text-sm uppercase tracking-[0.2em] mb-8">Compañía</h5>
+<ul class="flex flex-col gap-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Sobre Nosotros</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Casos de Éxito</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Whitepapers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contacto</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold text-sm uppercase tracking-[0.2em] mb-8">Newsletter</h5>
+<p class="text-xs text-gray-400 mb-6">Recibe insights exclusivos sobre tecnología logística.</p>
+<div class="flex gap-2">
+<input class="flex-1 rounded-lg bg-surface-dark border-white/10 text-white text-sm p-3 focus:ring-primary focus:border-primary placeholder:text-gray-600" placeholder="tu@email.com" type="email"/>
+<button class="bg-primary text-white px-5 py-3 rounded-lg font-bold text-sm hover:brightness-110 transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)]">OK</button>
+</div>
+</div>
+</div>
+<div class="border-t border-white/5 pt-10 flex flex-col sm:flex-row justify-between items-center gap-6">
+<p class="text-xs text-gray-500">© 2024 Logística Inteligente SaaS Premium. Fabricado con precisión.</p>
+<div class="flex gap-8 text-xs text-gray-500 font-medium">
+<a class="hover:text-white transition-colors" href="#">Privacidad</a>
+<a class="hover:text-white transition-colors" href="#">Seguridad</a>
+<a class="hover:text-white transition-colors" href="#">Términos</a>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

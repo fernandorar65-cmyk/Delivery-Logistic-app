@@ -10,13 +10,18 @@ import { roleGuard } from '@app/core/guards/role.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/landing',
     pathMatch: 'full'
   },
   {
     path: 'login',
     component: LoginViewComponent,
     canActivate: [guestGuard]
+  },
+  {
+    path: 'landing',
+    loadComponent: () => import('@app/features/landing/pages/landing-view/landing-view.component')
+      .then(m => m.LandingViewComponent)
   },
   {
     path: '',
