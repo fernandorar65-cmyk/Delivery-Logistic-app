@@ -1,11 +1,9 @@
-import { Component, ElementRef, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
+import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { ClientService } from '@app/features/clients/services/client.service';
-import { StorageService } from '@app/core/storage/storage.service';
-import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
 
 interface MatchRequest {
@@ -18,63 +16,43 @@ interface MatchRequest {
 }
 
 @Component({
-  selector: 'app-match-requests-panel',
+  selector: 'app-client-match-requests-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeroIconComponent],
-  templateUrl: './match-requests-panel.component.html',
-  styleUrl: './match-requests-panel.component.css'
+  imports: [CommonModule, HeroIconComponent, EmptyStateComponent],
+  templateUrl: './client-match-requests-view.component.html',
+  styleUrl: './client-match-requests-view.component.css'
 })
-export class MatchRequestsPanelComponent implements OnInit {
+export class ClientMatchRequestsViewComponent implements OnInit {
   private clientService = inject(ClientService);
-  private storageService = inject(StorageService);
 
-  isOpen = signal(false);
   loading = signal(false);
   error = signal<string | null>(null);
   requests = signal<MatchRequest[]>([]);
-
-  private loaded = false;
-
-  constructor(private elementRef: ElementRef) {}
 
   ngOnInit(): void {
     this.loadRequests();
   }
 
-  togglePanel() {
-    this.isOpen.update(value => !value);
-    if (this.isOpen()) {
-      this.loadRequests();
-    }
-  }
-
-  closePanel() {
-    this.isOpen.set(false);
-  }
-
   private loadRequests(): void {
-    if (this.loading()) return;
-
     this.loading.set(true);
     this.error.set(null);
     this.clientService.getPendingCompanyClients()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-      next: (response) => {
-        if (response?.errors?.length) {
+        next: (response) => {
+          if (response?.errors?.length) {
+            this.error.set('No se pudieron cargar las solicitudes.');
+            this.requests.set([]);
+            return;
+          }
+          const items = Array.isArray(response?.result) ? response.result : [];
+          this.requests.set(items.map(item => this.mapPendingToRequest(item)));
+        },
+        error: () => {
           this.error.set('No se pudieron cargar las solicitudes.');
           this.requests.set([]);
-          return;
         }
-        const items = Array.isArray(response?.result) ? response.result : [];
-        this.requests.set(items.map(item => this.mapPendingToRequest(item)));
-        this.loaded = true;
-      },
-      error: () => {
-        this.error.set('No se pudieron cargar las solicitudes.');
-        this.requests.set([]);
-      }
-    });
+      });
   }
 
   private mapPendingToRequest(item: CompanyRequestPending): MatchRequest {
@@ -100,19 +78,4 @@ export class MatchRequestsPanelComponent implements OnInit {
     if (Number.isNaN(date.getTime())) return 'Sin fecha';
     return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
   }
-
-  @HostListener('document:click', ['$event'])
-  handleClick(event: MouseEvent) {
-    if (!this.isOpen()) return;
-    const target = event.target as HTMLElement;
-    if (!this.elementRef.nativeElement.contains(target)) {
-      this.isOpen.set(false);
-    }
-  }
 }
-
-
-
-
-
-

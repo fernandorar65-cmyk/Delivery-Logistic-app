@@ -2,7 +2,7 @@
   <button class="match-requests-trigger" type="button" (click)="togglePanel()">
     <app-hero-icon name="bell" [size]="18"></app-hero-icon>
     @if (requests().length > 0) {
-      <span class="match-requests-dot"></span>
+      <span class="match-requests-badge">{{ requests().length }}</span>
     }
   </button>
 
@@ -49,7 +49,7 @@
 
       <a
         class="panel-footer"
-        [routerLink]="['/clients']"
+        [routerLink]="['/clients/requests']"
         (click)="closePanel()"
       >
         Ver todas las notificaciones →

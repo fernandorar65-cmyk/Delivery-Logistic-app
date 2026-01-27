@@ -125,6 +125,13 @@ export const routes: Routes = [
           .then(m => m.ClientListViewComponent)
       },
       {
+        path: 'clients/requests',
+        canActivate: [roleGuard],
+        data: { roles: ['company', 'client'] },
+        loadComponent: () => import('@app/features/clients/pages/client-match-requests-view/client-match-requests-view.component')
+          .then(m => m.ClientMatchRequestsViewComponent)
+      },
+      {
         path: 'clients/:id',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
