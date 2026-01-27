@@ -32,6 +32,7 @@ export class MatchRequestsPanelComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   requests = signal<MatchRequest[]>([]);
+  processingId = signal<string | null>(null);
 
   private loaded = false;
 
@@ -50,6 +51,14 @@ export class MatchRequestsPanelComponent implements OnInit {
 
   closePanel() {
     this.isOpen.set(false);
+  }
+
+  acceptRequest(requestId: string): void {
+    this.processRequest(requestId, 'accept');
+  }
+
+  rejectRequest(requestId: string): void {
+    this.processRequest(requestId, 'reject');
   }
 
   private loadRequests(): void {
@@ -75,6 +84,28 @@ export class MatchRequestsPanelComponent implements OnInit {
         this.requests.set([]);
       }
     });
+  }
+
+  private processRequest(requestId: string, action: 'accept' | 'reject'): void {
+    if (this.processingId()) return;
+    this.processingId.set(requestId);
+    const request$ = action === 'accept'
+      ? this.clientService.acceptCompanyClientRequest(requestId)
+      : this.clientService.rejectCompanyClientRequest(requestId);
+    request$
+      .pipe(finalize(() => this.processingId.set(null)))
+      .subscribe({
+        next: () => {
+          this.requests.update(items => items.filter(item => item.id !== requestId));
+        },
+        error: () => {
+          this.error.set('No se pudo procesar la solicitud.');
+        }
+      });
+  }
+
+  isProcessing(requestId: string): boolean {
+    return this.processingId() === requestId;
   }
 
   private mapPendingToRequest(item: CompanyRequestPending): MatchRequest {

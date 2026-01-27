@@ -21,6 +21,14 @@ export class ClientService {
     return this.http.get<CompanyRequestPendingListResponse>(`${environment.apiUrl}/company-clients/pending/`);
   }
 
+  acceptCompanyClientRequest(requestId: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/company-clients/${requestId}/accept/`, {});
+  }
+
+  rejectCompanyClientRequest(requestId: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/company-clients/${requestId}/reject/`, {});
+  }
+
   getById(id: string): Observable<ClientResponse> {
     return this.http.get<ClientResponse>(`${this.apiUrl}/${id}/`);
   }

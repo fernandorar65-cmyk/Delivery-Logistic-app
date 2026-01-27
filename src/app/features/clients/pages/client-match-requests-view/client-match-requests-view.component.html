@@ -44,10 +44,20 @@
           <div class="match-request-actions">
             <span class="match-request-time">{{ request.time }}</span>
             <div class="match-request-buttons">
-              <button class="action-btn action-primary" type="button">
+              <button
+                class="action-btn action-primary"
+                type="button"
+                [disabled]="isProcessing(request.id)"
+                (click)="acceptRequest(request.id)"
+              >
                 Aceptar
               </button>
-              <button class="action-btn action-outline" type="button">
+              <button
+                class="action-btn action-outline"
+                type="button"
+                [disabled]="isProcessing(request.id)"
+                (click)="rejectRequest(request.id)"
+              >
                 Rechazar
               </button>
             </div>

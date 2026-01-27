@@ -28,6 +28,7 @@ export class ClientMatchRequestsViewComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   requests = signal<MatchRequest[]>([]);
+  processingId = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadRequests();
@@ -51,6 +52,36 @@ export class ClientMatchRequestsViewComponent implements OnInit {
         error: () => {
           this.error.set('No se pudieron cargar las solicitudes.');
           this.requests.set([]);
+        }
+      });
+  }
+
+  acceptRequest(requestId: string): void {
+    this.processRequest(requestId, 'accept');
+  }
+
+  rejectRequest(requestId: string): void {
+    this.processRequest(requestId, 'reject');
+  }
+
+  isProcessing(requestId: string): boolean {
+    return this.processingId() === requestId;
+  }
+
+  private processRequest(requestId: string, action: 'accept' | 'reject'): void {
+    if (this.processingId()) return;
+    this.processingId.set(requestId);
+    const request$ = action === 'accept'
+      ? this.clientService.acceptCompanyClientRequest(requestId)
+      : this.clientService.rejectCompanyClientRequest(requestId);
+    request$
+      .pipe(finalize(() => this.processingId.set(null)))
+      .subscribe({
+        next: () => {
+          this.requests.update(items => items.filter(item => item.id !== requestId));
+        },
+        error: () => {
+          this.error.set('No se pudo procesar la solicitud.');
         }
       });
   }

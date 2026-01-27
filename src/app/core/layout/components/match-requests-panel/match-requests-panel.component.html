@@ -38,8 +38,22 @@
               <div class="panel-item-actions">
                 <span class="panel-time">{{ request.time }}</span>
                 <div class="panel-actions">
-                  <button class="action-btn action-primary">Aceptar</button>
-                  <button class="action-btn action-outline">Rechazar</button>
+                  <button
+                    class="action-btn action-primary"
+                    type="button"
+                    [disabled]="isProcessing(request.id)"
+                    (click)="acceptRequest(request.id)"
+                  >
+                    Aceptar
+                  </button>
+                  <button
+                    class="action-btn action-outline"
+                    type="button"
+                    [disabled]="isProcessing(request.id)"
+                    (click)="rejectRequest(request.id)"
+                  >
+                    Rechazar
+                  </button>
                 </div>
               </div>
             </div>
