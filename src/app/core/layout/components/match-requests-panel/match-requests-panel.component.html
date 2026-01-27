@@ -1,7 +1,9 @@
 <div class="match-requests">
   <button class="match-requests-trigger" type="button" (click)="togglePanel()">
     <app-hero-icon name="bell" [size]="18"></app-hero-icon>
-    <span class="match-requests-dot"></span>
+    @if (requests().length > 0) {
+      <span class="match-requests-dot"></span>
+    }
   </button>
 
   @if (isOpen()) {
@@ -15,31 +17,39 @@
       </div>
 
       <div class="panel-list">
-        @for (request of requests; track request.id) {
-          <div class="panel-item">
-            <div class="panel-item-main">
-              <div class="panel-icon" [ngClass]="request.tone">
-                <app-hero-icon [name]="request.icon" [size]="18"></app-hero-icon>
+        @if (loading()) {
+          <div class="panel-empty">Cargando solicitudes...</div>
+        } @else if (error()) {
+          <div class="panel-empty panel-error">{{ error() }}</div>
+        } @else if (requests().length === 0) {
+          <div class="panel-empty">No hay solicitudes pendientes.</div>
+        } @else {
+          @for (request of requests(); track request.id) {
+            <div class="panel-item">
+              <div class="panel-item-main">
+                <div class="panel-icon" [ngClass]="request.tone">
+                  <app-hero-icon [name]="request.icon" [size]="18"></app-hero-icon>
+                </div>
+                <div>
+                  <p class="panel-company">{{ request.company }}</p>
+                  <p class="panel-detail">{{ request.detail }}</p>
+                </div>
               </div>
-              <div>
-                <p class="panel-company">{{ request.company }}</p>
-                <p class="panel-detail">{{ request.detail }}</p>
+              <div class="panel-item-actions">
+                <span class="panel-time">{{ request.time }}</span>
+                <div class="panel-actions">
+                  <button class="action-btn action-primary">Aceptar</button>
+                  <button class="action-btn action-outline">Rechazar</button>
+                </div>
               </div>
             </div>
-            <div class="panel-item-actions">
-              <span class="panel-time">{{ request.time }}</span>
-              <div class="panel-actions">
-                <button class="action-btn action-primary">Aceptar</button>
-                <button class="action-btn action-outline">Rechazar</button>
-              </div>
-            </div>
-          </div>
+          }
         }
       </div>
 
       <a
         class="panel-footer"
-        [routerLink]="['/providers/requests']"
+        [routerLink]="['/clients']"
         (click)="closePanel()"
       >
         Ver todas las notificaciones →
