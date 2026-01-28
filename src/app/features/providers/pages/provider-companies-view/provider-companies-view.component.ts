@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -25,11 +25,13 @@ interface ProviderCompanyView {
 })
 export class ProviderCompaniesViewComponent implements OnInit {
   private providerService = inject(ProviderService);
+  private elementRef = inject(ElementRef);
 
   loading = signal(false);
   error = signal<string | null>(null);
   searchQuery = signal('');
   statusFilter = signal('');
+  statusOpen = signal(false);
 
   companies = signal<ProviderCompanyView[]>([]);
 
@@ -68,6 +70,15 @@ export class ProviderCompaniesViewComponent implements OnInit {
       return 'Todos';
     }
     return this.getStatusLabel(status as ProviderCompanyView['status']);
+  }
+
+  toggleStatusMenu(): void {
+    this.statusOpen.update(value => !value);
+  }
+
+  setStatusFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.statusOpen.set(false);
   }
 
   private loadCompanies(): void {
@@ -117,5 +128,12 @@ export class ProviderCompaniesViewComponent implements OnInit {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return 'Sin fecha';
     return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
+  }
+
+  @HostListener('document:click')
+  handleClick(): void {
+    if (this.statusOpen()) {
+      this.statusOpen.set(false);
+    }
   }
 }
