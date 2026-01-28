@@ -25,16 +25,48 @@
       />
     </label>
     <div class="filter-chips">
-      <button type="button" class="filter-chip">
-        Estado: {{ getStatusFilterLabel() }}
-        <span class="filter-chip-icon">▾</span>
-      </button>
-      <select class="filter-select" [(ngModel)]="statusFilter">
-        <option value="">Todos los estados</option>
-        <option value="active">Activo</option>
-        <option value="pending">Pendiente</option>
-        <option value="inactive">Inactivo</option>
-      </select>
+      <div class="status-dropdown" (click)="$event.stopPropagation()">
+        <button type="button" class="filter-select-trigger" (click)="toggleStatusMenu()">
+          Estado: {{ getStatusFilterLabel() }}
+          <span class="filter-chip-icon">▾</span>
+        </button>
+        @if (statusOpen()) {
+          <div class="filter-select-menu">
+            <button
+              type="button"
+              class="filter-select-option"
+              [class.active]="statusFilter() === ''"
+              (click)="setStatusFilter('')"
+            >
+              Todos los estados
+            </button>
+            <button
+              type="button"
+              class="filter-select-option"
+              [class.active]="statusFilter() === 'active'"
+              (click)="setStatusFilter('active')"
+            >
+              Activo
+            </button>
+            <button
+              type="button"
+              class="filter-select-option"
+              [class.active]="statusFilter() === 'pending'"
+              (click)="setStatusFilter('pending')"
+            >
+              Pendiente
+            </button>
+            <button
+              type="button"
+              class="filter-select-option"
+              [class.active]="statusFilter() === 'inactive'"
+              (click)="setStatusFilter('inactive')"
+            >
+              Inactivo
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -6,6 +6,7 @@ import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.comp
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
 import { ClientService } from '@app/features/clients/services/client.service';
 import { ClientCompany } from '@app/features/clients/models/client-company.model';
+import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
 
 type ClientCompanyView = {
   id: string;
@@ -30,12 +31,15 @@ export class ClientMyCompaniesViewComponent implements OnInit {
   error = signal<string | null>(null);
   searchQuery = signal('');
   statusFilter = signal('');
+  statusOpen = signal(false);
   companies = signal<ClientCompanyView[]>([]);
+  pendingCompanies = signal<ClientCompanyView[]>([]);
 
   filteredCompanies = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const status = this.statusFilter();
-    return this.companies().filter(company => {
+    const base = status === 'pending' ? this.pendingCompanies() : this.companies();
+    return base.filter(company => {
       const matchesQuery = !query
         || company.name.toLowerCase().includes(query)
         || company.companyId.toLowerCase().includes(query);
@@ -46,6 +50,7 @@ export class ClientMyCompaniesViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCompanies();
+    this.loadPendingCompanies();
   }
 
   getStatusLabel(status: ClientCompanyView['status']) {
@@ -67,6 +72,15 @@ export class ClientMyCompaniesViewComponent implements OnInit {
       return 'Todos';
     }
     return this.getStatusLabel(status as ClientCompanyView['status']);
+  }
+
+  toggleStatusMenu(): void {
+    this.statusOpen.update(value => !value);
+  }
+
+  setStatusFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.statusOpen.set(false);
   }
 
   private loadCompanies(): void {
@@ -91,6 +105,23 @@ export class ClientMyCompaniesViewComponent implements OnInit {
       });
   }
 
+  private loadPendingCompanies(): void {
+    this.clientService.getPendingCompanyClients()
+      .subscribe({
+        next: (response) => {
+          if (response?.errors?.length) {
+            this.pendingCompanies.set([]);
+            return;
+          }
+          const items = Array.isArray(response?.result) ? response.result : [];
+          this.pendingCompanies.set(items.map(item => this.mapPendingToView(item)));
+        },
+        error: () => {
+          this.pendingCompanies.set([]);
+        }
+      });
+  }
+
   private mapToView(item: ClientCompany): ClientCompanyView {
     const status = this.mapStatus(item.status);
     return {
@@ -100,6 +131,17 @@ export class ClientMyCompaniesViewComponent implements OnInit {
       status,
       since: this.formatDate(item.created_at),
       industry: 'Sin rubro'
+    };
+  }
+
+  private mapPendingToView(item: CompanyRequestPending): ClientCompanyView {
+    return {
+      id: item.id,
+      name: item.company_name ?? 'Compañía sin nombre',
+      companyId: item.company_id ?? item.id,
+      status: 'pending',
+      since: this.formatDate(item.created_at),
+      industry: 'Solicitud pendiente'
     };
   }
 
@@ -116,5 +158,12 @@ export class ClientMyCompaniesViewComponent implements OnInit {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return 'Sin fecha';
     return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
+  }
+
+  @HostListener('document:click')
+  handleClick(): void {
+    if (this.statusOpen()) {
+      this.statusOpen.set(false);
+    }
   }
 }
