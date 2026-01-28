@@ -4,24 +4,20 @@ Contra1234#
 
 
 -- COMPANY
-fernandorar65@gmail.com
-contraseña1234
-  INTERNO
-  interno-company@gmail.com
+  Fernandorar67@gmail.com
   Contra1234#
 
 
 -- providers
-  AquinosRetail@gmail.com
-  Contra123#
-    -- INTERNOS
-       interno-02-provider@gmail.com
-       Contra1234#
+  Aliado03@gmail.com
+  Contra1234#
+
+  provider04@gmail.com
+  Contra1234#
+
+  -- deberia tener una solicitud pendiente
+
+
 
 -- Clients
-   Cliente03@gmail.com
-   Contra1234#
 
-  -- INTERNOS
-    interno-cliente-01@gmail.com
-    Contra1234#

@@ -32,7 +32,8 @@
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   width: 100%;
   border: 1px solid #e5e7eb;
   background: #f8fafc;
@@ -44,11 +45,17 @@
 }
 
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.field textarea:focus {
   outline: none;
   border-color: #137fec;
   box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.15);
   background: #ffffff;
+}
+
+.field textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .radio-group {
