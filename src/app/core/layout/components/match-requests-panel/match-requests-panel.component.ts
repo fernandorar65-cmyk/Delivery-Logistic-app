@@ -4,9 +4,11 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ClientService } from '@app/features/clients/services/client.service';
+import { ProviderService } from '@app/features/providers/services/provider.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
+import { CompanyProviderPending } from '@app/features/providers/models/company-provider-pending.model';
 
 interface MatchRequest {
   id: string;
@@ -26,6 +28,7 @@ interface MatchRequest {
 })
 export class MatchRequestsPanelComponent implements OnInit {
   private clientService = inject(ClientService);
+  private providerService = inject(ProviderService);
   private storageService = inject(StorageService);
 
   isOpen = signal(false);
@@ -33,12 +36,15 @@ export class MatchRequestsPanelComponent implements OnInit {
   error = signal<string | null>(null);
   requests = signal<MatchRequest[]>([]);
   processingId = signal<string | null>(null);
+  userType = signal('');
 
   private loaded = false;
 
   constructor(private elementRef: ElementRef) {}
 
   ngOnInit(): void {
+    const storedType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
+    this.userType.set((storedType ?? '').toLowerCase());
     this.loadRequests();
   }
 
@@ -54,10 +60,18 @@ export class MatchRequestsPanelComponent implements OnInit {
   }
 
   acceptRequest(requestId: string): void {
+    if (this.isProviderUser()) {
+      this.error.set('Acción no disponible para providers.');
+      return;
+    }
     this.processRequest(requestId, 'accept');
   }
 
   rejectRequest(requestId: string): void {
+    if (this.isProviderUser()) {
+      this.error.set('Acción no disponible para providers.');
+      return;
+    }
     this.processRequest(requestId, 'reject');
   }
 
@@ -66,24 +80,46 @@ export class MatchRequestsPanelComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set(null);
+    if (this.isProviderUser()) {
+      this.providerService.getPendingCompanyProviders()
+        .pipe(finalize(() => this.loading.set(false)))
+        .subscribe({
+          next: (response) => {
+            if (response?.errors?.length) {
+              this.error.set('No se pudieron cargar las solicitudes.');
+              this.requests.set([]);
+              return;
+            }
+            const items = Array.isArray(response?.result) ? response.result : [];
+            this.requests.set(items.map(item => this.mapProviderPendingToRequest(item)));
+            this.loaded = true;
+          },
+          error: () => {
+            this.error.set('No se pudieron cargar las solicitudes.');
+            this.requests.set([]);
+          }
+        });
+      return;
+    }
+
     this.clientService.getPendingCompanyClients()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-      next: (response) => {
-        if (response?.errors?.length) {
+        next: (response) => {
+          if (response?.errors?.length) {
+            this.error.set('No se pudieron cargar las solicitudes.');
+            this.requests.set([]);
+            return;
+          }
+          const items = Array.isArray(response?.result) ? response.result : [];
+          this.requests.set(items.map(item => this.mapPendingToRequest(item)));
+          this.loaded = true;
+        },
+        error: () => {
           this.error.set('No se pudieron cargar las solicitudes.');
           this.requests.set([]);
-          return;
         }
-        const items = Array.isArray(response?.result) ? response.result : [];
-        this.requests.set(items.map(item => this.mapPendingToRequest(item)));
-        this.loaded = true;
-      },
-      error: () => {
-        this.error.set('No se pudieron cargar las solicitudes.');
-        this.requests.set([]);
-      }
-    });
+      });
   }
 
   private processRequest(requestId: string, action: 'accept' | 'reject'): void {
@@ -119,6 +155,17 @@ export class MatchRequestsPanelComponent implements OnInit {
     };
   }
 
+  private mapProviderPendingToRequest(item: CompanyProviderPending): MatchRequest {
+    return {
+      id: item.id,
+      company: item.company_name,
+      detail: `Proveedor: ${item.provider_name} · ${this.getStatusLabel(item.status)}`,
+      time: this.formatDate(item.created_at),
+      icon: 'users',
+      tone: item.status === 'pending' ? 'tone-blue' : 'tone-green'
+    };
+  }
+
   private getStatusLabel(status?: string): string {
     const normalized = (status ?? '').toLowerCase();
     if (normalized === 'pending') return 'Pendiente';
@@ -130,6 +177,10 @@ export class MatchRequestsPanelComponent implements OnInit {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return 'Sin fecha';
     return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
+  }
+
+  private isProviderUser(): boolean {
+    return this.userType() === 'provider';
   }
 
   @HostListener('document:click', ['$event'])

@@ -119,8 +119,13 @@ export class ProviderCreateModalComponent {
   confirmMatchRequest(): void {
     const providerId = this.matchProviderId();
     const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+    const userType = (this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? '').toLowerCase();
     if (!companyId || !providerId) {
       this.matchError.set('No se pudo enviar la solicitud. Falta información.');
+      return;
+    }
+    if (userType !== 'company') {
+      this.matchError.set('Solo una compañía puede enviar la solicitud de match.');
       return;
     }
     this.matchLoading.set(true);
@@ -179,11 +184,15 @@ export class ProviderCreateModalComponent {
           return of(null);
         }
         const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+        const userType = (this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? '').toLowerCase();
         const providerId = response?.result?.id;
 
         if (!companyId || !providerId) {
           this.error.set('Aliado creado, pero no se pudo enviar la solicitud de match.');
           return of(null);
+        }
+        if (userType !== 'company') {
+          return of(response);
         }
 
         return this.providerService.sendCompanyProviderRequest({

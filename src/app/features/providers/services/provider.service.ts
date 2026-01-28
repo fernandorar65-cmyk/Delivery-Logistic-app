@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProviderCheckResponse, ProviderCreate, ProviderListResponse, ProviderResponse } from '@app/features/providers/models/provider.model';
 import { CompanyProviderMatchRequest, CompanyProviderMatchResponse } from '@app/features/providers/models/company-provider-match.model';
+import { CompanyProviderPendingListResponse } from '@app/features/providers/models/company-provider-pending.model';
 import { environment } from 'environments/environment';
 import { HttpParams } from '@angular/common/http';
 
@@ -43,6 +44,10 @@ export class ProviderService {
   
   sendCompanyProviderRequest(payload: CompanyProviderMatchRequest): Observable<CompanyProviderMatchResponse> {
     return this.http.post<CompanyProviderMatchResponse>(`${this.apiUrl}/company-providers/send-request/`, payload);
+  }
+
+  getPendingCompanyProviders(): Observable<CompanyProviderPendingListResponse> {
+    return this.http.get<CompanyProviderPendingListResponse>(`${this.apiUrl}/company-providers/pending/`);
   }
 }
 
