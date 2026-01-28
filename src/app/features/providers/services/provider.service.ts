@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ProviderCheckResponse, ProviderCreate, ProviderListResponse, ProviderResponse } from '@app/features/providers/models/provider.model';
 import { CompanyProviderMatchRequest, CompanyProviderMatchResponse } from '@app/features/providers/models/company-provider-match.model';
 import { CompanyProviderPendingListResponse } from '@app/features/providers/models/company-provider-pending.model';
+import { ProviderCompanyListResponse } from '@app/features/providers/models/provider-company.model';
 import { environment } from 'environments/environment';
 import { HttpParams } from '@angular/common/http';
 
@@ -48,6 +49,18 @@ export class ProviderService {
 
   getPendingCompanyProviders(): Observable<CompanyProviderPendingListResponse> {
     return this.http.get<CompanyProviderPendingListResponse>(`${this.apiUrl}/company-providers/pending/`);
+  }
+
+  getMyCompanies(): Observable<ProviderCompanyListResponse> {
+    return this.http.get<ProviderCompanyListResponse>(`${this.apiUrl}/company-providers/my-companies/`);
+  }
+
+  acceptCompanyProviderRequest(requestId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/company-providers/${requestId}/accept/`, {});
+  }
+
+  rejectCompanyProviderRequest(requestId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/company-providers/${requestId}/reject/`, {});
   }
 }
 

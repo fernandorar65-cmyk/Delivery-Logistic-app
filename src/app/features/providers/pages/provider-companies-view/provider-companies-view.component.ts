@@ -1,15 +1,19 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
+import { ProviderService } from '@app/features/providers/services/provider.service';
+import { ProviderCompany } from '@app/features/providers/models/provider-company.model';
 
-interface ProviderCompany {
+interface ProviderCompanyView {
   id: string;
   name: string;
   industry: string;
   status: 'active' | 'pending' | 'inactive';
   since: string;
+  companyId: string;
 }
 
 @Component({
@@ -19,35 +23,15 @@ interface ProviderCompany {
   templateUrl: './provider-companies-view.component.html',
   styleUrl: './provider-companies-view.component.css'
 })
-export class ProviderCompaniesViewComponent {
+export class ProviderCompaniesViewComponent implements OnInit {
+  private providerService = inject(ProviderService);
+
   loading = signal(false);
   error = signal<string | null>(null);
   searchQuery = signal('');
   statusFilter = signal('');
 
-  companies = signal<ProviderCompany[]>([
-    {
-      id: 'C-1201',
-      name: 'Global Logistics S.A.',
-      industry: 'Logística · Internacional',
-      status: 'active',
-      since: 'Desde Ene 2025'
-    },
-    {
-      id: 'C-1189',
-      name: 'EcoFreight Solutions',
-      industry: 'Carga Terrestre',
-      status: 'pending',
-      since: 'Solicitud reciente'
-    },
-    {
-      id: 'C-1165',
-      name: 'Skyline Air Cargo',
-      industry: 'Logística Aérea',
-      status: 'inactive',
-      since: 'Inactivo'
-    }
-  ]);
+  companies = signal<ProviderCompanyView[]>([]);
 
   filteredCompanies = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -55,13 +39,17 @@ export class ProviderCompaniesViewComponent {
     return this.companies().filter(company => {
       const matchesQuery = !query
         || company.name.toLowerCase().includes(query)
-        || company.id.toLowerCase().includes(query);
+        || company.companyId.toLowerCase().includes(query);
       const matchesStatus = !status || company.status === status;
       return matchesQuery && matchesStatus;
     });
   });
 
-  getStatusLabel(status: ProviderCompany['status']) {
+  ngOnInit(): void {
+    this.loadCompanies();
+  }
+
+  getStatusLabel(status: ProviderCompanyView['status']) {
     switch (status) {
       case 'active':
         return 'Activo';
@@ -79,6 +67,55 @@ export class ProviderCompaniesViewComponent {
     if (!status) {
       return 'Todos';
     }
-    return this.getStatusLabel(status as ProviderCompany['status']);
+    return this.getStatusLabel(status as ProviderCompanyView['status']);
+  }
+
+  private loadCompanies(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.providerService.getMyCompanies()
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response?.errors?.length) {
+            this.error.set('No se pudieron cargar las compañías.');
+            this.companies.set([]);
+            return;
+          }
+          const items = Array.isArray(response?.result) ? response.result : [];
+          this.companies.set(items.map(item => this.mapToView(item)));
+        },
+        error: () => {
+          this.error.set('No se pudieron cargar las compañías.');
+          this.companies.set([]);
+        }
+      });
+  }
+
+  private mapToView(item: ProviderCompany): ProviderCompanyView {
+    const status = this.mapStatus(item.status);
+    return {
+      id: item.id,
+      name: item.company_name ?? 'Compañía sin nombre',
+      companyId: item.company_id ?? item.id,
+      status,
+      since: this.formatDate(item.created_at),
+      industry: 'Sin rubro'
+    };
+  }
+
+  private mapStatus(status?: string): ProviderCompanyView['status'] {
+    const normalized = (status ?? '').toLowerCase();
+    if (normalized === 'pending') return 'pending';
+    if (normalized === 'accepted' || normalized === 'active') return 'active';
+    if (normalized === 'rejected' || normalized === 'inactive') return 'inactive';
+    return 'active';
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) return 'Sin fecha';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Sin fecha';
+    return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
   }
 }

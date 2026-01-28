@@ -60,18 +60,10 @@ export class MatchRequestsPanelComponent implements OnInit {
   }
 
   acceptRequest(requestId: string): void {
-    if (this.isProviderUser()) {
-      this.error.set('Acción no disponible para providers.');
-      return;
-    }
     this.processRequest(requestId, 'accept');
   }
 
   rejectRequest(requestId: string): void {
-    if (this.isProviderUser()) {
-      this.error.set('Acción no disponible para providers.');
-      return;
-    }
     this.processRequest(requestId, 'reject');
   }
 
@@ -125,9 +117,13 @@ export class MatchRequestsPanelComponent implements OnInit {
   private processRequest(requestId: string, action: 'accept' | 'reject'): void {
     if (this.processingId()) return;
     this.processingId.set(requestId);
-    const request$ = action === 'accept'
-      ? this.clientService.acceptCompanyClientRequest(requestId)
-      : this.clientService.rejectCompanyClientRequest(requestId);
+    const request$ = this.isProviderUser()
+      ? (action === 'accept'
+        ? this.providerService.acceptCompanyProviderRequest(requestId)
+        : this.providerService.rejectCompanyProviderRequest(requestId))
+      : (action === 'accept'
+        ? this.clientService.acceptCompanyClientRequest(requestId)
+        : this.clientService.rejectCompanyClientRequest(requestId));
     request$
       .pipe(finalize(() => this.processingId.set(null)))
       .subscribe({
