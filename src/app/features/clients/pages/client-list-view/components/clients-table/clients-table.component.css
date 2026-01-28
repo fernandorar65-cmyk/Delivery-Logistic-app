@@ -1,6 +1,10 @@
 .table-card {
   padding: 0;
   overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .table-wrapper {
@@ -14,7 +18,7 @@
 }
 
 .data-table th {
-  background: #f9fafb;
+  background: #f8fafc;
   color: #617589;
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -29,6 +33,10 @@
   font-size: 0.9rem;
   color: #111418;
   vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fafc;
 }
 
 .logo-badge {
@@ -75,16 +83,19 @@
   border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .status-neutral {
   background: #f1f5f9;
   color: #64748b;
+  border-color: #e2e8f0;
 }
 
 .status-pending {
   background: #fef3c7;
   color: #92400e;
+  border-color: #fde68a;
 }
 
 .actions-cell {
@@ -121,7 +132,7 @@
   justify-content: center;
   background: #f3f4f6;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .icon-btn:hover {
