@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClientCreate, ClientListResponse, ClientResponse, ClientUpdate } from '@app/features/clients/models/client.model';
 import { CompanyRequestPendingListResponse } from '@app/features/clients/models/company-request-pending.model';
+import { ClientCompanyListResponse } from '@app/features/clients/models/client-company.model';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -19,6 +20,10 @@ export class ClientService {
 
   getPendingCompanyClients(): Observable<CompanyRequestPendingListResponse> {
     return this.http.get<CompanyRequestPendingListResponse>(`${environment.apiUrl}/company-clients/pending/`);
+  }
+
+  getMyCompanies(): Observable<ClientCompanyListResponse> {
+    return this.http.get<ClientCompanyListResponse>(`${environment.apiUrl}/company-clients/my-companies/`);
   }
 
   acceptCompanyClientRequest(requestId: string): Observable<void> {

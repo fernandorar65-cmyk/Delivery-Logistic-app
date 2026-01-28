@@ -27,6 +27,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'clients/companies',
+    renderMode: RenderMode.Server
+  },
+  {
     path: 'providers',
     renderMode: RenderMode.Server
   },
