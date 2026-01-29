@@ -35,15 +35,19 @@
     (createRequested)="openCreateModal()"
   ></app-providers-table>
 
-  <app-providers-pagination
+  <app-pagination
     [startItem]="startItem"
     [endItem]="endItem"
     [totalItems]="filteredAllies.length"
     [currentPage]="currentPage()"
     [totalPages]="totalPages"
+    [pages]="pages"
+    itemLabel="aliado"
+    itemLabelPlural="aliados"
     (previous)="previousPage()"
     (next)="nextPage()"
-  ></app-providers-pagination>
+    (goTo)="goToPage($event)"
+  ></app-pagination>
 
   <app-provider-create-modal
     [open]="createOpen()"

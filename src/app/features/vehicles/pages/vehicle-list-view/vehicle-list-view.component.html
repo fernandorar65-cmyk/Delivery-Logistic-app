@@ -44,17 +44,19 @@
     [allyName]="allyName()"
   ></app-vehicles-table>
 
-  <app-vehicles-pagination
+  <app-pagination
     [startItem]="startItem"
     [endItem]="endItem"
     [totalItems]="filteredVehicles.length"
     [currentPage]="currentPage()"
     [totalPages]="totalPages"
     [pages]="pages"
+    itemLabel="vehículo"
+    itemLabelPlural="vehículos"
     (previous)="previousPage()"
     (next)="nextPage()"
     (goTo)="goToPage($event)"
-  ></app-vehicles-pagination>
+  ></app-pagination>
 </div>
 
 @if (createOpen()) {

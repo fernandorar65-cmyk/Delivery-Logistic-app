@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ClientService } from '@app/features/clients/services/client.service';
 import { Client } from '@app/features/clients/models/client.model';
 import { ClientDetailCardComponent } from './components/client-detail-card/client-detail-card.component';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-client-detail-view',
@@ -34,7 +35,7 @@ export class ClientDetailViewComponent implements OnInit {
 
     this.clientService.getById(id).subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al cargar el cliente.');
           this.loading.set(false);
           return;
@@ -45,7 +46,6 @@ export class ClientDetailViewComponent implements OnInit {
       error: (err) => {
         this.error.set('Error al cargar el cliente.');
         this.loading.set(false);
-        console.error('Error loading client:', err);
       }
     });
   }

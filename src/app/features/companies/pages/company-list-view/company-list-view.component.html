@@ -57,17 +57,19 @@
         (remove)="deleteCompany($event)"
       ></app-companies-table>
 
-      <app-companies-pagination
+      <app-pagination
         [startItem]="startItem"
         [endItem]="endItem"
         [totalItems]="filteredCompanies().length"
         [currentPage]="currentPage()"
         [totalPages]="totalPages"
         [pages]="getPageNumbers()"
+        itemLabel="compañía"
+        itemLabelPlural="compañías"
         (previous)="previousPage()"
         (next)="nextPage()"
         (goTo)="goToPage($event)"
-      ></app-companies-pagination>
+      ></app-pagination>
     }
   }
 

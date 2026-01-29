@@ -1,9 +1,6 @@
-.table-container {
-  background: white;
-  border: 1px solid #dbe0e6;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+@import "../../../../../../shared/ui/table/table-base.css";
+
+.table-card {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -17,32 +14,13 @@
 }
 
 .data-table {
-  width: 100%;
-  text-align: left;
-  border-collapse: collapse;
   min-width: 800px;
 }
 
 .data-table thead {
-  background: #f9fafb;
   position: sticky;
   top: 0;
   z-index: 10;
-}
-
-.data-table th {
-  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
-  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
-  text-transform: uppercase;
-  color: #6b7280;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
-}
-
-.data-table tbody {
-  background: white;
 }
 
 .table-row {
@@ -55,13 +33,7 @@
 }
 
 .data-table td {
-  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   vertical-align: middle;
-}
-
-.text-right {
-  text-align: right;
 }
 
 .ally-info {

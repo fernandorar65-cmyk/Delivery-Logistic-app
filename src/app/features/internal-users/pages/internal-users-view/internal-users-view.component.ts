@@ -15,6 +15,7 @@ import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-internal-users-view',
@@ -113,7 +114,7 @@ export class InternalUsersViewComponent implements OnInit {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.errors && response.errors.length > 0) {
+          if (hasApiErrors(response)) {
             this.error.set(this.formatApiErrors(response.errors));
             return;
           }
@@ -171,7 +172,7 @@ export class InternalUsersViewComponent implements OnInit {
       .pipe(finalize(() => this.formLoading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.errors && response.errors.length > 0) {
+          if (hasApiErrors(response)) {
             this.formError.set(this.formatApiErrors(response.errors));
             return;
           }

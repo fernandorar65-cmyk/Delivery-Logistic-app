@@ -6,10 +6,11 @@ import { Company, CompanyCreate } from '@app/features/companies/models/company.m
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { CompaniesToolbarComponent } from './components/companies-toolbar/companies-toolbar.component';
 import { CompaniesTableComponent } from './components/companies-table/companies-table.component';
-import { CompaniesPaginationComponent } from './components/companies-pagination/companies-pagination.component';
+import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { CompaniesFormModalComponent } from './components/companies-form-modal/companies-form-modal.component';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-company-list-view',
@@ -20,7 +21,7 @@ import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.c
     HeroIconComponent,
     CompaniesToolbarComponent,
     CompaniesTableComponent,
-    CompaniesPaginationComponent,
+    PaginationComponent,
     CompaniesFormModalComponent,
     EmptyStateComponent,
     LoadingCardComponent
@@ -78,7 +79,7 @@ export class CompanyListViewComponent {
     
     this.companyService.getAll().subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al cargar las empresas. Por favor, intente nuevamente.');
           this.companies.set([]);
           this.filteredCompanies.set([]);
@@ -108,7 +109,6 @@ export class CompanyListViewComponent {
         this.companies.set([]); // Asegurar que siempre sea un array
         this.filteredCompanies.set([]);
         this.loading.set(false);
-        console.error('Error loading companies:', err);
       }
     });
   }
@@ -315,7 +315,7 @@ export class CompanyListViewComponent {
 
     // Prevenir submit si el formulario no existe o no es válido
     if (!this.companyForm) {
-      console.error('Formulario no inicializado');
+      this.formError.set('No se pudo inicializar el formulario.');
       return;
     }
 
@@ -337,7 +337,7 @@ export class CompanyListViewComponent {
       if (this.isEditMode() && this.editingCompanyId()) {
         this.companyService.update(this.editingCompanyId()!, formValue).subscribe({
           next: (response) => {
-            if (response.errors && response.errors.length > 0) {
+            if (hasApiErrors(response)) {
               this.formError.set('Error al actualizar la empresa.');
               this.formLoading.set(false);
               return;
@@ -349,7 +349,6 @@ export class CompanyListViewComponent {
           error: (err) => {
             this.formError.set('Error al actualizar la empresa.');
             this.formLoading.set(false);
-            console.error('Error updating company:', err);
           }
         });
       } else {
@@ -363,7 +362,7 @@ export class CompanyListViewComponent {
 
         this.companyService.create(companyPayload).subscribe({
           next: (response) => {
-            if (response.errors && response.errors.length > 0) {
+            if (hasApiErrors(response)) {
               this.formError.set('Error al crear la empresa. Por favor, intenta nuevamente.');
               this.formLoading.set(false);
               return;
@@ -374,7 +373,6 @@ export class CompanyListViewComponent {
           },
           error: (err) => {
             this.formLoading.set(false);
-            console.error('Error creating company:', err);
             
             if (err.status === 400) {
               this.formError.set('Datos inválidos. Por favor, verifica todos los campos.');
@@ -400,7 +398,6 @@ export class CompanyListViewComponent {
         },
         error: (err) => {
           this.error.set('Error al eliminar la empresa.');
-          console.error('Error deleting company:', err);
         }
       });
     }

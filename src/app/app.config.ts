@@ -5,6 +5,7 @@ import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/
 import { routes } from './core/routing/app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { responseNormalizerInterceptor } from './core/interceptors/response-normalizer.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([authInterceptor]), withFetch())
+    provideHttpClient(withInterceptors([authInterceptor, responseNormalizerInterceptor]), withFetch())
   ]
 };
 

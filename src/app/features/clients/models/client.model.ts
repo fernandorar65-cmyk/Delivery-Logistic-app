@@ -1,14 +1,15 @@
 export interface Client {
   id?: string;
   client_name: string;
+  name?: string;
   ruc: string;
   description?: string;
   email: string;
+  user_email?: string;
   phone_number?: string | null;
   contact_phone?: string | null;
   created_at?: string;
   user_id?: string;
-  user_email?: string;
   user_type?: string;
   match_status?: string;
 }

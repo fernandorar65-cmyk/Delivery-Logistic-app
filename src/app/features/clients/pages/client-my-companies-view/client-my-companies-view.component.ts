@@ -4,18 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
-import { ClientService } from '@app/features/clients/services/client.service';
-import { ClientCompany } from '@app/features/clients/models/client-company.model';
-import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
-
-type ClientCompanyView = {
-  id: string;
-  name: string;
-  companyId: string;
-  status: 'active' | 'pending' | 'inactive';
-  since: string;
-  industry: string;
-};
+import { ClientCompaniesFacade, ClientCompanyView } from '@app/features/clients/facades/client-companies.facade';
 
 @Component({
   selector: 'app-client-my-companies-view',
@@ -25,7 +14,7 @@ type ClientCompanyView = {
   styleUrl: './client-my-companies-view.component.css'
 })
 export class ClientMyCompaniesViewComponent implements OnInit {
-  private clientService = inject(ClientService);
+  private clientCompaniesFacade = inject(ClientCompaniesFacade);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -86,17 +75,11 @@ export class ClientMyCompaniesViewComponent implements OnInit {
   private loadCompanies(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.clientService.getMyCompanies()
+    this.clientCompaniesFacade.loadCompanies()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: (response) => {
-          if (response?.errors?.length) {
-            this.error.set('No se pudieron cargar las compañías.');
-            this.companies.set([]);
-            return;
-          }
-          const items = Array.isArray(response?.result) ? response.result : [];
-          this.companies.set(items.map(item => this.mapToView(item)));
+        next: (companies) => {
+          this.companies.set(companies);
         },
         error: () => {
           this.error.set('No se pudieron cargar las compañías.');
@@ -106,58 +89,15 @@ export class ClientMyCompaniesViewComponent implements OnInit {
   }
 
   private loadPendingCompanies(): void {
-    this.clientService.getPendingCompanyClients()
+    this.clientCompaniesFacade.loadPendingCompanies()
       .subscribe({
-        next: (response) => {
-          if (response?.errors?.length) {
-            this.pendingCompanies.set([]);
-            return;
-          }
-          const items = Array.isArray(response?.result) ? response.result : [];
-          this.pendingCompanies.set(items.map(item => this.mapPendingToView(item)));
+        next: (companies) => {
+          this.pendingCompanies.set(companies);
         },
         error: () => {
           this.pendingCompanies.set([]);
         }
       });
-  }
-
-  private mapToView(item: ClientCompany): ClientCompanyView {
-    const status = this.mapStatus(item.status);
-    return {
-      id: item.id,
-      name: item.company_name ?? 'Compañía sin nombre',
-      companyId: item.company_id ?? item.id,
-      status,
-      since: this.formatDate(item.created_at),
-      industry: 'Sin rubro'
-    };
-  }
-
-  private mapPendingToView(item: CompanyRequestPending): ClientCompanyView {
-    return {
-      id: item.id,
-      name: item.company_name ?? 'Compañía sin nombre',
-      companyId: item.company_id ?? item.id,
-      status: 'pending',
-      since: this.formatDate(item.created_at),
-      industry: 'Solicitud pendiente'
-    };
-  }
-
-  private mapStatus(status?: string): ClientCompanyView['status'] {
-    const normalized = (status ?? '').toLowerCase();
-    if (normalized === 'pending') return 'pending';
-    if (normalized === 'accepted' || normalized === 'active') return 'active';
-    if (normalized === 'rejected' || normalized === 'inactive') return 'inactive';
-    return 'active';
-  }
-
-  private formatDate(value?: string): string {
-    if (!value) return 'Sin fecha';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Sin fecha';
-    return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
   }
 
   @HostListener('document:click')

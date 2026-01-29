@@ -9,6 +9,7 @@ import { VehicleService } from '@app/features/vehicles/services/vehicle.service'
 import { Vehicle } from '@app/features/vehicles/models/vehicle.model';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-vehicle-detail-view',
@@ -101,7 +102,7 @@ export class VehicleDetailViewComponent implements OnInit {
 
     this.vehicleService.getById(allyId, vehicleId).subscribe({
       next: response => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('No se pudo cargar el detalle del vehículo.');
           this.loading.set(false);
           return;
@@ -185,7 +186,7 @@ export class VehicleDetailViewComponent implements OnInit {
       status: status ? (status as Vehicle['status']) : undefined
     }).subscribe({
       next: response => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.editLoading.set(false);
           this.editError.set('No se pudo actualizar el vehículo.');
           return;

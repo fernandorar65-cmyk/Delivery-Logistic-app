@@ -8,6 +8,7 @@ import { ProviderCheckResponse, ProviderCreate, ProviderResponse } from '@app/fe
 import { CompanyProviderMatchResponse } from '@app/features/providers/models/company-provider-match.model';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-provider-create-modal',
@@ -83,7 +84,7 @@ export class ProviderCreateModalComponent {
       finalize(() => this.checkLoading.set(false))
     ).subscribe((response: ProviderCheckResponse | null) => {
       if (!response) return;
-      if (response.errors && response.errors.length > 0) {
+      if (hasApiErrors(response)) {
         this.emailStatus.set('error');
         this.checkError.set('No se pudo verificar el correo.');
         this.checkSuccess.set(null);
@@ -137,7 +138,7 @@ export class ProviderCreateModalComponent {
       finalize(() => this.matchLoading.set(false))
     ).subscribe({
       next: (response: CompanyProviderMatchResponse) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.matchError.set('No se pudo enviar la solicitud. Intenta nuevamente.');
           return;
         }
@@ -179,7 +180,7 @@ export class ProviderCreateModalComponent {
     this.error.set(null);
     this.providerService.create(payload).pipe(
       switchMap((response: ProviderResponse) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al crear el aliado. Por favor, intenta nuevamente.');
           return of(null);
         }
@@ -200,7 +201,7 @@ export class ProviderCreateModalComponent {
           provider_id: providerId
         }).pipe(
           switchMap((matchResponse) => {
-            if (matchResponse?.errors && matchResponse.errors.length > 0) {
+            if (hasApiErrors(matchResponse)) {
               this.error.set('Aliado creado, pero no se pudo enviar la solicitud de match.');
               return of(null);
             }

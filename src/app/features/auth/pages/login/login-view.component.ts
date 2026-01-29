@@ -72,7 +72,6 @@ export class LoginViewComponent {
             this.error.set('Error al iniciar sesión. Por favor, intenta nuevamente.');
           }
           
-          console.error('Error en login:', err);
         }
       });
     } else {

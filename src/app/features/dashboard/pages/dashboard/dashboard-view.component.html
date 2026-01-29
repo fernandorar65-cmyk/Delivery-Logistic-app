@@ -29,12 +29,15 @@
     ></app-dashboard-shipments-table>
 
     <!-- Paginación -->
-    <app-dashboard-pagination
+    <app-pagination
       [totalItems]="totalShipmentsCount()"
       [currentPage]="currentPage()"
+      [pageSize]="5"
+      itemLabel="envío"
+      itemLabelPlural="envíos"
       (previous)="goToPreviousPage()"
       (next)="goToNextPage()"
-    ></app-dashboard-pagination>
+    ></app-pagination>
   </div>
 </div>
 

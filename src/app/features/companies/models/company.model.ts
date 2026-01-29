@@ -1,11 +1,13 @@
 export interface Company {
   id?: string;
   company_name: string;
+  name?: string;
   ruc: string;
   description?: string;
   created_at?: string;
   user_id?: string;
   user_email?: string;
+  email?: string;
   user_type?: string;
   // Campos adicionales para el diseño mejorado
   sector?: string;

@@ -1,0 +1,30 @@
+<div class="pagination">
+  <span class="pagination-info">
+    Mostrando {{ resolvedStartItem }}-{{ resolvedEndItem }} de {{ totalItems }} {{ resolvedLabel }}
+  </span>
+  <div class="pagination-controls">
+    <button class="pagination-btn" [disabled]="!canPrevious" (click)="previous.emit()">
+      Anterior
+    </button>
+    @if (pages.length > 0) {
+      <div class="pagination-numbers">
+        @for (page of pages; track $index) {
+          @if (page === '...') {
+            <span class="pagination-ellipsis">...</span>
+          } @else if (isPageNumber(page)) {
+            <button
+              class="pagination-number"
+              [class.active]="currentPage === page"
+              (click)="goTo.emit(page)"
+            >
+              {{ page }}
+            </button>
+          }
+        }
+      </div>
+    }
+    <button class="pagination-btn" [disabled]="!canNext" (click)="next.emit()">
+      Siguiente
+    </button>
+  </div>
+</div>

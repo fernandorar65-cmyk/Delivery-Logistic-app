@@ -9,10 +9,11 @@ import { StatCard } from './vehicle-list-view.types';
 import { VehiclesStatsComponent } from './components/vehicles-stats/vehicles-stats.component';
 import { VehiclesFiltersComponent } from './components/vehicles-filters/vehicles-filters.component';
 import { VehiclesTableComponent } from './components/vehicles-table/vehicles-table.component';
-import { VehiclesPaginationComponent } from './components/vehicles-pagination/vehicles-pagination.component';
+import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { VehiclesCreateModalComponent } from './components/vehicles-create-modal/vehicles-create-modal.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-vehicle-list-view',
@@ -25,7 +26,7 @@ import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
     VehiclesStatsComponent,
     VehiclesFiltersComponent,
     VehiclesTableComponent,
-    VehiclesPaginationComponent,
+    PaginationComponent,
     VehiclesCreateModalComponent
   ],
   templateUrl: './vehicle-list-view.component.html',
@@ -220,7 +221,7 @@ export class VehicleListViewComponent implements OnInit {
       status: status ? (status as Vehicle['status']) : undefined
     }).subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.createLoading.set(false);
           this.createError.set('No se pudo registrar el vehículo. Intenta nuevamente.');
           return;
@@ -262,7 +263,7 @@ export class VehicleListViewComponent implements OnInit {
 
     this.vehicleService.getByProvider(allyId).subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al cargar los vehículos');
           this.loading.set(false);
           return;
@@ -283,7 +284,6 @@ export class VehicleListViewComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading vehicles:', err);
         this.error.set('Error al cargar los vehículos');
         this.vehicles.set([]);
         this.totalItems.set(0);

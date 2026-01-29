@@ -1,20 +1,10 @@
-import { Component, ElementRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
-import { ProviderService } from '@app/features/providers/services/provider.service';
-import { ProviderCompany } from '@app/features/providers/models/provider-company.model';
-
-interface ProviderCompanyView {
-  id: string;
-  name: string;
-  industry: string;
-  status: 'active' | 'pending' | 'inactive';
-  since: string;
-  companyId: string;
-}
+import { ProviderCompaniesFacade, ProviderCompanyView } from '@app/features/providers/facades/provider-companies.facade';
 
 @Component({
   selector: 'app-provider-companies-view',
@@ -24,8 +14,7 @@ interface ProviderCompanyView {
   styleUrl: './provider-companies-view.component.css'
 })
 export class ProviderCompaniesViewComponent implements OnInit {
-  private providerService = inject(ProviderService);
-  private elementRef = inject(ElementRef);
+  private providerCompaniesFacade = inject(ProviderCompaniesFacade);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -84,50 +73,17 @@ export class ProviderCompaniesViewComponent implements OnInit {
   private loadCompanies(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.providerService.getMyCompanies()
+    this.providerCompaniesFacade.loadCompanies()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: (response) => {
-          if (response?.errors?.length) {
-            this.error.set('No se pudieron cargar las compañías.');
-            this.companies.set([]);
-            return;
-          }
-          const items = Array.isArray(response?.result) ? response.result : [];
-          this.companies.set(items.map(item => this.mapToView(item)));
+        next: (companies) => {
+          this.companies.set(companies);
         },
         error: () => {
           this.error.set('No se pudieron cargar las compañías.');
           this.companies.set([]);
         }
       });
-  }
-
-  private mapToView(item: ProviderCompany): ProviderCompanyView {
-    const status = this.mapStatus(item.status);
-    return {
-      id: item.id,
-      name: item.company_name ?? 'Compañía sin nombre',
-      companyId: item.company_id ?? item.id,
-      status,
-      since: this.formatDate(item.created_at),
-      industry: 'Sin rubro'
-    };
-  }
-
-  private mapStatus(status?: string): ProviderCompanyView['status'] {
-    const normalized = (status ?? '').toLowerCase();
-    if (normalized === 'pending') return 'pending';
-    if (normalized === 'accepted' || normalized === 'active') return 'active';
-    if (normalized === 'rejected' || normalized === 'inactive') return 'inactive';
-    return 'active';
-  }
-
-  private formatDate(value?: string): string {
-    if (!value) return 'Sin fecha';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Sin fecha';
-    return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: '2-digit' });
   }
 
   @HostListener('document:click')

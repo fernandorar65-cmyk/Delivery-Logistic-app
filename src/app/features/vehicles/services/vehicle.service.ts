@@ -12,6 +12,7 @@ import {
   VehicleApiResponse
 } from '@app/features/vehicles/models/vehicle.model';
 import { environment } from 'environments/environment';
+import { getApiErrors } from '@app/shared/utils/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -60,7 +61,7 @@ export class VehicleService {
   private mapListResponse(response: VehicleApiListResponse): VehicleListResponse {
     const items = Array.isArray(response.result) ? response.result : [];
     return {
-      errors: response.errors ?? [],
+      errors: getApiErrors(response),
       result: items.map(vehicle => this.mapVehicleFromApi(vehicle)),
       pagination: response.pagination ?? { count: items.length, next: null, previous: null }
     };
@@ -68,7 +69,7 @@ export class VehicleService {
 
   private mapResponse(response: VehicleApiResponse): VehicleResponse {
     return {
-      errors: response.errors,
+      errors: getApiErrors(response),
       result: this.mapVehicleFromApi(response.result)
     };
   }

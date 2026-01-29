@@ -1,11 +1,13 @@
 export interface Provider {
   id?: string;
   provider_name: string;
+  name?: string;
   ruc: string;
   description?: string;
   created_at?: string;
   user_id?: string;
   user_email?: string;
+  email?: string;
   user_type?: string;
   
   // Campos adicionales para el diseño (no vienen del API)

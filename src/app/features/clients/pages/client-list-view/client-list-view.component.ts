@@ -6,13 +6,14 @@ import { Client, ClientCreate } from '@app/features/clients/models/client.model'
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ClientsToolbarComponent } from './components/clients-toolbar/clients-toolbar.component';
 import { ClientsTableComponent } from './components/clients-table/clients-table.component';
-import { ClientsPaginationComponent } from './components/clients-pagination/clients-pagination.component';
+import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { ClientsStatsComponent } from './components/clients-stats/clients-stats.component';
 import { ClientsFormModalComponent } from './components/clients-form-modal/clients-form-modal.component';
 import { ClientsSuccessModalComponent } from './components/clients-success-modal/clients-success-modal.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-client-list-view',
@@ -23,7 +24,7 @@ import { CompanyRequestPending } from '@app/features/clients/models/company-requ
     HeroIconComponent,
     ClientsToolbarComponent,
     ClientsTableComponent,
-    ClientsPaginationComponent,
+    PaginationComponent,
     ClientsStatsComponent,
     ClientsFormModalComponent,
     ClientsSuccessModalComponent
@@ -43,6 +44,7 @@ export class ClientListViewComponent implements OnInit {
   totalCount = signal(0);
   hasNext = signal(false);
   hasPrevious = signal(false);
+  pageSize = signal(10);
   isCompanyUser = signal(false);
   showPending = signal(false);
   pendingCount = signal(0);
@@ -76,7 +78,7 @@ export class ClientListViewComponent implements OnInit {
     
     this.clientService.getAll(page).subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al cargar los clientes. Por favor, intente nuevamente.');
           this.loading.set(false);
           return;
@@ -84,15 +86,18 @@ export class ClientListViewComponent implements OnInit {
         const results = response.result;
         this.clients.set(results);
         this.totalCount.set(response.pagination?.count ?? results.length);
-        this.hasNext.set(!!response.pagination?.next);
+        const hasNext = !!response.pagination?.next;
+        this.hasNext.set(hasNext);
         this.hasPrevious.set(!!response.pagination?.previous);
+        if ((hasNext || page === 1) && results.length > 0) {
+          this.pageSize.set(results.length);
+        }
         this.currentPage.set(page);
         this.loading.set(false);
       },
       error: (err) => {
         this.error.set('Error al cargar los clientes. Por favor, intente nuevamente.');
         this.loading.set(false);
-        console.error('Error loading clients:', err);
       }
     });
   }
@@ -103,7 +108,7 @@ export class ClientListViewComponent implements OnInit {
 
     this.clientService.getPendingCompanyClients().subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al cargar los clientes pendientes.');
           this.loading.set(false);
           return;
@@ -113,15 +118,18 @@ export class ClientListViewComponent implements OnInit {
         this.clients.set(mapped);
         this.pendingCount.set(response.pagination?.count ?? mapped.length);
         this.totalCount.set(response.pagination?.count ?? mapped.length);
-        this.hasNext.set(!!response.pagination?.next);
+        const hasNext = !!response.pagination?.next;
+        this.hasNext.set(hasNext);
         this.hasPrevious.set(!!response.pagination?.previous);
+        if ((hasNext || this.currentPage() === 1) && mapped.length > 0) {
+          this.pageSize.set(mapped.length);
+        }
         this.currentPage.set(1);
         this.loading.set(false);
       },
       error: (err) => {
         this.error.set('Error al cargar los clientes pendientes.');
         this.loading.set(false);
-        console.error('Error loading pending clients:', err);
       }
     });
   }
@@ -154,6 +162,45 @@ export class ClientListViewComponent implements OnInit {
     }
     if (this.hasPrevious()) {
       this.loadClients(this.currentPage() - 1);
+    }
+  }
+
+  get startItem(): number {
+    const count = this.clients().length;
+    if (this.totalCount() === 0 || count === 0) {
+      return 0;
+    }
+    return (this.currentPage() - 1) * this.pageSize() + 1;
+  }
+
+  get endItem(): number {
+    const count = this.clients().length;
+    if (this.totalCount() === 0 || count === 0) {
+      return 0;
+    }
+    return Math.min(this.startItem + count - 1, this.totalCount());
+  }
+
+  get totalPages(): number {
+    if (this.pageSize() <= 0) {
+      return 1;
+    }
+    return Math.max(1, Math.ceil(this.totalCount() / this.pageSize()));
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number) {
+    if (this.showPending()) {
+      return;
+    }
+    if (page === this.currentPage()) {
+      return;
+    }
+    if (page >= 1 && page <= this.totalPages) {
+      this.loadClients(page);
     }
   }
 
@@ -217,7 +264,7 @@ export class ClientListViewComponent implements OnInit {
       if (this.isEditMode() && this.editingClientId()) {
         this.clientService.update(this.editingClientId()!, formValue).subscribe({
           next: (response) => {
-            if (response.errors && response.errors.length > 0) {
+            if (hasApiErrors(response)) {
               this.formError.set('Error al actualizar el cliente.');
               this.formLoading.set(false);
               return;
@@ -229,7 +276,6 @@ export class ClientListViewComponent implements OnInit {
           error: (err) => {
             this.formError.set('Error al actualizar el cliente.');
             this.formLoading.set(false);
-            console.error('Error updating client:', err);
           }
         });
       } else {
@@ -243,7 +289,7 @@ export class ClientListViewComponent implements OnInit {
 
         this.clientService.create(clientPayload).subscribe({
           next: (response) => {
-            if (response.errors && response.errors.length > 0) {
+            if (hasApiErrors(response)) {
               this.formError.set('Error al crear el cliente. Por favor, intenta nuevamente.');
               this.formLoading.set(false);
               return;
@@ -255,7 +301,6 @@ export class ClientListViewComponent implements OnInit {
           },
           error: (err) => {
             this.formLoading.set(false);
-            console.error('Error creating client:', err);
             
             if (err.status === 400) {
               this.formError.set('Datos inválidos. Por favor, verifica todos los campos.');

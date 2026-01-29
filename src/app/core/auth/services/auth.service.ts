@@ -13,6 +13,7 @@ import {
 } from '@app/core/auth/models/auth.model';
 import { StorageService } from '@app/core/storage/storage.service';
 import { environment } from 'environments/environment';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +48,7 @@ export class AuthService {
 
   private normalizeTokenResponse(response: TokenResponse | TokenResponseWrapper): TokenResponse {
     if ('result' in response) {
-      if (response.errors && response.errors.length > 0) {
+      if (hasApiErrors(response)) {
         throw new Error('Auth error');
       }
       if (!response.result) {
@@ -62,7 +63,7 @@ export class AuthService {
     response: RefreshTokenResponse | RefreshTokenResponseWrapper
   ): RefreshTokenResponse {
     if ('result' in response) {
-      if (response.errors && response.errors.length > 0) {
+      if (hasApiErrors(response)) {
         throw new Error('Refresh token error');
       }
       if (!response.result) {

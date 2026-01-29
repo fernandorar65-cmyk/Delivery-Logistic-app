@@ -10,7 +10,8 @@ import { DashboardMetricsComponent } from './components/dashboard-metrics/dashbo
 import { DashboardShipmentsHeaderComponent } from './components/dashboard-shipments-header/dashboard-shipments-header.component';
 import { DashboardShipmentsTabsComponent, DashboardTab } from './components/dashboard-shipments-tabs/dashboard-shipments-tabs.component';
 import { DashboardShipmentsTableComponent } from './components/dashboard-shipments-table/dashboard-shipments-table.component';
-import { DashboardPaginationComponent } from './components/dashboard-pagination/dashboard-pagination.component';
+import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -21,7 +22,7 @@ import { DashboardPaginationComponent } from './components/dashboard-pagination/
     DashboardShipmentsHeaderComponent,
     DashboardShipmentsTabsComponent,
     DashboardShipmentsTableComponent,
-    DashboardPaginationComponent
+    PaginationComponent
   ],
   templateUrl: './dashboard-view.component.html',
   styleUrl: './dashboard-view.component.css'
@@ -126,7 +127,6 @@ export class DashboardViewComponent {
       this.providerService.getMe().subscribe({
         next: (response) => this.handleMeResponse(response),
         error: () => {
-          console.warn('No se pudo obtener el id del usuario.');
         }
       });
       return;
@@ -136,7 +136,6 @@ export class DashboardViewComponent {
       this.companyService.getMe().subscribe({
         next: (response) => this.handleMeResponse(response),
         error: () => {
-          console.warn('No se pudo obtener el id del usuario.');
         }
       });
       return;
@@ -146,15 +145,13 @@ export class DashboardViewComponent {
       this.clientService.getMe().subscribe({
         next: (response) => this.handleMeResponse(response),
         error: () => {
-          console.warn('No se pudo obtener el id del usuario.');
         }
       });
     }
   }
 
   private handleMeResponse(response: { errors: any[]; result: any }) {
-    if (response.errors && response.errors.length > 0) {
-      console.warn('No se pudo obtener el id del usuario.');
+    if (hasApiErrors(response)) {
       return;
     }
     const result = response?.result ?? null;

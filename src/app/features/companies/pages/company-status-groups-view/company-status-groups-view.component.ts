@@ -9,6 +9,7 @@ import { StatusGroupsService } from '@app/features/companies/services/status-gro
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { StatusGroup } from '@app/features/companies/models/status-group.model';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 type StatusTag = {
   label: string;
@@ -185,7 +186,7 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
       .pipe(finalize(() => this.createLoading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.errors && response.errors.length > 0) {
+          if (hasApiErrors(response)) {
             this.createError.set('No se pudo crear el grupo.');
             return;
           }
@@ -219,7 +220,7 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
       .pipe(finalize(() => this.editLoading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.errors && response.errors.length > 0) {
+          if (hasApiErrors(response)) {
             this.editError.set('No se pudo actualizar el grupo.');
             return;
           }
@@ -247,8 +248,7 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
       .pipe(finalize(() => this.deleteLoading.set(false)))
       .subscribe({
         next: (response) => {
-          const hasErrors = Array.isArray(response?.errors) && response.errors.length > 0;
-          if (hasErrors) {
+          if (hasApiErrors(response)) {
             this.deleteError.set('No se pudo eliminar el grupo.');
             return;
           }
@@ -276,7 +276,7 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (response) => {
-          if (response.errors && response.errors.length > 0) {
+          if (hasApiErrors(response)) {
             this.error.set('No se pudieron cargar los grupos.');
             return;
           }

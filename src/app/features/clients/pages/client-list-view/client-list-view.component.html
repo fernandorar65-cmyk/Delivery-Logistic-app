@@ -40,14 +40,21 @@
     ></app-clients-table>
 
     @if (!showPending()) {
-    <app-clients-pagination
-      [currentCount]="clients().length"
-      [totalCount]="totalCount()"
+    <app-pagination
+      [startItem]="startItem"
+      [endItem]="endItem"
+      [totalItems]="totalCount()"
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages"
+      [pages]="pages"
       [hasPrevious]="hasPrevious()"
       [hasNext]="hasNext()"
+      itemLabel="cliente"
+      itemLabelPlural="clientes"
       (previous)="previousPage()"
       (next)="nextPage()"
-    ></app-clients-pagination>
+      (goTo)="goToPage($event)"
+    ></app-pagination>
 
     <app-clients-stats
       [totalCount]="totalCount()"

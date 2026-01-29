@@ -1,29 +1,12 @@
-.table-card {
-  overflow: hidden;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
+@import "../../../../../../shared/ui/table/table-base.css";
 
 .shipments-table {
-  width: 100%;
   border-collapse: collapse;
-}
-
-.shipments-table thead {
-  background: #f9fafb;
 }
 
 .shipments-table th {
   padding: 1rem 1.5rem;
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .actions-header {
@@ -32,12 +15,7 @@
 }
 
 .shipments-table tbody tr {
-  border-bottom: 1px solid #f3f4f6;
   transition: background-color 0.15s;
-}
-
-.shipments-table tbody tr:hover {
-  background-color: #f9fafb;
 }
 
 .shipments-table td {

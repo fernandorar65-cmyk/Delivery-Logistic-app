@@ -11,7 +11,8 @@ import { Ally, StatCard } from './providers-list-view.types';
 import { ProvidersStatsCardsComponent } from './components/providers-stats-cards/providers-stats-cards.component';
 import { ProvidersToolbarComponent } from './components/providers-toolbar/providers-toolbar.component';
 import { ProvidersTableComponent } from './components/providers-table/providers-table.component';
-import { ProvidersPaginationComponent } from './components/providers-pagination/providers-pagination.component';
+import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
+import { hasApiErrors } from '@app/shared/utils/api-response';
 
 @Component({
   selector: 'app-providers-list-view',
@@ -23,7 +24,7 @@ import { ProvidersPaginationComponent } from './components/providers-pagination/
     ProvidersStatsCardsComponent,
     ProvidersToolbarComponent,
     ProvidersTableComponent,
-    ProvidersPaginationComponent
+    PaginationComponent
   ],
   templateUrl: './providers-list-view.component.html',
   styleUrl: './providers-list-view.component.css'
@@ -79,7 +80,7 @@ export class AllyListViewComponent implements OnInit {
       finalize(() => this.loading.set(false))
     ).subscribe({
       next: (response) => {
-        if (response.errors && response.errors.length > 0) {
+        if (hasApiErrors(response)) {
           this.error.set('Error al cargar los aliados');
           return;
         }
@@ -97,7 +98,6 @@ export class AllyListViewComponent implements OnInit {
         
       },
       error: (err) => {
-        console.error('Error loading providers:', err);
         this.error.set('Error al cargar los aliados. Por favor, intente nuevamente.');
       }
     });
@@ -232,6 +232,10 @@ export class AllyListViewComponent implements OnInit {
     return Math.min(this.currentPage() * this.itemsPerPage, this.filteredAllies.length);
   }
 
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
   previousPage() {
     if (this.currentPage() > 1) {
       this.currentPage.set(this.currentPage() - 1);
@@ -241,6 +245,12 @@ export class AllyListViewComponent implements OnInit {
   nextPage() {
     if (this.currentPage() < this.totalPages) {
       this.currentPage.set(this.currentPage() + 1);
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage.set(page);
     }
   }
 
