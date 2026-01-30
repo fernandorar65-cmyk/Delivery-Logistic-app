@@ -5,8 +5,9 @@
 }
 
 .shipments-table th {
-  padding: 1rem 1.5rem;
+  padding: 0.6rem 0.95rem;
   letter-spacing: 0.5px;
+  font-size: 0.66rem;
 }
 
 .actions-header {
@@ -19,15 +20,16 @@
 }
 
 .shipments-table td {
-  padding: 1.25rem 1.5rem;
+  padding: 0.7rem 0.95rem;
   color: #374151;
-  font-size: 0.9375rem;
+  font-size: 0.8rem;
 }
 
 .id-cell {
   font-weight: 600;
   color: #667eea;
   font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
 }
 
 .client-cell {
@@ -41,14 +43,14 @@
 }
 
 .client-avatar {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   color: white;
   flex-shrink: 0;
 }
@@ -64,11 +66,11 @@
 .client-name {
   font-weight: 500;
   color: #1a1a1a;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .client-type {
-  font-size: 0.8125rem;
+  font-size: 0.7rem;
   color: #6b7280;
 }
 
@@ -79,11 +81,11 @@
 .destination-address {
   font-weight: 500;
   color: #1a1a1a;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .destination-eta {
-  font-size: 0.875rem;
+  font-size: 0.72rem;
   color: #6b7280;
 }
 
@@ -104,11 +106,11 @@
 .vehicle-name {
   font-weight: 500;
   color: #1a1a1a;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .vehicle-plate {
-  font-size: 0.8125rem;
+  font-size: 0.7rem;
   color: #6b7280;
 }
 
@@ -116,7 +118,7 @@
   color: #667eea;
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.9375rem;
+  font-size: 0.78rem;
   transition: color 0.2s;
 }
 
@@ -129,9 +131,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.28rem 0.6rem;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   font-weight: 500;
 }
 
@@ -156,8 +158,8 @@
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
 }

@@ -1,18 +1,18 @@
 .tabs-container {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.6rem;
   border-bottom: 2px solid #e5e7eb;
 }
 
 .tab {
-  padding: 0.75rem 1.5rem;
+  padding: 0.4rem 0.85rem;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   color: #6b7280;
   font-weight: 500;
-  font-size: 0.9375rem;
+  font-size: 0.76rem;
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: -2px;
@@ -35,8 +35,8 @@
 .tab-badge {
   background: #ef4444;
   color: white;
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
+  font-size: 0.6rem;
+  padding: 0.08rem 0.35rem;
   border-radius: 10px;
   font-weight: 600;
 }

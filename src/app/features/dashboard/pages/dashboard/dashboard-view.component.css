@@ -1,15 +1,33 @@
 .dashboard-container {
-  padding: 2rem;
-  max-width: 1600px;
+  padding: 0.6rem;
+  max-width: 1800px;
+  width: 100%;
   margin: 0 auto;
 }
 
 .shipments-section {
   background: white;
   border-radius: 12px;
-  padding: 2rem;
+  padding: 0.9rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
+}
+
+.shipments-section .pagination {
+  margin-top: 0.6rem;
+  padding: 0.45rem 0.75rem;
+}
+
+.shipments-section .pagination-info {
+  font-size: 0.7rem;
+}
+
+.shipments-section .pagination-btn,
+.shipments-section .pagination-number {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.45rem;
+  min-width: 1.6rem;
+  height: 1.6rem;
 }
 
 @media (max-width: 768px) {
