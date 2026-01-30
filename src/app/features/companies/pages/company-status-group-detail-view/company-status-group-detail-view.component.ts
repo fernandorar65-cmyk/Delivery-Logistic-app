@@ -98,35 +98,20 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
     is_visible_to_provider: [true, [Validators.required]]
   });
 
-  private readonly statusTemplates: StatusStep[][] = [
-    [
-      { label: 'Pendiente de recogida', tone: 'amber' },
-      { label: 'En almacén', tone: 'blue' },
-      { label: 'En tránsito', tone: 'cyan' },
-      { label: 'Entregado', tone: 'green' }
-    ],
-    [
-      { label: 'Recogido', tone: 'green' },
-      { label: 'Control de temperatura', tone: 'cyan' },
-      { label: 'Despacho prioritario', tone: 'orange' },
-      { label: 'Última milla', tone: 'indigo' }
-    ],
-    [
-      { label: 'Recepción', tone: 'blue' },
-      { label: 'Clasificación', tone: 'amber' },
-      { label: 'Transporte principal', tone: 'indigo' },
-      { label: 'Entrega final', tone: 'green' }
-    ]
-  ];
-
   ngOnInit(): void {
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
-    if (!this.groupId) {
-      this.error.set('No se pudo identificar el grupo.');
-      return;
-    }
-    this.loadGroup(this.groupId);
-    this.loadStatuses(this.groupId);
+    this.route.paramMap.subscribe((params) => {
+      const groupId = params.get('groupId');
+      if (!groupId) {
+        this.error.set('No se pudo identificar el grupo.');
+        this.groupId = null;
+        this.group.set(null);
+        this.steps.set([]);
+        return;
+      }
+      this.groupId = groupId;
+      this.loadGroup(groupId);
+      this.loadStatuses(groupId);
+    });
   }
 
   getToneClass(tone: StatusStep['tone']): string {
@@ -403,7 +388,7 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
           }
           const result = response?.result ?? null;
           this.group.set(result);
-          this.steps.set(result ? this.getTemplateFor(result.id ?? groupId) : []);
+          this.steps.set([]);
         },
         error: () => {
           this.error.set('No se pudo cargar el grupo.');
@@ -420,7 +405,7 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
           }
           const items = Array.isArray(response?.result) ? response.result : [];
           if (items.length === 0) {
-            this.steps.set(this.getTemplateFor(groupId));
+            this.steps.set([]);
             return;
           }
           const mapped = items
@@ -429,20 +414,9 @@ export class CompanyStatusGroupDetailViewComponent implements OnInit {
           this.steps.set(mapped);
         },
         error: () => {
-          // fallback to template to keep UI filled
-          this.steps.set(this.getTemplateFor(groupId));
+          this.steps.set([]);
         }
       });
-  }
-
-  private getTemplateFor(groupId: string): StatusStep[] {
-    const index = this.getTemplateIndex(groupId);
-    return this.statusTemplates[index] ?? [];
-  }
-
-  private getTemplateIndex(groupId: string): number {
-    const sum = Array.from(groupId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return this.statusTemplates.length > 0 ? sum % this.statusTemplates.length : 0;
   }
 
   private appendStep(payload: StatusGroupStateCreate, id?: string): void {

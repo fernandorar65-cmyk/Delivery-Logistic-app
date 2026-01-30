@@ -19,7 +19,7 @@
     </div>
 
     <div class="header-right">
-      <app-match-requests-panel></app-match-requests-panel>
+      <app-match-requests-panel *ngIf="canAccess([UserTypes.PROVIDER, UserTypes.CLIENT])"></app-match-requests-panel>
       <button class="icon-button" title="Ayuda">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
