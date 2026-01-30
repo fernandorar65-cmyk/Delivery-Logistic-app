@@ -45,6 +45,11 @@ export interface ClientResponse {
   result: Client;
 }
 
+export interface ClientCheckResponse {
+  errors: any[];
+  result: Client | null;
+}
+
 
 
 

@@ -15,8 +15,14 @@ export class ClientsFormModalComponent {
   @Input({ required: true }) isEditMode!: boolean;
   @Input() formLoading = false;
   @Input() formError: string | null = null;
+  @Input() checkLoading = false;
+  @Input() checkError: string | null = null;
+  @Input() checkSuccess: string | null = null;
+  @Input() emailStatus: 'idle' | 'checking' | 'unique' | 'exists' | 'error' = 'idle';
+  @Input() showEmailCheck = false;
   @Output() close = new EventEmitter<void>();
   @Output() submit = new EventEmitter<Event>();
+  @Output() verifyEmail = new EventEmitter<void>();
 
   getFieldError(fieldName: string): string {
     const field = this.clientForm.get(fieldName);

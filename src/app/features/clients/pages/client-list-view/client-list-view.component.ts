@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientService } from '@app/features/clients/services/client.service';
-import { Client, ClientCreate } from '@app/features/clients/models/client.model';
+import { Client, ClientCheckResponse, ClientCreate } from '@app/features/clients/models/client.model';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ClientsToolbarComponent } from './components/clients-toolbar/clients-toolbar.component';
 import { ClientsTableComponent } from './components/clients-table/clients-table.component';
@@ -14,6 +14,9 @@ import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { CompanyClientMatchResponse } from '@app/features/clients/models/company-client-match.model';
+import { catchError, finalize, of } from 'rxjs';
+import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
 @Component({
   selector: 'app-client-list-view',
@@ -27,7 +30,8 @@ import { hasApiErrors } from '@app/shared/utils/api-response';
     PaginationComponent,
     ClientsStatsComponent,
     ClientsFormModalComponent,
-    ClientsSuccessModalComponent
+    ClientsSuccessModalComponent,
+    ModalComponent
   ],
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
@@ -56,6 +60,16 @@ export class ClientListViewComponent implements OnInit {
   formLoading = signal(false);
   formError = signal<string | null>(null);
   showSuccessModal = signal(false);
+  checkLoading = signal(false);
+  checkError = signal<string | null>(null);
+  checkSuccess = signal<string | null>(null);
+  emailStatus = signal<'idle' | 'checking' | 'unique' | 'exists' | 'error'>('idle');
+  checkedClientId = signal<string | null>(null);
+  matchRequested = signal(false);
+  matchModalOpen = signal(false);
+  matchEmail = signal<string | null>(null);
+  matchLoading = signal(false);
+  matchError = signal<string | null>(null);
 
   clientForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -211,6 +225,7 @@ export class ClientListViewComponent implements OnInit {
     this.clientForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
     this.clientForm.get('password')?.updateValueAndValidity();
     this.formError.set(null);
+    this.resetEmailCheck();
     this.showModal.set(true);
   }
 
@@ -240,6 +255,8 @@ export class ClientListViewComponent implements OnInit {
     this.clientForm.reset();
     this.formError.set(null);
     this.formLoading.set(false);
+    this.resetEmailCheck();
+    this.closeMatchModal();
   }
 
   closeSuccessModal() {
@@ -279,6 +296,18 @@ export class ClientListViewComponent implements OnInit {
           }
         });
       } else {
+        if (this.isCompanyUser()) {
+          if (this.emailStatus() === 'checking') {
+            this.formLoading.set(false);
+            this.formError.set('Espera a que termine la verificación del correo.');
+            return;
+          }
+          if (this.emailStatus() === 'exists') {
+            this.formLoading.set(false);
+            this.openMatchModal();
+            return;
+          }
+        }
         const clientPayload: ClientCreate = {
           email: formValue.email,
           password: formValue.password,
@@ -290,7 +319,7 @@ export class ClientListViewComponent implements OnInit {
         this.clientService.create(clientPayload).subscribe({
           next: (response) => {
             if (hasApiErrors(response)) {
-              this.formError.set('Error al crear el cliente. Por favor, intenta nuevamente.');
+              this.formError.set(this.formatApiErrors(response.errors));
               this.formLoading.set(false);
               return;
             }
@@ -303,7 +332,7 @@ export class ClientListViewComponent implements OnInit {
             this.formLoading.set(false);
             
             if (err.status === 400) {
-              this.formError.set('Datos inválidos. Por favor, verifica todos los campos.');
+              this.formError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
             } else if (err.status === 401) {
               this.formError.set('No autorizado. Por favor, inicia sesión nuevamente.');
             } else if (err.status === 409) {
@@ -319,6 +348,137 @@ export class ClientListViewComponent implements OnInit {
     } else {
       this.clientForm.markAllAsTouched();
     }
+  }
+
+  verifyClientEmail(): void {
+    if (!this.isCompanyUser() || this.isEditMode()) {
+      return;
+    }
+    const emailValue = (this.clientForm.value.email ?? '').toString().trim().toLowerCase();
+    if (!emailValue) {
+      this.emailStatus.set('idle');
+      this.checkError.set('Ingresa un correo válido para verificar.');
+      return;
+    }
+    if (this.clientForm.get('email')?.invalid) {
+      this.emailStatus.set('idle');
+      this.checkError.set('Ingresa un correo válido para verificar.');
+      return;
+    }
+
+    this.checkError.set(null);
+    this.checkSuccess.set(null);
+    this.emailStatus.set('checking');
+    this.checkLoading.set(true);
+
+    this.clientService.checkClientEmail(emailValue).pipe(
+      catchError((err) => {
+        if (err?.status === 404) {
+          this.emailStatus.set('unique');
+          this.checkSuccess.set('Correo disponible.');
+          return of<ClientCheckResponse>({ errors: [], result: null });
+        }
+        if (err?.status === 400) {
+          this.emailStatus.set('error');
+          this.checkError.set('El correo existe, pero no pertenece a un cliente.');
+          return of(null);
+        }
+        this.emailStatus.set('error');
+        this.checkError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+        return of(null);
+      }),
+      finalize(() => this.checkLoading.set(false))
+    ).subscribe((response: ClientCheckResponse | null) => {
+      if (!response) return;
+      if (hasApiErrors(response)) {
+        this.emailStatus.set('error');
+        this.checkError.set(this.formatApiErrors(response.errors));
+        return;
+      }
+      const exists = Boolean(response.result?.id);
+      if (exists) {
+        this.checkedClientId.set(response.result?.id ?? null);
+        this.emailStatus.set('exists');
+        this.matchEmail.set(response.result?.user_email ?? emailValue);
+        this.openMatchModal();
+        return;
+      }
+      this.emailStatus.set('unique');
+      this.checkSuccess.set('Correo disponible.');
+    });
+  }
+
+  openMatchModal(): void {
+    const emailValue = (this.clientForm.value.email ?? '').toString().trim().toLowerCase();
+    if (emailValue) {
+      this.matchEmail.set(emailValue);
+    }
+    this.matchError.set(null);
+    this.matchModalOpen.set(true);
+  }
+
+  closeMatchModal(): void {
+    this.matchModalOpen.set(false);
+    this.matchError.set(null);
+    this.matchLoading.set(false);
+  }
+
+  confirmMatchRequest(): void {
+    if (this.matchLoading()) return;
+    this.matchLoading.set(true);
+    this.matchError.set(null);
+    this.sendCompanyClientRequest().subscribe({
+      next: (response) => {
+        if (hasApiErrors(response)) {
+          this.matchError.set(this.formatApiErrors(response.errors));
+          this.matchLoading.set(false);
+          return;
+        }
+        this.matchRequested.set(true);
+        this.matchLoading.set(false);
+        this.closeMatchModal();
+        this.closeModal();
+        this.loadClients(this.currentPage());
+      },
+      error: (err) => {
+        this.matchLoading.set(false);
+        this.matchError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+      }
+    });
+  }
+
+  private sendCompanyClientRequest(clientId?: string | null) {
+    const companyId = this.storageService.getItem(LocalStorageEnums.ID);
+    const resolvedClientId = clientId ?? this.checkedClientId();
+    if (!companyId || !resolvedClientId) {
+      return of<CompanyClientMatchResponse>({ errors: ['Missing IDs'] });
+    }
+    return this.clientService.sendCompanyClientRequest({
+      company_id: companyId,
+      client_id: resolvedClientId
+    });
+  }
+
+  private formatApiErrors(errors: unknown): string {
+    if (Array.isArray(errors)) {
+      return errors.filter(Boolean).join(' ');
+    }
+    if (typeof errors === 'string') {
+      return errors;
+    }
+    return 'Ocurrió un error al procesar la solicitud.';
+  }
+
+  private resetEmailCheck(): void {
+    this.checkLoading.set(false);
+    this.checkError.set(null);
+    this.checkSuccess.set(null);
+    this.emailStatus.set('idle');
+    this.checkedClientId.set(null);
+    this.matchRequested.set(false);
+    this.matchEmail.set(null);
+    this.matchModalOpen.set(false);
+    this.matchError.set(null);
   }
 
   // Helpers movidos al componente de tabla.

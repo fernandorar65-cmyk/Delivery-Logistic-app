@@ -70,9 +70,42 @@
       [isEditMode]="isEditMode()"
       [formLoading]="formLoading()"
       [formError]="formError()"
+      [checkLoading]="checkLoading()"
+      [checkError]="checkError()"
+      [checkSuccess]="checkSuccess()"
+      [emailStatus]="emailStatus()"
+      [showEmailCheck]="isCompanyUser() && !isEditMode()"
       (close)="closeModal()"
       (submit)="onSubmit($event)"
+      (verifyEmail)="verifyClientEmail()"
     ></app-clients-form-modal>
+  }
+
+  @if (matchModalOpen()) {
+    <app-modal title="Cliente ya registrado" size="sm" [showClose]="false" (close)="closeMatchModal()">
+      <div class="match-icon">
+        <span class="material-symbols-outlined">hub</span>
+      </div>
+      <p>
+        El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
+      </p>
+      @if (matchError()) {
+        <div class="match-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ matchError() }}
+        </div>
+      }
+      <div class="match-actions">
+        <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
+        <button type="button" class="btn primary" (click)="confirmMatchRequest()" [disabled]="matchLoading()">
+          @if (matchLoading()) {
+            Enviando...
+          } @else {
+            Enviar solicitud
+          }
+        </button>
+      </div>
+    </app-modal>
   }
 
   @if (showSuccessModal()) {

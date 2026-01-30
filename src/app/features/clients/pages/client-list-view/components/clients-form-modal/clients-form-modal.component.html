@@ -15,9 +15,65 @@
         </div>
       }
 
+      @if (showEmailCheck && checkError) {
+        <div class="form-error-message form-check-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ checkError }}</span>
+        </div>
+      }
+      @if (showEmailCheck && checkSuccess) {
+        <div class="form-success-message form-check-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m4.5 12.75 6 6 9-13.5"></path>
+          </svg>
+          <span>{{ checkSuccess }}</span>
+        </div>
+      }
+
       <div class="form-section">
         <h3 class="section-title">Información Básica</h3>
         
+        <div class="form-group">
+          <label for="email">
+            Email <span class="required">*</span>
+          </label>
+          <div class="email-row">
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="correo@ejemplo.com"
+              [class.invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
+            />
+            @if (showEmailCheck) {
+              <button
+                type="button"
+                class="email-check-btn"
+                (click)="verifyEmail.emit()"
+                [disabled]="checkLoading"
+              >
+                Verificar
+              </button>
+            }
+          </div>
+          @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
+            <span class="error-text">{{ getFieldError('email') }}</span>
+          }
+          @if (showEmailCheck) {
+            @if (emailStatus === 'checking') {
+              <span class="email-status">Verificando correo...</span>
+            } @else if (emailStatus === 'exists') {
+              <span class="email-status email-status-warning">El cliente ya existe. Se enviará solicitud.</span>
+            } @else if (emailStatus === 'unique') {
+              <span class="email-status email-status-success">Correo disponible para registrar.</span>
+            }
+          }
+        </div>
+
         <div class="form-group">
           <label for="client_name">
             Nombre del Cliente <span class="required">*</span>
@@ -59,22 +115,6 @@
             formControlName="description"
             placeholder="Describe brevemente al cliente"
           ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="email">
-            Email <span class="required">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            placeholder="correo@ejemplo.com"
-            [class.invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
-          />
-          @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
-            <span class="error-text">{{ getFieldError('email') }}</span>
-          }
         </div>
 
         <div class="form-group">

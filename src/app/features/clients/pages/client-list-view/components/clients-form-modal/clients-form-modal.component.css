@@ -15,6 +15,21 @@
   border-left: 4px solid #dc2626;
 }
 
+.form-success-message {
+  background-color: #ecfdf3;
+  color: #15803d;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-left: 4px solid #16a34a;
+}
+
+.form-check-message {
+  margin-top: -0.25rem;
+}
+
 .form-section {
   display: flex;
   flex-direction: column;
@@ -62,6 +77,62 @@
   box-sizing: border-box;
   font-family: inherit;
   background-color: #f9fafb;
+}
+
+.email-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.email-row .email-check-btn {
+  height: 100%;
+}
+
+.email-row input {
+  min-height: 44px;
+}
+
+.email-row input {
+  flex: 1;
+}
+
+.email-check-btn {
+  padding: 0.65rem 1rem;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 0.65rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.email-check-btn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.email-check-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.email-status {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.email-status-success {
+  color: #15803d;
+}
+
+.email-status-warning {
+  color: #b45309;
 }
 
 .form-group textarea {
