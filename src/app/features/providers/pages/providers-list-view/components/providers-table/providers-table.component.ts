@@ -17,6 +17,7 @@ export class ProvidersTableComponent {
   @Input() loading = false;
   @Input() error: string | null = null;
   @Input() allies: Ally[] = [];
+  @Input() showEmail = false;
   @Output() createRequested = new EventEmitter<void>();
 
   getStatusClass(status?: string): string {

@@ -4,6 +4,9 @@
       <thead>
         <tr>
           <th>Aliado / Empresa</th>
+          @if (showEmail) {
+            <th>Correo</th>
+          }
           <th>Estado</th>
           <th>Flota</th>
           <th>Conductores</th>
@@ -15,13 +18,13 @@
       <tbody>
         @if (loading) {
           <tr>
-            <td colspan="7" class="text-center p-8">
+            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-8">
               <app-loading-card message="Cargando aliados..."></app-loading-card>
             </td>
           </tr>
         } @else if (error) {
           <tr>
-            <td colspan="7" class="text-center p-8 text-red-600">
+            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-8 text-red-600">
               <app-empty-state
                 icon="exclamation-triangle"
                 title="No se pudieron cargar los aliados"
@@ -31,7 +34,7 @@
           </tr>
         } @else if (allies.length === 0) {
           <tr>
-            <td colspan="7" class="text-center p-8">
+            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-8">
               <app-empty-state
                 icon="users"
                 title="No hay providers por el momento"
@@ -59,6 +62,11 @@
                 <p class="ally-id">ID: #{{ ally.id }}</p>
               </div>
             </td>
+            @if (showEmail) {
+              <td class="ally-email">
+                {{ ally.email || ally.user_email || '-' }}
+              </td>
+            }
             <td>
               <span class="status-badge" [class]="getStatusClass(ally.status)">
                 <span class="status-dot"></span>

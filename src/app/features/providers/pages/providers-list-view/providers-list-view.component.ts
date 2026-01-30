@@ -36,6 +36,7 @@ export class AllyListViewComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   createOpen = signal(false);
+  isCompanyUser = signal(false);
 
   // Tarjetas de estadísticas (se setean con updateStats)
   stats = signal<StatCard[]>([]);
@@ -56,6 +57,8 @@ export class AllyListViewComponent implements OnInit {
 
   ngOnInit() {
     this.updateStats([]);
+    const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? 'admin';
+    this.isCompanyUser.set(userType.toLowerCase() === 'company');
     this.loadProviders();
   }
 
