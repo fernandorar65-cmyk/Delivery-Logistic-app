@@ -9,6 +9,7 @@ import { CompanyProviderMatchResponse } from '@app/features/providers/models/com
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { normalizeUserType } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-provider-create-modal',
@@ -120,7 +121,7 @@ export class ProviderCreateModalComponent {
   confirmMatchRequest(): void {
     const providerId = this.matchProviderId();
     const companyId = this.storageService.getItem(LocalStorageEnums.ID);
-    const userType = (this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? '').toLowerCase();
+    const userType = normalizeUserType(this.storageService.getItem(LocalStorageEnums.USER_TYPE)) ?? '';
     if (!companyId || !providerId) {
       this.matchError.set('No se pudo enviar la solicitud. Falta información.');
       return;
@@ -185,7 +186,7 @@ export class ProviderCreateModalComponent {
           return of(null);
         }
         const companyId = this.storageService.getItem(LocalStorageEnums.ID);
-        const userType = (this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? '').toLowerCase();
+        const userType = normalizeUserType(this.storageService.getItem(LocalStorageEnums.USER_TYPE)) ?? '';
         const providerId = response?.result?.id;
 
         if (!companyId || !providerId) {

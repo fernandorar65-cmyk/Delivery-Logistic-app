@@ -3,19 +3,13 @@ import { CanActivateFn, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { normalizeUserType } from '@app/shared/models/user-types';
 
 type RouteRole = string;
 
 const getAllowedRoles = (route: Parameters<CanActivateFn>[0]): RouteRole[] | null => {
   const roles = route.data?.['roles'] as RouteRole[] | undefined;
   return roles?.length ? roles : null;
-};
-
-const normalizeRole = (role: string): string => {
-  const map: Record<string, string> = {
-    platform: 'admin'
-  };
-  return map[role] ?? role;
 };
 
 export const roleGuard: CanActivateFn = (route, state) => {
@@ -40,7 +34,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
     });
   }
 
-  const normalizedUserType = normalizeRole(rawUserType);
+  const normalizedUserType = normalizeUserType(rawUserType) ?? rawUserType;
   if (!allowedRoles.includes(normalizedUserType)) {
     return router.createUrlTree(['/dashboard']);
   }

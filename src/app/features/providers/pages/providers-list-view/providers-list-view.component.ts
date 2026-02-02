@@ -13,6 +13,7 @@ import { ProvidersToolbarComponent } from './components/providers-toolbar/provid
 import { ProvidersTableComponent } from './components/providers-table/providers-table.component';
 import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { normalizeUserType } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-providers-list-view',
@@ -58,7 +59,7 @@ export class AllyListViewComponent implements OnInit {
   ngOnInit() {
     this.updateStats([]);
     const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? 'admin';
-    this.isCompanyUser.set(userType.toLowerCase() === 'company');
+    this.isCompanyUser.set(normalizeUserType(userType) === 'company');
     this.loadProviders();
   }
 
@@ -77,7 +78,7 @@ export class AllyListViewComponent implements OnInit {
   loadProviders() {
     this.loading.set(true);
     this.error.set(null);
-    const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE) ?? 'admin';
+    const userType = normalizeUserType(this.storageService.getItem(LocalStorageEnums.USER_TYPE)) ?? 'admin';
 
     this.providerService.getAll(userType).pipe(
       finalize(() => this.loading.set(false))

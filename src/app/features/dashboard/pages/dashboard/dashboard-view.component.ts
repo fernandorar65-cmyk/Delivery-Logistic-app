@@ -12,6 +12,7 @@ import { DashboardShipmentsTabsComponent, DashboardTab } from './components/dash
 import { DashboardShipmentsTableComponent } from './components/dashboard-shipments-table/dashboard-shipments-table.component';
 import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { normalizeUserType } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -121,7 +122,7 @@ export class DashboardViewComponent {
       return;
     }
 
-    const normalizedType = userType === 'platform' ? 'admin' : userType;
+    const normalizedType = normalizeUserType(userType) ?? userType;
 
     if (normalizedType === 'provider') {
       this.providerService.getMe().subscribe({

@@ -12,6 +12,7 @@ import { ClientsFormModalComponent } from './components/clients-form-modal/clien
 import { ClientsSuccessModalComponent } from './components/clients-success-modal/clients-success-modal.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { normalizeUserType } from '@app/shared/models/user-types';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
 import { hasApiErrors } from '@app/shared/utils/api-response';
 import { CompanyClientMatchResponse } from '@app/features/clients/models/company-client-match.model';
@@ -81,7 +82,7 @@ export class ClientListViewComponent implements OnInit {
 
   ngOnInit(): void {
     const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
-    this.isCompanyUser.set((userType ?? '').toLowerCase() === 'company');
+    this.isCompanyUser.set(normalizeUserType(userType) === 'company');
     this.loadClients(1);
   }
 

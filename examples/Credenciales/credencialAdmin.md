@@ -15,10 +15,16 @@ Contra1234#
    Aliado10@gmail.com
    Contra1234#
 
+                        Internos:
+                        InternoAliado@gmail.com
+                        Contra1234#
+
 -- CLIENTS
    Cliente04@gmail.com
    Contra1234#
-
+                        Internos:
+                        UsuarioInterno04@gmail.com
+                        Contra1234#
 
 
 

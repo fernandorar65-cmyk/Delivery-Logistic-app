@@ -6,7 +6,7 @@ import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { MatchRequestsPanelComponent } from '@app/core/layout/components/match-requests-panel/match-requests-panel.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
-import { UserTypes } from '@app/shared/models/user-types';
+import { normalizeUserType, UserTypes } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-main-layout',
@@ -27,7 +27,7 @@ export class MainLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.userType.set(this.storageService.getItem(LocalStorageEnums.USER_TYPE));
+      this.userType.set(normalizeUserType(this.storageService.getItem(LocalStorageEnums.USER_TYPE)));
       this.userEmail.set(this.storageService.getItem(LocalStorageEnums.USER_EMAIL));
       this.userId.set(this.storageService.getItem(LocalStorageEnums.ID));
     }
@@ -38,9 +38,7 @@ export class MainLayoutComponent implements OnInit {
     if (!currentRole) {
       return false;
     }
-    const normalizedRole = currentRole.toLowerCase() === 'platform'
-      ? 'admin'
-      : currentRole.toLowerCase();
+    const normalizedRole = normalizeUserType(currentRole) ?? currentRole.toLowerCase();
     return roles.includes(normalizedRole);
   }
 
@@ -49,9 +47,7 @@ export class MainLayoutComponent implements OnInit {
     if (!currentRole) {
       return 'Usuario';
     }
-    const normalizedRole = currentRole.toLowerCase() === 'platform'
-      ? 'admin'
-      : currentRole.toLowerCase();
+    const normalizedRole = normalizeUserType(currentRole) ?? currentRole.toLowerCase();
     const labels: Record<string, string> = {
       admin: 'Admin',
       company: 'Company',

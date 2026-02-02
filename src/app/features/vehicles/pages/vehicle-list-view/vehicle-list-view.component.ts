@@ -14,6 +14,7 @@ import { VehiclesCreateModalComponent } from './components/vehicles-create-modal
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { normalizeUserType } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-vehicle-list-view',
@@ -121,7 +122,7 @@ export class VehicleListViewComponent implements OnInit {
 
   ngOnInit() {
     const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
-    this.isProviderUser.set((userType ?? '').toLowerCase() === 'provider');
+    this.isProviderUser.set(normalizeUserType(userType) === 'provider');
 
     this.route.paramMap.subscribe(params => {
       this.allyId.set(params.get('allyId'));

@@ -9,6 +9,7 @@ import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
 import { CompanyProviderPending } from '@app/features/providers/models/company-provider-pending.model';
+import { normalizeUserType } from '@app/shared/models/user-types';
 
 interface MatchRequest {
   id: string;
@@ -44,7 +45,7 @@ export class MatchRequestsPanelComponent implements OnInit {
 
   ngOnInit(): void {
     const storedType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
-    this.userType.set((storedType ?? '').toLowerCase());
+    this.userType.set(normalizeUserType(storedType) ?? '');
     this.loadRequests();
   }
 
