@@ -12,7 +12,7 @@
 }
 
 .app-modal-container {
-  width: min(100%, 42rem);
+  width: min(100%, 95rem);
   max-height: 90vh;
   background: #ffffff;
   border-radius: 1rem;
@@ -33,6 +33,10 @@
 
 .app-modal-container.lg {
   width: min(100%, 48rem);
+}
+
+.app-modal-container.xl {
+  width: min(100%, 64rem);
 }
 
 .app-modal-header {
