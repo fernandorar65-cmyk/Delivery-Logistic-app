@@ -12,6 +12,12 @@ import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 export class ClientShipmentsUploadViewComponent {
   uploadModalOpen = signal(false);
   openSelectId = signal<string | null>(null);
+  currentStep = signal(0);
+  readonly steps = [
+    { id: 'order', label: 'Información del Pedido' },
+    { id: 'receiver', label: 'Datos del Destinatario' },
+    { id: 'logistics', label: 'Detalles Logísticos' }
+  ];
   selectedLabels = signal<Record<string, string>>({
     order_ref_id: 'ID de Pedido (Sistema)',
     order_date_created: 'Fecha de Creación',
@@ -24,6 +30,17 @@ export class ClientShipmentsUploadViewComponent {
 
   closeUploadModal(): void {
     this.uploadModalOpen.set(false);
+  }
+
+  setStep(index: number): void {
+    if (index < 0 || index >= this.steps.length) {
+      return;
+    }
+    this.currentStep.set(index);
+  }
+
+  get currentStepLabel(): string {
+    return this.steps[this.currentStep()]?.label ?? '';
   }
 
   @HostListener('document:click')

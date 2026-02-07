@@ -151,18 +151,12 @@
           </header>
 
           <nav class="excel-modal-steps">
-            <button type="button" class="excel-step active">
-              <span>1</span>
-              Información del Pedido
-            </button>
-            <button type="button" class="excel-step">
-              <span>2</span>
-              Datos del Destinatario
-            </button>
-            <button type="button" class="excel-step">
-              <span>3</span>
-              Detalles Logísticos
-            </button>
+            @for (step of steps; track step.id; let idx = $index) {
+              <button type="button" class="excel-step" [class.active]="currentStep() === idx" (click)="setStep(idx)">
+                <span>{{ idx + 1 }}</span>
+                {{ step.label }}
+              </button>
+            }
           </nav>
 
           <div class="excel-modal-body">
@@ -170,7 +164,7 @@
               <span class="material-symbols-outlined">description</span>
               <p>
                 Mostrando <strong>8 de 8 campos</strong> de la sección
-                <strong>Información del Pedido</strong>.
+                <strong>{{ currentStepLabel }}</strong>.
               </p>
             </div>
 
