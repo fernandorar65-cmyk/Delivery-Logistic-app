@@ -127,9 +127,157 @@
   </div>
 
     @if (uploadModalOpen()) {
-      <app-modal title="Seleccionar archivo" size="sm" (close)="closeUploadModal()">
-        <div class="upload-modal-placeholder">
-          <p>Modal en construcción.</p>
+      <app-modal title="Mapeo de Columnas" size="lg" (close)="closeUploadModal()">
+        <div class="excel-modal">
+          <header class="excel-modal-header">
+            <div class="excel-modal-title">
+              <div class="excel-modal-icon">
+                <span class="material-symbols-outlined">account_tree</span>
+              </div>
+              <div>
+                <h2>Mapeo de Columnas (24 Campos)</h2>
+                <p>Asignación estructurada por categorías para carga masiva.</p>
+              </div>
+            </div>
+            <div class="excel-modal-progress">
+              <span>Progreso Global</span>
+              <div class="excel-progress-row">
+                <strong>8/24</strong>
+                <div class="excel-progress-bar">
+                  <div class="excel-progress-value"></div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <nav class="excel-modal-steps">
+            <button type="button" class="excel-step active">
+              <span>1</span>
+              Información del Pedido
+            </button>
+            <button type="button" class="excel-step">
+              <span>2</span>
+              Datos del Destinatario
+            </button>
+            <button type="button" class="excel-step">
+              <span>3</span>
+              Detalles Logísticos
+            </button>
+          </nav>
+
+          <div class="excel-modal-body">
+            <div class="excel-modal-alert">
+              <span class="material-symbols-outlined">description</span>
+              <p>
+                Mostrando <strong>8 de 8 campos</strong> de la sección
+                <strong>Información del Pedido</strong>.
+              </p>
+            </div>
+
+            <div class="excel-table-wrapper">
+              <table class="excel-table">
+                <thead>
+                  <tr>
+                    <th>Columna en Excel (Origen)</th>
+                    <th>Campo en el Sistema (Destino)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="excel-origin">
+                        <div class="excel-origin-header">
+                          <span class="material-symbols-outlined">data_table</span>
+                          <strong>order_ref_id</strong>
+                        </div>
+                        <div class="excel-origin-sample">
+                          <span>Ejemplos</span>
+                          <p>#TRK-9821, #TRK-9822, #TRK-9823</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="excel-select">
+                        <select>
+                          <option>ID de Pedido (Sistema)</option>
+                          <option>Referencia Externa</option>
+                          <option>SKU</option>
+                          <option>Omitir esta columna</option>
+                        </select>
+                        <span class="material-symbols-outlined">unfold_more</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="excel-origin">
+                        <div class="excel-origin-header">
+                          <span class="material-symbols-outlined">data_table</span>
+                          <strong>order_date_created</strong>
+                        </div>
+                        <div class="excel-origin-sample">
+                          <span>Ejemplos</span>
+                          <p>2023-10-15, 2023-10-16, 2023-10-17</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="excel-select">
+                        <select>
+                          <option>Fecha de Creación</option>
+                          <option>Fecha de Entrega</option>
+                          <option>Omitir esta columna</option>
+                        </select>
+                        <span class="material-symbols-outlined">unfold_more</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="excel-origin">
+                        <div class="excel-origin-header">
+                          <span class="material-symbols-outlined">data_table</span>
+                          <strong>service_type_name</strong>
+                        </div>
+                        <div class="excel-origin-sample">
+                          <span>Ejemplos</span>
+                          <p>Express, Estándar, Mismo Día</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="excel-select highlighted">
+                        <select>
+                          <option>Tipo de Servicio</option>
+                          <option>Categoría de Envío</option>
+                          <option>Omitir esta columna</option>
+                        </select>
+                        <span class="material-symbols-outlined">unfold_more</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <footer class="excel-modal-footer">
+            <div class="excel-footer-info">
+              <span class="material-symbols-outlined">auto_awesome</span>
+              <span>Asignación automática: 85% confianza</span>
+            </div>
+            <div class="excel-footer-actions">
+              <button type="button" class="excel-btn ghost">Cancelar</button>
+              <button type="button" class="excel-btn muted" disabled>
+                <span class="material-symbols-outlined">arrow_back</span>
+                Anterior
+              </button>
+              <button type="button" class="excel-btn primary">
+                Siguiente Sección
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </footer>
         </div>
       </app-modal>
     }
