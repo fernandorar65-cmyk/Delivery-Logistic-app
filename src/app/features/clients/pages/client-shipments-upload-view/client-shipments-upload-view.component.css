@@ -603,6 +603,62 @@
   gap: 1rem;
 }
 
+.excel-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #ffffff;
+  border-radius: 0.9rem;
+  border: 0.0625rem solid #e2e8f0;
+  padding: 0.9rem 1rem;
+}
+
+.excel-file-title {
+  margin: 0;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.excel-file-name {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.excel-file-actions {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.excel-file-actions .excel-btn.primary {
+  padding: 0.55rem 1rem;
+  font-size: 0.7rem;
+  box-shadow: 0 0.5rem 1rem rgba(19, 127, 236, 0.2);
+}
+
+.excel-file-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.8rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.excel-file-error span {
+  font-size: 1rem;
+}
+
 .excel-modal-alert {
   display: flex;
   align-items: center;

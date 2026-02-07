@@ -68,7 +68,8 @@
           También puedes buscarlo en tu ordenador. Formatos admitidos:
           <span>.xlsx, .csv</span> (Máx 20MB)
         </p>
-        <button type="button" class="primary-button" (click)="openUploadModal()">
+        <input type="file" accept=".xlsx,.csv" #excelMainInput hidden (change)="onExcelFileSelected($event); openUploadModal()" />
+        <button type="button" class="primary-button" (click)="excelMainInput.click()">
           <span class="material-symbols-outlined">upload_file</span>
           Seleccionar Archivo
         </button>
@@ -160,10 +161,29 @@
           </nav>
 
           <div class="excel-modal-body">
+            <div class="excel-file-row">
+              <div>
+                <p class="excel-file-title">Archivo seleccionado</p>
+                <p class="excel-file-name">{{ excelFileName() || 'Sin archivo cargado' }}</p>
+              </div>
+              <div class="excel-file-actions">
+                <input type="file" accept=".xlsx,.csv" #excelInput hidden (change)="onExcelFileSelected($event)" />
+                <button type="button" class="excel-btn primary" (click)="excelInput.click()">
+                  <span class="material-symbols-outlined">upload_file</span>
+                  Cargar archivo
+                </button>
+              </div>
+            </div>
+            @if (excelError()) {
+              <div class="excel-file-error">
+                <span class="material-symbols-outlined">error</span>
+                {{ excelError() }}
+              </div>
+            }
             <div class="excel-modal-alert">
               <span class="material-symbols-outlined">description</span>
               <p>
-                Mostrando <strong>8 de 8 campos</strong> de la sección
+                Mostrando <strong>{{ excelHeaders().length || 8 }} de {{ excelHeaders().length || 8 }} campos</strong> de la sección
                 <strong>{{ currentStepLabel }}</strong>.
               </p>
             </div>
@@ -177,134 +197,159 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <div class="excel-origin">
-                        <div class="excel-origin-header">
-                          <span class="material-symbols-outlined">data_table</span>
-                          <strong>order_ref_id</strong>
-                        </div>
-                        <div class="excel-origin-sample">
-                          <span>Ejemplos</span>
-                          <p>#TRK-9821, #TRK-9822, #TRK-9823</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="excel-select" (click)="$event.stopPropagation()">
-                        <button type="button" class="excel-select-trigger" (click)="toggleSelect('order_ref_id')">
-                          <span>{{ getSelectedLabel('order_ref_id') }}</span>
-                          <span class="material-symbols-outlined">unfold_more</span>
-                        </button>
-                        @if (isSelectOpen('order_ref_id')) {
-                          <div class="excel-select-menu">
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('order_ref_id') === 'ID de Pedido (Sistema)'"
-                              (click)="selectOption('order_ref_id', 'ID de Pedido (Sistema)')">
-                              ID de Pedido (Sistema)
-                            </button>
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('order_ref_id') === 'Referencia Externa'"
-                              (click)="selectOption('order_ref_id', 'Referencia Externa')">
-                              Referencia Externa
-                            </button>
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('order_ref_id') === 'SKU'"
-                              (click)="selectOption('order_ref_id', 'SKU')">
-                              SKU
-                            </button>
-                            <button type="button" class="excel-select-option danger"
-                              [class.active]="getSelectedLabel('order_ref_id') === 'Omitir esta columna'"
-                              (click)="selectOption('order_ref_id', 'Omitir esta columna')">
-                              Omitir esta columna
-                            </button>
+                  @if (excelHeaders().length) {
+                    @for (header of excelHeaders(); track header) {
+                      <tr>
+                        <td>
+                          <div class="excel-origin">
+                            <div class="excel-origin-header">
+                              <span class="material-symbols-outlined">data_table</span>
+                              <strong>{{ header }}</strong>
+                            </div>
+                            <div class="excel-origin-sample">
+                              <span>Ejemplos</span>
+                              <p>{{ getSample(header) }}</p>
+                            </div>
                           </div>
-                        }
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="excel-origin">
-                        <div class="excel-origin-header">
-                          <span class="material-symbols-outlined">data_table</span>
-                          <strong>order_date_created</strong>
-                        </div>
-                        <div class="excel-origin-sample">
-                          <span>Ejemplos</span>
-                          <p>2023-10-15, 2023-10-16, 2023-10-17</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="excel-select" (click)="$event.stopPropagation()">
-                        <button type="button" class="excel-select-trigger" (click)="toggleSelect('order_date_created')">
-                          <span>{{ getSelectedLabel('order_date_created') }}</span>
-                          <span class="material-symbols-outlined">unfold_more</span>
-                        </button>
-                        @if (isSelectOpen('order_date_created')) {
-                          <div class="excel-select-menu">
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('order_date_created') === 'Fecha de Creación'"
-                              (click)="selectOption('order_date_created', 'Fecha de Creación')">
-                              Fecha de Creación
+                        </td>
+                        <td>
+                          <div class="excel-select" (click)="$event.stopPropagation()">
+                            <button type="button" class="excel-select-trigger" (click)="toggleSelect(header)">
+                              <span>{{ getSelectedLabel(header) }}</span>
+                              <span class="material-symbols-outlined">unfold_more</span>
                             </button>
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('order_date_created') === 'Fecha de Entrega'"
-                              (click)="selectOption('order_date_created', 'Fecha de Entrega')">
-                              Fecha de Entrega
-                            </button>
-                            <button type="button" class="excel-select-option danger"
-                              [class.active]="getSelectedLabel('order_date_created') === 'Omitir esta columna'"
-                              (click)="selectOption('order_date_created', 'Omitir esta columna')">
-                              Omitir esta columna
-                            </button>
+                            @if (isSelectOpen(header)) {
+                              <div class="excel-select-menu">
+                                @for (option of fieldOptions; track option) {
+                                  <button
+                                    type="button"
+                                    class="excel-select-option"
+                                    [class.active]="getSelectedLabel(header) === option"
+                                    [class.danger]="isDangerOption(option)"
+                                    (click)="selectOption(header, option)"
+                                  >
+                                    {{ option }}
+                                  </button>
+                                }
+                              </div>
+                            }
                           </div>
-                        }
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="excel-origin">
-                        <div class="excel-origin-header">
-                          <span class="material-symbols-outlined">data_table</span>
-                          <strong>service_type_name</strong>
-                        </div>
-                        <div class="excel-origin-sample">
-                          <span>Ejemplos</span>
-                          <p>Express, Estándar, Mismo Día</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="excel-select highlighted" (click)="$event.stopPropagation()">
-                        <button type="button" class="excel-select-trigger" (click)="toggleSelect('service_type_name')">
-                          <span>{{ getSelectedLabel('service_type_name') }}</span>
-                          <span class="material-symbols-outlined">unfold_more</span>
-                        </button>
-                        @if (isSelectOpen('service_type_name')) {
-                          <div class="excel-select-menu">
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('service_type_name') === 'Tipo de Servicio'"
-                              (click)="selectOption('service_type_name', 'Tipo de Servicio')">
-                              Tipo de Servicio
-                            </button>
-                            <button type="button" class="excel-select-option"
-                              [class.active]="getSelectedLabel('service_type_name') === 'Categoría de Envío'"
-                              (click)="selectOption('service_type_name', 'Categoría de Envío')">
-                              Categoría de Envío
-                            </button>
-                            <button type="button" class="excel-select-option danger"
-                              [class.active]="getSelectedLabel('service_type_name') === 'Omitir esta columna'"
-                              (click)="selectOption('service_type_name', 'Omitir esta columna')">
-                              Omitir esta columna
-                            </button>
+                        </td>
+                      </tr>
+                    }
+                  } @else {
+                    <tr>
+                      <td>
+                        <div class="excel-origin">
+                          <div class="excel-origin-header">
+                            <span class="material-symbols-outlined">data_table</span>
+                            <strong>order_ref_id</strong>
                           </div>
-                        }
-                      </div>
-                    </td>
-                  </tr>
+                          <div class="excel-origin-sample">
+                            <span>Ejemplos</span>
+                            <p>#TRK-9821, #TRK-9822, #TRK-9823</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="excel-select" (click)="$event.stopPropagation()">
+                          <button type="button" class="excel-select-trigger" (click)="toggleSelect('order_ref_id')">
+                            <span>{{ getSelectedLabel('order_ref_id') }}</span>
+                            <span class="material-symbols-outlined">unfold_more</span>
+                          </button>
+                          @if (isSelectOpen('order_ref_id')) {
+                            <div class="excel-select-menu">
+                              @for (option of fieldOptions; track option) {
+                                <button
+                                  type="button"
+                                  class="excel-select-option"
+                                  [class.active]="getSelectedLabel('order_ref_id') === option"
+                                  [class.danger]="isDangerOption(option)"
+                                  (click)="selectOption('order_ref_id', option)"
+                                >
+                                  {{ option }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="excel-origin">
+                          <div class="excel-origin-header">
+                            <span class="material-symbols-outlined">data_table</span>
+                            <strong>order_date_created</strong>
+                          </div>
+                          <div class="excel-origin-sample">
+                            <span>Ejemplos</span>
+                            <p>2023-10-15, 2023-10-16, 2023-10-17</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="excel-select" (click)="$event.stopPropagation()">
+                          <button type="button" class="excel-select-trigger" (click)="toggleSelect('order_date_created')">
+                            <span>{{ getSelectedLabel('order_date_created') }}</span>
+                            <span class="material-symbols-outlined">unfold_more</span>
+                          </button>
+                          @if (isSelectOpen('order_date_created')) {
+                            <div class="excel-select-menu">
+                              @for (option of fieldOptions; track option) {
+                                <button
+                                  type="button"
+                                  class="excel-select-option"
+                                  [class.active]="getSelectedLabel('order_date_created') === option"
+                                  [class.danger]="isDangerOption(option)"
+                                  (click)="selectOption('order_date_created', option)"
+                                >
+                                  {{ option }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="excel-origin">
+                          <div class="excel-origin-header">
+                            <span class="material-symbols-outlined">data_table</span>
+                            <strong>service_type_name</strong>
+                          </div>
+                          <div class="excel-origin-sample">
+                            <span>Ejemplos</span>
+                            <p>Express, Estándar, Mismo Día</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="excel-select highlighted" (click)="$event.stopPropagation()">
+                          <button type="button" class="excel-select-trigger" (click)="toggleSelect('service_type_name')">
+                            <span>{{ getSelectedLabel('service_type_name') }}</span>
+                            <span class="material-symbols-outlined">unfold_more</span>
+                          </button>
+                          @if (isSelectOpen('service_type_name')) {
+                            <div class="excel-select-menu">
+                              @for (option of fieldOptions; track option) {
+                                <button
+                                  type="button"
+                                  class="excel-select-option"
+                                  [class.active]="getSelectedLabel('service_type_name') === option"
+                                  [class.danger]="isDangerOption(option)"
+                                  (click)="selectOption('service_type_name', option)"
+                                >
+                                  {{ option }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
                 </tbody>
               </table>
             </div>
