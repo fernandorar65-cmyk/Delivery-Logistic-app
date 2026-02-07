@@ -1,0 +1,174 @@
+<section class="upload-v2-page">
+  <header class="upload-v2-header">
+    <div>
+      <p class="upload-v2-badge">Envio de orden por Excel</p>
+      <h1 class="upload-v2-title">Cargar Orden de Envio</h1>
+      <p class="upload-v2-subtitle">
+        Selecciona tu Excel, divide los campos por secciones y asigna cada columna al campo correspondiente.
+      </p>
+    </div>
+    <div class="upload-v2-header-actions">
+      <div class="upload-v2-file">
+        <span class="material-symbols-outlined">description</span>
+        <div>
+          <p class="upload-v2-file-label">Archivo actual</p>
+          <p class="upload-v2-file-name">{{ excelFileName() || 'Sin archivo cargado' }}</p>
+        </div>
+      </div>
+      <div class="upload-v2-actions">
+        <input type="file" accept=".xlsx,.csv" #excelMainInput hidden (change)="onExcelFileSelected($event)" />
+        <button type="button" class="action-button outline" (click)="resetFileInput(excelMainInput); excelMainInput.click()">
+          <span class="material-symbols-outlined">upload_file</span>
+          Cargar nuevo Excel
+        </button>
+        <button type="button" class="action-button primary">
+          <span class="material-symbols-outlined">send</span>
+          Enviar carga
+        </button>
+      </div>
+    </div>
+  </header>
+
+  @if (excelError()) {
+    <div class="upload-v2-error">
+      <span class="material-symbols-outlined">error</span>
+      {{ excelError() }}
+    </div>
+  }
+
+  <section class="upload-v2-progress">
+    <div>
+      <h3>Progreso global</h3>
+      <p>{{ mappedCount }}/{{ totalHeaders }} columnas asignadas</p>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-value" [style.width.%]="progressPercent"></div>
+    </div>
+  </section>
+
+  <nav class="upload-v2-steps">
+    @for (step of steps; track step.id; let idx = $index) {
+      <button type="button" class="step-pill" [class.active]="currentStep() === idx" (click)="setStep(idx)">
+        <span>{{ idx + 1 }}</span>
+        {{ step.label }}
+      </button>
+    }
+  </nav>
+
+  <section class="upload-v2-body">
+    <div class="upload-v2-alert">
+      <span class="material-symbols-outlined">info</span>
+      <p>
+        Mostrando
+        <strong>{{ excelHeaders().length ? currentStepHeaders.length : 8 }}</strong>
+        de
+        <strong>{{ excelHeaders().length ? excelHeaders().length : 8 }}</strong>
+        campos en la sección
+        <strong>{{ currentStepLabel }}</strong>.
+      </p>
+    </div>
+
+    <div class="upload-v2-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Columna en Excel (Origen)</th>
+            <th>Campo en el Sistema (Destino)</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (excelHeaders().length) {
+            @for (header of currentStepHeaders; track header) {
+              <tr>
+                <td>
+                  <div class="origin-card">
+                    <div class="origin-title">
+                      <span class="material-symbols-outlined">data_table</span>
+                      <strong>{{ header }}</strong>
+                    </div>
+                    <div class="origin-sample">
+                      <span>Ejemplos</span>
+                      <p>{{ getSample(header) }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="select-box" (click)="$event.stopPropagation()">
+                    <button type="button" class="select-trigger" (click)="toggleSelect(header)">
+                      <span>{{ getSelectedLabel(header) }}</span>
+                      <span class="material-symbols-outlined">unfold_more</span>
+                    </button>
+                    @if (isSelectOpen(header)) {
+                      <div class="select-menu">
+                        @for (option of fieldOptions; track option) {
+                          <button
+                            type="button"
+                            class="select-option"
+                            [class.active]="getSelectedLabel(header) === option"
+                            [class.danger]="isDangerOption(option)"
+                            (click)="selectOption(header, option)"
+                          >
+                            {{ option }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td>
+                <div class="origin-card">
+                  <div class="origin-title">
+                    <span class="material-symbols-outlined">data_table</span>
+                    <strong>order_ref_id</strong>
+                  </div>
+                  <div class="origin-sample">
+                    <span>Ejemplos</span>
+                    <p>#TRK-9821, #TRK-9822, #TRK-9823</p>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="select-box" (click)="$event.stopPropagation()">
+                  <button type="button" class="select-trigger" (click)="toggleSelect('order_ref_id')">
+                    <span>{{ getSelectedLabel('order_ref_id') }}</span>
+                    <span class="material-symbols-outlined">unfold_more</span>
+                  </button>
+                  @if (isSelectOpen('order_ref_id')) {
+                    <div class="select-menu">
+                      @for (option of fieldOptions; track option) {
+                        <button
+                          type="button"
+                          class="select-option"
+                          [class.active]="getSelectedLabel('order_ref_id') === option"
+                          [class.danger]="isDangerOption(option)"
+                          (click)="selectOption('order_ref_id', option)"
+                        >
+                          {{ option }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="upload-v2-footer">
+    <button type="button" class="action-button ghost" (click)="previousStep()" [disabled]="currentStep() === 0">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Anterior
+    </button>
+    <button type="button" class="action-button primary" (click)="nextStep()" [disabled]="currentStep() === steps.length - 1">
+      Siguiente sección
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </footer>
+</section>
