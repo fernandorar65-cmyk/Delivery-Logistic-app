@@ -65,11 +65,11 @@ export class ClientShipmentsUploadViewComponent {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' }) as string[][];
-        const headerRow = rows?.[0] ?? [];
+        const headerRow = rows?.[1] ?? [];
         const headers = headerRow
           .map((value) => String(value).trim())
           .filter((value) => Boolean(value));
-        const sampleRow = rows?.[1] ?? [];
+        const sampleRow = rows?.[2] ?? [];
         const samples = headers.reduce<Record<string, string>>((acc, header, index) => {
           acc[header] = String(sampleRow[index] ?? '').trim() || 'Sin ejemplo';
           return acc;
@@ -112,6 +112,23 @@ export class ClientShipmentsUploadViewComponent {
 
   get currentStepLabel(): string {
     return this.steps[this.currentStep()]?.label ?? '';
+  }
+
+  getHeadersForStep(stepIndex: number): string[] {
+    const headers = this.excelHeaders();
+    if (!headers.length) {
+      return [];
+    }
+    const total = headers.length;
+    const base = Math.floor(total / this.steps.length);
+    const remainder = total % this.steps.length;
+    const start = stepIndex * base + Math.min(stepIndex, remainder);
+    const end = start + base + (stepIndex < remainder ? 1 : 0);
+    return headers.slice(start, end);
+  }
+
+  get currentStepHeaders(): string[] {
+    return this.getHeadersForStep(this.currentStep());
   }
 
   @HostListener('document:click')

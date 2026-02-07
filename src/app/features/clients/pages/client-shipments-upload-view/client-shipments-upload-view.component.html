@@ -183,7 +183,14 @@
             <div class="excel-modal-alert">
               <span class="material-symbols-outlined">description</span>
               <p>
-                Mostrando <strong>{{ excelHeaders().length || 8 }} de {{ excelHeaders().length || 8 }} campos</strong> de la sección
+                Mostrando
+                <strong>
+                  {{ excelHeaders().length ? currentStepHeaders.length : 8 }}
+                  de
+                  {{ excelHeaders().length ? excelHeaders().length : 8 }}
+                  campos
+                </strong>
+                de la sección
                 <strong>{{ currentStepLabel }}</strong>.
               </p>
             </div>
@@ -198,7 +205,7 @@
                 </thead>
                 <tbody>
                   @if (excelHeaders().length) {
-                    @for (header of excelHeaders(); track header) {
+                    @for (header of currentStepHeaders; track header) {
                       <tr>
                         <td>
                           <div class="excel-origin">
