@@ -143,9 +143,9 @@
             <div class="excel-modal-progress">
               <span>Progreso Global</span>
               <div class="excel-progress-row">
-                <strong>8/24</strong>
+                <strong>{{ mappedCount }}/{{ totalHeaders }}</strong>
                 <div class="excel-progress-bar">
-                  <div class="excel-progress-value"></div>
+                  <div class="excel-progress-value" [style.width.%]="progressPercent"></div>
                 </div>
               </div>
             </div>
@@ -368,15 +368,21 @@
               <span>Asignación automática: 85% confianza</span>
             </div>
             <div class="excel-footer-actions">
-              <button type="button" class="excel-btn ghost">Cancelar</button>
-              <button type="button" class="excel-btn muted" disabled>
-                <span class="material-symbols-outlined">arrow_back</span>
-                Anterior
+              <button type="button" class="excel-btn primary send-btn">
+                <span class="material-symbols-outlined">send</span>
+                Enviar
               </button>
-              <button type="button" class="excel-btn primary">
-                Siguiente Sección
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </button>
+              <div class="excel-footer-group">
+                <button type="button" class="excel-btn ghost">Cancelar</button>
+                <button type="button" class="excel-btn muted" (click)="previousStep()" [disabled]="currentStep() === 0">
+                  <span class="material-symbols-outlined">arrow_back</span>
+                  Anterior
+                </button>
+                <button type="button" class="excel-btn primary" (click)="nextStep()" [disabled]="currentStep() === steps.length - 1">
+                  Siguiente Sección
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
             </div>
           </footer>
         </div>

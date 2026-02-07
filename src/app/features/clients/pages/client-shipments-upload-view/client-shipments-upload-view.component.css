@@ -865,7 +865,26 @@
 .excel-footer-actions {
   display: inline-flex;
   align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.excel-footer-group {
+  display: inline-flex;
+  align-items: center;
   gap: 0.6rem;
+}
+
+.excel-btn.send-btn {
+  background: #137fec;
+  color: #ffffff;
+  border-color: rgba(19, 127, 236, 0.4);
+  box-shadow: 0 0.625rem 1.25rem rgba(19, 127, 236, 0.2);
+}
+
+.excel-btn.send-btn:hover {
+  background: #0f6fd1;
 }
 
 .excel-btn {
@@ -877,6 +896,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .excel-btn.ghost {
@@ -896,6 +916,24 @@
   color: #ffffff;
   border-color: rgba(19, 127, 236, 0.4);
   box-shadow: 0 0.625rem 1.25rem rgba(19, 127, 236, 0.2);
+}
+
+.excel-btn:hover:not(:disabled) {
+  transform: translateY(-0.08rem);
+}
+
+.excel-btn.primary:hover:not(:disabled),
+.excel-btn.send-btn:hover:not(:disabled) {
+  box-shadow: 0 0.75rem 1.5rem rgba(19, 127, 236, 0.25);
+}
+
+.excel-btn.ghost:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.excel-btn.muted:disabled {
+  opacity: 0.6;
+  transform: none;
 }
 
 @media (max-width: 48rem) {

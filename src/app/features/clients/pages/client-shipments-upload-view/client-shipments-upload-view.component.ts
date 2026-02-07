@@ -19,6 +19,7 @@ export class ClientShipmentsUploadViewComponent {
     { id: 'receiver', label: 'Datos de Entrega' },
     { id: 'logistics', label: 'Paquete' }
   ];
+  readonly fallbackHeaders = ['order_ref_id', 'order_date_created', 'service_type_name'];
   readonly fieldOptions = [
     'ID de Pedido (Sistema)',
     'Referencia Externa',
@@ -110,8 +111,38 @@ export class ClientShipmentsUploadViewComponent {
     this.currentStep.set(index);
   }
 
+  nextStep(): void {
+    this.setStep(this.currentStep() + 1);
+  }
+
+  previousStep(): void {
+    this.setStep(this.currentStep() - 1);
+  }
+
   get currentStepLabel(): string {
     return this.steps[this.currentStep()]?.label ?? '';
+  }
+
+  get displayedHeaders(): string[] {
+    return this.excelHeaders().length ? this.excelHeaders() : this.fallbackHeaders;
+  }
+
+  get mappedCount(): number {
+    return this.displayedHeaders.filter((header) => {
+      const selection = this.selectedLabels()[header] ?? '';
+      return selection && !this.isDangerOption(selection);
+    }).length;
+  }
+
+  get totalHeaders(): number {
+    return this.displayedHeaders.length;
+  }
+
+  get progressPercent(): number {
+    if (!this.totalHeaders) {
+      return 0;
+    }
+    return Math.round((this.mappedCount / this.totalHeaders) * 100);
   }
 
   getHeadersForStep(stepIndex: number): string[] {
