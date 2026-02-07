@@ -1,0 +1,137 @@
+<section class="bulk-upload-page">
+  <div class="bulk-upload-card-shell">
+    <header class="bulk-upload-header">
+    <div class="bulk-upload-header-main">
+      <div class="bulk-upload-breadcrumb">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Gestión de Operaciones</span>
+      </div>
+      <h1 class="bulk-upload-title">Carga Masiva de Envíos</h1>
+      <p class="bulk-upload-subtitle">
+        Sube archivos Excel (.xlsx) o CSV para procesar múltiples órdenes de forma instantánea en el sistema.
+      </p>
+    </div>
+    <div class="bulk-upload-date-card">
+      <label>Fecha de Programación</label>
+      <div class="bulk-upload-date-input">
+        <span class="material-symbols-outlined">calendar_today</span>
+        <input type="text" readonly value="24 Octubre, 2023" />
+      </div>
+    </div>
+  </header>
+
+    <div class="bulk-upload-grid">
+    <aside class="bulk-upload-sidebar">
+      <div class="bulk-upload-card">
+        <h3>
+          <span class="material-symbols-outlined">info</span>
+          Instrucciones
+        </h3>
+        <ul class="bulk-upload-steps">
+          <li>
+            <span class="step-number">01.</span>
+            <p>Descarga nuestra plantilla oficial para asegurar el formato correcto.</p>
+          </li>
+          <li>
+            <span class="step-number">02.</span>
+            <p>Completa los campos requeridos: Destinatario, Dirección, Peso y Servicio.</p>
+          </li>
+          <li>
+            <span class="step-number">03.</span>
+            <p>Arrastra el archivo a la zona de carga y presiona "Procesar Datos".</p>
+          </li>
+        </ul>
+        <button type="button" class="ghost-button">
+          <span class="material-symbols-outlined">download</span>
+          Descargar Plantilla
+        </button>
+      </div>
+
+      <div class="bulk-upload-help">
+        <div class="help-icon">
+          <span class="material-symbols-outlined">support_agent</span>
+        </div>
+        <div>
+          <p class="help-title">¿Necesitas ayuda?</p>
+          <p class="help-subtitle">Nuestro soporte técnico está disponible 24/7.</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="bulk-upload-main">
+      <div class="bulk-upload-dropzone">
+        <div class="dropzone-icon">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <h3>Arrastra tu archivo Excel aquí</h3>
+        <p>
+          También puedes buscarlo en tu ordenador. Formatos admitidos:
+          <span>.xlsx, .csv</span> (Máx 20MB)
+        </p>
+        <button type="button" class="primary-button" (click)="openUploadModal()">
+          <span class="material-symbols-outlined">upload_file</span>
+          Seleccionar Archivo
+        </button>
+      </div>
+
+      <div class="bulk-upload-file-card">
+        <div class="file-card-main">
+          <div class="file-icon">
+            <span class="material-symbols-outlined">table_chart</span>
+          </div>
+          <div>
+            <p class="file-name">envios_logistica_octubre_final.xlsx</p>
+            <p class="file-meta">2.4 MB • 450 filas detectadas</p>
+          </div>
+        </div>
+        <div class="file-card-actions">
+          <button type="button" class="icon-button">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+          <button type="button" class="primary-button compact">
+            Procesar Datos
+            <span class="material-symbols-outlined">play_arrow</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bulk-upload-history">
+        <div class="history-header">
+          <h4>Últimas Cargas</h4>
+          <button type="button" class="link-button">Ver todo el historial</button>
+        </div>
+        <div class="history-list">
+          <div class="history-item">
+            <div class="history-info">
+              <span class="material-symbols-outlined success-icon">check_circle</span>
+              <div>
+                <p class="history-title">Carga_0923_A.xlsx</p>
+                <p class="history-meta">Ayer, 14:20 • 1,200 registros</p>
+              </div>
+            </div>
+            <span class="status-pill success">Completado</span>
+          </div>
+          <div class="history-item">
+            <div class="history-info">
+              <span class="material-symbols-outlined success-icon">check_circle</span>
+              <div>
+                <p class="history-title">Consolidado_Final.csv</p>
+                <p class="history-meta">22 Oct, 09:15 • 340 registros</p>
+              </div>
+            </div>
+            <span class="status-pill success">Completado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    @if (uploadModalOpen()) {
+      <app-modal title="Seleccionar archivo" size="sm" (close)="closeUploadModal()">
+        <div class="upload-modal-placeholder">
+          <p>Modal en construcción.</p>
+        </div>
+      </app-modal>
+    }
+  </div>
+</section>

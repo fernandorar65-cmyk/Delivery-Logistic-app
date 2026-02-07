@@ -1,0 +1,464 @@
+.bulk-upload-page {
+  padding: 0px 5px 0px;
+  max-width: 1736px;
+  margin: 0 auto;
+}
+
+.bulk-upload-card-shell {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  border: 1px solid #eef0f3;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  padding: 2.5rem;
+}
+
+.bulk-upload-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+}
+
+.bulk-upload-header-main {
+  flex: 1;
+  min-width: 280px;
+}
+
+.bulk-upload-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #137fec;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.bulk-upload-title {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  color: #111418;
+}
+
+.bulk-upload-subtitle {
+  margin: 0;
+  color: #617589;
+  font-size: 1rem;
+  max-width: 620px;
+}
+
+.bulk-upload-date-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #eef0f3;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 260px;
+}
+
+.bulk-upload-date-card label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #111418;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.bulk-upload-date-input {
+  position: relative;
+}
+
+.bulk-upload-date-input span {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #137fec;
+  font-size: 1.1rem;
+}
+
+.bulk-upload-date-input input {
+  width: 100%;
+  background: #f6f7f8;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem 0.65rem 2.4rem;
+  font-weight: 600;
+  color: #111418;
+  font-size: 0.9rem;
+}
+
+.bulk-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.bulk-upload-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bulk-upload-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #eef0f3;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.bulk-upload-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+}
+
+.bulk-upload-card h3 span {
+  color: #137fec;
+}
+
+.bulk-upload-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bulk-upload-steps li {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.bulk-upload-steps p {
+  margin: 0;
+  color: #617589;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.step-number {
+  color: #137fec;
+  font-weight: 700;
+}
+
+.ghost-button {
+  margin-top: 1.5rem;
+  width: 100%;
+  border: 2px solid rgba(19, 127, 236, 0.2);
+  color: #137fec;
+  background: transparent;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.ghost-button:hover {
+  border-color: #137fec;
+  background: rgba(19, 127, 236, 0.08);
+}
+
+.bulk-upload-help {
+  background: rgba(19, 127, 236, 0.08);
+  border-radius: 1rem;
+  border: 1px solid rgba(19, 127, 236, 0.2);
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.help-icon {
+  width: 3rem;
+  height: 3rem;
+  background: #137fec;
+  color: #ffffff;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.help-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: #617589;
+}
+
+.bulk-upload-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bulk-upload-dropzone {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 2.5rem 2rem;
+  border: 2px dashed #e5e7eb;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.bulk-upload-dropzone:hover {
+  border-color: rgba(19, 127, 236, 0.6);
+}
+
+.dropzone-icon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 999px;
+  background: rgba(19, 127, 236, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.dropzone-icon span {
+  font-size: 2.5rem;
+  color: #137fec;
+}
+
+.bulk-upload-dropzone h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111418;
+}
+
+.bulk-upload-dropzone p {
+  margin: 0;
+  color: #617589;
+  max-width: 420px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.bulk-upload-dropzone p span {
+  color: #111418;
+  font-weight: 700;
+}
+
+.primary-button {
+  background: #137fec;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.85rem 1.6rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 12px 24px rgba(19, 127, 236, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(19, 127, 236, 0.28);
+}
+
+.primary-button.compact {
+  padding: 0.65rem 1.3rem;
+  border-radius: 0.7rem;
+  box-shadow: none;
+}
+
+.bulk-upload-file-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid rgba(19, 127, 236, 0.4);
+  padding: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 24px rgba(19, 127, 236, 0.12);
+}
+
+.file-card-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-icon span {
+  font-size: 1.8rem;
+}
+
+.file-name {
+  margin: 0;
+  font-weight: 700;
+  color: #111418;
+}
+
+.file-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: #617589;
+}
+
+.file-card-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon-button {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  padding: 0.4rem;
+  border-radius: 0.6rem;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.icon-button:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.bulk-upload-history {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #eef0f3;
+  overflow: hidden;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.history-header h4 {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  color: #137fec;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-item {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.history-info {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.success-icon {
+  color: #22c55e;
+}
+
+.history-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.history-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.status-pill {
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-pill.success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.upload-modal-placeholder {
+  padding: 1.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .bulk-upload-card-shell {
+    padding: 1.5rem;
+  }
+
+  .bulk-upload-header {
+    flex-direction: column;
+  }
+
+  .bulk-upload-date-card {
+    width: 100%;
+  }
+
+  .bulk-upload-file-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

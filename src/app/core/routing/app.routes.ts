@@ -139,6 +139,13 @@ export const routes: Routes = [
           .then(m => m.ClientMyCompaniesViewComponent)
       },
       {
+        path: 'clients/shipments-upload',
+        canActivate: [roleGuard],
+        data: { roles: ['client'] },
+        loadComponent: () => import('@app/features/clients/pages/client-shipments-upload-view/client-shipments-upload-view.component')
+          .then(m => m.ClientShipmentsUploadViewComponent)
+      },
+      {
         path: 'clients/:id',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
