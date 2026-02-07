@@ -678,36 +678,90 @@
 .excel-select {
   position: relative;
   max-width: 17.5rem;
+  width: 100%;
 }
 
-.excel-select select {
+.excel-select-trigger {
   width: 100%;
-  padding: 0.6rem 2.2rem 0.6rem 0.8rem;
-  border-radius: 0.6rem;
+  padding: 0.65rem 2.4rem 0.65rem 0.9rem;
+  border-radius: 0.7rem;
   border: 0.0625rem solid #e2e8f0;
-  background: #ffffff;
-  font-size: 0.7rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  font-size: 0.72rem;
   font-weight: 600;
   color: #0f172a;
-  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.excel-select span {
-  position: absolute;
-  right: 0.7rem;
-  top: 50%;
-  transform: translateY(-50%);
+.excel-select-trigger span:last-child {
   color: #94a3b8;
   font-size: 1.1rem;
-  pointer-events: none;
 }
 
-.excel-select.highlighted select {
+.excel-select-trigger:hover {
+  border-color: rgba(19, 127, 236, 0.45);
+  box-shadow: 0 0.45rem 1rem rgba(19, 127, 236, 0.18);
+}
+
+.excel-select-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  min-width: 100%;
+  background: #ffffff;
+  border: 0.0625rem solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 2.4rem rgba(15, 23, 42, 0.18);
+  padding: 0.35rem;
+  z-index: 20;
+}
+
+.excel-select-option {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #0f172a;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.excel-select-option:hover {
+  background: rgba(19, 127, 236, 0.12);
+  color: #0b3ea8;
+  transform: translateX(0.125rem);
+}
+
+.excel-select-option.active {
+  background: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 0.5rem 1rem -0.6rem rgba(29, 78, 216, 0.6);
+}
+
+.excel-select-option + .excel-select-option {
+  border-top: 0.0625rem solid #f1f5f9;
+}
+
+.excel-select-option.danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.excel-select.highlighted .excel-select-trigger {
   background: rgba(19, 127, 236, 0.08);
   border-color: rgba(19, 127, 236, 0.4);
 }
 
-.excel-select.highlighted span {
+.excel-select.highlighted .excel-select-trigger span:last-child {
   color: #137fec;
 }
 
