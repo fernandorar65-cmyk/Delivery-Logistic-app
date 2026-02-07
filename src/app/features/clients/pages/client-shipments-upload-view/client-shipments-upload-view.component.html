@@ -69,7 +69,7 @@
           <span>.xlsx, .csv</span> (Máx 20MB)
         </p>
         <input type="file" accept=".xlsx,.csv" #excelMainInput hidden (change)="onExcelFileSelected($event); openUploadModal()" />
-        <button type="button" class="primary-button" (click)="excelMainInput.click()">
+        <button type="button" class="primary-button" (click)="resetFileInput(excelMainInput); excelMainInput.click()">
           <span class="material-symbols-outlined">upload_file</span>
           Seleccionar Archivo
         </button>
@@ -168,7 +168,7 @@
               </div>
               <div class="excel-file-actions">
                 <input type="file" accept=".xlsx,.csv" #excelInput hidden (change)="onExcelFileSelected($event)" />
-                <button type="button" class="excel-btn primary" (click)="excelInput.click()">
+                <button type="button" class="excel-btn primary" (click)="resetFileInput(excelInput); excelInput.click()">
                   <span class="material-symbols-outlined">upload_file</span>
                   Cargar archivo
                 </button>

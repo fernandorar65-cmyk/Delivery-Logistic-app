@@ -48,6 +48,10 @@ export class ClientShipmentsUploadViewComponent {
     this.uploadModalOpen.set(false);
   }
 
+  resetFileInput(input: HTMLInputElement): void {
+    input.value = '';
+  }
+
   onExcelFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0];
