@@ -47,7 +47,7 @@
   </section>
 
   <nav class="upload-v2-steps">
-    @for (step of steps; track step.id; let idx = $index) {
+    @for (step of steps(); track step.id; let idx = $index) {
       <button type="button" class="step-pill" [class.active]="currentStep() === idx" (click)="setStep(idx)">
         <span>{{ idx + 1 }}</span>
         {{ step.label }}
@@ -69,7 +69,11 @@
     </div>
 
     <div class="upload-v2-table">
-      <div class="upload-v2-grid">
+    <div class="upload-v2-section">
+        <div class="upload-v2-section-header">
+          {{ currentStepLabel }}
+        </div>
+        <div class="upload-v2-grid">
         @if (excelHeaders().length) {
           @for (header of currentStepHeaders; track header) {
             <article class="upload-v2-card">
@@ -77,10 +81,6 @@
                 <div class="origin-title">
                   <span class="material-symbols-outlined">data_table</span>
                   <strong>{{ header }}</strong>
-                </div>
-                <div class="origin-sample">
-                  <span>Ejemplos</span>
-                  <p>{{ getSample(header) }}</p>
                 </div>
               </div>
               <div class="select-box" (click)="$event.stopPropagation()">
@@ -113,10 +113,6 @@
                 <span class="material-symbols-outlined">data_table</span>
                 <strong>order_ref_id</strong>
               </div>
-              <div class="origin-sample">
-                <span>Ejemplos</span>
-                <p>#TRK-9821, #TRK-9822, #TRK-9823</p>
-              </div>
             </div>
             <div class="select-box" (click)="$event.stopPropagation()">
               <button type="button" class="select-trigger" (click)="toggleSelect('order_ref_id')">
@@ -141,6 +137,7 @@
             </div>
           </article>
         }
+        </div>
       </div>
     </div>
   </section>
@@ -150,7 +147,7 @@
       <span class="material-symbols-outlined">arrow_back</span>
       Anterior
     </button>
-    <button type="button" class="action-button primary" (click)="nextStep()" [disabled]="currentStep() === steps.length - 1">
+    <button type="button" class="action-button primary" (click)="nextStep()" [disabled]="currentStep() === steps().length - 1">
       Siguiente sección
       <span class="material-symbols-outlined">arrow_forward</span>
     </button>

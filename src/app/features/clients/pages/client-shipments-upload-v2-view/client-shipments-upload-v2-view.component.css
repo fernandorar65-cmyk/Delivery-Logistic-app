@@ -239,6 +239,24 @@
   font-size: 0.8rem;
 }
 
+.upload-v2-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.upload-v2-section-header {
+  background: #e11d48;
+  color: #ffffff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.9rem;
+  text-align: center;
+}
+
 .upload-v2-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
