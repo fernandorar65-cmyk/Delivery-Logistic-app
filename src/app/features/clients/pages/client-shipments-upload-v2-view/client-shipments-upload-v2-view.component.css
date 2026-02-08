@@ -260,6 +260,11 @@
   vertical-align: top;
 }
 
+.upload-v2-table td:last-child {
+  text-align: center;
+  vertical-align: middle;
+}
+
 .origin-card {
   display: flex;
   flex-direction: column;
@@ -304,6 +309,7 @@
 .select-box {
   position: relative;
   max-width: 18rem;
+  margin: 0 auto;
 }
 
 .select-trigger {
