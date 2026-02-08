@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.25rem clamp(0.75rem, 2vw, 1.5rem);
-  max-width: 96rem;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -239,30 +239,21 @@
   font-size: 0.8rem;
 }
 
-.upload-v2-table table {
-  width: 100%;
-  border-collapse: collapse;
+.upload-v2-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
 }
 
-.upload-v2-table th {
-  text-align: left;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #94a3b8;
-  padding: 0.9rem 1rem;
-  border-bottom: 0.0625rem solid #e2e8f0;
-}
-
-.upload-v2-table td {
-  padding: 1rem;
-  border-top: 0.0625rem solid #f1f5f9;
-  vertical-align: top;
-}
-
-.upload-v2-table td:last-child {
-  text-align: center;
-  vertical-align: middle;
+.upload-v2-card {
+  background: #ffffff;
+  border: 0.0625rem solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.06);
 }
 
 .origin-card {
@@ -395,6 +386,12 @@
   .upload-v2-progress {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 48rem) {
+  .upload-v2-grid {
+    grid-template-columns: 1fr;
   }
 }
 
