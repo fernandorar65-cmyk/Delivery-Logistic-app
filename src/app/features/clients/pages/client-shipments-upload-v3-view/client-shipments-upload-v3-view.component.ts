@@ -25,6 +25,7 @@ export class ClientShipmentsUploadV3ViewComponent {
   excelHeaders = signal<string[]>([]);
   excelFileName = signal<string | null>(null);
   excelError = signal<string | null>(null);
+  accordionOpen = signal<Record<string, boolean>>({});
 
   readonly standardSections: StandardSection[] = [
     {
@@ -120,17 +121,17 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   getOptions(): string[] {
     const options = this.excelHeaders();
-    return options.length ? options : ['Sin columnas'];
+    if (!options.length) {
+      return ['Opcional'];
+    }
+    return ['Opcional', ...options];
   }
 
   getAvailableOptions(fieldId: string): string[] {
     const options = this.getOptions();
-    if (options.length === 1 && options[0] === 'Sin columnas') {
-      return options;
-    }
     const selected = this.selectedMappings();
     const used = new Set(Object.entries(selected)
-      .filter(([key, value]) => key !== fieldId && value)
+      .filter(([key, value]) => key !== fieldId && value && value !== 'Opcional')
       .map(([, value]) => value));
     return options.filter((option) => !used.has(option));
   }
@@ -154,5 +155,24 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   isSelectOpen(id: string): boolean {
     return this.openSelectId() === id;
+  }
+
+  getTopSections(): StandardSection[] {
+    return this.standardSections.slice(0, 2);
+  }
+
+  getAccordionSections(): StandardSection[] {
+    return this.standardSections.slice(2);
+  }
+
+  toggleAccordion(sectionId: string): void {
+    this.accordionOpen.update((current) => ({
+      ...current,
+      [sectionId]: !current[sectionId]
+    }));
+  }
+
+  isAccordionOpen(sectionId: string): boolean {
+    return Boolean(this.accordionOpen()[sectionId]);
   }
 }
