@@ -32,46 +32,53 @@
     </div>
   }
 
-  <div class="upload-v3-body">
-    @for (section of standardSections; track section.id) {
-      <section class="upload-v3-section">
-        <div class="upload-v3-section-header">
-          {{ section.title }}
-        </div>
-        <div class="upload-v3-grid">
-          @for (field of section.fields; track field.id) {
-            <article class="upload-v3-card">
-              <div class="field-info">
-                <span class="material-symbols-outlined">list_alt</span>
-                <div>
-                  <p class="field-label">{{ field.label }}</p>
-                  <p class="field-hint">Selecciona la columna del Excel</p>
-                </div>
-              </div>
-              <div class="select-box" (click)="$event.stopPropagation()">
-                <button type="button" class="select-trigger" (click)="toggleSelect(field.id)">
-                  <span>{{ selectedMappings()[field.id] || 'Seleccionar columna' }}</span>
-                  <span class="material-symbols-outlined">unfold_more</span>
-                </button>
-                @if (isSelectOpen(field.id)) {
-                  <div class="select-menu">
-                    @for (option of getOptions(); track option) {
-                      <button
-                        type="button"
-                        class="select-option"
-                        [class.active]="isSelected(field.id, option)"
-                        (click)="selectOption(field.id, option)"
-                      >
-                        {{ option }}
-                      </button>
-                    }
+  @if (excelHeaders().length) {
+    <div class="upload-v3-body">
+      @for (section of standardSections; track section.id) {
+        <section class="upload-v3-section">
+          <div class="upload-v3-section-header">
+            {{ section.title }}
+          </div>
+          <div class="upload-v3-grid">
+            @for (field of section.fields; track field.id) {
+              <article class="upload-v3-card">
+                <div class="field-info">
+                  <span class="material-symbols-outlined">list_alt</span>
+                  <div>
+                    <p class="field-label">{{ field.label }}</p>
+                    <p class="field-hint">Selecciona la columna del Excel</p>
                   </div>
-                }
-              </div>
-            </article>
-          }
-        </div>
-      </section>
-    }
-  </div>
+                </div>
+                <div class="select-box" (click)="$event.stopPropagation()">
+                  <button type="button" class="select-trigger" (click)="toggleSelect(field.id)">
+                    <span>{{ selectedMappings()[field.id] || 'Seleccionar columna' }}</span>
+                    <span class="material-symbols-outlined">unfold_more</span>
+                  </button>
+                  @if (isSelectOpen(field.id)) {
+                    <div class="select-menu">
+                    @for (option of getAvailableOptions(field.id); track option) {
+                        <button
+                          type="button"
+                          class="select-option"
+                          [class.active]="isSelected(field.id, option)"
+                          (click)="selectOption(field.id, option)"
+                        >
+                          {{ option }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="upload-v3-empty">
+      <span class="material-symbols-outlined">cloud_upload</span>
+      <p>Sube un Excel para generar el formulario de mapeo.</p>
+    </div>
+  }
 </section>

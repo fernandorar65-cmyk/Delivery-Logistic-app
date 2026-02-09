@@ -118,6 +118,25 @@
   font-weight: 600;
 }
 
+.upload-v3-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 0.0625rem dashed #cbd5f5;
+  color: #64748b;
+  background: #f8fafc;
+  text-align: center;
+  font-weight: 600;
+}
+
+.upload-v3-empty span {
+  font-size: 2rem;
+  color: #137fec;
+}
+
 .upload-v3-body {
   display: flex;
   flex-direction: column;

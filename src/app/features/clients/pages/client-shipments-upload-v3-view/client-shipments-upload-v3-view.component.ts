@@ -123,6 +123,18 @@ export class ClientShipmentsUploadV3ViewComponent {
     return options.length ? options : ['Sin columnas'];
   }
 
+  getAvailableOptions(fieldId: string): string[] {
+    const options = this.getOptions();
+    if (options.length === 1 && options[0] === 'Sin columnas') {
+      return options;
+    }
+    const selected = this.selectedMappings();
+    const used = new Set(Object.entries(selected)
+      .filter(([key, value]) => key !== fieldId && value)
+      .map(([, value]) => value));
+    return options.filter((option) => !used.has(option));
+  }
+
   selectOption(fieldId: string, value: string): void {
     this.selectedMappings.update((current) => ({ ...current, [fieldId]: value }));
   }
