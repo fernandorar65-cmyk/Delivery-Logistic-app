@@ -51,14 +51,14 @@ export class ClientShipmentsUploadV3ViewComponent {
       title: 'Datos de recojo',
       fields: [
         { id: 'pickup_company', label: 'Nombre de empresa (Punto de recojo)' },
-        { id: 'pickup_contact', label: 'Nombre de contacto' },
-        { id: 'pickup_phone', label: 'Celular' },
+        { id: 'pickup_contact', label: 'Nombre de contacto (Recojo)' },
+        { id: 'pickup_phone', label: 'Celular (Recojo)' },
         { id: 'pickup_address', label: 'Dirección de recojo' },
         { id: 'pickup_reference', label: 'Referencia especificar piso/oficina/número de tienda' },
         { id: 'pickup_country', label: 'País' },
         { id: 'pickup_district', label: 'Distrito' },
-        { id: 'pickup_province', label: 'Provincia' },
-        { id: 'pickup_department', label: 'Departamento' },
+        { id: 'pickup_province', label: 'Provincia (Recojo)' },
+        { id: 'pickup_department', label: 'Departamento (Recojo)' },
         { id: 'pickup_date', label: 'Fecha de recojo' },
         { id: 'pickup_start_time', label: 'Hora inicio de recojo' },
         { id: 'pickup_end_time', label: 'Hora fin de recojo' }
@@ -69,14 +69,14 @@ export class ClientShipmentsUploadV3ViewComponent {
       title: 'Datos de entrega',
       fields: [
         { id: 'delivery_company', label: 'Nombre de empresa (Punto de entrega)' },
-        { id: 'delivery_contact', label: 'Nombre de contacto' },
+        { id: 'delivery_contact', label: 'Nombre de contacto (Entrega)' },
         { id: 'delivery_document', label: 'DNI' },
-        { id: 'delivery_phone', label: 'Celular' },
+        { id: 'delivery_phone', label: 'Celular (Entrega)' },
         { id: 'delivery_address', label: 'Dirección' },
         { id: 'delivery_reference', label: 'Referencia especificar piso/oficina/número de tienda' },
         { id: 'delivery_district', label: 'Distrito' },
-        { id: 'delivery_province', label: 'Provincia' },
-        { id: 'delivery_department', label: 'Departamento' }
+        { id: 'delivery_province', label: 'Provincia (Entrega)' },
+        { id: 'delivery_department', label: 'Departamento (Entrega)' }
       ]
     },
     {
@@ -269,7 +269,8 @@ export class ClientShipmentsUploadV3ViewComponent {
     if (optionId === 'Opcional') {
       return 'Opcional';
     }
-    return this.getFieldOptions().find((option) => option.id === optionId)?.label ?? optionId;
+    const option = this.getFieldOptions().find((item) => item.id === optionId);
+    return option?.displayLabel ?? optionId;
   }
 
   private detectTemplate(headers: string[]): void {
@@ -343,16 +344,46 @@ export class ClientShipmentsUploadV3ViewComponent {
     return Boolean(this.accordionOpen()[sectionId]);
   }
 
-  private getFieldOptions(): Array<{ id: string; label: string; apiKey: string; sectionId: string; sectionTitle: string }> {
-    return this.standardSections.flatMap((section) =>
-      section.fields.map((field) => ({
-        id: field.id,
-        label: field.label,
-        apiKey: this.getApiKeyForField(field.id),
-        sectionId: section.id,
-        sectionTitle: section.title
-      }))
-    );
+  private getFieldOptions(): Array<{
+    id: string;
+    label: string;
+    apiKey: string;
+    displayLabel: string;
+  }> {
+    return [
+      { id: 'pickup_company', label: 'Nombre de empresa (Punto de recojo)', displayLabel: 'Nombre de empresa (Recojo)', apiKey: this.getApiKeyForField('pickup_company') },
+      { id: 'pickup_contact', label: 'Nombre de contacto', displayLabel: 'Nombre de contacto (Recojo)', apiKey: this.getApiKeyForField('pickup_contact') },
+      { id: 'pickup_phone', label: 'Celular', displayLabel: 'Celular (Recojo)', apiKey: this.getApiKeyForField('pickup_phone') },
+      { id: 'pickup_address', label: 'Dirección de recojo', displayLabel: 'Dirección de recojo', apiKey: this.getApiKeyForField('pickup_address') },
+      { id: 'pickup_reference', label: 'Referencia especificar piso/oficina/número de tienda', displayLabel: 'Referencia (Recojo)', apiKey: this.getApiKeyForField('pickup_reference') },
+      { id: 'pickup_country', label: 'País', displayLabel: 'País (Recojo)', apiKey: this.getApiKeyForField('pickup_country') },
+      { id: 'pickup_district', label: 'Distrito', displayLabel: 'Distrito (Recojo)', apiKey: this.getApiKeyForField('pickup_district') },
+      { id: 'pickup_province', label: 'Provincia', displayLabel: 'Provincia (Recojo)', apiKey: this.getApiKeyForField('pickup_province') },
+      { id: 'pickup_department', label: 'Departamento', displayLabel: 'Departamento (Recojo)', apiKey: this.getApiKeyForField('pickup_department') },
+      { id: 'pickup_date', label: 'Fecha de recojo', displayLabel: 'Fecha de recojo', apiKey: this.getApiKeyForField('pickup_date') },
+      { id: 'pickup_start_time', label: 'Hora inicio de recojo', displayLabel: 'Hora inicio de recojo', apiKey: this.getApiKeyForField('pickup_start_time') },
+      { id: 'pickup_end_time', label: 'Hora fin de recojo', displayLabel: 'Hora fin de recojo', apiKey: this.getApiKeyForField('pickup_end_time') },
+      { id: 'delivery_company', label: 'Nombre de empresa (Punto de entrega)', displayLabel: 'Nombre de empresa (Entrega)', apiKey: this.getApiKeyForField('delivery_company') },
+      { id: 'delivery_contact', label: 'Nombre de contacto', displayLabel: 'Nombre de contacto (Entrega)', apiKey: this.getApiKeyForField('delivery_contact') },
+      { id: 'delivery_document', label: 'DNI', displayLabel: 'DNI (Entrega)', apiKey: this.getApiKeyForField('delivery_document') },
+      { id: 'delivery_phone', label: 'Celular', displayLabel: 'Celular (Entrega)', apiKey: this.getApiKeyForField('delivery_phone') },
+      { id: 'delivery_address', label: 'Dirección', displayLabel: 'Dirección (Entrega)', apiKey: this.getApiKeyForField('delivery_address') },
+      { id: 'delivery_reference', label: 'Referencia especificar piso/oficina/número de tienda', displayLabel: 'Referencia (Entrega)', apiKey: this.getApiKeyForField('delivery_reference') },
+      { id: 'delivery_district', label: 'Distrito', displayLabel: 'Distrito (Entrega)', apiKey: this.getApiKeyForField('delivery_district') },
+      { id: 'delivery_province', label: 'Provincia', displayLabel: 'Provincia (Entrega)', apiKey: this.getApiKeyForField('delivery_province') },
+      { id: 'delivery_department', label: 'Departamento', displayLabel: 'Departamento (Entrega)', apiKey: this.getApiKeyForField('delivery_department') },
+      { id: 'package_description', label: 'Descripción del paquete', displayLabel: 'Descripción del paquete', apiKey: this.getApiKeyForField('package_description') },
+      { id: 'package_qty', label: 'Cantidad de paquetes', displayLabel: 'Cantidad de paquetes', apiKey: this.getApiKeyForField('package_qty') },
+      { id: 'package_weight', label: 'Peso guía (KG)', displayLabel: 'Peso guía (KG)', apiKey: this.getApiKeyForField('package_weight') },
+      { id: 'package_size', label: 'Tamaño referencial guía', displayLabel: 'Tamaño referencial guía', apiKey: this.getApiKeyForField('package_size') },
+      { id: 'package_height', label: 'Alto CM', displayLabel: 'Alto CM', apiKey: this.getApiKeyForField('package_height') },
+      { id: 'package_width', label: 'Ancho CM', displayLabel: 'Ancho CM', apiKey: this.getApiKeyForField('package_width') },
+      { id: 'package_depth', label: 'Profundidad CM', displayLabel: 'Profundidad CM', apiKey: this.getApiKeyForField('package_depth') },
+      { id: 'package_volumetric', label: 'Peso volumétrico guía', displayLabel: 'Peso volumétrico guía', apiKey: this.getApiKeyForField('package_volumetric') },
+      { id: 'package_m3', label: 'M3 guía', displayLabel: 'M3 guía', apiKey: this.getApiKeyForField('package_m3') },
+      { id: 'package_value', label: 'Valor estimado (opcional)', displayLabel: 'Valor estimado (opcional)', apiKey: this.getApiKeyForField('package_value') },
+      { id: 'package_notes', label: 'Observaciones (opcional)', displayLabel: 'Observaciones (opcional)', apiKey: this.getApiKeyForField('package_notes') }
+    ];
   }
 
   private getApiKeyForField(fieldId: string): string {
