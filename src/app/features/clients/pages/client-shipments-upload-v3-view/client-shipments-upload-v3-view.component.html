@@ -49,6 +49,9 @@
           <section class="upload-v3-section">
             <div class="upload-v3-section-header">
               {{ section.title }}
+              <span class="material-symbols-outlined section-icon">
+                {{ section.id === 'pickup' ? 'local_shipping' : 'location_on' }}
+              </span>
             </div>
             <div class="upload-v3-grid">
               @for (field of section.fields; track field.id) {
@@ -91,7 +94,10 @@
         @for (section of getAccordionSections(); track section.id) {
           <div class="accordion-item">
             <button type="button" class="accordion-header" (click)="toggleAccordion(section.id)">
-              <span>{{ section.title }}</span>
+              <span class="accordion-title">
+                <span class="material-symbols-outlined section-icon">inventory_2</span>
+                {{ section.title }}
+              </span>
               <span class="material-symbols-outlined">
                 {{ isAccordionOpen(section.id) ? 'expand_less' : 'expand_more' }}
               </span>
