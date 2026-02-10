@@ -21,6 +21,11 @@
           <span class="material-symbols-outlined">upload_file</span>
           Cargar Excel
         </button>
+        <button type="button" class="action-button primary" (click)="createTemplate()"
+          [disabled]="mappingLoading() || !excelHeaders().length">
+          <span class="material-symbols-outlined">save</span>
+          @if (mappingLoading()) { Guardando... } @else { Guardar template }
+        </button>
       </div>
     </div>
   </header>
@@ -29,6 +34,13 @@
     <div class="upload-v3-error">
       <span class="material-symbols-outlined">error</span>
       {{ excelError() }}
+    </div>
+  }
+
+  @if (mappingError()) {
+    <div class="upload-v3-error">
+      <span class="material-symbols-outlined">error</span>
+      {{ mappingError() }}
     </div>
   }
 
@@ -50,34 +62,34 @@
             <div class="upload-v3-section-header">
               <span class="section-title">{{ section.title }}</span>
               <span class="material-symbols-outlined section-icon">
-                {{ section.id === 'pickup' ? 'local_shipping' : 'location_on' }}
+                {{ section.id === 'group-1' ? 'local_shipping' : 'location_on' }}
               </span>
             </div>
             <div class="upload-v3-grid">
-              @for (field of section.fields; track field.id) {
+              @for (header of section.headers; track header) {
                 <article class="upload-v3-card">
                   <div class="field-info">
-                    <span class="material-symbols-outlined field-icon">{{ getFieldIcon(field.id) }}</span>
+                    <span class="material-symbols-outlined field-icon">dataset</span>
                     <div>
-                      <p class="field-label">{{ field.label }}</p>
-                      <p class="field-hint">Selecciona la columna del Excel</p>
+                      <p class="field-label">{{ header }}</p>
+                      <p class="field-hint">Selecciona el campo del sistema</p>
                     </div>
                   </div>
                   <div class="select-box" (click)="$event.stopPropagation()">
-                    <button type="button" class="select-trigger" (click)="toggleSelect(field.id)">
-                      <span>{{ selectedMappings()[field.id] || 'Seleccionar columna' }}</span>
+                    <button type="button" class="select-trigger" (click)="toggleSelect(header)">
+                      <span>{{ getSelectedLabel(header) }}</span>
                       <span class="material-symbols-outlined">unfold_more</span>
                     </button>
-                    @if (isSelectOpen(field.id)) {
+                    @if (isSelectOpen(header)) {
                       <div class="select-menu">
-                        @for (option of getAvailableOptions(field.id); track option) {
+                        @for (option of getAvailableOptions(header); track option) {
                           <button
                             type="button"
                             class="select-option"
-                            [class.active]="isSelected(field.id, option)"
-                            (click)="selectOption(field.id, option)"
+                            [class.active]="isSelected(header, option)"
+                            (click)="selectOption(header, option)"
                           >
-                            {{ option }}
+                            {{ getOptionLabel(option) }}
                           </button>
                         }
                       </div>
@@ -105,30 +117,30 @@
             @if (isAccordionOpen(section.id)) {
               <div class="accordion-body">
                 <div class="upload-v3-grid">
-                  @for (field of section.fields; track field.id) {
+                  @for (header of section.headers; track header) {
                     <article class="upload-v3-card">
                       <div class="field-info">
-                        <span class="material-symbols-outlined field-icon">{{ getFieldIcon(field.id) }}</span>
+                        <span class="material-symbols-outlined field-icon">dataset</span>
                         <div>
-                          <p class="field-label">{{ field.label }}</p>
-                          <p class="field-hint">Selecciona la columna del Excel</p>
+                          <p class="field-label">{{ header }}</p>
+                          <p class="field-hint">Selecciona el campo del sistema</p>
                         </div>
                       </div>
                       <div class="select-box" (click)="$event.stopPropagation()">
-                        <button type="button" class="select-trigger" (click)="toggleSelect(field.id)">
-                          <span>{{ selectedMappings()[field.id] || 'Seleccionar columna' }}</span>
+                        <button type="button" class="select-trigger" (click)="toggleSelect(header)">
+                          <span>{{ getSelectedLabel(header) }}</span>
                           <span class="material-symbols-outlined">unfold_more</span>
                         </button>
-                        @if (isSelectOpen(field.id)) {
+                        @if (isSelectOpen(header)) {
                           <div class="select-menu">
-                            @for (option of getAvailableOptions(field.id); track option) {
+                            @for (option of getAvailableOptions(header); track option) {
                               <button
                                 type="button"
                                 class="select-option"
-                                [class.active]="isSelected(field.id, option)"
-                                (click)="selectOption(field.id, option)"
+                                [class.active]="isSelected(header, option)"
+                                (click)="selectOption(header, option)"
                               >
-                                {{ option }}
+                                {{ getOptionLabel(option) }}
                               </button>
                             }
                           </div>

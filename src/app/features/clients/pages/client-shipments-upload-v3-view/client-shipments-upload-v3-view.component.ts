@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
-import { ImportMappingDetectResponse } from '@app/features/clients/models/imports.model';
+import { ImportMappingCreateResponse, ImportMappingDetectResponse } from '@app/features/clients/models/imports.model';
 
 type StandardField = {
   id: string;
@@ -15,6 +15,12 @@ type StandardSection = {
   id: string;
   title: string;
   fields: StandardField[];
+};
+
+type HeaderGroup = {
+  id: string;
+  title: string;
+  headers: string[];
 };
 
 @Component({
@@ -35,6 +41,9 @@ export class ClientShipmentsUploadV3ViewComponent {
   accordionOpen = signal<Record<string, boolean>>({});
   templateResult = signal<ImportMappingDetectResponse['result'] | null>(null);
   templateError = signal<string | null>(null);
+  mappingLoading = signal(false);
+  mappingError = signal<string | null>(null);
+  mappingResult = signal<ImportMappingCreateResponse['result'] | null>(null);
 
   readonly standardSections: StandardSection[] = [
     {
@@ -125,6 +134,41 @@ export class ClientShipmentsUploadV3ViewComponent {
     package_notes: 'note'
   };
 
+  private readonly fieldKeyMap: Record<string, string> = {
+    pickup_company: 'pickup.company_name',
+    pickup_contact: 'pickup.contact_name',
+    pickup_phone: 'pickup.phone',
+    pickup_address: 'pickup.address',
+    pickup_reference: 'pickup.reference',
+    pickup_country: 'pickup.country',
+    pickup_department: 'pickup.department',
+    pickup_province: 'pickup.province',
+    pickup_district: 'pickup.district',
+    pickup_date: 'pickup.date',
+    pickup_start_time: 'pickup.time_from',
+    pickup_end_time: 'pickup.time_to',
+    delivery_company: 'delivery.company_name',
+    delivery_contact: 'delivery.contact_name',
+    delivery_document: 'delivery.dni',
+    delivery_phone: 'delivery.phone',
+    delivery_address: 'delivery.address',
+    delivery_reference: 'delivery.reference',
+    delivery_department: 'delivery.department',
+    delivery_province: 'delivery.province',
+    delivery_district: 'delivery.district',
+    package_description: 'package.description',
+    package_qty: 'package.quantity',
+    package_weight: 'package.weight',
+    package_size: 'package.size',
+    package_height: 'package.height',
+    package_width: 'package.width',
+    package_depth: 'package.length',
+    package_volumetric: 'package.volumetric_weight',
+    package_m3: 'package.m3',
+    package_value: 'order.estimated_value',
+    package_notes: 'order.observations'
+  };
+
   resetFileInput(input: HTMLInputElement): void {
     input.value = '';
   }
@@ -164,18 +208,14 @@ export class ClientShipmentsUploadV3ViewComponent {
   }
 
   getOptions(): string[] {
-    const options = this.excelHeaders();
-    if (!options.length) {
-      return ['Opcional'];
-    }
-    return ['Opcional', ...options];
+    return ['Opcional', ...this.getFieldOptions().map((option) => option.id)];
   }
 
-  getAvailableOptions(fieldId: string): string[] {
+  getAvailableOptions(header: string): string[] {
     const options = this.getOptions();
     const selected = this.selectedMappings();
     const used = new Set(Object.entries(selected)
-      .filter(([key, value]) => key !== fieldId && value && value !== 'Opcional')
+      .filter(([key, value]) => key !== header && value && value !== 'Opcional')
       .map(([, value]) => value));
     return options.filter((option) => !used.has(option));
   }
@@ -197,12 +237,12 @@ export class ClientShipmentsUploadV3ViewComponent {
     return Math.round((this.mappedCount() / total) * 100);
   }
 
-  selectOption(fieldId: string, value: string): void {
-    this.selectedMappings.update((current) => ({ ...current, [fieldId]: value }));
+  selectOption(header: string, value: string): void {
+    this.selectedMappings.update((current) => ({ ...current, [header]: value }));
   }
 
-  isSelected(fieldId: string, value: string): boolean {
-    return this.selectedMappings()[fieldId] === value;
+  isSelected(header: string, value: string): boolean {
+    return this.selectedMappings()[header] === value;
   }
 
   @HostListener('document:click')
@@ -216,6 +256,20 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   isSelectOpen(id: string): boolean {
     return this.openSelectId() === id;
+  }
+
+  getSelectedLabel(header: string): string {
+    return this.getOptionLabel(this.selectedMappings()[header]);
+  }
+
+  getOptionLabel(optionId?: string): string {
+    if (!optionId) {
+      return 'Seleccionar campo';
+    }
+    if (optionId === 'Opcional') {
+      return 'Opcional';
+    }
+    return this.getFieldOptions().find((option) => option.id === optionId)?.label ?? optionId;
   }
 
   private detectTemplate(headers: string[]): void {
@@ -238,12 +292,44 @@ export class ClientShipmentsUploadV3ViewComponent {
     return this.fieldIconMap[fieldId] ?? 'list_alt';
   }
 
-  getTopSections(): StandardSection[] {
-    return this.standardSections.slice(0, 2);
+  createTemplate(): void {
+    if (this.mappingLoading()) {
+      return;
+    }
+    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
+    const headers = this.excelHeaders();
+    if (!clientId || !headers.length) {
+      this.mappingError.set('Debes cargar un Excel válido antes de guardar.');
+      return;
+    }
+
+    const selections = this.selectedMappings();
+    const mapping = this.getFieldOptions().reduce<Record<string, string>>((acc, option) => {
+      const header = Object.entries(selections).find(([, value]) => value === option.id)?.[0] ?? 'Opcional';
+      acc[option.apiKey] = header || 'Opcional';
+      return acc;
+    }, {});
+
+    this.mappingError.set(null);
+    this.mappingLoading.set(true);
+    this.importsService.createMapping({ client_id: clientId, headers, mapping }).subscribe({
+      next: (response) => {
+        this.mappingResult.set(response?.result ?? null);
+        this.mappingLoading.set(false);
+      },
+      error: () => {
+        this.mappingError.set('No se pudo guardar el template.');
+        this.mappingLoading.set(false);
+      }
+    });
   }
 
-  getAccordionSections(): StandardSection[] {
-    return this.standardSections.slice(2);
+  getTopSections(): HeaderGroup[] {
+    return this.getHeaderGroups().slice(0, 2);
+  }
+
+  getAccordionSections(): HeaderGroup[] {
+    return this.getHeaderGroups().slice(2);
   }
 
   toggleAccordion(sectionId: string): void {
@@ -255,5 +341,45 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   isAccordionOpen(sectionId: string): boolean {
     return Boolean(this.accordionOpen()[sectionId]);
+  }
+
+  private getFieldOptions(): Array<{ id: string; label: string; apiKey: string; sectionId: string; sectionTitle: string }> {
+    return this.standardSections.flatMap((section) =>
+      section.fields.map((field) => ({
+        id: field.id,
+        label: field.label,
+        apiKey: this.getApiKeyForField(field.id),
+        sectionId: section.id,
+        sectionTitle: section.title
+      }))
+    );
+  }
+
+  private getApiKeyForField(fieldId: string): string {
+    return this.fieldKeyMap[fieldId] ?? fieldId;
+  }
+
+  private getHeaderGroups(): HeaderGroup[] {
+    const headers = this.excelHeaders();
+    if (!headers.length) {
+      return [];
+    }
+    const titles = this.standardSections.map((section) => section.title);
+    const total = headers.length;
+    const base = Math.floor(total / titles.length);
+    const remainder = total % titles.length;
+    let start = 0;
+    return titles.map((title, index) => {
+      const extra = index < remainder ? 1 : 0;
+      const end = start + base + extra;
+      const slice = headers.slice(start, end);
+      const group = {
+        id: `group-${index + 1}`,
+        title,
+        headers: slice
+      };
+      start = end;
+      return group;
+    });
   }
 }

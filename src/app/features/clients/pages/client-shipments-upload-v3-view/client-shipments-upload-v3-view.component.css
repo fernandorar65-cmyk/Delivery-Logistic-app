@@ -104,6 +104,17 @@
   border-color: #e2e8f0;
 }
 
+.action-button.primary {
+  background: #137fec;
+  color: #ffffff;
+  border-color: rgba(19, 127, 236, 0.4);
+  box-shadow: 0 0.8rem 1.6rem rgba(19, 127, 236, 0.25);
+}
+
+.action-button.primary:disabled {
+  box-shadow: none;
+}
+
 .action-button:hover:not(:disabled) {
   transform: translateY(-0.08rem);
 }
