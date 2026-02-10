@@ -81,6 +81,40 @@ export class ClientShipmentsUploadV3ViewComponent {
   ];
 
   selectedMappings = signal<Record<string, string>>({});
+  private readonly fieldIconMap: Record<string, string> = {
+    pickup_company: 'storefront',
+    pickup_contact: 'person',
+    pickup_phone: 'call',
+    pickup_address: 'location_on',
+    pickup_reference: 'edit_location_alt',
+    pickup_country: 'public',
+    pickup_district: 'map',
+    pickup_province: 'location_city',
+    pickup_department: 'apartment',
+    pickup_date: 'calendar_month',
+    pickup_start_time: 'schedule',
+    pickup_end_time: 'schedule',
+    delivery_company: 'storefront',
+    delivery_contact: 'person',
+    delivery_document: 'badge',
+    delivery_phone: 'call',
+    delivery_address: 'location_on',
+    delivery_reference: 'edit_location_alt',
+    delivery_district: 'map',
+    delivery_province: 'location_city',
+    delivery_department: 'apartment',
+    package_description: 'inventory_2',
+    package_qty: 'inventory',
+    package_weight: 'scale',
+    package_size: 'straighten',
+    package_height: 'height',
+    package_width: 'width',
+    package_depth: 'unfold_more',
+    package_volumetric: 'straighten',
+    package_m3: 'cube',
+    package_value: 'payments',
+    package_notes: 'note'
+  };
 
   resetFileInput(input: HTMLInputElement): void {
     input.value = '';
@@ -136,6 +170,23 @@ export class ClientShipmentsUploadV3ViewComponent {
     return options.filter((option) => !used.has(option));
   }
 
+  mappedCount(): number {
+    const selected = this.selectedMappings();
+    return Object.values(selected).filter((value) => value && value !== 'Opcional').length;
+  }
+
+  totalHeaders(): number {
+    return this.excelHeaders().length;
+  }
+
+  progressPercent(): number {
+    const total = this.totalHeaders();
+    if (!total) {
+      return 0;
+    }
+    return Math.round((this.mappedCount() / total) * 100);
+  }
+
   selectOption(fieldId: string, value: string): void {
     this.selectedMappings.update((current) => ({ ...current, [fieldId]: value }));
   }
@@ -155,6 +206,10 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   isSelectOpen(id: string): boolean {
     return this.openSelectId() === id;
+  }
+
+  getFieldIcon(fieldId: string): string {
+    return this.fieldIconMap[fieldId] ?? 'list_alt';
   }
 
   getTopSections(): StandardSection[] {

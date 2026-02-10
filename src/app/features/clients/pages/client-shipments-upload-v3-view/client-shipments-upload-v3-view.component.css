@@ -119,6 +119,45 @@
   font-weight: 600;
 }
 
+.upload-v3-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 1.2rem;
+  background: #ffffff;
+  border-radius: 1.2rem;
+  border: 0.0625rem solid #e2e8f0;
+}
+
+.upload-v3-progress h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.upload-v3-progress p {
+  margin: 0.3rem 0 0;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 0.5rem;
+  background: #e2e8f0;
+  border-radius: 999rem;
+  overflow: hidden;
+}
+
+.progress-value {
+  height: 100%;
+  background: #137fec;
+  border-radius: 999rem;
+  transition: width 0.3s ease;
+}
+
 .upload-v3-empty {
   display: flex;
   flex-direction: column;
@@ -174,15 +213,15 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.75rem;
-  color: #111827;
-  background: #f8fafc;
+  color: #ffffff;
+  background: #111827;
   border: none;
   cursor: pointer;
 }
 
 .accordion-header span:last-child {
   font-size: 1.2rem;
-  color: #64748b;
+  color: #ffffff;
 }
 
 .accordion-body {
@@ -231,11 +270,19 @@
 .field-info {
   display: flex;
   gap: 0.6rem;
-  align-items: center;
+  align-items: flex-start;
 }
 
-.field-info span {
-  color: #94a3b8;
+.field-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.7rem;
+  background: #eef2ff;
+  color: #1d4ed8;
+  font-size: 1.2rem;
 }
 
 .field-label {

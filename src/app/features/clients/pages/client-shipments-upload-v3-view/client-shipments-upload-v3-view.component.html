@@ -32,6 +32,16 @@
     </div>
   }
 
+  <section class="upload-v3-progress">
+    <div>
+      <h3>Progreso global</h3>
+      <p>{{ mappedCount() }} / {{ totalHeaders() }} campos asignados</p>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-value" [style.width.%]="progressPercent()"></div>
+    </div>
+  </section>
+
   @if (excelHeaders().length) {
     <div class="upload-v3-body">
       <div class="upload-v3-top">
@@ -44,7 +54,7 @@
               @for (field of section.fields; track field.id) {
                 <article class="upload-v3-card">
                   <div class="field-info">
-                    <span class="material-symbols-outlined">list_alt</span>
+                    <span class="material-symbols-outlined field-icon">{{ getFieldIcon(field.id) }}</span>
                     <div>
                       <p class="field-label">{{ field.label }}</p>
                       <p class="field-hint">Selecciona la columna del Excel</p>
@@ -92,7 +102,7 @@
                   @for (field of section.fields; track field.id) {
                     <article class="upload-v3-card">
                       <div class="field-info">
-                        <span class="material-symbols-outlined">list_alt</span>
+                        <span class="material-symbols-outlined field-icon">{{ getFieldIcon(field.id) }}</span>
                         <div>
                           <p class="field-label">{{ field.label }}</p>
                           <p class="field-hint">Selecciona la columna del Excel</p>
