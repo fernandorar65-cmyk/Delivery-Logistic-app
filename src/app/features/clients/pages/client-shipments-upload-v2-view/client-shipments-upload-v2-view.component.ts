@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import * as XLSX from 'xlsx';
+import { ImportsService } from '@app/features/clients/services/imports.service';
+import { StorageService } from '@app/core/storage/storage.service';
+import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { ImportMappingDetectResponse } from '@app/features/clients/models/imports.model';
 
 type SectionConfig = {
   id: string;
@@ -16,6 +20,9 @@ type SectionConfig = {
   styleUrl: './client-shipments-upload-v2-view.component.css'
 })
 export class ClientShipmentsUploadV2ViewComponent {
+  private importsService = inject(ImportsService);
+  private storageService = inject(StorageService);
+
   openSelectId = signal<string | null>(null);
   currentStep = signal(0);
   readonly defaultSteps = [
@@ -45,6 +52,8 @@ export class ClientShipmentsUploadV2ViewComponent {
   excelSamples = signal<Record<string, string>>({});
   excelFileName = signal<string | null>(null);
   excelError = signal<string | null>(null);
+  templateResult = signal<ImportMappingDetectResponse['result'] | null>(null);
+  templateError = signal<string | null>(null);
 
   resetFileInput(input: HTMLInputElement): void {
     input.value = '';
@@ -81,6 +90,7 @@ export class ClientShipmentsUploadV2ViewComponent {
         }, {});
         this.excelHeaders.set(headers);
         this.excelSamples.set(samples);
+        this.detectTemplate(headers);
         this.sections.set(this.buildSections(worksheet, headers, sectionRowIndex));
         this.steps.set(this.sections().length
           ? this.sections().map((section, index) => ({
@@ -108,6 +118,22 @@ export class ClientShipmentsUploadV2ViewComponent {
       this.excelError.set('No se pudo leer el archivo. Intenta nuevamente.');
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  private detectTemplate(headers: string[]): void {
+    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (!clientId || !headers.length) {
+      return;
+    }
+    this.templateError.set(null);
+    this.importsService.detectMapping({ client_id: clientId, headers }).subscribe({
+      next: (response) => {
+        this.templateResult.set(response?.result ?? null);
+      },
+      error: () => {
+        this.templateError.set('No se pudo validar el template.');
+      }
+    });
   }
 
   getSample(header: string): string {

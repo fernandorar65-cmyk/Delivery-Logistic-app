@@ -225,6 +225,12 @@
   gap: 0.5rem;
 }
 
+.section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .section-icon {
   font-size: 1rem;
 }
@@ -258,7 +264,7 @@
   letter-spacing: 0.08em;
   padding: 0.6rem 0.9rem;
   border-radius: 0.9rem;
-  text-align: center;
+  text-align: left;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;

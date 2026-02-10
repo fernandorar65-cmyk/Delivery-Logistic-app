@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import * as XLSX from 'xlsx';
+import { ImportsService } from '@app/features/clients/services/imports.service';
+import { StorageService } from '@app/core/storage/storage.service';
+import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import { ImportMappingDetectResponse } from '@app/features/clients/models/imports.model';
 
 type StandardField = {
   id: string;
@@ -21,11 +25,16 @@ type StandardSection = {
   styleUrl: './client-shipments-upload-v3-view.component.css'
 })
 export class ClientShipmentsUploadV3ViewComponent {
+  private importsService = inject(ImportsService);
+  private storageService = inject(StorageService);
+
   openSelectId = signal<string | null>(null);
   excelHeaders = signal<string[]>([]);
   excelFileName = signal<string | null>(null);
   excelError = signal<string | null>(null);
   accordionOpen = signal<Record<string, boolean>>({});
+  templateResult = signal<ImportMappingDetectResponse['result'] | null>(null);
+  templateError = signal<string | null>(null);
 
   readonly standardSections: StandardSection[] = [
     {
@@ -143,6 +152,7 @@ export class ClientShipmentsUploadV3ViewComponent {
           .map((value) => String(value).trim())
           .filter((value) => Boolean(value));
         this.excelHeaders.set(headers);
+        this.detectTemplate(headers);
       } catch (error) {
         this.excelError.set('No se pudo leer el archivo. Verifica el formato.');
       }
@@ -206,6 +216,22 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   isSelectOpen(id: string): boolean {
     return this.openSelectId() === id;
+  }
+
+  private detectTemplate(headers: string[]): void {
+    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (!clientId || !headers.length) {
+      return;
+    }
+    this.templateError.set(null);
+    this.importsService.detectMapping({ client_id: clientId, headers }).subscribe({
+      next: (response) => {
+        this.templateResult.set(response?.result ?? null);
+      },
+      error: () => {
+        this.templateError.set('No se pudo validar el template.');
+      }
+    });
   }
 
   getFieldIcon(fieldId: string): string {
