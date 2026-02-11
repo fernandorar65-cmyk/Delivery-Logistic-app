@@ -1,4 +1,14 @@
 <section class="upload-v3-page">
+  @if (showTemplateDetectedModal()) {
+    <app-modal title="Template detectado" size="sm" (close)="closeTemplateDetectedModal()">
+      <p>Se detectó un template anterior para estas cabeceras.</p>
+      <div class="upload-v3-modal-actions">
+        <button type="button" class="action-button primary" (click)="closeTemplateDetectedModal()">
+          Entendido
+        </button>
+      </div>
+    </app-modal>
+  }
   <header class="upload-v3-header" [class.collapsed]="excelHeaders().length">
     <div>
       <p class="upload-v3-badge">Subir Orden V3</p>

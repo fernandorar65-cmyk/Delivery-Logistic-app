@@ -5,6 +5,7 @@ import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { ImportMappingCreateResponse, ImportMappingDetectResponse } from '@app/features/clients/models/imports.model';
+import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
 type StandardField = {
   id: string;
@@ -26,7 +27,7 @@ type HeaderGroup = {
 @Component({
   selector: 'app-client-shipments-upload-v3-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ModalComponent],
   templateUrl: './client-shipments-upload-v3-view.component.html',
   styleUrl: './client-shipments-upload-v3-view.component.css'
 })
@@ -45,6 +46,7 @@ export class ClientShipmentsUploadV3ViewComponent {
   mappingLoading = signal(false);
   mappingError = signal<string | null>(null);
   mappingResult = signal<ImportMappingCreateResponse['result'] | null>(null);
+  showTemplateDetectedModal = signal(false);
 
   readonly standardSections: StandardSection[] = [
     {
@@ -330,12 +332,41 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.templateError.set(null);
     this.importsService.detectMapping({ client_id: clientId, headers }).subscribe({
       next: (response) => {
-        this.templateResult.set(response?.result ?? null);
+        const result = response?.result ?? null;
+        this.templateResult.set(result as ImportMappingDetectResponse['result'] ?? null);
+        const hasTemplate = this.hasDetectResult(result);
+        // Diferir un tick para que la vista haya actualizado las cabeceras y el modal se muestre correctamente
+        queueMicrotask(() => this.showTemplateDetectedModal.set(hasTemplate));
       },
       error: () => {
         this.templateError.set('No se pudo validar el template.');
+        this.showTemplateDetectedModal.set(false);
       }
     });
+  }
+
+  closeTemplateDetectedModal(): void {
+    this.showTemplateDetectedModal.set(false);
+  }
+
+  /**
+   * Indica si la API devolvió un template válido.
+   * Acepta result con forma { mapping: { ... } } o result siendo el mapping directamente.
+   */
+  private hasDetectResult(result: unknown): boolean {
+    if (result == null || typeof result !== 'object' || Array.isArray(result)) {
+      return false;
+    }
+    const record = result as Record<string, unknown>;
+    const rawMapping = record['mapping'];
+    const hasNestedMapping =
+      rawMapping != null && typeof rawMapping === 'object' && !Array.isArray(rawMapping);
+    const mapping = hasNestedMapping
+      ? (rawMapping as Record<string, unknown>)
+      : !('mapping' in record)
+        ? record
+        : null;
+    return mapping != null && Object.keys(mapping).length > 0;
   }
 
   getFieldIcon(fieldId: string): string {
