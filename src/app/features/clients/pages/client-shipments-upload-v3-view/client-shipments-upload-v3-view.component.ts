@@ -271,6 +271,7 @@ export class ClientShipmentsUploadV3ViewComponent {
       ...current,
       [id]: current[id] ?? ''
     }));
+    this.focusSearchInput(id);
   }
 
   isSelectOpen(id: string): boolean {
@@ -283,6 +284,18 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   getSearchValue(id: string): string {
     return this.searchText()[id] ?? '';
+  }
+
+  private focusSearchInput(id: string): void {
+    setTimeout(() => {
+      const input = document.getElementById(this.getSearchInputId(id)) as HTMLInputElement | null;
+      input?.focus();
+      input?.select();
+    }, 0);
+  }
+
+  getSearchInputId(id: string): string {
+    return `search-${id}`;
   }
 
   getSelectedLabel(headerKey: string): string {
