@@ -66,7 +66,7 @@
               </span>
             </div>
             <div class="upload-v3-grid">
-              @for (header of section.headers; track header) {
+              @for (header of section.headers; track idx; let idx = $index) {
                 <article class="upload-v3-card">
                   <div class="field-info">
                     <span class="material-symbols-outlined field-icon">dataset</span>
@@ -76,18 +76,18 @@
                     </div>
                   </div>
                   <div class="select-box" (click)="$event.stopPropagation()">
-                    <button type="button" class="select-trigger" (click)="toggleSelect(header)">
-                      <span>{{ getSelectedLabel(header) }}</span>
+                    <button type="button" class="select-trigger" (click)="toggleSelect(getHeaderKey(section.id, header, idx))">
+                      <span>{{ getSelectedLabel(getHeaderKey(section.id, header, idx)) }}</span>
                       <span class="material-symbols-outlined">unfold_more</span>
                     </button>
-                    @if (isSelectOpen(header)) {
+                    @if (isSelectOpen(getHeaderKey(section.id, header, idx))) {
                       <div class="select-menu">
-                        @for (option of getAvailableOptions(header); track option) {
+                        @for (option of getAvailableOptions(getHeaderKey(section.id, header, idx)); track option) {
                           <button
                             type="button"
                             class="select-option"
-                            [class.active]="isSelected(header, option)"
-                            (click)="selectOption(header, option)"
+                            [class.active]="isSelected(getHeaderKey(section.id, header, idx), option)"
+                            (click)="selectOption(getHeaderKey(section.id, header, idx), option)"
                           >
                             {{ getOptionLabel(option) }}
                           </button>
@@ -117,7 +117,7 @@
             @if (isAccordionOpen(section.id)) {
               <div class="accordion-body">
                 <div class="upload-v3-grid">
-                  @for (header of section.headers; track header) {
+                  @for (header of section.headers; track idx; let idx = $index) {
                     <article class="upload-v3-card">
                       <div class="field-info">
                         <span class="material-symbols-outlined field-icon">dataset</span>
@@ -127,18 +127,18 @@
                         </div>
                       </div>
                       <div class="select-box" (click)="$event.stopPropagation()">
-                        <button type="button" class="select-trigger" (click)="toggleSelect(header)">
-                          <span>{{ getSelectedLabel(header) }}</span>
+                        <button type="button" class="select-trigger" (click)="toggleSelect(getHeaderKey(section.id, header, idx))">
+                          <span>{{ getSelectedLabel(getHeaderKey(section.id, header, idx)) }}</span>
                           <span class="material-symbols-outlined">unfold_more</span>
                         </button>
-                        @if (isSelectOpen(header)) {
+                        @if (isSelectOpen(getHeaderKey(section.id, header, idx))) {
                           <div class="select-menu">
-                            @for (option of getAvailableOptions(header); track option) {
+                            @for (option of getAvailableOptions(getHeaderKey(section.id, header, idx)); track option) {
                               <button
                                 type="button"
                                 class="select-option"
-                                [class.active]="isSelected(header, option)"
-                                (click)="selectOption(header, option)"
+                                [class.active]="isSelected(getHeaderKey(section.id, header, idx), option)"
+                                (click)="selectOption(getHeaderKey(section.id, header, idx), option)"
                               >
                                 {{ getOptionLabel(option) }}
                               </button>

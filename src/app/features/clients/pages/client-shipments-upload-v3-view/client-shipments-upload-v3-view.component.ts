@@ -211,11 +211,11 @@ export class ClientShipmentsUploadV3ViewComponent {
     return ['Opcional', ...this.getFieldOptions().map((option) => option.id)];
   }
 
-  getAvailableOptions(header: string): string[] {
+  getAvailableOptions(headerKey: string): string[] {
     const options = this.getOptions();
     const selected = this.selectedMappings();
     const used = new Set(Object.entries(selected)
-      .filter(([key, value]) => key !== header && value && value !== 'Opcional')
+      .filter(([key, value]) => key !== headerKey && value && value !== 'Opcional')
       .map(([, value]) => value));
     return options.filter((option) => !used.has(option));
   }
@@ -237,12 +237,12 @@ export class ClientShipmentsUploadV3ViewComponent {
     return Math.round((this.mappedCount() / total) * 100);
   }
 
-  selectOption(header: string, value: string): void {
-    this.selectedMappings.update((current) => ({ ...current, [header]: value }));
+  selectOption(headerKey: string, value: string): void {
+    this.selectedMappings.update((current) => ({ ...current, [headerKey]: value }));
   }
 
-  isSelected(header: string, value: string): boolean {
-    return this.selectedMappings()[header] === value;
+  isSelected(headerKey: string, value: string): boolean {
+    return this.selectedMappings()[headerKey] === value;
   }
 
   @HostListener('document:click')
@@ -258,8 +258,8 @@ export class ClientShipmentsUploadV3ViewComponent {
     return this.openSelectId() === id;
   }
 
-  getSelectedLabel(header: string): string {
-    return this.getOptionLabel(this.selectedMappings()[header]);
+  getSelectedLabel(headerKey: string): string {
+    return this.getOptionLabel(this.selectedMappings()[headerKey]);
   }
 
   getOptionLabel(optionId?: string): string {
@@ -305,8 +305,10 @@ export class ClientShipmentsUploadV3ViewComponent {
     }
 
     const selections = this.selectedMappings();
+    const headerKeyMap = this.getHeaderKeyMap();
     const mapping = this.getFieldOptions().reduce<Record<string, string>>((acc, option) => {
-      const header = Object.entries(selections).find(([, value]) => value === option.id)?.[0] ?? 'Opcional';
+      const headerKey = Object.entries(selections).find(([, value]) => value === option.id)?.[0];
+      const header = headerKey ? headerKeyMap[headerKey] : 'Opcional';
       acc[option.apiKey] = header || 'Opcional';
       return acc;
     }, {});
@@ -412,5 +414,20 @@ export class ClientShipmentsUploadV3ViewComponent {
       start = end;
       return group;
     });
+  }
+
+  getHeaderKey(sectionId: string, header: string, index: number): string {
+    const safeHeader = String(header || '').trim().toLowerCase().replace(/\s+/g, '-');
+    return `${sectionId}-${index}-${safeHeader}`;
+  }
+
+  private getHeaderKeyMap(): Record<string, string> {
+    const map: Record<string, string> = {};
+    this.getHeaderGroups().forEach((group) => {
+      group.headers.forEach((header, index) => {
+        map[this.getHeaderKey(group.id, header, index)] = header;
+      });
+    });
+    return map;
   }
 }
