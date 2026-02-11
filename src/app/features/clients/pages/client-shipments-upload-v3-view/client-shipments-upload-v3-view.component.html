@@ -82,7 +82,15 @@
                     </button>
                     @if (isSelectOpen(getHeaderKey(section.id, header, idx))) {
                       <div class="select-menu">
-                        @for (option of getAvailableOptions(getHeaderKey(section.id, header, idx)); track option) {
+                        <input
+                          type="text"
+                          class="select-search"
+                          placeholder="Buscar campo"
+                          [value]="getSearchValue(getHeaderKey(section.id, header, idx))"
+                          (input)="setSearchValue(getHeaderKey(section.id, header, idx), $any($event.target).value)"
+                          (click)="$event.stopPropagation()"
+                        />
+                        @for (option of getFilteredOptions(getHeaderKey(section.id, header, idx)); track option) {
                           <button
                             type="button"
                             class="select-option"
@@ -91,6 +99,8 @@
                           >
                             {{ getOptionLabel(option) }}
                           </button>
+                        } @empty {
+                          <div class="select-empty">Sin coincidencias</div>
                         }
                       </div>
                     }
@@ -133,7 +143,15 @@
                         </button>
                         @if (isSelectOpen(getHeaderKey(section.id, header, idx))) {
                           <div class="select-menu">
-                            @for (option of getAvailableOptions(getHeaderKey(section.id, header, idx)); track option) {
+                            <input
+                              type="text"
+                              class="select-search"
+                              placeholder="Buscar campo"
+                              [value]="getSearchValue(getHeaderKey(section.id, header, idx))"
+                              (input)="setSearchValue(getHeaderKey(section.id, header, idx), $any($event.target).value)"
+                              (click)="$event.stopPropagation()"
+                            />
+                            @for (option of getFilteredOptions(getHeaderKey(section.id, header, idx)); track option) {
                               <button
                                 type="button"
                                 class="select-option"
@@ -142,6 +160,8 @@
                               >
                                 {{ getOptionLabel(option) }}
                               </button>
+                            } @empty {
+                              <div class="select-empty">Sin coincidencias</div>
                             }
                           </div>
                         }

@@ -39,6 +39,7 @@ export class ClientShipmentsUploadV3ViewComponent {
   excelFileName = signal<string | null>(null);
   excelError = signal<string | null>(null);
   accordionOpen = signal<Record<string, boolean>>({});
+  searchText = signal<Record<string, string>>({});
   templateResult = signal<ImportMappingDetectResponse['result'] | null>(null);
   templateError = signal<string | null>(null);
   mappingLoading = signal(false);
@@ -220,6 +221,16 @@ export class ClientShipmentsUploadV3ViewComponent {
     return options.filter((option) => !used.has(option));
   }
 
+  getFilteredOptions(headerKey: string): string[] {
+    const query = this.normalizeForSearch(this.getSearchValue(headerKey));
+    const options = this.getAvailableOptions(headerKey);
+    if (!query) {
+      return options;
+    }
+    return options.filter((option) =>
+      this.normalizeForSearch(this.getOptionLabel(option)).includes(query));
+  }
+
   mappedCount(): number {
     const selected = this.selectedMappings();
     return Object.values(selected).filter((value) => value && value !== 'Opcional').length;
@@ -251,11 +262,27 @@ export class ClientShipmentsUploadV3ViewComponent {
   }
 
   toggleSelect(id: string): void {
-    this.openSelectId.set(this.openSelectId() === id ? null : id);
+    if (this.openSelectId() === id) {
+      this.openSelectId.set(null);
+      return;
+    }
+    this.openSelectId.set(id);
+    this.searchText.update((current) => ({
+      ...current,
+      [id]: current[id] ?? ''
+    }));
   }
 
   isSelectOpen(id: string): boolean {
     return this.openSelectId() === id;
+  }
+
+  setSearchValue(id: string, value: string): void {
+    this.searchText.update((current) => ({ ...current, [id]: value }));
+  }
+
+  getSearchValue(id: string): string {
+    return this.searchText()[id] ?? '';
   }
 
   getSelectedLabel(headerKey: string): string {
@@ -271,6 +298,15 @@ export class ClientShipmentsUploadV3ViewComponent {
     }
     const option = this.getFieldOptions().find((item) => item.id === optionId);
     return option?.displayLabel ?? optionId;
+  }
+
+  private normalizeForSearch(value: string): string {
+    return (value ?? '')
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 
   private detectTemplate(headers: string[]): void {
