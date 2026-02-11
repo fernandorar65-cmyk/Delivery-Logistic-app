@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
-import { ImportMappingCreateResponse, ImportMappingDetectResponse } from '@app/features/clients/models/imports.model';
+import { ImportMappingCreateResult, ImportMappingDetectResult } from '@app/features/clients/models/imports.model';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
 type StandardField = {
@@ -52,11 +52,11 @@ export class ClientShipmentsUploadV3ViewComponent {
   excelError = signal<string | null>(null);
   accordionOpen = signal<Record<string, boolean>>({});
   searchText = signal<Record<string, string>>({});
-  templateResult = signal<ImportMappingDetectResponse['result'] | null>(null);
+  templateResult = signal<ImportMappingDetectResult | null>(null);
   templateError = signal<string | null>(null);
   mappingLoading = signal(false);
   mappingError = signal<string | null>(null);
-  mappingResult = signal<ImportMappingCreateResponse['result'] | null>(null);
+  mappingResult = signal<ImportMappingCreateResult | null>(null);
   showTemplateDetectedModal = signal(false);
 
   readonly standardSections: StandardSection[] = [
@@ -350,9 +350,11 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.importsService.detectMapping({ client_id: clientId, headers }).subscribe({
       next: (response) => {
         const result = response?.result ?? null;
-        this.templateResult.set(result as ImportMappingDetectResponse['result'] ?? null);
+        this.templateResult.set(result);
         const hasTemplate = this.hasDetectResult(result);
-        // Diferir un tick para que la vista haya actualizado las cabeceras y el modal se muestre correctamente
+        if (hasTemplate && result) {
+          this.applyDetectedTemplate(result, headers);
+        }
         queueMicrotask(() => this.showTemplateDetectedModal.set(hasTemplate));
       },
       error: () => {
@@ -362,28 +364,44 @@ export class ClientShipmentsUploadV3ViewComponent {
     });
   }
 
+  /**
+   * Aplica el template detectado al formulario: preselecciona en cada card
+   * el campo estándar que corresponde según el mapping (apiKey → nombre columna Excel).
+   */
+  private applyDetectedTemplate(result: ImportMappingDetectResult, currentHeaders: string[]): void {
+    const apiKeyToFieldId = this.getApiKeyToFieldIdMap();
+    const normalizedToHeader = new Map<string, string>();
+    currentHeaders.forEach((h) => normalizedToHeader.set(this.normalizeForSearch(h), h));
+
+    const next: Record<string, string> = {};
+    Object.entries(result.mapping).forEach(([apiKey, mappingHeaderName]) => {
+      const fieldId = apiKeyToFieldId[apiKey];
+      if (!fieldId) return;
+      const normalized = this.normalizeForSearch(mappingHeaderName);
+      const currentHeader = normalizedToHeader.get(normalized);
+      if (currentHeader != null) {
+        next[currentHeader] = fieldId;
+      }
+    });
+    this.selectedMappings.update((prev) => ({ ...prev, ...next }));
+  }
+
+  /** Mapa apiKey (ej. pickup.address) → fieldId (ej. pickup_address) para aplicar template. */
+  private getApiKeyToFieldIdMap(): Record<string, string> {
+    const map: Record<string, string> = {};
+    Object.entries(this.fieldKeyMap).forEach(([fieldId, apiKey]) => {
+      map[apiKey] = fieldId;
+    });
+    return map;
+  }
+
   closeTemplateDetectedModal(): void {
     this.showTemplateDetectedModal.set(false);
   }
 
-  /**
-   * Indica si la API devolvió un template válido.
-   * Acepta result con forma { mapping: { ... } } o result siendo el mapping directamente.
-   */
-  private hasDetectResult(result: unknown): boolean {
-    if (result == null || typeof result !== 'object' || Array.isArray(result)) {
-      return false;
-    }
-    const record = result as Record<string, unknown>;
-    const rawMapping = record['mapping'];
-    const hasNestedMapping =
-      rawMapping != null && typeof rawMapping === 'object' && !Array.isArray(rawMapping);
-    const mapping = hasNestedMapping
-      ? (rawMapping as Record<string, unknown>)
-      : !('mapping' in record)
-        ? record
-        : null;
-    return mapping != null && Object.keys(mapping).length > 0;
+  /** Indica si la API devolvió un template válido (con mapping no vacío). */
+  private hasDetectResult(result: ImportMappingDetectResult | null | undefined): boolean {
+    return result != null && typeof result.mapping === 'object' && Object.keys(result.mapping).length > 0;
   }
 
   getFieldIcon(fieldId: string): string {

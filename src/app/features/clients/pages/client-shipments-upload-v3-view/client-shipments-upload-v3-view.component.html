@@ -1,7 +1,7 @@
 <section class="upload-v3-page">
   @if (showTemplateDetectedModal()) {
-    <app-modal title="Template detectado" size="sm" (close)="closeTemplateDetectedModal()">
-      <p>Se detectó un template anterior para estas cabeceras.</p>
+    <app-modal title="Template anterior encontrado" size="sm" (close)="closeTemplateDetectedModal()">
+      <p>Se encontró un template anterior, por lo que se preseleccionó la definición de los campos según tu configuración previa. Puedes revisar o ajustar las asignaciones y guardar.</p>
       <div class="upload-v3-modal-actions">
         <button type="button" class="action-button primary" (click)="closeTemplateDetectedModal()">
           Entendido
