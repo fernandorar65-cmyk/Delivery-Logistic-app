@@ -1,5 +1,5 @@
 <section class="upload-v3-page">
-  <header class="upload-v3-header">
+  <header class="upload-v3-header" [class.collapsed]="excelHeaders().length">
     <div>
       <p class="upload-v3-badge">Subir Orden V3</p>
       <h1 class="upload-v3-title">Relaciona columnas del Excel con tu estándar</h1>
@@ -17,15 +17,12 @@
       </div>
       <div class="upload-v3-buttons">
         <input type="file" accept=".xlsx,.csv" #excelInput hidden (change)="onExcelFileSelected($event)" />
-        <button type="button" class="action-button outline" (click)="resetFileInput(excelInput); excelInput.click()">
-          <span class="material-symbols-outlined">upload_file</span>
-          Cargar Excel
-        </button>
-        <button type="button" class="action-button primary" (click)="createTemplate()"
-          [disabled]="mappingLoading() || !excelHeaders().length">
-          <span class="material-symbols-outlined">save</span>
-          @if (mappingLoading()) { Guardando... } @else { Guardar template }
-        </button>
+        @if (!excelHeaders().length) {
+          <button type="button" class="action-button outline" (click)="resetFileInput(excelInput); excelInput.click()">
+            <span class="material-symbols-outlined">upload_file</span>
+            Cargar Excel
+          </button>
+        }
       </div>
     </div>
   </header>
@@ -44,18 +41,28 @@
     </div>
   }
 
-  <section class="upload-v3-progress">
-    <div>
-      <h3>Progreso global</h3>
-      <p>{{ mappedCount() }} / {{ totalHeaders() }} campos asignados</p>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-value" [style.width.%]="progressPercent()"></div>
-    </div>
-  </section>
-
   @if (excelHeaders().length) {
-    <div class="upload-v3-body">
+    <div class="upload-v3-top-row">
+      <section class="upload-v3-progress">
+        <div>
+          <h3>Progreso global</h3>
+          <p>{{ mappedCount() }} / {{ totalHeaders() }} campos asignados</p>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-value" [style.width.%]="progressPercent()"></div>
+        </div>
+      </section>
+      <button
+        type="button"
+        class="action-button primary upload-v3-save"
+        (click)="createTemplate()"
+        [disabled]="mappingLoading() || !excelHeaders().length"
+      >
+        <span class="material-symbols-outlined">save</span>
+        @if (mappingLoading()) { Guardando... } @else { Guardar template }
+      </button>
+    </div>
+    <div class="upload-v3-body" [class.expanded]="excelHeaders().length">
       <div class="upload-v3-top">
         @for (section of getTopSections(); track section.id) {
           <section class="upload-v3-section">

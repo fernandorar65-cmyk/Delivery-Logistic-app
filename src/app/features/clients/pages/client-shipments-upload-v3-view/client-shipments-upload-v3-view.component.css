@@ -1,8 +1,8 @@
 .upload-v3-page {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.1rem clamp(0.75rem, 2vw, 1.5rem);
+  gap: 0.75rem;
+  padding: 0.6rem clamp(0.6rem, 2vw, 1.2rem);
   max-width: 110rem;
   margin: 0 auto;
 }
@@ -18,6 +18,20 @@
   border: 0.0625rem solid #e2e8f0;
   padding: 1.1rem 1.4rem;
   box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.08);
+  transition: all 0.35s ease;
+  overflow: hidden;
+  max-height: 20rem;
+  opacity: 1;
+}
+
+.upload-v3-header.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin: 0;
+  border-width: 0;
+  box-shadow: none;
 }
 
 .upload-v3-badge {
@@ -135,7 +149,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
-  padding: 1rem 1.2rem;
+  padding: 0.7rem 1rem;
   background: #ffffff;
   border-radius: 1.2rem;
   border: 0.0625rem solid #e2e8f0;
@@ -191,19 +205,42 @@
 .upload-v3-body {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.upload-v3-body.expanded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.upload-v3-top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: -0.3rem;
+}
+
+.upload-v3-top-row .upload-v3-progress {
+  flex: 1;
+}
+
+.upload-v3-save {
+  white-space: nowrap;
 }
 
 .upload-v3-top {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
+  gap: 0.75rem;
 }
 
 .upload-v3-accordion {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .accordion-item {
@@ -219,7 +256,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.9rem 1.2rem;
+  padding: 0.7rem 1rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -252,7 +289,7 @@
 }
 
 .accordion-body {
-  padding: 1rem 1.2rem 1.2rem;
+  padding: 0.75rem 1rem 0.9rem;
   background: #ffffff;
 }
 
@@ -260,10 +297,10 @@
   background: #ffffff;
   border-radius: 1.5rem;
   border: 0.0625rem solid #e2e8f0;
-  padding: 1.1rem;
+  padding: 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.85rem;
 }
 
 .upload-v3-section-header {
@@ -273,7 +310,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 0.6rem 0.9rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 0.9rem;
   text-align: left;
   display: inline-flex;
@@ -286,16 +323,15 @@
 .upload-v3-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem 1rem;
+  gap: 0.6rem 0.8rem;
 }
 
 .upload-v3-card {
   border: 0.0625rem solid #e2e8f0;
   border-radius: 1rem;
-  padding: 0.85rem 1rem;
+  padding: 0.6rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
   background: #f8fafc;
   height: 100%;
 }
@@ -304,27 +340,28 @@
   display: flex;
   gap: 0.6rem;
   align-items: flex-start;
-  min-height: 3.6rem;
+  min-height: 3.1rem;
 }
 
 .field-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 1.7rem;
+  height: 1.7rem;
   border-radius: 0.7rem;
   background: #eef2ff;
   color: #1d4ed8;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
 }
 
 .field-label {
   margin: 0;
   font-weight: 700;
   color: #0f172a;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   line-height: 1.2;
+  line-clamp: 2;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -334,7 +371,7 @@
 .field-hint {
   margin: 0.15rem 0 0;
   color: #94a3b8;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   line-height: 1.2;
 }
 
@@ -346,11 +383,11 @@
 
 .select-trigger {
   width: 100%;
-  padding: 0.6rem 2.2rem 0.6rem 0.85rem;
+  padding: 0.45rem 1.8rem 0.45rem 0.7rem;
   border-radius: 0.75rem;
   border: 0.0625rem solid #e2e8f0;
   background: #ffffff;
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 600;
   color: #0f172a;
   display: inline-flex;
@@ -384,8 +421,8 @@
   width: 100%;
   border: 0.0625rem solid #e2e8f0;
   border-radius: 0.65rem;
-  padding: 0.5rem 0.7rem;
-  font-size: 0.7rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: #0f172a;
   outline: none;
@@ -398,8 +435,8 @@
 }
 
 .select-empty {
-  padding: 0.5rem 0.7rem;
-  font-size: 0.7rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.65rem;
   color: #94a3b8;
   font-weight: 600;
 }
@@ -408,9 +445,9 @@
   width: 100%;
   border: none;
   background: transparent;
-  padding: 0.6rem 0.9rem;
+  padding: 0.45rem 0.7rem;
   border-radius: 0.7rem;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #0f172a;
   text-align: left;
