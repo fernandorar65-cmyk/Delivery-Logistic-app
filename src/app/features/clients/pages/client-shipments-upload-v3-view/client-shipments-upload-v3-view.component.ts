@@ -446,23 +446,77 @@ export class ClientShipmentsUploadV3ViewComponent {
     if (!headers.length) {
       return [];
     }
-    const titles = this.standardSections.map((section) => section.title);
-    const total = headers.length;
-    const base = Math.floor(total / titles.length);
-    const remainder = total % titles.length;
-    let start = 0;
-    return titles.map((title, index) => {
-      const extra = index < remainder ? 1 : 0;
-      const end = start + base + extra;
-      const slice = headers.slice(start, end);
-      const group = {
-        id: `group-${index + 1}`,
-        title,
-        headers: slice
-      };
-      start = end;
-      return group;
+
+    const pickupKeywords = [
+      'recojo',
+      'recoger',
+      'retiro',
+      'retirar',
+      'pickup',
+      'pick up',
+      'origen',
+      'origin',
+      'salida'
+    ];
+    const deliveryKeywords = [
+      'entrega',
+      'entregar',
+      'delivery',
+      'destino',
+      'destination',
+      'llegada'
+    ];
+    const packageKeywords = [
+      'paquete',
+      'paquetes',
+      'bulto',
+      'bultos',
+      'caja',
+      'cajas',
+      'embalaje',
+      'mercaderia',
+      'mercancía',
+      'carga',
+      'package'
+    ];
+
+    const sections = this.standardSections.map((section, index) => ({
+      id: `group-${index + 1}`,
+      title: section.title,
+      headers: [] as string[]
+    }));
+
+    const normalizedHeaders = headers.map((header) => ({
+      raw: header,
+      normalized: this.normalizeForSearch(header)
+    }));
+
+    const unassigned: string[] = [];
+    normalizedHeaders.forEach(({ raw, normalized }) => {
+      if (this.hasKeyword(normalized, pickupKeywords)) {
+        sections[0].headers.push(raw);
+        return;
+      }
+      if (this.hasKeyword(normalized, deliveryKeywords)) {
+        sections[1].headers.push(raw);
+        return;
+      }
+      if (this.hasKeyword(normalized, packageKeywords)) {
+        sections[2].headers.push(raw);
+        return;
+      }
+      unassigned.push(raw);
     });
+
+    unassigned.forEach((header, index) => {
+      sections[index % sections.length].headers.push(header);
+    });
+
+    return sections;
+  }
+
+  private hasKeyword(value: string, keywords: string[]): boolean {
+    return keywords.some((keyword) => value.includes(this.normalizeForSearch(keyword)));
   }
 
   getHeaderKey(sectionId: string, header: string, index: number): string {
