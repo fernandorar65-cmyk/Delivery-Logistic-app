@@ -332,6 +332,10 @@
   gap: 0.6rem 0.8rem;
 }
 
+.upload-v3-drop-list {
+  min-height: 3rem;
+}
+
 .upload-v3-card {
   border: 0.0625rem solid #e2e8f0;
   border-radius: 1rem;
@@ -340,6 +344,41 @@
   flex-direction: column;
   background: #f8fafc;
   height: 100%;
+}
+
+/* Drag and drop (CDK) */
+.upload-v3-card.cdk-drag-dragging {
+  opacity: 0.85;
+}
+
+.cdk-drag-preview.upload-v3-card {
+  box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.2);
+  border-radius: 1rem;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  border: 0.125rem dashed #137fec;
+  border-radius: 1rem;
+  background: rgba(19, 127, 236, 0.08);
+}
+
+.cdk-drag-animating {
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.upload-v3-drop-list.cdk-drop-list-dragging .upload-v3-card:not(.cdk-drag-placeholder) {
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drag-handle {
+  cursor: grab;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .field-info {

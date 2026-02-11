@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+  CdkDropListGroup,
+  moveItemInArray,
+  transferArrayItem
+} from '@angular/cdk/drag-drop';
 import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
@@ -27,7 +36,7 @@ type HeaderGroup = {
 @Component({
   selector: 'app-client-shipments-upload-v3-view',
   standalone: true,
-  imports: [CommonModule, ModalComponent],
+  imports: [CommonModule, ModalComponent, CdkDropListGroup, CdkDropList, CdkDrag, CdkDragHandle],
   templateUrl: './client-shipments-upload-v3-view.component.html',
   styleUrl: './client-shipments-upload-v3-view.component.css'
 })
@@ -37,6 +46,8 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   openSelectId = signal<string | null>(null);
   excelHeaders = signal<string[]>([]);
+  /** Grupos de cabeceras por sección; mutable para drag and drop entre secciones. */
+  headerGroups = signal<HeaderGroup[]>([]);
   excelFileName = signal<string | null>(null);
   excelError = signal<string | null>(null);
   accordionOpen = signal<Record<string, boolean>>({});
@@ -199,6 +210,7 @@ export class ClientShipmentsUploadV3ViewComponent {
           .map((value) => String(value).trim())
           .filter((value) => Boolean(value));
         this.excelHeaders.set(headers);
+        this.headerGroups.set(this.getHeaderGroups());
         this.detectTemplate(headers);
       } catch (error) {
         this.excelError.set('No se pudo leer el archivo. Verifica el formato.');
@@ -214,18 +226,18 @@ export class ClientShipmentsUploadV3ViewComponent {
     return ['Opcional', ...this.getFieldOptions().map((option) => option.id)];
   }
 
-  getAvailableOptions(headerKey: string): string[] {
+  getAvailableOptions(header: string): string[] {
     const options = this.getOptions();
     const selected = this.selectedMappings();
     const used = new Set(Object.entries(selected)
-      .filter(([key, value]) => key !== headerKey && value && value !== 'Opcional')
+      .filter(([key, value]) => key !== header && value && value !== 'Opcional')
       .map(([, value]) => value));
     return options.filter((option) => !used.has(option));
   }
 
-  getFilteredOptions(headerKey: string): string[] {
-    const query = this.normalizeForSearch(this.getSearchValue(headerKey));
-    const options = this.getAvailableOptions(headerKey);
+  getFilteredOptions(header: string): string[] {
+    const query = this.normalizeForSearch(this.getSearchValue(header));
+    const options = this.getAvailableOptions(header);
     if (!query) {
       return options;
     }
@@ -250,12 +262,12 @@ export class ClientShipmentsUploadV3ViewComponent {
     return Math.round((this.mappedCount() / total) * 100);
   }
 
-  selectOption(headerKey: string, value: string): void {
-    this.selectedMappings.update((current) => ({ ...current, [headerKey]: value }));
+  selectOption(header: string, value: string): void {
+    this.selectedMappings.update((current) => ({ ...current, [header]: value }));
   }
 
-  isSelected(headerKey: string, value: string): boolean {
-    return this.selectedMappings()[headerKey] === value;
+  isSelected(header: string, value: string): boolean {
+    return this.selectedMappings()[header] === value;
   }
 
   @HostListener('document:click')
@@ -263,45 +275,50 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.openSelectId.set(null);
   }
 
-  toggleSelect(id: string): void {
-    if (this.openSelectId() === id) {
+  toggleSelect(header: string): void {
+    if (this.openSelectId() === header) {
       this.openSelectId.set(null);
       return;
     }
-    this.openSelectId.set(id);
+    this.openSelectId.set(header);
     this.searchText.update((current) => ({
       ...current,
-      [id]: current[id] ?? ''
+      [header]: current[header] ?? ''
     }));
-    this.focusSearchInput(id);
+    this.focusSearchInput(header);
   }
 
-  isSelectOpen(id: string): boolean {
-    return this.openSelectId() === id;
+  isSelectOpen(header: string): boolean {
+    return this.openSelectId() === header;
   }
 
-  setSearchValue(id: string, value: string): void {
-    this.searchText.update((current) => ({ ...current, [id]: value }));
+  setSearchValue(header: string, value: string): void {
+    this.searchText.update((current) => ({ ...current, [header]: value }));
   }
 
-  getSearchValue(id: string): string {
-    return this.searchText()[id] ?? '';
+  getSearchValue(header: string): string {
+    return this.searchText()[header] ?? '';
   }
 
-  private focusSearchInput(id: string): void {
+  private focusSearchInput(header: string): void {
     setTimeout(() => {
-      const input = document.getElementById(this.getSearchInputId(id)) as HTMLInputElement | null;
+      const input = document.getElementById(this.getSearchInputId(header)) as HTMLInputElement | null;
       input?.focus();
       input?.select();
     }, 0);
   }
 
-  getSearchInputId(id: string): string {
-    return `search-${id}`;
+  /** Id DOM-safe para inputs y cards (la cabecera puede tener espacios y caracteres especiales). */
+  getCardId(header: string): string {
+    return header.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
   }
 
-  getSelectedLabel(headerKey: string): string {
-    return this.getOptionLabel(this.selectedMappings()[headerKey]);
+  getSearchInputId(header: string): string {
+    return `search-${this.getCardId(header)}`;
+  }
+
+  getSelectedLabel(header: string): string {
+    return this.getOptionLabel(this.selectedMappings()[header]);
   }
 
   getOptionLabel(optionId?: string): string {
@@ -385,11 +402,9 @@ export class ClientShipmentsUploadV3ViewComponent {
     }
 
     const selections = this.selectedMappings();
-    const headerKeyMap = this.getHeaderKeyMap();
     const mapping = this.getFieldOptions().reduce<Record<string, string>>((acc, option) => {
-      const headerKey = Object.entries(selections).find(([, value]) => value === option.id)?.[0];
-      const header = headerKey ? headerKeyMap[headerKey] : 'Opcional';
-      acc[option.apiKey] = header || 'Opcional';
+      const header = Object.entries(selections).find(([, value]) => value === option.id)?.[0];
+      acc[option.apiKey] = header ?? 'Opcional';
       return acc;
     }, {});
 
@@ -408,11 +423,40 @@ export class ClientShipmentsUploadV3ViewComponent {
   }
 
   getTopSections(): HeaderGroup[] {
-    return this.getHeaderGroups().slice(0, 2);
+    return this.headerGroups().slice(0, 2);
   }
 
   getAccordionSections(): HeaderGroup[] {
-    return this.getHeaderGroups().slice(2);
+    return this.headerGroups().slice(2);
+  }
+
+  /**
+   * Mueve una cabecera dentro de la misma sección o a otra sección (drag and drop).
+   */
+  drop(event: CdkDragDrop<string[]>): void {
+    const prevData = event.previousContainer.data;
+    const currData = event.container.data;
+    const groups = this.headerGroups();
+    const prevIdx = groups.findIndex((g) => g.headers === prevData);
+    const currIdx = groups.findIndex((g) => g.headers === currData);
+    if (prevIdx === -1 || currIdx === -1) return;
+
+    if (prevIdx === currIdx) {
+      const newHeaders = [...prevData];
+      moveItemInArray(newHeaders, event.previousIndex, event.currentIndex);
+      this.headerGroups.update((gs) =>
+        gs.map((g, i) => (i === prevIdx ? { ...g, headers: newHeaders } : g))
+      );
+    } else {
+      const newPrev = [...prevData];
+      const newCurr = [...currData];
+      transferArrayItem(newPrev, newCurr, event.previousIndex, event.currentIndex);
+      this.headerGroups.update((gs) =>
+        gs.map((g, i) =>
+          i === prevIdx ? { ...g, headers: newPrev } : i === currIdx ? { ...g, headers: newCurr } : g
+        )
+      );
+    }
   }
 
   toggleAccordion(sectionId: string): void {
@@ -550,18 +594,4 @@ export class ClientShipmentsUploadV3ViewComponent {
     return keywords.some((keyword) => value.includes(this.normalizeForSearch(keyword)));
   }
 
-  getHeaderKey(sectionId: string, header: string, index: number): string {
-    const safeHeader = String(header || '').trim().toLowerCase().replace(/\s+/g, '-');
-    return `${sectionId}-${index}-${safeHeader}`;
-  }
-
-  private getHeaderKeyMap(): Record<string, string> {
-    const map: Record<string, string> = {};
-    this.getHeaderGroups().forEach((group) => {
-      group.headers.forEach((header, index) => {
-        map[this.getHeaderKey(group.id, header, index)] = header;
-      });
-    });
-    return map;
-  }
 }
