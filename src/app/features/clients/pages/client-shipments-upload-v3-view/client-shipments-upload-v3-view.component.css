@@ -346,6 +346,23 @@
   height: 100%;
 }
 
+/* Card pendiente: sin asignar o "Opcional" — animación en rojo */
+.upload-v3-card--pending {
+  border-color: #fca5a5;
+  background: rgba(254, 226, 226, 0.4);
+  animation: upload-v3-pending-pulse 2s ease-in-out infinite;
+}
+
+@keyframes upload-v3-pending-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.2);
+  }
+}
+
 /* Drag and drop (CDK) */
 .upload-v3-card.cdk-drag-dragging {
   opacity: 0.85;

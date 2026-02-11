@@ -321,6 +321,12 @@ export class ClientShipmentsUploadV3ViewComponent {
     return this.getOptionLabel(this.selectedMappings()[header]);
   }
 
+  /** True si la card aún no tiene un campo asignado o está en "Opcional" (falta por definir). */
+  isCardPending(header: string): boolean {
+    const value = this.selectedMappings()[header];
+    return !value || value === 'Opcional';
+  }
+
   getOptionLabel(optionId?: string): string {
     if (!optionId) {
       return 'Seleccionar campo';

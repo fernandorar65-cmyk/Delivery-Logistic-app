@@ -89,7 +89,12 @@
               (cdkDropListDropped)="drop($event)"
             >
               @for (header of section.headers; track header) {
-                <article class="upload-v3-card" cdkDrag [cdkDragData]="header">
+                <article
+                  class="upload-v3-card"
+                  [class.upload-v3-card--pending]="isCardPending(header)"
+                  cdkDrag
+                  [cdkDragData]="header"
+                >
                   <div class="field-info">
                     <span class="material-symbols-outlined field-icon drag-handle" cdkDragHandle>drag_indicator</span>
                     <span class="material-symbols-outlined field-icon">dataset</span>
@@ -157,7 +162,12 @@
                   (cdkDropListDropped)="drop($event)"
                 >
                   @for (header of section.headers; track header) {
-                    <article class="upload-v3-card" cdkDrag [cdkDragData]="header">
+                    <article
+                      class="upload-v3-card"
+                      [class.upload-v3-card--pending]="isCardPending(header)"
+                      cdkDrag
+                      [cdkDragData]="header"
+                    >
                       <div class="field-info">
                         <span class="material-symbols-outlined field-icon drag-handle" cdkDragHandle>drag_indicator</span>
                         <span class="material-symbols-outlined field-icon">dataset</span>
