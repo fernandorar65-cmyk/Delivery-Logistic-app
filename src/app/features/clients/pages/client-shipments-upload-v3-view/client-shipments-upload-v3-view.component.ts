@@ -187,6 +187,24 @@ export class ClientShipmentsUploadV3ViewComponent {
     input.value = '';
   }
 
+  onDescartar(fileInput?: HTMLInputElement): void {
+    this.excelHeaders.set([]);
+    this.headerGroups.set([]);
+    this.selectedMappings.set({});
+    this.excelFileName.set(null);
+    this.excelError.set(null);
+    this.templateResult.set(null);
+    this.templateError.set(null);
+    this.mappingError.set(null);
+    this.mappingResult.set(null);
+    this.showTemplateDetectedModal.set(false);
+    this.searchText.set({});
+    this.openSelectId.set(null);
+    if (fileInput) {
+      this.resetFileInput(fileInput);
+    }
+  }
+
   onExcelFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0];
@@ -260,6 +278,12 @@ export class ClientShipmentsUploadV3ViewComponent {
       return 0;
     }
     return Math.round((this.mappedCount() / total) * 100);
+  }
+
+  /** Para el anillo de progreso: stroke-dashoffset (circunferencia ≈ 125.66 con r=20). */
+  progressRingDashOffset(): number {
+    const circumference = 2 * Math.PI * 20;
+    return circumference * (1 - this.progressPercent() / 100);
   }
 
   selectOption(header: string, value: string): void {
@@ -452,6 +476,15 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   getAccordionSections(): HeaderGroup[] {
     return this.headerGroups().slice(2);
+  }
+
+  getSectionTitleShort(sectionId: string): string {
+    const map: Record<string, string> = {
+      pickup: 'Recojo',
+      delivery: 'Entrega',
+      package: 'Paquete'
+    };
+    return map[sectionId] ?? sectionId;
   }
 
   /**

@@ -3,12 +3,13 @@
     <app-modal title="Template anterior encontrado" size="sm" (close)="closeTemplateDetectedModal()">
       <p>Se encontró un template anterior, por lo que se preseleccionó la definición de los campos según tu configuración previa. Puedes revisar o ajustar las asignaciones y guardar.</p>
       <div class="upload-v3-modal-actions">
-        <button type="button" class="action-button primary" (click)="closeTemplateDetectedModal()">
+        <button type="button" class="upload-v3-btn upload-v3-btn--primary" (click)="closeTemplateDetectedModal()">
           Entendido
         </button>
       </div>
     </app-modal>
   }
+
   <header class="upload-v3-header" [class.collapsed]="excelHeaders().length">
     <div>
       <p class="upload-v3-badge">Subir Orden V3</p>
@@ -28,7 +29,7 @@
       <div class="upload-v3-buttons">
         <input type="file" accept=".xlsx,.csv" #excelInput hidden (change)="onExcelFileSelected($event)" />
         @if (!excelHeaders().length) {
-          <button type="button" class="action-button outline" (click)="resetFileInput(excelInput); excelInput.click()">
+          <button type="button" class="action-button primary" (click)="resetFileInput(excelInput); excelInput.click()">
             <span class="material-symbols-outlined">upload_file</span>
             Cargar Excel
           </button>
@@ -43,7 +44,6 @@
       {{ excelError() }}
     </div>
   }
-
   @if (mappingError()) {
     <div class="upload-v3-error">
       <span class="material-symbols-outlined">error</span>
@@ -52,67 +52,152 @@
   }
 
   @if (excelHeaders().length) {
-    <div class="upload-v3-top-row">
-      <section class="upload-v3-progress">
-        <div>
-          <h3>Progreso global</h3>
-          <p>{{ mappedCount() }} / {{ totalHeaders() }} campos asignados</p>
+    <header class="upload-v3-header-sticky">
+      <div class="upload-v3-header-inner">
+        <div class="upload-v3-header-left">
+          <div class="upload-v3-progress-ring">
+            <svg class="upload-v3-progress-ring-svg" viewBox="0 0 48 48">
+              <circle class="upload-v3-progress-ring-bg" cx="24" cy="24" r="20" fill="none" stroke-width="2.5" />
+              <circle
+                class="upload-v3-progress-ring-fill"
+                cx="24"
+                cy="24"
+                r="20"
+                fill="none"
+                stroke-width="2.5"
+                [attr.stroke-dasharray]="125.66"
+                [attr.stroke-dashoffset]="progressRingDashOffset()"
+              />
+            </svg>
+            <span class="upload-v3-progress-ring-text">{{ progressPercent() }}%</span>
+          </div>
+          <div>
+            <div class="upload-v3-header-badges">
+              <span class="upload-v3-badge">Subir Orden V3</span>
+              <span class="upload-v3-badge-dot">•</span>
+              <span class="upload-v3-badge-sub">Mapeo de columnas</span>
+            </div>
+            <h1 class="upload-v3-title">Mapeo de datos de alta fidelidad</h1>
+          </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-value" [style.width.%]="progressPercent()"></div>
+        <div class="upload-v3-header-right">
+          <div class="upload-v3-file-info">
+            <p class="upload-v3-file-label">Archivo cargado</p>
+            <p class="upload-v3-file-name">
+              <span class="material-symbols-outlined">description</span>
+              {{ excelFileName() }}
+            </p>
+          </div>
+          <input type="file" accept=".xlsx,.csv" #excelInput hidden (change)="onExcelFileSelected($event)" />
+          <button type="button" class="upload-v3-btn upload-v3-btn--secondary" (click)="resetFileInput(excelInput); excelInput.click()">
+            <span class="material-symbols-outlined">refresh</span>
+            Cambiar
+          </button>
         </div>
-      </section>
-      <button
-        type="button"
-        class="action-button primary upload-v3-save"
-        (click)="createTemplate()"
-        [disabled]="mappingLoading() || !excelHeaders().length"
-      >
-        <span class="material-symbols-outlined">save</span>
-        @if (mappingLoading()) { Guardando... } @else { Guardar template }
-      </button>
-    </div>
-    <div class="upload-v3-body" [class.expanded]="excelHeaders().length" cdkDropListGroup>
-      <div class="upload-v3-top">
+      </div>
+    </header>
+
+    <main class="upload-v3-main" cdkDropListGroup>
+      <div class="upload-v3-sections-grid">
         @for (section of getTopSections(); track section.id) {
-          <section class="upload-v3-section">
-            <div class="upload-v3-section-header">
-              <span class="section-title">{{ section.title }}</span>
-              <span class="material-symbols-outlined section-icon">
-                {{ section.id === 'group-1' ? 'local_shipping' : 'location_on' }}
-              </span>
+          <div class="upload-v3-section-card">
+            <div class="upload-v3-section-card-head">
+              <h2 class="upload-v3-section-title">{{ getSectionTitleShort(section.id) }}</h2>
             </div>
             <div
-              class="upload-v3-grid upload-v3-drop-list"
+              class="upload-v3-scrollable-content upload-v3-drop-list"
               cdkDropList
               [cdkDropListData]="section.headers"
               (cdkDropListDropped)="drop($event)"
             >
+              <div class="upload-v3-mapping-list">
+                @for (header of section.headers; track header) {
+                  <div
+                    class="upload-v3-mapping-row"
+                    [class.upload-v3-mapping-row--pending]="isCardPending(header)"
+                    cdkDrag
+                    [cdkDragData]="header"
+                  >
+                    <span class="material-symbols-outlined upload-v3-mapping-icon drag-handle" cdkDragHandle>drag_indicator</span>
+                    <span class="material-symbols-outlined upload-v3-mapping-icon">dataset</span>
+                    <div class="upload-v3-mapping-label-wrap">
+                      <p class="upload-v3-mapping-label">{{ header }}</p>
+                      <p class="upload-v3-mapping-hint">Columna del Excel</p>
+                    </div>
+                    <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
+                      <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(header)">
+                        <span>{{ getSelectedLabel(header) }}</span>
+                        <span class="material-symbols-outlined">expand_more</span>
+                      </button>
+                      @if (isSelectOpen(header)) {
+                        <div class="upload-v3-select-menu">
+                          <input
+                            type="text"
+                            class="upload-v3-select-search"
+                            placeholder="Buscar campo"
+                            [id]="getSearchInputId(header)"
+                            [value]="getSearchValue(header)"
+                            (input)="setSearchValue(header, $any($event.target).value)"
+                            (click)="$event.stopPropagation()"
+                          />
+                          @for (option of getFilteredOptions(header); track option) {
+                            <button
+                              type="button"
+                              class="upload-v3-select-option"
+                              [class.upload-v3-select-option--active]="isSelected(header, option)"
+                              (click)="selectOption(header, option)"
+                            >
+                              {{ getOptionLabel(option) }}
+                            </button>
+                          } @empty {
+                            <div class="upload-v3-select-empty">Sin coincidencias</div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @for (section of getAccordionSections(); track section.id) {
+        <div class="upload-v3-section-card upload-v3-section-card--full">
+          <div class="upload-v3-section-card-head">
+            <h2 class="upload-v3-section-title">{{ getSectionTitleShort(section.id) }}</h2>
+          </div>
+          <div
+            class="upload-v3-scrollable-content upload-v3-drop-list"
+            cdkDropList
+            [cdkDropListData]="section.headers"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div class="upload-v3-paquete-grid">
               @for (header of section.headers; track header) {
-                <article
-                  class="upload-v3-card"
-                  [class.upload-v3-card--pending]="isCardPending(header)"
+                <div
+                  class="upload-v3-mapping-row"
+                  [class.upload-v3-mapping-row--pending]="isCardPending(header)"
                   cdkDrag
                   [cdkDragData]="header"
                 >
-                  <div class="field-info">
-                    <span class="material-symbols-outlined field-icon drag-handle" cdkDragHandle>drag_indicator</span>
-                    <span class="material-symbols-outlined field-icon">dataset</span>
-                    <div>
-                      <p class="field-label">{{ header }}</p>
-                      <p class="field-hint">Selecciona el campo del sistema</p>
-                    </div>
+                  <span class="material-symbols-outlined upload-v3-mapping-icon drag-handle" cdkDragHandle>drag_indicator</span>
+                  <span class="material-symbols-outlined upload-v3-mapping-icon">dataset</span>
+                  <div class="upload-v3-mapping-label-wrap">
+                    <p class="upload-v3-mapping-label">{{ header }}</p>
+                    <p class="upload-v3-mapping-hint">Columna del Excel</p>
                   </div>
-                  <div class="select-box" (click)="$event.stopPropagation()">
-                    <button type="button" class="select-trigger" (click)="toggleSelect(header)">
+                  <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
+                    <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(header)">
                       <span>{{ getSelectedLabel(header) }}</span>
-                      <span class="material-symbols-outlined">unfold_more</span>
+                      <span class="material-symbols-outlined">expand_more</span>
                     </button>
                     @if (isSelectOpen(header)) {
-                      <div class="select-menu">
+                      <div class="upload-v3-select-menu">
                         <input
                           type="text"
-                          class="select-search"
+                          class="upload-v3-select-search"
                           placeholder="Buscar campo"
                           [id]="getSearchInputId(header)"
                           [value]="getSearchValue(header)"
@@ -122,100 +207,45 @@
                         @for (option of getFilteredOptions(header); track option) {
                           <button
                             type="button"
-                            class="select-option"
-                            [class.active]="isSelected(header, option)"
+                            class="upload-v3-select-option"
+                            [class.upload-v3-select-option--active]="isSelected(header, option)"
                             (click)="selectOption(header, option)"
                           >
                             {{ getOptionLabel(option) }}
                           </button>
                         } @empty {
-                          <div class="select-empty">Sin coincidencias</div>
+                          <div class="upload-v3-select-empty">Sin coincidencias</div>
                         }
                       </div>
                     }
                   </div>
-                </article>
+                </div>
               }
             </div>
-          </section>
-        }
-      </div>
-
-      <div class="upload-v3-accordion">
-        @for (section of getAccordionSections(); track section.id) {
-          <div class="accordion-item">
-            <button type="button" class="accordion-header" (click)="toggleAccordion(section.id)">
-              <span class="accordion-title">
-                <span class="section-title">{{ section.title }}</span>
-                <span class="material-symbols-outlined section-icon">inventory_2</span>
-              </span>
-              <span class="material-symbols-outlined">
-                {{ isAccordionOpen(section.id) ? 'expand_less' : 'expand_more' }}
-              </span>
-            </button>
-            @if (isAccordionOpen(section.id)) {
-              <div class="accordion-body">
-                <div
-                  class="upload-v3-grid upload-v3-drop-list"
-                  cdkDropList
-                  [cdkDropListData]="section.headers"
-                  (cdkDropListDropped)="drop($event)"
-                >
-                  @for (header of section.headers; track header) {
-                    <article
-                      class="upload-v3-card"
-                      [class.upload-v3-card--pending]="isCardPending(header)"
-                      cdkDrag
-                      [cdkDragData]="header"
-                    >
-                      <div class="field-info">
-                        <span class="material-symbols-outlined field-icon drag-handle" cdkDragHandle>drag_indicator</span>
-                        <span class="material-symbols-outlined field-icon">dataset</span>
-                        <div>
-                          <p class="field-label">{{ header }}</p>
-                          <p class="field-hint">Selecciona el campo del sistema</p>
-                        </div>
-                      </div>
-                      <div class="select-box" (click)="$event.stopPropagation()">
-                        <button type="button" class="select-trigger" (click)="toggleSelect(header)">
-                          <span>{{ getSelectedLabel(header) }}</span>
-                          <span class="material-symbols-outlined">unfold_more</span>
-                        </button>
-                        @if (isSelectOpen(header)) {
-                          <div class="select-menu">
-                            <input
-                              type="text"
-                              class="select-search"
-                              placeholder="Buscar campo"
-                              [id]="getSearchInputId(header)"
-                              [value]="getSearchValue(header)"
-                              (input)="setSearchValue(header, $any($event.target).value)"
-                              (click)="$event.stopPropagation()"
-                            />
-                            @for (option of getFilteredOptions(header); track option) {
-                              <button
-                                type="button"
-                                class="select-option"
-                                [class.active]="isSelected(header, option)"
-                                (click)="selectOption(header, option)"
-                              >
-                                {{ getOptionLabel(option) }}
-                              </button>
-                            } @empty {
-                              <div class="select-empty">Sin coincidencias</div>
-                            }
-                          </div>
-                        }
-                      </div>
-                    </article>
-                  }
-                </div>
-              </div>
-            }
           </div>
-        }
-      </div>
-    </div>
+        </div>
+      }
+
+      <footer class="upload-v3-footer">
+        <div class="upload-v3-footer-info">
+          <span class="material-symbols-outlined upload-v3-footer-icon">verified</span>
+          <p>El sistema utiliza <strong class="upload-v3-footer-smart">Smart Mapping</strong> para pre-asignar campos basándose en el historial de operaciones anteriores.</p>
+        </div>
+        <div class="upload-v3-footer-actions">
+          <button type="button" class="upload-v3-btn upload-v3-btn--ghost" (click)="onDescartar(excelInput)">
+            Descartar
+          </button>
+          <button
+            type="button"
+            class="upload-v3-btn upload-v3-btn--primary"
+            (click)="createTemplate()"
+            [disabled]="mappingLoading()"
+          >
+            @if (mappingLoading()) { Validando... } @else { Confirmar y validar datos }
+          </button>
+        </div>
+      </footer>
+    </main>
   } @else {
     <div class="upload-v3-empty">
       <span class="material-symbols-outlined">cloud_upload</span>
