@@ -612,8 +612,8 @@ export class ClientShipmentsUploadV3ViewComponent {
       'package'
     ];
 
-    const sections = this.standardSections.map((section, index) => ({
-      id: `group-${index + 1}`,
+    const sections = this.standardSections.map((section) => ({
+      id: section.id,
       title: section.title,
       headers: [] as string[]
     }));
