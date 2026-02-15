@@ -89,12 +89,9 @@
         <div class="card-header tech-card-header">
           <div class="tech-header-content">
             <div class="tech-header-icon">
-              <app-hero-icon name="wrench-screwdriver" [size]="20"></app-hero-icon>
+              <app-hero-icon name="wrench-screwdriver" [size]="16"></app-hero-icon>
             </div>
-            <div>
-              <h3>Detalles Técnicos</h3>
-              <p class="tech-header-subtitle">Especificaciones del vehículo</p>
-            </div>
+            <h3>Detalles Técnicos</h3>
           </div>
         </div>
         <div class="tech-details-body">
@@ -183,33 +180,42 @@
       </section>
 
       <section class="vehicle-card metrics-card">
-        <div class="card-header">
+        <div class="card-header metrics-card-header">
           <h3>Métricas de Rendimiento</h3>
         </div>
-        <div class="metric-item">
-          <div class="metric-row">
-            <span>Consumo de Combustible</span>
-            <strong>32.5 L/100km</strong>
+        <div class="metrics-row">
+          <div class="metric-block metric-block-fuel">
+            <div class="metric-block-icon">
+              <app-hero-icon name="bolt" [size]="18"></app-hero-icon>
+            </div>
+            <div class="metric-block-content">
+              <span class="metric-block-label">Consumo de Combustible</span>
+              <strong class="metric-block-value">32.5 L/100km</strong>
+              <div class="metric-bar">
+                <span class="metric-bar-fill" style="width: 65%;"></span>
+              </div>
+              <span class="metric-block-footnote">Promedio mensual: 31.2 L</span>
+            </div>
           </div>
-          <div class="metric-bar">
-            <span class="metric-bar-fill" style="width: 65%;"></span>
+          <div class="metric-block metric-block-km">
+            <div class="metric-block-icon">
+              <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
+            </div>
+            <div class="metric-block-content">
+              <span class="metric-block-label">Km Recorridos</span>
+              <strong class="metric-block-value">12,450</strong>
+              <span class="metric-block-footnote">Este mes</span>
+            </div>
           </div>
-          <span class="metric-footnote">Promedio mensual: 31.2 L</span>
-        </div>
-        <div class="metric-highlight">
-          <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
-          <div>
-            <p>Km Recorridos</p>
-            <strong>12,450</strong>
-            <span>Este mes</span>
-          </div>
-        </div>
-        <div class="metric-highlight alert">
-          <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
-          <div>
-            <p>Incidentes Reportados</p>
-            <strong>2</strong>
-            <span>Total</span>
+          <div class="metric-block metric-block-alert">
+            <div class="metric-block-icon">
+              <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
+            </div>
+            <div class="metric-block-content">
+              <span class="metric-block-label">Incidentes Reportados</span>
+              <strong class="metric-block-value">2</strong>
+              <span class="metric-block-footnote">Total</span>
+            </div>
           </div>
         </div>
       </section>
