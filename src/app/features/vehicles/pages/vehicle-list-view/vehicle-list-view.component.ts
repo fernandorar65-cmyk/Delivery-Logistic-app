@@ -42,8 +42,8 @@ export class VehicleListViewComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   isProviderUser = signal(false);
-  allyId = signal<string | null>(null);
-  allyName = signal<string | null>(null);
+  providerId = signal<string | null>(null);
+  providerName = signal<string | null>(null);
   createOpen = signal(false);
   createLoading = signal(false);
   createError = signal<string | null>(null);
@@ -125,24 +125,24 @@ export class VehicleListViewComponent implements OnInit {
     this.isProviderUser.set(normalizeUserType(userType) === 'provider');
 
     this.route.paramMap.subscribe(params => {
-      this.allyId.set(params.get('allyId'));
+      this.providerId.set(params.get('providerId'));
       this.currentPage.set(1);
       this.loadVehicles();
     });
 
     this.route.queryParamMap.subscribe(params => {
-      this.allyName.set(params.get('name'));
+      this.providerName.set(params.get('name'));
     });
 
-    if (!this.allyId()) {
-      this.allyId.set(this.getProviderId());
+    if (!this.providerId()) {
+      this.providerId.set(this.getProviderId());
     }
   }
 
   openCreateModal() {
-    const allyId = this.getProviderId();
-    if (!allyId) {
-      this.createError.set('No se encontró el aliado para registrar el vehículo.');
+    const providerId = this.effectiveProviderId;
+    if (!providerId) {
+      this.createError.set('No se encontró el provider para registrar el vehículo.');
       return;
     }
     this.createError.set(null);
@@ -179,9 +179,9 @@ export class VehicleListViewComponent implements OnInit {
       return;
     }
 
-    const allyId = this.getProviderId();
-    if (!allyId) {
-      this.createError.set('No se encontró el aliado para registrar el vehículo.');
+    const providerId = this.effectiveProviderId;
+    if (!providerId) {
+      this.createError.set('No se encontró el provider para registrar el vehículo.');
       return;
     }
 
@@ -205,7 +205,7 @@ export class VehicleListViewComponent implements OnInit {
       status
     } = this.createForm.getRawValue();
 
-    this.vehicleService.create(allyId, {
+    this.vehicleService.create(providerId, {
       license_plate: license_plate ?? '',
       brand: brand ?? undefined,
       model: model ?? undefined,
@@ -242,27 +242,27 @@ export class VehicleListViewComponent implements OnInit {
     return this.storageService.getItem(LocalStorageEnums.ID);
   }
 
-  get effectiveAllyId(): string | null {
+  get effectiveProviderId(): string | null {
     if (this.isProviderUser()) {
       return this.getProviderId();
     }
-    return this.allyId() || this.getProviderId();
+    return this.providerId() || this.getProviderId();
   }
 
   loadVehicles() {
     this.loading.set(true);
     this.error.set(null);
-    const allyId = this.getProviderId();
+    const providerId = this.effectiveProviderId;
 
-    if (!allyId) {
-      this.error.set('No se encontró el aliado para cargar vehículos.');
+    if (!providerId) {
+      this.error.set('No se encontró el provider para cargar vehículos.');
       this.loading.set(false);
       this.vehicles.set([]);
       this.totalItems.set(0);
       return;
     }
 
-    this.vehicleService.getByProvider(allyId).subscribe({
+    this.vehicleService.getByProvider(providerId).subscribe({
       next: (response) => {
         if (hasApiErrors(response)) {
           this.error.set('Error al cargar los vehículos');
@@ -277,7 +277,7 @@ export class VehicleListViewComponent implements OnInit {
 
         this.vehicles.set(mappedVehicles);
         this.totalItems.set(response.pagination?.count || mappedVehicles.length);
-        this.syncAllyName(mappedVehicles);
+        this.syncProviderName(mappedVehicles);
 
         // Actualizar estadísticas dinámicamente
         this.updateStats(this.scopedVehicles);
@@ -370,42 +370,42 @@ export class VehicleListViewComponent implements OnInit {
   totalItems = signal(0);
   itemsPerPage = 10;
 
-  get allyLabel(): string {
-    const name = this.allyName();
+  get providerLabel(): string {
+    const name = this.providerName();
     if (name) return name;
     if (this.isProviderUser()) return 'Flota';
-    const id = this.allyId();
-    return id ? `Aliado #${id}` : 'Flota';
+    const id = this.providerId();
+    return id ? `Provider #${id}` : 'Flota';
   }
 
   get pageTitle(): string {
     return this.isProviderUser()
       ? 'Vehículos'
-      : this.allyId()
-        ? `Vehículos de ${this.allyLabel}`
+      : this.providerId()
+        ? `Vehículos de ${this.providerLabel}`
         : 'Administración de Flota';
   }
 
   get pageSubtitle(): string {
     return this.isProviderUser()
       ? 'Supervisión operativa de tu flota.'
-      : this.allyId()
-      ? 'Supervisión operativa de la flota asignada al aliado.'
+      : this.providerId()
+      ? 'Supervisión operativa de la flota asignada al provider.'
       : 'Supervisión operativa y asignación técnica de unidades.';
   }
 
-  // Filtra por aliado seleccionado cuando aplica
+  // Filtra por provider seleccionado cuando aplica
   get scopedVehicles(): Vehicle[] {
-    const allyId = this.allyId();
-    const allyName = this.allyName();
+    const providerId = this.providerId();
+    const providerName = this.providerName();
     const items = this.vehicles();
-    if (!allyId && !allyName) {
+    if (!providerId && !providerName) {
       return items;
     }
 
     const filtered = items.filter(vehicle => {
-      const matchesId = allyId && vehicle.provider_id ? vehicle.provider_id === allyId : false;
-      const matchesName = allyName && vehicle.provider_name ? vehicle.provider_name === allyName : false;
+      const matchesId = providerId && vehicle.provider_id ? vehicle.provider_id === providerId : false;
+      const matchesName = providerName && vehicle.provider_name ? vehicle.provider_name === providerName : false;
       return matchesId || matchesName;
     });
     return filtered.length > 0 ? filtered : items;
@@ -479,11 +479,11 @@ export class VehicleListViewComponent implements OnInit {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-  private syncAllyName(vehicles: Vehicle[]) {
-    if (this.allyName() || !this.allyId()) return;
-    const match = vehicles.find(vehicle => vehicle.provider_id === this.allyId());
+  private syncProviderName(vehicles: Vehicle[]) {
+    if (this.providerName() || !this.providerId()) return;
+    const match = vehicles.find(vehicle => vehicle.provider_id === this.providerId());
     if (match?.provider_name) {
-      this.allyName.set(match.provider_name);
+      this.providerName.set(match.provider_name);
     }
   }
 }

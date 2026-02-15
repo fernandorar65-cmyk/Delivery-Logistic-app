@@ -14,6 +14,9 @@ Contra1234#
 -- providers
    provider01@gmail.com -- 20200300111
    Contra1234
+      INTERNOS:
+      InternoProvider01@gmail.com
+      Contra1234##
 
 -- CLIENTS --> los clientes de los companies
    cliente01@gmail.com -- 20400200111

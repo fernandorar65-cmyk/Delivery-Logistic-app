@@ -20,7 +20,7 @@ export class VehiclesCreateModalComponent {
   @Input({ required: true }) createForm!: FormGroup;
   @Input({ required: true }) vehicleTypes!: SelectOption[];
   @Input({ required: true }) statusOptions!: SelectOption[];
-  @Input({ required: true }) allyLabel!: string;
+  @Input({ required: true }) providerLabel!: string;
   @Input() createLoading = false;
   @Input() createError: string | null = null;
   @Output() close = new EventEmitter<void>();

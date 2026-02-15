@@ -18,8 +18,8 @@ export class VehiclesTableComponent {
   @Input() error: string | null = null;
   @Input() vehicles: Vehicle[] = [];
   @Input() totalFiltered = 0;
-  @Input() allyId: string | null = null;
-  @Input() allyName: string | null = null;
+  @Input() providerId: string | null = null;
+  @Input() providerName: string | null = null;
 
   getStatusClass(status?: string): string {
     if (!status) return '';

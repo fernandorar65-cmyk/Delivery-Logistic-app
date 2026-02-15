@@ -36,8 +36,8 @@ export class VehicleDetailViewComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   vehicle = signal<Vehicle | null>(null);
-  allyId = signal<string | null>(null);
-  allyName = signal<string | null>(null);
+  providerId = signal<string | null>(null);
+  providerName = signal<string | null>(null);
   vehicleId = signal<string | null>(null);
   editOpen = signal(false);
   editLoading = signal(false);
@@ -77,7 +77,7 @@ export class VehicleDetailViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.allyId.set(params.get('allyId'));
+      this.providerId.set(params.get('providerId'));
       const vehicleId = params.get('vehicleId');
       this.vehicleId.set(vehicleId);
       if (vehicleId) {
@@ -86,21 +86,21 @@ export class VehicleDetailViewComponent implements OnInit {
     });
 
     this.route.queryParamMap.subscribe(params => {
-      this.allyName.set(params.get('name'));
+      this.providerName.set(params.get('name'));
     });
   }
 
   private loadVehicle(vehicleId: string): void {
-    const allyId = this.allyId();
-    if (!allyId) {
-      this.error.set('No se encontró el aliado para cargar el vehículo.');
+    const providerId = this.providerId();
+    if (!providerId) {
+      this.error.set('No se encontró el provider para cargar el vehículo.');
       return;
     }
 
     this.loading.set(true);
     this.error.set(null);
 
-    this.vehicleService.getById(allyId, vehicleId).subscribe({
+    this.vehicleService.getById(providerId, vehicleId).subscribe({
       next: response => {
         if (hasApiErrors(response)) {
           this.error.set('No se pudo cargar el detalle del vehículo.');
@@ -142,9 +142,9 @@ export class VehicleDetailViewComponent implements OnInit {
       return;
     }
 
-    const allyId = this.allyId();
+    const providerId = this.providerId();
     const vehicleId = this.vehicleId();
-    if (!allyId || !vehicleId) {
+    if (!providerId || !vehicleId) {
       this.editError.set('No se encontró el vehículo para actualizar.');
       return;
     }
@@ -169,7 +169,7 @@ export class VehicleDetailViewComponent implements OnInit {
     this.editLoading.set(true);
     this.editError.set(null);
 
-    this.vehicleService.patch(allyId, vehicleId, {
+    this.vehicleService.patch(providerId, vehicleId, {
       license_plate: license_plate ?? '',
       brand: brand ?? undefined,
       model: model ?? undefined,
@@ -203,7 +203,7 @@ export class VehicleDetailViewComponent implements OnInit {
   }
 
   openDeleteModal(): void {
-    if (!this.vehicleId() || !this.allyId()) {
+    if (!this.vehicleId() || !this.providerId()) {
       this.deleteError.set('No se encontró el vehículo para dar de baja.');
       return;
     }
@@ -217,9 +217,9 @@ export class VehicleDetailViewComponent implements OnInit {
   }
 
   confirmDelete(): void {
-    const allyId = this.allyId();
+    const providerId = this.providerId();
     const vehicleId = this.vehicleId();
-    if (!allyId || !vehicleId) {
+    if (!providerId || !vehicleId) {
       this.deleteError.set('No se encontró el vehículo para dar de baja.');
       return;
     }
@@ -227,12 +227,12 @@ export class VehicleDetailViewComponent implements OnInit {
     this.deleteLoading.set(true);
     this.deleteError.set(null);
 
-    this.vehicleService.delete(allyId, vehicleId).subscribe({
+    this.vehicleService.delete(providerId, vehicleId).subscribe({
       next: () => {
         this.deleteLoading.set(false);
         this.closeDeleteModal();
-        this.router.navigate(['/allies', allyId, 'vehicles'], {
-          queryParams: { name: this.allyName() ?? undefined }
+        this.router.navigate(['/providers', providerId, 'vehicles'], {
+          queryParams: { name: this.providerName() ?? undefined }
         });
       },
       error: () => {
@@ -271,11 +271,11 @@ export class VehicleDetailViewComponent implements OnInit {
     return value === null || value === undefined ? undefined : value;
   }
 
-  get allyLabel(): string {
-    const name = this.allyName();
+  get providerLabel(): string {
+    const name = this.providerName();
     if (name) return name;
-    const id = this.allyId();
-    return id ? `Aliado #${id}` : 'Aliado';
+    const id = this.providerId();
+    return id ? `Provider #${id}` : 'Provider';
   }
 
   getStatusLabel(status?: string): string {

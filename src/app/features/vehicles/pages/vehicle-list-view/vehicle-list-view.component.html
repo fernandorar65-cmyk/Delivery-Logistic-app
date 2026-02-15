@@ -6,7 +6,7 @@
       <span>Inicio</span>
     </a>
     <span class="breadcrumb-separator">/</span>
-    <a routerLink="/allies" class="breadcrumb-link">Aliados</a>
+    <a routerLink="/providers" class="breadcrumb-link">Providers</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current">{{ pageTitle }}</span>
   </div>
@@ -17,7 +17,7 @@
       <h1 class="page-title">{{ pageTitle }}</h1>
       <p class="page-subtitle">{{ pageSubtitle }}</p>
     </div>
-    <button class="btn btn-primary" (click)="openCreateModal()" [disabled]="!effectiveAllyId">
+    <button class="btn btn-primary" (click)="openCreateModal()" [disabled]="!effectiveProviderId">
       <app-hero-icon name="plus" [size]="18"></app-hero-icon>
       Registrar Vehículo
     </button>
@@ -40,8 +40,8 @@
     [error]="error()"
     [vehicles]="paginatedVehicles"
     [totalFiltered]="filteredVehicles.length"
-    [allyId]="effectiveAllyId"
-    [allyName]="allyName()"
+    [providerId]="effectiveProviderId"
+    [providerName]="providerName()"
   ></app-vehicles-table>
 
   <app-pagination
@@ -64,7 +64,7 @@
     [createForm]="createForm"
     [vehicleTypes]="vehicleTypes"
     [statusOptions]="statusOptions"
-    [allyLabel]="allyLabel"
+    [providerLabel]="providerLabel"
     [createLoading]="createLoading()"
     [createError]="createError()"
     (close)="closeCreateModal()"

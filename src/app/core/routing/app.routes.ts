@@ -69,21 +69,14 @@ export const routes: Routes = [
           .then(m => m.InternalUsersViewComponent)
       },
       {
-        path: 'allies',
-        canActivate: [roleGuard],
-        data: { roles: ['admin', 'company'] },
-        loadComponent: () => import('@app/features/providers/pages/providers-list-view/providers-list-view.component')
-          .then(m => m.AllyListViewComponent)
-      },
-      {
-        path: 'allies/:allyId/vehicles',
+        path: 'providers/:providerId/vehicles',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'provider'] },
         loadComponent: () => import('@app/features/vehicles/pages/vehicle-list-view/vehicle-list-view.component')
           .then(m => m.VehicleListViewComponent)
       },
       {
-        path: 'allies/:allyId/vehicles/:vehicleId',
+        path: 'providers/:providerId/vehicles/:vehicleId',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'provider'] },
         loadComponent: () => import('@app/features/vehicles/pages/vehicle-detail-view/vehicle-detail-view.component')

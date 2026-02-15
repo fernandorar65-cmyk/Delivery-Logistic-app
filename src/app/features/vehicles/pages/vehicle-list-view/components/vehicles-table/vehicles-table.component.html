@@ -30,7 +30,7 @@
           <tr>
             <th>Vehículo</th>
             <th>Tipo / Modelo</th>
-            <th>Aliado</th>
+            <th>Provider</th>
             <th>Capacidad</th>
             <th>Estado</th>
             <th class="text-right">Acciones</th>
@@ -69,12 +69,12 @@
               </td>
               <td class="text-right">
                 <div class="action-buttons">
-                  @if (vehicle.id && allyId) {
+                  @if (vehicle.id && providerId) {
                     <a
                       class="action-btn"
                       title="Ver Detalle"
-                      [routerLink]="['/allies', allyId, 'vehicles', vehicle.id]"
-                      [queryParams]="{ name: allyName ?? undefined }"
+                      [routerLink]="['/providers', providerId, 'vehicles', vehicle.id]"
+                      [queryParams]="{ name: providerName ?? undefined }"
                     >
                       <app-hero-icon name="clock" [size]="18"></app-hero-icon>
                     </a>

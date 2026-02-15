@@ -51,10 +51,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
-    path: 'allies',
-    renderMode: RenderMode.Server
-  },
-  {
     path: 'companies',
     renderMode: RenderMode.Server
   },
@@ -76,11 +72,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
-    path: 'allies/:allyId/vehicles',
+    path: 'providers/:providerId/vehicles',
     renderMode: RenderMode.Server
   },
   {
-    path: 'allies/:allyId/vehicles/:vehicleId',
+    path: 'providers/:providerId/vehicles/:vehicleId',
     renderMode: RenderMode.Server
   },
   {

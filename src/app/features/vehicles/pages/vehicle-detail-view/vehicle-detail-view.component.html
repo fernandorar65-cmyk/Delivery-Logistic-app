@@ -5,9 +5,9 @@
       <span>Inicio</span>
     </a>
     <span class="breadcrumb-separator">/</span>
-    <a routerLink="/allies" class="breadcrumb-link">Aliados</a>
+    <a routerLink="/providers" class="breadcrumb-link">Providers</a>
     <span class="breadcrumb-separator">/</span>
-    <a [routerLink]="['/allies', allyId(), 'vehicles']" class="breadcrumb-link">Vehículos</a>
+    <a [routerLink]="['/providers', providerId(), 'vehicles']" class="breadcrumb-link">Vehículos</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current">Detalle</span>
   </div>
@@ -65,8 +65,8 @@
         </div>
         <div class="vehicle-summary-meta">
           <div class="meta-item">
-            <span class="meta-label">Aliado</span>
-            <span class="meta-value">{{ vehicle()?.provider_name || allyLabel }}</span>
+            <span class="meta-label">Provider</span>
+            <span class="meta-value">{{ vehicle()?.provider_name || providerLabel }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Tipo</span>
