@@ -25,6 +25,12 @@ export class ClientService {
     return this.http.get<CompanyRequestPendingListResponse>(`${environment.apiUrl}/company-clients/pending/`);
   }
 
+  getMyClients(): Observable<ClientListResponse> {
+    return this.http.get<ClientListResponse>(`${environment.apiUrl}/company-clients/my-clients/`).pipe(
+      map((response) => this.normalizeListResponse(response))
+    );
+  }
+
   getMyCompanies(): Observable<ClientCompanyListResponse> {
     return this.http.get<ClientCompanyListResponse>(`${environment.apiUrl}/company-clients/my-companies/`);
   }

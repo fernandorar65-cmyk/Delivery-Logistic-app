@@ -23,8 +23,9 @@
       [error]="error()"
       [clients]="clients()"
       [emptyTitle]="showPending() ? 'No hay clientes pendientes' : 'No hay clientes registrados'"
-      [emptyDescription]="showPending() ? 'No hay solicitudes pendientes de match.' : 'Comienza agregando tu primer cliente al sistema'"
+      [emptyDescription]="showPending() ? 'No tienes solicitudes de vinculación pendientes. Los clientes que soliciten vincularse aparecerán aquí.' : 'Comienza agregando tu primer cliente al sistema'"
       [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
+      [emptyIcon]="showPending() ? 'clock' : 'users'"
       (createRequested)="openNewClientModal()"
       (edit)="openEditClientModal($event)"
       (remove)="openDeleteConfirm($event)"
@@ -33,8 +34,9 @@
     <app-clients-table
       [clients]="clients()"
       [emptyTitle]="showPending() ? 'No hay clientes pendientes' : 'No hay clientes registrados'"
-      [emptyDescription]="showPending() ? 'No hay solicitudes pendientes de match.' : 'Comienza agregando tu primer cliente al sistema'"
+      [emptyDescription]="showPending() ? 'No tienes solicitudes de vinculación pendientes. Los clientes que soliciten vincularse aparecerán aquí.' : 'Comienza agregando tu primer cliente al sistema'"
       [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
+      [emptyIcon]="showPending() ? 'clock' : 'users'"
       (edit)="openEditClientModal($event)"
       (remove)="openDeleteConfirm($event)"
     ></app-clients-table>

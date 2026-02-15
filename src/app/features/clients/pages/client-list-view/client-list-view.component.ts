@@ -53,6 +53,7 @@ export class ClientListViewComponent implements OnInit {
   hasPrevious = signal(false);
   pageSize = signal(10);
   isCompanyUser = signal(false);
+  isAdminUser = signal(false);
   showPending = signal(false);
   pendingCount = signal(0);
   
@@ -86,14 +87,20 @@ export class ClientListViewComponent implements OnInit {
 
   ngOnInit(): void {
     const userType = this.storageService.getItem(LocalStorageEnums.USER_TYPE);
-    this.isCompanyUser.set(normalizeUserType(userType) === 'company');
-    this.loadClients(1);
+    const role = normalizeUserType(userType);
+    this.isCompanyUser.set(role === 'company');
+    this.isAdminUser.set(role === 'admin');
+    if (role === 'admin') {
+      this.loadAllClients(1);
+    } else if (role === 'company') {
+      this.loadMyClients();
+    }
   }
 
-  loadClients(page: number = 1) {
+  /** Solo para admin: lista global de clientes GET /clients/?page=X */
+  loadAllClients(page: number = 1) {
     this.loading.set(true);
     this.error.set(null);
-    this.showPending.set(false);
     
     this.clientService.getAll(page).subscribe({
       next: (response) => {
@@ -114,7 +121,39 @@ export class ClientListViewComponent implements OnInit {
         this.currentPage.set(page);
         this.loading.set(false);
       },
-      error: (err) => {
+      error: () => {
+        this.error.set('Error al cargar los clientes. Por favor, intente nuevamente.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  /** Solo para company: clientes vinculados GET /company-clients/my-clients/ */
+  loadMyClients() {
+    this.loading.set(true);
+    this.error.set(null);
+    this.showPending.set(false);
+
+    this.clientService.getMyClients().subscribe({
+      next: (response) => {
+        if (hasApiErrors(response)) {
+          this.error.set('Error al cargar los clientes. Por favor, intente nuevamente.');
+          this.loading.set(false);
+          return;
+        }
+        const results = response.result ?? [];
+        this.clients.set(results);
+        this.totalCount.set(response.pagination?.count ?? results.length);
+        const hasNext = !!response.pagination?.next;
+        this.hasNext.set(hasNext);
+        this.hasPrevious.set(!!response.pagination?.previous);
+        if ((hasNext || this.currentPage() === 1) && results.length > 0) {
+          this.pageSize.set(results.length);
+        }
+        this.currentPage.set(1);
+        this.loading.set(false);
+      },
+      error: () => {
         this.error.set('Error al cargar los clientes. Por favor, intente nuevamente.');
         this.loading.set(false);
       }
@@ -132,7 +171,8 @@ export class ClientListViewComponent implements OnInit {
           this.loading.set(false);
           return;
         }
-        const results = response.result || [];
+        const raw = response.result;
+        const results = Array.isArray(raw) ? raw : [];
         const mapped = results.map((match) => this.mapPendingToClient(match));
         this.clients.set(mapped);
         this.pendingCount.set(response.pagination?.count ?? mapped.length);
@@ -162,7 +202,7 @@ export class ClientListViewComponent implements OnInit {
     if (next) {
       this.loadPendingClients();
     } else {
-      this.loadClients(1);
+      this.loadMyClients();
     }
   }
 
@@ -171,7 +211,11 @@ export class ClientListViewComponent implements OnInit {
       return;
     }
     if (this.hasNext()) {
-      this.loadClients(this.currentPage() + 1);
+      if (this.isAdminUser()) {
+        this.loadAllClients(this.currentPage() + 1);
+      } else {
+        this.loadMyClients();
+      }
     }
   }
 
@@ -180,7 +224,11 @@ export class ClientListViewComponent implements OnInit {
       return;
     }
     if (this.hasPrevious()) {
-      this.loadClients(this.currentPage() - 1);
+      if (this.isAdminUser()) {
+        this.loadAllClients(this.currentPage() - 1);
+      } else {
+        this.loadMyClients();
+      }
     }
   }
 
@@ -219,7 +267,11 @@ export class ClientListViewComponent implements OnInit {
       return;
     }
     if (page >= 1 && page <= this.totalPages) {
-      this.loadClients(page);
+      if (this.isAdminUser()) {
+        this.loadAllClients(page);
+      } else {
+        this.loadMyClients();
+      }
     }
   }
 
@@ -287,9 +339,9 @@ export class ClientListViewComponent implements OnInit {
             }
             this.formLoading.set(false);
             this.closeModal();
-            this.loadClients(this.currentPage());
+            this.refreshClients();
           },
-          error: (err) => {
+          error: () => {
             this.formError.set('Error al actualizar el cliente.');
             this.formLoading.set(false);
           }
@@ -324,7 +376,7 @@ export class ClientListViewComponent implements OnInit {
             }
             this.formLoading.set(false);
             this.closeModal();
-            this.loadClients(this.currentPage());
+            this.refreshClients();
             this.showSuccessModal.set(true);
           },
           error: (err) => {
@@ -437,7 +489,7 @@ export class ClientListViewComponent implements OnInit {
         this.matchLoading.set(false);
         this.closeMatchModal();
         this.closeModal();
-        this.loadClients(this.currentPage());
+        this.refreshClients();
       },
       error: (err) => {
         this.matchLoading.set(false);
@@ -493,13 +545,26 @@ export class ClientListViewComponent implements OnInit {
       next: () => {
         this.formLoading.set(false);
         this.closeDeleteConfirm();
-        this.loadClients(this.currentPage());
+        this.refreshClients();
       },
       error: () => {
         this.formLoading.set(false);
         this.formError.set('Error al eliminar el cliente.');
       }
     });
+  }
+
+  /** Recarga la lista según el tipo de usuario y estado actual. */
+  private refreshClients(): void {
+    if (this.isAdminUser()) {
+      this.loadAllClients(this.currentPage());
+    } else if (this.isCompanyUser()) {
+      if (this.showPending()) {
+        this.loadPendingClients();
+      } else {
+        this.loadMyClients();
+      }
+    }
   }
 
   private mapPendingToClient(match: CompanyRequestPending): Client {

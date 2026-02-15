@@ -20,6 +20,7 @@ export class ClientsTableComponent {
   @Input() emptyTitle = 'No hay clientes registrados';
   @Input() emptyDescription = 'Comienza agregando tu primer cliente al sistema';
   @Input() emptyActionLabel?: string = 'Crear Primer Cliente';
+  @Input() emptyIcon = 'users';
 
   @Output() createRequested = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Client>();
