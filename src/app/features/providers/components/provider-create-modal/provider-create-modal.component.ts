@@ -35,6 +35,11 @@ export class ProviderCreateModalComponent {
   matchModalOpen = signal(false);
   matchEmail = signal<string | null>(null);
   matchProviderId = signal<string | null>(null);
+
+  get isAdminUser(): boolean {
+    const role = normalizeUserType(this.storageService.getItem(LocalStorageEnums.USER_TYPE));
+    return role === 'admin';
+  }
   matchLoading = signal(false);
   matchError = signal<string | null>(null);
   loading = signal(false);

@@ -86,32 +86,41 @@
 
 @if (matchModalOpen()) {
   <app-modal
-    title="Proveedor ya registrado"
+    [title]="isAdminUser ? 'Proveedor ya existe' : 'Proveedor ya registrado'"
     size="sm"
     [showClose]="false"
     (close)="closeMatchModal()"
   >
     <div class="match-icon">
-      <span class="material-symbols-outlined">hub</span>
+      <span class="material-symbols-outlined">{{ isAdminUser ? 'info' : 'hub' }}</span>
     </div>
-    <p>
-      El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
-    </p>
-    @if (matchError()) {
-      <div class="match-error">
-        <span class="material-symbols-outlined">error</span>
-        {{ matchError() }}
+    @if (isAdminUser) {
+      <p>
+        El correo <strong>{{ matchEmail() }}</strong> ya está registrado como proveedor. Este proveedor ya existe en el sistema.
+      </p>
+      <div class="match-actions">
+        <button type="button" class="btn primary" (click)="closeMatchModal()">Entendido</button>
+      </div>
+    } @else {
+      <p>
+        El correo <strong>{{ matchEmail() }}</strong> ya existe. ¿Deseas enviar una solicitud de match?
+      </p>
+      @if (matchError()) {
+        <div class="match-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ matchError() }}
+        </div>
+      }
+      <div class="match-actions">
+        <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
+        <button type="button" class="btn primary" (click)="confirmMatchRequest()" [disabled]="matchLoading()">
+          @if (matchLoading()) {
+            Enviando...
+          } @else {
+            Enviar solicitud
+          }
+        </button>
       </div>
     }
-    <div class="match-actions">
-      <button type="button" class="btn secondary" (click)="closeMatchModal()">Cancelar</button>
-      <button type="button" class="btn primary" (click)="confirmMatchRequest()" [disabled]="matchLoading()">
-        @if (matchLoading()) {
-          Enviando...
-        } @else {
-          Enviar solicitud
-        }
-      </button>
-    </div>
   </app-modal>
 }
