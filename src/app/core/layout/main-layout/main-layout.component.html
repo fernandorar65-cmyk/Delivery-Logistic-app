@@ -97,7 +97,7 @@
           <span>Providers</span>
         </a>
 
-        <a *ngIf="canAccess([UserTypes.ADMIN, UserTypes.PROVIDER])" [routerLink]="['/providers', userId(), 'vehicles']"
+        <a *ngIf="canAccess([UserTypes.PROVIDER])" [routerLink]="['/providers', userId(), 'vehicles']"
           routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M10 17h4"></path>
