@@ -66,7 +66,7 @@ export class CompanyListViewComponent {
     ruc: ['', [Validators.required, Validators.minLength(8)]],
     description: [''],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['']
   });
 
   constructor() {
@@ -274,8 +274,6 @@ export class CompanyListViewComponent {
     this.isEditMode.set(false);
     this.editingCompanyId.set(null);
     this.companyForm.reset();
-    this.companyForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-    this.companyForm.get('password')?.updateValueAndValidity();
     this.formError.set(null);
     this.showModal.set(true);
   }
@@ -291,10 +289,6 @@ export class CompanyListViewComponent {
       description: company.description || '',
       email: company.user_email || ''
     });
-    
-    // En modo edición, el password es opcional
-    this.companyForm.get('password')?.clearValidators();
-    this.companyForm.get('password')?.updateValueAndValidity();
     
     this.showModal.set(true);
   }

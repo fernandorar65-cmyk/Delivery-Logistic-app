@@ -74,7 +74,7 @@ export class ClientListViewComponent implements OnInit {
 
   clientForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: [''], // PasswordConfirmComponent maneja validación via [required]="!isEditMode"
     client_name: ['', [Validators.required, Validators.minLength(2)]],
     ruc: ['', [Validators.required, Validators.minLength(8)]],
     description: ['']
@@ -223,8 +223,6 @@ export class ClientListViewComponent implements OnInit {
     this.isEditMode.set(false);
     this.editingClientId.set(null);
     this.clientForm.reset();
-    this.clientForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-    this.clientForm.get('password')?.updateValueAndValidity();
     this.formError.set(null);
     this.resetEmailCheck();
     this.showModal.set(true);
@@ -239,13 +237,9 @@ export class ClientListViewComponent implements OnInit {
       email: client.email || '',
       client_name: client.client_name || '',
       ruc: client.ruc || '',
-      description: client.description || ''
+      description: client.description || '',
+      password: ''
     });
-    
-    // En modo edición, el password es opcional
-    this.clientForm.get('password')?.clearValidators();
-    this.clientForm.get('password')?.updateValueAndValidity();
-    
     this.showModal.set(true);
   }
 

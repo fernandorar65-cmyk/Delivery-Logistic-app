@@ -59,10 +59,12 @@
             <span>Descripción</span>
             <textarea formControlName="description" rows="3" placeholder="Describe brevemente al aliado."></textarea>
           </label>
-          <label class="field">
-            <span>Contraseña temporal</span>
-            <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
-          </label>
+          <app-password-confirm
+            formControlName="password"
+            [required]="true"
+            placeholder="Mínimo 6 caracteres"
+            passwordLabel="Contraseña temporal"
+          />
         </div>
       </div>
 

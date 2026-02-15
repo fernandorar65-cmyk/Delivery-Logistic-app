@@ -191,29 +191,6 @@
           <span>Subir Orden</span>
         </a>
 
-        <a *ngIf="canAccess([UserTypes.CLIENT])" routerLink="/clients/shipments-upload-v2" routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: false}" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-            <path d="M16 16h5"></path>
-          </svg>
-          <span>Subir Orden V2</span>
-        </a>
-
-        <a *ngIf="canAccess([UserTypes.CLIENT])" routerLink="/clients/shipments-upload-v3" routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: false}" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-            <path d="M19 16h2"></path>
-            <path d="M15 16h2"></path>
-          </svg>
-          <span>Subir Orden V3</span>
-        </a>
-
         <a *ngIf="canAccess([UserTypes.ADMIN])" routerLink="/companies" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: false}" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

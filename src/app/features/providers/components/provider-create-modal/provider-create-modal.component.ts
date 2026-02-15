@@ -8,13 +8,14 @@ import { ProviderCheckResponse, ProviderCreate, ProviderResponse } from '@app/fe
 import { CompanyProviderMatchResponse } from '@app/features/providers/models/company-provider-match.model';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
+import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
 import { normalizeUserType } from '@app/shared/models/user-types';
 
 @Component({
   selector: 'app-provider-create-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, PasswordConfirmComponent],
   templateUrl: './provider-create-modal.component.html',
   styleUrl: './provider-create-modal.component.css'
 })
@@ -44,7 +45,7 @@ export class ProviderCreateModalComponent {
     ruc: ['', [Validators.required, Validators.minLength(6)]],
     contact_email: ['', [Validators.required, Validators.email]],
     description: [''],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['']
   });
 
   verifyEmail(): void {

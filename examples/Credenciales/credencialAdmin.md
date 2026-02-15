@@ -1,32 +1,23 @@
 -- ADMIN
-admin-1@gmail.com
+admin-1@gmail.com 
 Contra1234#
 
 
--- COMPANY
-   Fernandorar67@gmail.com
-   Contra1234#
+-- COMPANY -- los companies son nuestros clientes
+   fernandorar65@gmail.com -- 20300200111
+   Contra1234
+      INTERNOS:
+      Interno01@gmail.com
+      Contra1234##
 
 
 -- providers
-   Aliado06@gmail.com
-   Contra1234#
+   provider01@gmail.com -- 20200300111
+   Contra1234
 
-   Aliado10@gmail.com
-   Contra1234#
-
-                        Internos:
-                        InternoAliado@gmail.com
-                        Contra1234#
-
--- CLIENTS
-   Cliente04@gmail.com
-   Contra1234#
-                        Internos:
-                        UsuarioInterno04@gmail.com
-                        Contra1234#
-
-
+-- CLIENTS --> los clientes de los companies
+   cliente01@gmail.com -- 20400200111
+   Contra1234
 
 
 

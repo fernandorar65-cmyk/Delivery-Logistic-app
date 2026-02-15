@@ -74,26 +74,12 @@
           ></textarea>
         </div>
 
-        <div class="form-group">
-          <label for="password">
-            Contraseña 
-            @if (!isEditMode) {
-              <span class="required">*</span>
-            } @else {
-              <span class="optional">(opcional - dejar en blanco para no cambiar)</span>
-            }
-          </label>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            [placeholder]="isEditMode ? 'Dejar en blanco para no cambiar' : 'Ingrese la contraseña'"
-            [class.invalid]="companyForm.get('password')?.invalid && companyForm.get('password')?.touched"
-          />
-          @if (companyForm.get('password')?.invalid && companyForm.get('password')?.touched) {
-            <span class="error-text">{{ getFieldError('password') }}</span>
-          }
-        </div>
+        <app-password-confirm
+          formControlName="password"
+          [required]="!isEditMode"
+          placeholder="Ingrese la contraseña"
+          optionalLabel="(opcional - dejar en blanco para no cambiar)"
+        />
       </div>
 
       <div class="modal-actions">

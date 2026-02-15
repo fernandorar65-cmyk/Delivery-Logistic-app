@@ -2,12 +2,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
+import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
 @Component({
   selector: 'app-companies-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent, ModalComponent, PasswordConfirmComponent],
   templateUrl: './companies-form-modal.component.html',
   styleUrl: './companies-form-modal.component.css'
 })

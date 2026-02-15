@@ -22,6 +22,16 @@
   gap: clamp(0.9rem, 2vw, 1.25rem);
 }
 
+.required {
+  color: #dc2626;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
 .field {
   display: flex;
   flex-direction: column;

@@ -16,11 +16,12 @@ import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
 
 @Component({
   selector: 'app-internal-users-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent, HeroIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent, HeroIconComponent, PasswordConfirmComponent],
   templateUrl: './internal-users-view.component.html',
   styleUrl: './internal-users-view.component.css'
 })
@@ -59,7 +60,7 @@ export class InternalUsersViewComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     first_name: [''],
     last_name: [''],
-    password: ['', Validators.required]
+    password: ['']
   });
 
   ngOnInit(): void {
@@ -130,8 +131,6 @@ export class InternalUsersViewComponent implements OnInit {
   openCreate(): void {
     this.formError.set(null);
     this.userForm.reset();
-    this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-    this.userForm.get('password')?.updateValueAndValidity();
     this.modalOpen.set(true);
   }
 
