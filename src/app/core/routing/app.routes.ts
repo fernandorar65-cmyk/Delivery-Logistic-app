@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 // Componentes que se cargan siempre (eager loading)
 import { LoginViewComponent } from '@app/features/auth/pages/login/login-view.component';
 import { MainLayoutComponent } from '@app/core/layout/main-layout/main-layout.component';
-import { ClientDetailViewComponent } from '@app/features/clients/pages/client-detail-view/client-detail-view.component';
 import { authGuard } from '@app/core/guards/auth.guard';
 import { guestGuard } from '@app/core/guards/guest.guard';
 import { roleGuard } from '@app/core/guards/role.guard';
@@ -142,7 +141,8 @@ export const routes: Routes = [
         path: 'clients/:id',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },
-        component: ClientDetailViewComponent
+        loadComponent: () => import('@app/features/clients/pages/client-detail-view/client-detail-view.component')
+          .then(m => m.ClientDetailViewComponent)
       },
       {
         path: 'clients/:id/usuarios-internos',

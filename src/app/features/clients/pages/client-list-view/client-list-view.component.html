@@ -27,7 +27,7 @@
       [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
       (createRequested)="openNewClientModal()"
       (edit)="openEditClientModal($event)"
-      (remove)="deleteClient($event)"
+      (remove)="openDeleteConfirm($event)"
     ></app-clients-table>
   } @else {
     <app-clients-table
@@ -36,7 +36,7 @@
       [emptyDescription]="showPending() ? 'No hay solicitudes pendientes de match.' : 'Comienza agregando tu primer cliente al sistema'"
       [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
       (edit)="openEditClientModal($event)"
-      (remove)="deleteClient($event)"
+      (remove)="openDeleteConfirm($event)"
     ></app-clients-table>
 
     @if (!showPending()) {
@@ -106,6 +106,19 @@
         </button>
       </div>
     </app-modal>
+  }
+
+  @if (deleteConfirmOpen()) {
+    <app-confirm-modal
+      title="Eliminar cliente"
+      message="¿Está seguro de que desea eliminar este cliente?"
+      confirmLabel="Eliminar"
+      cancelLabel="Cancelar"
+      [loading]="formLoading()"
+      [error]="formError()"
+      (close)="closeDeleteConfirm()"
+      (confirm)="confirmDeleteClient()"
+    ></app-confirm-modal>
   }
 
   @if (showSuccessModal()) {

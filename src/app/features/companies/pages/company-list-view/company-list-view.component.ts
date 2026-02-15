@@ -11,6 +11,7 @@ import { CompaniesFormModalComponent } from './components/companies-form-modal/c
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-company-list-view',
@@ -24,7 +25,8 @@ import { hasApiErrors } from '@app/shared/utils/api-response';
     PaginationComponent,
     CompaniesFormModalComponent,
     EmptyStateComponent,
-    LoadingCardComponent
+    LoadingCardComponent,
+    ConfirmModalComponent
   ],
   templateUrl: './company-list-view.component.html',
   styleUrl: './company-list-view.component.css'
@@ -57,6 +59,10 @@ export class CompanyListViewComponent {
   // Modal state
   showModal = signal(false);
   isEditMode = signal(false);
+  deleteConfirmOpen = signal(false);
+  deleteTargetId = signal<string | null>(null);
+  deleteError = signal<string | null>(null);
+  deleteLoading = signal(false);
   editingCompanyId = signal<string | null>(null);
   formLoading = signal(false);
   formError = signal<string | null>(null);
@@ -384,17 +390,34 @@ export class CompanyListViewComponent {
       }
   }
 
-  deleteCompany(id: string) {
-    if (confirm('¿Está seguro de que desea eliminar esta empresa?')) {
-      this.companyService.delete(id).subscribe({
-        next: () => {
-          this.loadCompanies();
-        },
-        error: (err) => {
-          this.error.set('Error al eliminar la empresa.');
-        }
-      });
-    }
+  openDeleteConfirm(id: string) {
+    this.deleteTargetId.set(id);
+    this.deleteError.set(null);
+    this.deleteConfirmOpen.set(true);
+  }
+
+  closeDeleteConfirm() {
+    this.deleteConfirmOpen.set(false);
+    this.deleteTargetId.set(null);
+    this.deleteError.set(null);
+  }
+
+  confirmDeleteCompany() {
+    const id = this.deleteTargetId();
+    if (!id) return;
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
+    this.companyService.delete(id).subscribe({
+      next: () => {
+        this.deleteLoading.set(false);
+        this.closeDeleteConfirm();
+        this.loadCompanies();
+      },
+      error: () => {
+        this.deleteLoading.set(false);
+        this.deleteError.set('Error al eliminar la empresa.');
+      }
+    });
   }
 
   getPageNumbers(): (number | string)[] {

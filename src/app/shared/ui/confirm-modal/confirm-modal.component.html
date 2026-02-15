@@ -1,0 +1,34 @@
+<app-modal
+  [title]="title"
+  size="sm"
+  [showClose]="false"
+  (close)="close.emit()"
+>
+  <div class="confirm-modal-icon" [class.danger]="danger">
+    <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+  </div>
+  <p class="confirm-modal-message">{{ message }}</p>
+
+  @if (error) {
+    <div class="confirm-modal-error">{{ error }}</div>
+  }
+
+  <div class="confirm-modal-actions">
+    <button
+      type="button"
+      class="confirm-btn"
+      [class.danger]="danger"
+      (click)="confirm.emit()"
+      [disabled]="loading"
+    >
+      @if (loading) {
+        Procesando...
+      } @else {
+        {{ confirmLabel }}
+      }
+    </button>
+    <button type="button" class="confirm-btn secondary" (click)="close.emit()" [disabled]="loading">
+      {{ cancelLabel }}
+    </button>
+  </div>
+</app-modal>

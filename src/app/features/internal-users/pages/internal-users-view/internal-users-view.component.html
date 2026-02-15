@@ -67,7 +67,7 @@
                   title="Editar (próximamente)">
                   <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
                 </button>
-                <button type="button" class="action-icon danger" (click)="remove(user)">
+                <button type="button" class="action-icon danger" (click)="openDeleteConfirm(user)">
                   <app-hero-icon name="trash" [size]="16"></app-hero-icon>
                 </button>
               </div>
@@ -80,6 +80,19 @@
     }
   </div>
 </section>
+
+@if (deleteConfirmOpen()) {
+  <app-confirm-modal
+    title="Eliminar usuario interno"
+    message="¿Seguro que deseas eliminar este usuario interno?"
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    [loading]="deleteLoading()"
+    [error]="deleteError()"
+    (close)="closeDeleteConfirm()"
+    (confirm)="confirmRemoveUser()"
+  ></app-confirm-modal>
+}
 
 @if (modalOpen()) {
 <app-modal title="Nuevo usuario interno" size="lg" (close)="closeModal()">

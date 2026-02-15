@@ -14,10 +14,11 @@ import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { normalizeUserType } from '@app/shared/models/user-types';
 import { CompanyRequestPending } from '@app/features/clients/models/company-request-pending.model';
-import { hasApiErrors } from '@app/shared/utils/api-response';
+import { formatApiErrors, hasApiErrors } from '@app/shared/utils/api-response';
 import { CompanyClientMatchResponse } from '@app/features/clients/models/company-client-match.model';
 import { catchError, finalize, of } from 'rxjs';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
+import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-client-list-view',
@@ -32,7 +33,8 @@ import { ModalComponent } from '@app/shared/ui/modal/modal.component';
     ClientsStatsComponent,
     ClientsFormModalComponent,
     ClientsSuccessModalComponent,
-    ModalComponent
+    ModalComponent,
+    ConfirmModalComponent
   ],
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
@@ -71,6 +73,8 @@ export class ClientListViewComponent implements OnInit {
   matchEmail = signal<string | null>(null);
   matchLoading = signal(false);
   matchError = signal<string | null>(null);
+  deleteConfirmOpen = signal(false);
+  deleteTargetId = signal<string | null>(null);
 
   clientForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -314,7 +318,7 @@ export class ClientListViewComponent implements OnInit {
         this.clientService.create(clientPayload).subscribe({
           next: (response) => {
             if (hasApiErrors(response)) {
-              this.formError.set(this.formatApiErrors(response.errors));
+              this.formError.set(formatApiErrors(response.errors));
               this.formLoading.set(false);
               return;
             }
@@ -327,7 +331,7 @@ export class ClientListViewComponent implements OnInit {
             this.formLoading.set(false);
             
             if (err.status === 400) {
-              this.formError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+              this.formError.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
             } else if (err.status === 401) {
               this.formError.set('No autorizado. Por favor, inicia sesión nuevamente.');
             } else if (err.status === 409) {
@@ -379,7 +383,7 @@ export class ClientListViewComponent implements OnInit {
           return of(null);
         }
         this.emailStatus.set('error');
-        this.checkError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+        this.checkError.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         return of(null);
       }),
       finalize(() => this.checkLoading.set(false))
@@ -387,7 +391,7 @@ export class ClientListViewComponent implements OnInit {
       if (!response) return;
       if (hasApiErrors(response)) {
         this.emailStatus.set('error');
-        this.checkError.set(this.formatApiErrors(response.errors));
+        this.checkError.set(formatApiErrors(response.errors));
         return;
       }
       const exists = Boolean(response.result?.id);
@@ -425,7 +429,7 @@ export class ClientListViewComponent implements OnInit {
     this.sendCompanyClientRequest().subscribe({
       next: (response) => {
         if (hasApiErrors(response)) {
-          this.matchError.set(this.formatApiErrors(response.errors));
+          this.matchError.set(formatApiErrors(response.errors));
           this.matchLoading.set(false);
           return;
         }
@@ -437,7 +441,7 @@ export class ClientListViewComponent implements OnInit {
       },
       error: (err) => {
         this.matchLoading.set(false);
-        this.matchError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+        this.matchError.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
       }
     });
   }
@@ -454,16 +458,6 @@ export class ClientListViewComponent implements OnInit {
     });
   }
 
-  private formatApiErrors(errors: unknown): string {
-    if (Array.isArray(errors)) {
-      return errors.filter(Boolean).join(' ');
-    }
-    if (typeof errors === 'string') {
-      return errors;
-    }
-    return 'Ocurrió un error al procesar la solicitud.';
-  }
-
   private resetEmailCheck(): void {
     this.checkLoading.set(false);
     this.checkError.set(null);
@@ -478,22 +472,34 @@ export class ClientListViewComponent implements OnInit {
 
   // Helpers movidos al componente de tabla.
 
-  deleteClient(id?: string) {
+  openDeleteConfirm(id: string) {
+    this.deleteTargetId.set(id);
+    this.formError.set(null);
+    this.deleteConfirmOpen.set(true);
+  }
+
+  closeDeleteConfirm() {
+    this.deleteConfirmOpen.set(false);
+    this.deleteTargetId.set(null);
+    this.formError.set(null);
+  }
+
+  confirmDeleteClient() {
+    const id = this.deleteTargetId();
     if (!id) return;
-    if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
-      this.formLoading.set(true);
-      this.formError.set(null);
-      this.clientService.delete(id).subscribe({
-        next: () => {
-          this.formLoading.set(false);
-          this.loadClients(this.currentPage());
-        },
-        error: () => {
-          this.formLoading.set(false);
-          this.formError.set('Error al eliminar el cliente.');
-        }
-      });
-    }
+    this.formLoading.set(true);
+    this.formError.set(null);
+    this.clientService.delete(id).subscribe({
+      next: () => {
+        this.formLoading.set(false);
+        this.closeDeleteConfirm();
+        this.loadClients(this.currentPage());
+      },
+      error: () => {
+        this.formLoading.set(false);
+        this.formError.set('Error al eliminar el cliente.');
+      }
+    });
   }
 
   private mapPendingToClient(match: CompanyRequestPending): Client {

@@ -15,13 +15,14 @@ import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
-import { hasApiErrors } from '@app/shared/utils/api-response';
+import { formatApiErrors, hasApiErrors } from '@app/shared/utils/api-response';
 import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
+import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-internal-users-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent, HeroIconComponent, PasswordConfirmComponent],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent, HeroIconComponent, PasswordConfirmComponent, ConfirmModalComponent],
   templateUrl: './internal-users-view.component.html',
   styleUrl: './internal-users-view.component.css'
 })
@@ -39,6 +40,10 @@ export class InternalUsersViewComponent implements OnInit {
   modalOpen = signal(false);
   formLoading = signal(false);
   formError = signal<string | null>(null);
+  deleteConfirmOpen = signal(false);
+  deleteTargetUser = signal<InternalUser | null>(null);
+  deleteError = signal<string | null>(null);
+  deleteLoading = signal(false);
 
   ownerId = signal<string | null>(null);
   ownerType = signal<InternalUserOwnerType>('company');
@@ -116,14 +121,14 @@ export class InternalUsersViewComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (hasApiErrors(response)) {
-            this.error.set(this.formatApiErrors(response.errors));
+            this.error.set(formatApiErrors(response.errors));
             return;
           }
           const result = response.result;
           this.users.set(Array.isArray(result) ? result : []);
         },
         error: (err) => {
-          this.error.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+          this.error.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         }
       });
   }
@@ -172,49 +177,51 @@ export class InternalUsersViewComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (hasApiErrors(response)) {
-            this.formError.set(this.formatApiErrors(response.errors));
+            this.formError.set(formatApiErrors(response.errors));
             return;
           }
           this.modalOpen.set(false);
           this.loadUsers();
         },
         error: (err) => {
-          this.formError.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+          this.formError.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         }
       });
   }
 
-  remove(user: InternalUser): void {
+  openDeleteConfirm(user: InternalUser): void {
+    if (!user?.id) return;
+    this.deleteTargetUser.set(user);
+    this.deleteError.set(null);
+    this.deleteConfirmOpen.set(true);
+  }
+
+  closeDeleteConfirm(): void {
+    this.deleteConfirmOpen.set(false);
+    this.deleteTargetUser.set(null);
+    this.deleteError.set(null);
+  }
+
+  confirmRemoveUser(): void {
+    const user = this.deleteTargetUser();
     const ownerId = this.ownerId();
     const ownerType = this.ownerType();
-    if (!ownerId || !user.id) {
-      return;
-    }
+    if (!ownerId || !user?.id) return;
 
-    const confirmed = confirm('¿Seguro que deseas eliminar este usuario interno?');
-    if (!confirmed) {
-      return;
-    }
-
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
     this.usersService.remove(ownerType, ownerId, String(user.id))
       .subscribe({
         next: () => {
+          this.deleteLoading.set(false);
           this.users.update(items => items.filter(item => item.id !== user.id));
+          this.closeDeleteConfirm();
         },
         error: (err) => {
-          this.error.set(this.formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+          this.deleteLoading.set(false);
+          this.deleteError.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
         }
       });
-  }
-
-  private formatApiErrors(errors: unknown): string {
-    if (Array.isArray(errors)) {
-      return errors.filter(Boolean).join(' ');
-    }
-    if (typeof errors === 'string') {
-      return errors;
-    }
-    return 'Ocurrió un error al procesar la solicitud.';
   }
 
   getUserDisplayName(user: InternalUser): string {

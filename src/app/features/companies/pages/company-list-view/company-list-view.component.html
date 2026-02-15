@@ -54,7 +54,7 @@
         [getStatusClass]="getStatusClass.bind(this)"
         [getStatusLabel]="getStatusLabel.bind(this)"
         (edit)="openEditCompanyModal($event)"
-        (remove)="deleteCompany($event)"
+        (remove)="openDeleteConfirm($event)"
       ></app-companies-table>
 
       <app-pagination
@@ -71,6 +71,19 @@
         (goTo)="goToPage($event)"
       ></app-pagination>
     }
+  }
+
+  @if (deleteConfirmOpen()) {
+    <app-confirm-modal
+      title="Eliminar empresa"
+      message="¿Está seguro de que desea eliminar esta empresa?"
+      confirmLabel="Eliminar"
+      cancelLabel="Cancelar"
+      [loading]="deleteLoading()"
+      [error]="deleteError()"
+      (close)="closeDeleteConfirm()"
+      (confirm)="confirmDeleteCompany()"
+    ></app-confirm-modal>
   }
 
   <!-- Modal Flotante -->

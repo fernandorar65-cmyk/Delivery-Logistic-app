@@ -12,7 +12,7 @@
     </div>
     @if (client()) {
       <div class="header-actions">
-        <button class="btn btn-secondary" (click)="deleteClient()">
+        <button class="btn btn-secondary" (click)="openDeleteConfirm()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
@@ -45,3 +45,16 @@
     <app-client-detail-card [client]="client()!"></app-client-detail-card>
   }
 </div>
+
+@if (deleteConfirmOpen()) {
+  <app-confirm-modal
+    title="Eliminar cliente"
+    message="¿Está seguro de que desea eliminar este cliente?"
+    confirmLabel="Eliminar"
+    cancelLabel="Cancelar"
+    [loading]="deleteLoading()"
+    [error]="deleteError()"
+    (close)="closeDeleteConfirm()"
+    (confirm)="confirmDeleteClient()"
+  ></app-confirm-modal>
+}
