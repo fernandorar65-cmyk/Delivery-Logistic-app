@@ -85,37 +85,70 @@
     </div>
 
     <div class="vehicle-detail-grid">
-      <section class="vehicle-card">
-        <div class="card-header">
-          <h3>Detalles Técnicos</h3>
-          <app-hero-icon name="information-circle" [size]="18" class="muted-icon"></app-hero-icon>
+      <section class="vehicle-card tech-details-card">
+        <div class="card-header tech-card-header">
+          <div class="tech-header-content">
+            <div class="tech-header-icon">
+              <app-hero-icon name="wrench-screwdriver" [size]="20"></app-hero-icon>
+            </div>
+            <div>
+              <h3>Detalles Técnicos</h3>
+              <p class="tech-header-subtitle">Especificaciones del vehículo</p>
+            </div>
+          </div>
         </div>
-        <div class="card-grid">
-          <div class="card-item">
-            <span class="card-label">Marca / Modelo</span>
-            <span class="card-value">{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }}</span>
+        <div class="tech-details-body">
+          <div class="tech-section">
+            <h4 class="tech-section-title">Identificación</h4>
+            <div class="tech-grid">
+              <div class="tech-item">
+                <span class="tech-label">Marca / Modelo</span>
+                <span class="tech-value">{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }}</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-label">Color</span>
+                <span class="tech-value">{{ vehicle()?.color || '-' }}</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-label">Tipo de Carrocería</span>
+                <span class="tech-value">{{ vehicle()?.body_type || '-' }}</span>
+              </div>
+            </div>
           </div>
-          <div class="card-item">
-            <span class="card-label">Capacidad de Carga</span>
-            <span class="card-value">{{ vehicle()?.net_capacity_kg || '-' }} kg</span>
+          <div class="tech-section">
+            <h4 class="tech-section-title">Pesos y Dimensiones</h4>
+            <div class="tech-grid">
+              <div class="tech-item">
+                <span class="tech-label">Capacidad de Carga</span>
+                <span class="tech-value">{{ vehicle()?.net_capacity_kg ?? '-' }} <small>kg</small></span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-label">Peso en tara</span>
+                <span class="tech-value">{{ vehicle()?.tara_kg ?? '-' }} <small>kg</small></span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-label">Peso bruto</span>
+                <span class="tech-value">{{ vehicle()?.gross_weight_kg ?? '-' }} <small>kg</small></span>
+              </div>
+              <div class="tech-item tech-item-full">
+                <span class="tech-label">Dimensiones (L × A × H)</span>
+                <span class="tech-value">
+                  {{ vehicle()?.length_m ?? '-' }} × {{ vehicle()?.width_m ?? '-' }} × {{ vehicle()?.height_m ?? '-' }} <small>m</small>
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="card-item">
-            <span class="card-label">Color</span>
-            <span class="card-value">{{ vehicle()?.color || '-' }}</span>
-          </div>
-          <div class="card-item">
-            <span class="card-label">Tipo de Carrocería</span>
-            <span class="card-value">{{ vehicle()?.body_type || '-' }}</span>
-          </div>
-          <div class="card-item">
-            <span class="card-label">Dimensiones</span>
-            <span class="card-value">
-              {{ vehicle()?.length_m || '-' }} x {{ vehicle()?.width_m || '-' }} x {{ vehicle()?.height_m || '-' }} m
-            </span>
-          </div>
-          <div class="card-item">
-            <span class="card-label">Peso bruto</span>
-            <span class="card-value">{{ vehicle()?.gross_weight_kg || '-' }} kg</span>
+          <div class="tech-section tech-section-meta">
+            <div class="tech-meta-row">
+              <div class="tech-meta-item">
+                <span class="tech-label">Creado</span>
+                <span class="tech-value tech-value-mono">{{ formatDate(vehicle()?.created_at) }}</span>
+              </div>
+              <div class="tech-meta-item">
+                <span class="tech-label">Actualizado</span>
+                <span class="tech-value tech-value-mono">{{ formatDate(vehicle()?.updated_at) }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

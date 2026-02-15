@@ -310,9 +310,26 @@ export class VehicleDetailViewComponent implements OnInit {
     }
   }
 
+  formatDate(value?: string | null): string {
+    if (!value) return '-';
+    try {
+      const d = new Date(value);
+      return Number.isNaN(d.getTime()) ? '-' : d.toLocaleDateString('es-PE', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '-';
+    }
+  }
+
   getVehicleTypeLabel(type?: string): string {
     if (!type) return '-';
-    switch (type) {
+    const normalized = (type || '').toLowerCase().replace(/_/g, '-');
+    switch (normalized) {
       case 'truck':
         return 'Camión Pesado';
       case 'van':

@@ -1,7 +1,7 @@
 .vehicle-detail-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2vw, 1.5rem);
@@ -275,6 +275,157 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: #0f172a;
+}
+
+/* Detalles Técnicos - Card mejorada */
+.tech-details-card {
+  border-left: 4px solid #137fec;
+  overflow: hidden;
+}
+
+.tech-card-header {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 1.25rem;
+}
+
+.tech-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.tech-header-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(19, 127, 236, 0.12) 0%, rgba(19, 127, 236, 0.06) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #137fec;
+  flex-shrink: 0;
+}
+
+.tech-card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tech-header-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.tech-details-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tech-section {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tech-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tech-section-meta {
+  background: #f8fafc;
+  margin: 0 -1rem -1rem;
+  padding: 1rem clamp(1rem, 2vw, 1.5rem) 1.25rem;
+  border-radius: 0 0 0.75rem 0;
+}
+
+.tech-section-title {
+  margin: 0 0 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.tech-item {
+  background: #f8fafc;
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border: 1px solid #f1f5f9;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tech-item:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px -4px rgba(15, 23, 42, 0.12);
+}
+
+.tech-item-full {
+  grid-column: 1 / -1;
+}
+
+.tech-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tech-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.tech-value small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.tech-value-mono {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.tech-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.tech-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 140px;
+}
+
+.tech-section-meta .tech-label {
+  color: #94a3b8;
+}
+
+.tech-section-meta .tech-value {
+  font-size: 0.88rem;
 }
 
 .card-list {
