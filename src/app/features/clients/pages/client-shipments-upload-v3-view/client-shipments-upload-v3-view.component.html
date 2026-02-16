@@ -121,7 +121,7 @@
                     <span class="material-symbols-outlined upload-v3-mapping-icon drag-handle" cdkDragHandle>drag_indicator</span>
                     <span class="material-symbols-outlined upload-v3-mapping-icon">dataset</span>
                     <div class="upload-v3-mapping-label-wrap">
-                      <p class="upload-v3-mapping-label">{{ header }}</p>
+                      <p class="upload-v3-mapping-label">{{ getDisplayHeader(header, section.id, $index) }}</p>
                       <p class="upload-v3-mapping-hint">Columna del Excel</p>
                     </div>
                     <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
@@ -185,7 +185,7 @@
                   <span class="material-symbols-outlined upload-v3-mapping-icon drag-handle" cdkDragHandle>drag_indicator</span>
                   <span class="material-symbols-outlined upload-v3-mapping-icon">dataset</span>
                   <div class="upload-v3-mapping-label-wrap">
-                    <p class="upload-v3-mapping-label">{{ header }}</p>
+                    <p class="upload-v3-mapping-label">{{ getDisplayHeader(header, section.id, $index) }}</p>
                     <p class="upload-v3-mapping-hint">Columna del Excel</p>
                   </div>
                   <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">

@@ -502,6 +502,26 @@ export class ClientShipmentsUploadV3ViewComponent {
   }
 
   /**
+   * Si el mismo header aparece varias veces en el Excel (ej. CELULAR en Recojo y Entrega),
+   * devuelve "CELULAR 1", "CELULAR 2" etc. para que el usuario distinga cuál es cuál.
+   */
+  getDisplayHeader(header: string, sectionId: string, index: number): string {
+    const groups = this.headerGroups();
+    const flat: { header: string; sectionId: string; idx: number }[] = [];
+    groups.forEach((g) => {
+      g.headers.forEach((h, i) => flat.push({ header: h, sectionId: g.id, idx: i }));
+    });
+    const sameHeader = flat.filter((x) => x.header === header);
+    if (sameHeader.length <= 1) {
+      return header;
+    }
+    const pos = flat.findIndex((x) => x.sectionId === sectionId && x.idx === index);
+    if (pos === -1) return header;
+    const occurrenceInSame = flat.slice(0, pos + 1).filter((x) => x.header === header).length;
+    return `${header} ${occurrenceInSame}`;
+  }
+
+  /**
    * Mueve una cabecera dentro de la misma sección o a otra sección (drag and drop).
    */
   drop(event: CdkDragDrop<string[]>): void {
