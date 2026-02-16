@@ -111,7 +111,7 @@
               (cdkDropListDropped)="drop($event)"
             >
               <div class="upload-v3-mapping-list">
-                @for (header of section.headers; track header) {
+                @for (header of section.headers; track header + '-' + $index) {
                   <div
                     class="upload-v3-mapping-row"
                     [class.upload-v3-mapping-row--pending]="isCardPending(header)"
@@ -125,22 +125,22 @@
                       <p class="upload-v3-mapping-hint">Columna del Excel</p>
                     </div>
                     <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
-                      <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(header)">
+                      <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(getRowKey(section.id, $index), header)">
                         <span>{{ getSelectedLabel(header) }}</span>
                         <span class="material-symbols-outlined">expand_more</span>
                       </button>
-                      @if (isSelectOpen(header)) {
+                      @if (isSelectOpen(getRowKey(section.id, $index))) {
                         <div class="upload-v3-select-menu">
                           <input
                             type="text"
                             class="upload-v3-select-search"
                             placeholder="Buscar campo"
-                            [id]="getSearchInputId(header)"
-                            [value]="getSearchValue(header)"
-                            (input)="setSearchValue(header, $any($event.target).value)"
+                            [id]="getSearchInputId(getRowKey(section.id, $index))"
+                            [value]="getSearchValue(getRowKey(section.id, $index))"
+                            (input)="setSearchValue(getRowKey(section.id, $index), $any($event.target).value)"
                             (click)="$event.stopPropagation()"
                           />
-                          @for (option of getFilteredOptions(header); track option) {
+                          @for (option of getFilteredOptions(header, getRowKey(section.id, $index)); track option) {
                             <button
                               type="button"
                               class="upload-v3-select-option"
@@ -175,7 +175,7 @@
             (cdkDropListDropped)="drop($event)"
           >
             <div class="upload-v3-paquete-grid">
-              @for (header of section.headers; track header) {
+              @for (header of section.headers; track header + '-' + $index) {
                 <div
                   class="upload-v3-mapping-row"
                   [class.upload-v3-mapping-row--pending]="isCardPending(header)"
@@ -189,22 +189,22 @@
                     <p class="upload-v3-mapping-hint">Columna del Excel</p>
                   </div>
                   <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
-                    <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(header)">
+                    <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(getRowKey(section.id, $index), header)">
                       <span>{{ getSelectedLabel(header) }}</span>
                       <span class="material-symbols-outlined">expand_more</span>
                     </button>
-                    @if (isSelectOpen(header)) {
+                    @if (isSelectOpen(getRowKey(section.id, $index))) {
                       <div class="upload-v3-select-menu">
                         <input
                           type="text"
                           class="upload-v3-select-search"
                           placeholder="Buscar campo"
-                          [id]="getSearchInputId(header)"
-                          [value]="getSearchValue(header)"
-                          (input)="setSearchValue(header, $any($event.target).value)"
+                          [id]="getSearchInputId(getRowKey(section.id, $index))"
+                          [value]="getSearchValue(getRowKey(section.id, $index))"
+                          (input)="setSearchValue(getRowKey(section.id, $index), $any($event.target).value)"
                           (click)="$event.stopPropagation()"
                         />
-                        @for (option of getFilteredOptions(header); track option) {
+                        @for (option of getFilteredOptions(header, getRowKey(section.id, $index)); track option) {
                           <button
                             type="button"
                             class="upload-v3-select-option"

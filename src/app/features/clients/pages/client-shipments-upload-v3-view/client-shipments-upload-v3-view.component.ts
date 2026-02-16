@@ -64,6 +64,9 @@ export class ClientShipmentsUploadV3ViewComponent {
       id: 'pickup',
       title: 'Datos de recojo',
       fields: [
+        { id: 'order_client_code', label: 'Código cliente' },
+        { id: 'order_guide_number', label: 'N° de guía' },
+        { id: 'order_request_date', label: 'Fecha de solicitud' },
         { id: 'pickup_company', label: 'Nombre de empresa (Punto de recojo)' },
         { id: 'pickup_contact', label: 'Nombre de contacto (Recojo)' },
         { id: 'pickup_phone', label: 'Celular (Recojo)' },
@@ -114,6 +117,9 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   selectedMappings = signal<Record<string, string>>({});
   private readonly fieldIconMap: Record<string, string> = {
+    order_client_code: 'badge',
+    order_guide_number: 'description',
+    order_request_date: 'calendar_month',
     pickup_company: 'storefront',
     pickup_contact: 'person',
     pickup_phone: 'call',
@@ -149,6 +155,9 @@ export class ClientShipmentsUploadV3ViewComponent {
   };
 
   private readonly fieldKeyMap: Record<string, string> = {
+    order_client_code: 'order.client_code',
+    order_guide_number: 'order.guide_number',
+    order_request_date: 'order.request_date',
     pickup_company: 'pickup.company_name',
     pickup_contact: 'pickup.contact_name',
     pickup_phone: 'pickup.phone',
@@ -253,8 +262,8 @@ export class ClientShipmentsUploadV3ViewComponent {
     return options.filter((option) => !used.has(option));
   }
 
-  getFilteredOptions(header: string): string[] {
-    const query = this.normalizeForSearch(this.getSearchValue(header));
+  getFilteredOptions(header: string, rowKey: string): string[] {
+    const query = this.normalizeForSearch(this.getSearchValue(rowKey));
     const options = this.getAvailableOptions(header);
     if (!query) {
       return options;
@@ -299,46 +308,51 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.openSelectId.set(null);
   }
 
-  toggleSelect(header: string): void {
-    if (this.openSelectId() === header) {
+  /** Identificador único por fila: evita que dropdowns con mismo header (ej. PROVINCIA) se abran ambos. */
+  getRowKey(sectionId: string, index: number): string {
+    return `${sectionId}-${index}`;
+  }
+
+  toggleSelect(rowKey: string, header: string): void {
+    if (this.openSelectId() === rowKey) {
       this.openSelectId.set(null);
       return;
     }
-    this.openSelectId.set(header);
+    this.openSelectId.set(rowKey);
     this.searchText.update((current) => ({
       ...current,
-      [header]: current[header] ?? ''
+      [rowKey]: current[rowKey] ?? ''
     }));
-    this.focusSearchInput(header);
+    this.focusSearchInput(rowKey);
   }
 
-  isSelectOpen(header: string): boolean {
-    return this.openSelectId() === header;
+  isSelectOpen(rowKey: string): boolean {
+    return this.openSelectId() === rowKey;
   }
 
-  setSearchValue(header: string, value: string): void {
-    this.searchText.update((current) => ({ ...current, [header]: value }));
+  setSearchValue(rowKey: string, value: string): void {
+    this.searchText.update((current) => ({ ...current, [rowKey]: value }));
   }
 
-  getSearchValue(header: string): string {
-    return this.searchText()[header] ?? '';
+  getSearchValue(rowKey: string): string {
+    return this.searchText()[rowKey] ?? '';
   }
 
-  private focusSearchInput(header: string): void {
+  private focusSearchInput(rowKey: string): void {
     setTimeout(() => {
-      const input = document.getElementById(this.getSearchInputId(header)) as HTMLInputElement | null;
+      const input = document.getElementById(this.getSearchInputId(rowKey)) as HTMLInputElement | null;
       input?.focus();
       input?.select();
     }, 0);
   }
 
-  /** Id DOM-safe para inputs y cards (la cabecera puede tener espacios y caracteres especiales). */
+  /** Id DOM-safe para inputs y cards. */
   getCardId(header: string): string {
     return header.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
   }
 
-  getSearchInputId(header: string): string {
-    return `search-${this.getCardId(header)}`;
+  getSearchInputId(rowKey: string): string {
+    return `search-${rowKey.replace(/[^a-zA-Z0-9-_]/g, '_')}`;
   }
 
   getSelectedLabel(header: string): string {
@@ -534,18 +548,23 @@ export class ClientShipmentsUploadV3ViewComponent {
     displayLabel: string;
   }> {
     return [
+      { id: 'order_client_code', label: 'Código cliente', displayLabel: 'Código cliente', apiKey: this.getApiKeyForField('order_client_code') },
+      { id: 'order_guide_number', label: 'N° de guía', displayLabel: 'N° de guía', apiKey: this.getApiKeyForField('order_guide_number') },
+      { id: 'order_request_date', label: 'Fecha de solicitud', displayLabel: 'Fecha de solicitud', apiKey: this.getApiKeyForField('order_request_date') },
+      { id: 'pickup_country', label: 'País', displayLabel: 'País (Recojo)', apiKey: this.getApiKeyForField('pickup_country') },
       { id: 'pickup_company', label: 'Nombre de empresa (Punto de recojo)', displayLabel: 'Nombre de empresa (Recojo)', apiKey: this.getApiKeyForField('pickup_company') },
       { id: 'pickup_contact', label: 'Nombre de contacto', displayLabel: 'Nombre de contacto (Recojo)', apiKey: this.getApiKeyForField('pickup_contact') },
       { id: 'pickup_phone', label: 'Celular', displayLabel: 'Celular (Recojo)', apiKey: this.getApiKeyForField('pickup_phone') },
       { id: 'pickup_address', label: 'Dirección de recojo', displayLabel: 'Dirección de recojo', apiKey: this.getApiKeyForField('pickup_address') },
       { id: 'pickup_reference', label: 'Referencia especificar piso/oficina/número de tienda', displayLabel: 'Referencia (Recojo)', apiKey: this.getApiKeyForField('pickup_reference') },
-      { id: 'pickup_country', label: 'País', displayLabel: 'País (Recojo)', apiKey: this.getApiKeyForField('pickup_country') },
       { id: 'pickup_district', label: 'Distrito', displayLabel: 'Distrito (Recojo)', apiKey: this.getApiKeyForField('pickup_district') },
       { id: 'pickup_province', label: 'Provincia', displayLabel: 'Provincia (Recojo)', apiKey: this.getApiKeyForField('pickup_province') },
       { id: 'pickup_department', label: 'Departamento', displayLabel: 'Departamento (Recojo)', apiKey: this.getApiKeyForField('pickup_department') },
       { id: 'pickup_date', label: 'Fecha de recojo', displayLabel: 'Fecha de recojo', apiKey: this.getApiKeyForField('pickup_date') },
       { id: 'pickup_start_time', label: 'Hora inicio de recojo', displayLabel: 'Hora inicio de recojo', apiKey: this.getApiKeyForField('pickup_start_time') },
       { id: 'pickup_end_time', label: 'Hora fin de recojo', displayLabel: 'Hora fin de recojo', apiKey: this.getApiKeyForField('pickup_end_time') },
+
+
       { id: 'delivery_company', label: 'Nombre de empresa (Punto de entrega)', displayLabel: 'Nombre de empresa (Entrega)', apiKey: this.getApiKeyForField('delivery_company') },
       { id: 'delivery_contact', label: 'Nombre de contacto', displayLabel: 'Nombre de contacto (Entrega)', apiKey: this.getApiKeyForField('delivery_contact') },
       { id: 'delivery_document', label: 'DNI', displayLabel: 'DNI (Entrega)', apiKey: this.getApiKeyForField('delivery_document') },
@@ -555,6 +574,8 @@ export class ClientShipmentsUploadV3ViewComponent {
       { id: 'delivery_district', label: 'Distrito', displayLabel: 'Distrito (Entrega)', apiKey: this.getApiKeyForField('delivery_district') },
       { id: 'delivery_province', label: 'Provincia', displayLabel: 'Provincia (Entrega)', apiKey: this.getApiKeyForField('delivery_province') },
       { id: 'delivery_department', label: 'Departamento', displayLabel: 'Departamento (Entrega)', apiKey: this.getApiKeyForField('delivery_department') },
+      
+
       { id: 'package_description', label: 'Descripción del paquete', displayLabel: 'Descripción del paquete', apiKey: this.getApiKeyForField('package_description') },
       { id: 'package_qty', label: 'Cantidad de paquetes', displayLabel: 'Cantidad de paquetes', apiKey: this.getApiKeyForField('package_qty') },
       { id: 'package_weight', label: 'Peso guía (KG)', displayLabel: 'Peso guía (KG)', apiKey: this.getApiKeyForField('package_weight') },
