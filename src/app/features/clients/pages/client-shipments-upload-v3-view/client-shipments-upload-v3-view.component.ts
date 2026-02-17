@@ -49,7 +49,6 @@ export class ClientShipmentsUploadV3ViewComponent {
       title: 'Datos de recojo',
       fields: [
         { id: 'order_client_code', label: 'Código cliente', apiKey: 'order.client_code' },
-        { id: 'order_guide_number', label: 'N° de guía', apiKey: 'order.guide_number' },
         { id: 'order_request_date', label: 'Fecha de solicitud', apiKey: 'order.request_date' },
         { id: 'pickup_company', label: 'Nombre de empresa (Recojo)', apiKey: 'pickup.company_name' },
         { id: 'pickup_contact', label: 'Nombre de contacto (Recojo)', apiKey: 'pickup.contact_name' },
