@@ -1,7 +1,7 @@
 <section class="upload-v3-page">
   @if (showTemplateDetectedModal()) {
     <app-modal title="Template anterior encontrado" size="sm" (close)="closeTemplateDetectedModal()">
-      <p>Se encontró un template anterior, por lo que se preseleccionó la definición de los campos según tu configuración previa. Puedes revisar o ajustar las asignaciones y guardar.</p>
+      <p>Se encontró un template anterior. Se preseleccionó la asignación de columnas. Puedes revisar o ajustar.</p>
       <div class="upload-v3-modal-actions">
         <button type="button" class="upload-v3-btn upload-v3-btn--primary" (click)="closeTemplateDetectedModal()">
           Entendido
@@ -13,9 +13,9 @@
   <header class="upload-v3-header" [class.collapsed]="excelHeaders().length">
     <div>
       <p class="upload-v3-badge">Subir Orden V3</p>
-      <h1 class="upload-v3-title">Relaciona columnas del Excel con tu estándar</h1>
+      <h1 class="upload-v3-title">Mapea campos estándar con columnas del Excel</h1>
       <p class="upload-v3-subtitle">
-        Sube el Excel del cliente y asigna cada columna a los campos estandarizados del sistema.
+        Sube el Excel y asigna cada campo estándar a la columna correspondiente del archivo.
       </p>
     </div>
     <div class="upload-v3-actions">
@@ -75,9 +75,9 @@
             <div class="upload-v3-header-badges">
               <span class="upload-v3-badge">Subir Orden V3</span>
               <span class="upload-v3-badge-dot">•</span>
-              <span class="upload-v3-badge-sub">Mapeo de columnas</span>
+              <span class="upload-v3-badge-sub">Mapeo</span>
             </div>
-            <h1 class="upload-v3-title">Mapeo de datos de alta fidelidad</h1>
+            <h1 class="upload-v3-title">Asigna columnas del Excel</h1>
           </div>
         </div>
         <div class="upload-v3-header-right">
@@ -97,57 +97,49 @@
       </div>
     </header>
 
-    <main class="upload-v3-main" cdkDropListGroup>
+    <main class="upload-v3-main">
       <div class="upload-v3-sections-grid">
-        @for (section of getTopSections(); track section.id) {
+        @for (section of standardSections; track section.id) {
           <div class="upload-v3-section-card">
             <div class="upload-v3-section-card-head">
               <h2 class="upload-v3-section-title">{{ getSectionTitleShort(section.id) }}</h2>
             </div>
-            <div
-              class="upload-v3-scrollable-content upload-v3-drop-list"
-              cdkDropList
-              [cdkDropListData]="section.headers"
-              (cdkDropListDropped)="drop($event)"
-            >
+            <div class="upload-v3-scrollable-content">
               <div class="upload-v3-mapping-list">
-                @for (header of section.headers; track header + '-' + $index) {
+                @for (field of section.fields; track field.id) {
                   <div
                     class="upload-v3-mapping-row"
-                    [class.upload-v3-mapping-row--pending]="isCardPending(header)"
-                    cdkDrag
-                    [cdkDragData]="header"
+                    [class.upload-v3-mapping-row--pending]="isCardPending(field.id)"
                   >
-                    <span class="material-symbols-outlined upload-v3-mapping-icon drag-handle" cdkDragHandle>drag_indicator</span>
                     <span class="material-symbols-outlined upload-v3-mapping-icon">dataset</span>
                     <div class="upload-v3-mapping-label-wrap">
-                      <p class="upload-v3-mapping-label">{{ getDisplayHeader(header, section.id, $index) }}</p>
-                      <p class="upload-v3-mapping-hint">Columna del Excel</p>
+                      <p class="upload-v3-mapping-label">{{ field.label }}</p>
+                      <p class="upload-v3-mapping-hint">Campo estándar (envío al sistema)</p>
                     </div>
                     <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
-                      <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(getRowKey(section.id, $index), header)">
-                        <span>{{ getSelectedLabel(header) }}</span>
+                      <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(field.id)">
+                        <span>{{ getSelectedLabel(field.id) }}</span>
                         <span class="material-symbols-outlined">expand_more</span>
                       </button>
-                      @if (isSelectOpen(getRowKey(section.id, $index))) {
+                      @if (isSelectOpen(field.id)) {
                         <div class="upload-v3-select-menu">
                           <input
                             type="text"
                             class="upload-v3-select-search"
-                            placeholder="Buscar campo"
-                            [id]="getSearchInputId(getRowKey(section.id, $index))"
-                            [value]="getSearchValue(getRowKey(section.id, $index))"
-                            (input)="setSearchValue(getRowKey(section.id, $index), $any($event.target).value)"
+                            placeholder="Buscar columna"
+                            [id]="'search-' + field.id"
+                            [value]="getSearchValue(field.id)"
+                            (input)="setSearchValue(field.id, $any($event.target).value)"
                             (click)="$event.stopPropagation()"
                           />
-                          @for (option of getFilteredOptions(header, getRowKey(section.id, $index)); track option) {
+                          @for (option of getFilteredOptions(field.id); track option) {
                             <button
                               type="button"
                               class="upload-v3-select-option"
-                              [class.upload-v3-select-option--active]="isSelected(header, option)"
-                              (click)="selectOption(header, option)"
+                              [class.upload-v3-select-option--active]="isSelected(field.id, option)"
+                              (click)="selectOption(field.id, option); $event.stopPropagation()"
                             >
-                              {{ getOptionLabel(option) }}
+                              {{ option }}
                             </button>
                           } @empty {
                             <div class="upload-v3-select-empty">Sin coincidencias</div>
@@ -163,73 +155,10 @@
         }
       </div>
 
-      @for (section of getAccordionSections(); track section.id) {
-        <div class="upload-v3-section-card upload-v3-section-card--full">
-          <div class="upload-v3-section-card-head">
-            <h2 class="upload-v3-section-title">{{ getSectionTitleShort(section.id) }}</h2>
-          </div>
-          <div
-            class="upload-v3-scrollable-content upload-v3-drop-list"
-            cdkDropList
-            [cdkDropListData]="section.headers"
-            (cdkDropListDropped)="drop($event)"
-          >
-            <div class="upload-v3-paquete-grid">
-              @for (header of section.headers; track header + '-' + $index) {
-                <div
-                  class="upload-v3-mapping-row"
-                  [class.upload-v3-mapping-row--pending]="isCardPending(header)"
-                  cdkDrag
-                  [cdkDragData]="header"
-                >
-                  <span class="material-symbols-outlined upload-v3-mapping-icon drag-handle" cdkDragHandle>drag_indicator</span>
-                  <span class="material-symbols-outlined upload-v3-mapping-icon">dataset</span>
-                  <div class="upload-v3-mapping-label-wrap">
-                    <p class="upload-v3-mapping-label">{{ getDisplayHeader(header, section.id, $index) }}</p>
-                    <p class="upload-v3-mapping-hint">Columna del Excel</p>
-                  </div>
-                  <div class="upload-v3-mapping-select-wrap" (click)="$event.stopPropagation()">
-                    <button type="button" class="upload-v3-custom-select" (click)="toggleSelect(getRowKey(section.id, $index), header)">
-                      <span>{{ getSelectedLabel(header) }}</span>
-                      <span class="material-symbols-outlined">expand_more</span>
-                    </button>
-                    @if (isSelectOpen(getRowKey(section.id, $index))) {
-                      <div class="upload-v3-select-menu">
-                        <input
-                          type="text"
-                          class="upload-v3-select-search"
-                          placeholder="Buscar campo"
-                          [id]="getSearchInputId(getRowKey(section.id, $index))"
-                          [value]="getSearchValue(getRowKey(section.id, $index))"
-                          (input)="setSearchValue(getRowKey(section.id, $index), $any($event.target).value)"
-                          (click)="$event.stopPropagation()"
-                        />
-                        @for (option of getFilteredOptions(header, getRowKey(section.id, $index)); track option) {
-                          <button
-                            type="button"
-                            class="upload-v3-select-option"
-                            [class.upload-v3-select-option--active]="isSelected(header, option)"
-                            (click)="selectOption(header, option)"
-                          >
-                            {{ getOptionLabel(option) }}
-                          </button>
-                        } @empty {
-                          <div class="upload-v3-select-empty">Sin coincidencias</div>
-                        }
-                      </div>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-      }
-
       <footer class="upload-v3-footer">
         <div class="upload-v3-footer-info">
           <span class="material-symbols-outlined upload-v3-footer-icon">verified</span>
-          <p>El sistema utiliza <strong class="upload-v3-footer-smart">Smart Mapping</strong> para pre-asignar campos basándose en el historial de operaciones anteriores.</p>
+          <p>Asigna cada campo estándar a la columna del Excel que contiene ese dato.</p>
         </div>
         <div class="upload-v3-footer-actions">
           <button type="button" class="upload-v3-btn upload-v3-btn--ghost" (click)="onDescartar(excelInput)">
@@ -249,7 +178,7 @@
   } @else {
     <div class="upload-v3-empty">
       <span class="material-symbols-outlined">cloud_upload</span>
-      <p>Sube un Excel para generar el formulario de mapeo.</p>
+      <p>Sube un Excel para configurar el mapeo de campos.</p>
     </div>
   }
 </section>

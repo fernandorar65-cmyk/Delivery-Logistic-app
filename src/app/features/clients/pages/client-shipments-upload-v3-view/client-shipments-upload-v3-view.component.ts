@@ -1,14 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
-import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDragHandle,
-  CdkDropList,
-  CdkDropListGroup,
-  moveItemInArray,
-  transferArrayItem
-} from '@angular/cdk/drag-drop';
 import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
@@ -19,6 +10,7 @@ import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 type StandardField = {
   id: string;
   label: string;
+  apiKey: string;
 };
 
 type StandardSection = {
@@ -27,16 +19,10 @@ type StandardSection = {
   fields: StandardField[];
 };
 
-type HeaderGroup = {
-  id: string;
-  title: string;
-  headers: string[];
-};
-
 @Component({
   selector: 'app-client-shipments-upload-v3-view',
   standalone: true,
-  imports: [CommonModule, ModalComponent, CdkDropListGroup, CdkDropList, CdkDrag, CdkDragHandle],
+  imports: [CommonModule, ModalComponent],
   templateUrl: './client-shipments-upload-v3-view.component.html',
   styleUrl: './client-shipments-upload-v3-view.component.css'
 })
@@ -46,11 +32,8 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   openSelectId = signal<string | null>(null);
   excelHeaders = signal<string[]>([]);
-  /** Grupos de cabeceras por sección; mutable para drag and drop entre secciones. */
-  headerGroups = signal<HeaderGroup[]>([]);
   excelFileName = signal<string | null>(null);
   excelError = signal<string | null>(null);
-  accordionOpen = signal<Record<string, boolean>>({});
   searchText = signal<Record<string, string>>({});
   templateResult = signal<ImportMappingDetectResult | null>(null);
   templateError = signal<string | null>(null);
@@ -59,138 +42,65 @@ export class ClientShipmentsUploadV3ViewComponent {
   mappingResult = signal<ImportMappingCreateResult | null>(null);
   showTemplateDetectedModal = signal(false);
 
+  /** Campos estándar EN DURO: lo que se envía al API. */
   readonly standardSections: StandardSection[] = [
     {
       id: 'pickup',
       title: 'Datos de recojo',
       fields: [
-        { id: 'order_client_code', label: 'Código cliente' },
-        { id: 'order_guide_number', label: 'N° de guía' },
-        { id: 'order_request_date', label: 'Fecha de solicitud' },
-        { id: 'pickup_company', label: 'Nombre de empresa (Punto de recojo)' },
-        { id: 'pickup_contact', label: 'Nombre de contacto (Recojo)' },
-        { id: 'pickup_phone', label: 'Celular (Recojo)' },
-        { id: 'pickup_address', label: 'Dirección de recojo' },
-        { id: 'pickup_reference', label: 'Referencia especificar piso/oficina/número de tienda' },
-        { id: 'pickup_country', label: 'País' },
-        { id: 'pickup_district', label: 'Distrito' },
-        { id: 'pickup_province', label: 'Provincia (Recojo)' },
-        { id: 'pickup_department', label: 'Departamento (Recojo)' },
-        { id: 'pickup_date', label: 'Fecha de recojo' },
-        { id: 'pickup_start_time', label: 'Hora inicio de recojo' },
-        { id: 'pickup_end_time', label: 'Hora fin de recojo' }
+        { id: 'order_client_code', label: 'Código cliente', apiKey: 'order.client_code' },
+        { id: 'order_guide_number', label: 'N° de guía', apiKey: 'order.guide_number' },
+        { id: 'order_request_date', label: 'Fecha de solicitud', apiKey: 'order.request_date' },
+        { id: 'pickup_company', label: 'Nombre de empresa (Recojo)', apiKey: 'pickup.company_name' },
+        { id: 'pickup_contact', label: 'Nombre de contacto (Recojo)', apiKey: 'pickup.contact_name' },
+        { id: 'pickup_phone', label: 'Celular (Recojo)', apiKey: 'pickup.phone' },
+        { id: 'pickup_address', label: 'Dirección de recojo', apiKey: 'pickup.address' },
+        { id: 'pickup_reference', label: 'Referencia (Recojo)', apiKey: 'pickup.reference' },
+        { id: 'pickup_country', label: 'País', apiKey: 'pickup.country' },
+        { id: 'pickup_district', label: 'Distrito (Recojo)', apiKey: 'pickup.district' },
+        { id: 'pickup_province', label: 'Provincia (Recojo)', apiKey: 'pickup.province' },
+        { id: 'pickup_department', label: 'Departamento (Recojo)', apiKey: 'pickup.department' },
+        { id: 'pickup_date', label: 'Fecha de recojo', apiKey: 'pickup.date' },
+        { id: 'pickup_start_time', label: 'Hora inicio de recojo', apiKey: 'pickup.time_from' },
+        { id: 'pickup_end_time', label: 'Hora fin de recojo', apiKey: 'pickup.time_to' }
       ]
     },
     {
       id: 'delivery',
       title: 'Datos de entrega',
       fields: [
-        { id: 'delivery_company', label: 'Nombre de empresa (Punto de entrega)' },
-        { id: 'delivery_contact', label: 'Nombre de contacto (Entrega)' },
-        { id: 'delivery_document', label: 'DNI' },
-        { id: 'delivery_phone', label: 'Celular (Entrega)' },
-        { id: 'delivery_address', label: 'Dirección' },
-        { id: 'delivery_reference', label: 'Referencia especificar piso/oficina/número de tienda' },
-        { id: 'delivery_district', label: 'Distrito' },
-        { id: 'delivery_province', label: 'Provincia (Entrega)' },
-        { id: 'delivery_department', label: 'Departamento (Entrega)' }
+        { id: 'delivery_company', label: 'Nombre de empresa (Entrega)', apiKey: 'delivery.company_name' },
+        { id: 'delivery_contact', label: 'Nombre de contacto (Entrega)', apiKey: 'delivery.contact_name' },
+        { id: 'delivery_document', label: 'DNI (Entrega)', apiKey: 'delivery.dni' },
+        { id: 'delivery_phone', label: 'Celular (Entrega)', apiKey: 'delivery.phone' },
+        { id: 'delivery_address', label: 'Dirección (Entrega)', apiKey: 'delivery.address' },
+        { id: 'delivery_reference', label: 'Referencia (Entrega)', apiKey: 'delivery.reference' },
+        { id: 'delivery_district', label: 'Distrito (Entrega)', apiKey: 'delivery.district' },
+        { id: 'delivery_province', label: 'Provincia (Entrega)', apiKey: 'delivery.province' },
+        { id: 'delivery_department', label: 'Departamento (Entrega)', apiKey: 'delivery.department' }
       ]
     },
     {
       id: 'package',
       title: 'Datos de paquete',
       fields: [
-        { id: 'package_description', label: 'Descripción del paquete' },
-        { id: 'package_qty', label: 'Cantidad de paquetes' },
-        { id: 'package_weight', label: 'Peso guía (KG)' },
-        { id: 'package_size', label: 'Tamaño referencial guía' },
-        { id: 'package_height', label: 'Alto CM' },
-        { id: 'package_width', label: 'Ancho CM' },
-        { id: 'package_depth', label: 'Profundidad CM' },
-        { id: 'package_volumetric', label: 'Peso volumétrico guía' },
-        { id: 'package_m3', label: 'M3 guía' },
-        { id: 'package_value', label: 'Valor estimado (opcional)' },
-        { id: 'package_notes', label: 'Observaciones (opcional)' }
+        { id: 'package_description', label: 'Descripción del paquete', apiKey: 'package.description' },
+        { id: 'package_qty', label: 'Cantidad de paquetes', apiKey: 'package.quantity' },
+        { id: 'package_weight', label: 'Peso guía (KG)', apiKey: 'package.weight' },
+        { id: 'package_size', label: 'Tamaño referencial guía', apiKey: 'package.size' },
+        { id: 'package_height', label: 'Alto CM', apiKey: 'package.height' },
+        { id: 'package_width', label: 'Ancho CM', apiKey: 'package.width' },
+        { id: 'package_depth', label: 'Profundidad CM', apiKey: 'package.length' },
+        { id: 'package_volumetric', label: 'Peso volumétrico guía', apiKey: 'package.volumetric_weight' },
+        { id: 'package_m3', label: 'M3 guía', apiKey: 'package.m3' },
+        { id: 'package_value', label: 'Valor estimado (opcional)', apiKey: 'order.estimated_value' },
+        { id: 'package_notes', label: 'Observaciones (opcional)', apiKey: 'order.observations' }
       ]
     }
   ];
 
+  /** fieldId -> columna Excel seleccionada */
   selectedMappings = signal<Record<string, string>>({});
-  private readonly fieldIconMap: Record<string, string> = {
-    order_client_code: 'badge',
-    order_guide_number: 'description',
-    order_request_date: 'calendar_month',
-    pickup_company: 'storefront',
-    pickup_contact: 'person',
-    pickup_phone: 'call',
-    pickup_address: 'location_on',
-    pickup_reference: 'edit_location_alt',
-    pickup_country: 'public',
-    pickup_district: 'map',
-    pickup_province: 'location_city',
-    pickup_department: 'apartment',
-    pickup_date: 'calendar_month',
-    pickup_start_time: 'schedule',
-    pickup_end_time: 'schedule',
-    delivery_company: 'storefront',
-    delivery_contact: 'person',
-    delivery_document: 'badge',
-    delivery_phone: 'call',
-    delivery_address: 'location_on',
-    delivery_reference: 'edit_location_alt',
-    delivery_district: 'map',
-    delivery_province: 'location_city',
-    delivery_department: 'apartment',
-    package_description: 'inventory_2',
-    package_qty: 'inventory',
-    package_weight: 'scale',
-    package_size: 'straighten',
-    package_height: 'height',
-    package_width: 'width',
-    package_depth: 'unfold_more',
-    package_volumetric: 'straighten',
-    package_m3: 'cube',
-    package_value: 'payments',
-    package_notes: 'note'
-  };
-
-  private readonly fieldKeyMap: Record<string, string> = {
-    order_client_code: 'order.client_code',
-    order_guide_number: 'order.guide_number',
-    order_request_date: 'order.request_date',
-    pickup_company: 'pickup.company_name',
-    pickup_contact: 'pickup.contact_name',
-    pickup_phone: 'pickup.phone',
-    pickup_address: 'pickup.address',
-    pickup_reference: 'pickup.reference',
-    pickup_country: 'pickup.country',
-    pickup_department: 'pickup.department',
-    pickup_province: 'pickup.province',
-    pickup_district: 'pickup.district',
-    pickup_date: 'pickup.date',
-    pickup_start_time: 'pickup.time_from',
-    pickup_end_time: 'pickup.time_to',
-    delivery_company: 'delivery.company_name',
-    delivery_contact: 'delivery.contact_name',
-    delivery_document: 'delivery.dni',
-    delivery_phone: 'delivery.phone',
-    delivery_address: 'delivery.address',
-    delivery_reference: 'delivery.reference',
-    delivery_department: 'delivery.department',
-    delivery_province: 'delivery.province',
-    delivery_district: 'delivery.district',
-    package_description: 'package.description',
-    package_qty: 'package.quantity',
-    package_weight: 'package.weight',
-    package_size: 'package.size',
-    package_height: 'package.height',
-    package_width: 'package.width',
-    package_depth: 'package.length',
-    package_volumetric: 'package.volumetric_weight',
-    package_m3: 'package.m3',
-    package_value: 'order.estimated_value',
-    package_notes: 'order.observations'
-  };
 
   resetFileInput(input: HTMLInputElement): void {
     input.value = '';
@@ -198,7 +108,6 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   onDescartar(fileInput?: HTMLInputElement): void {
     this.excelHeaders.set([]);
-    this.headerGroups.set([]);
     this.selectedMappings.set({});
     this.excelFileName.set(null);
     this.excelError.set(null);
@@ -209,17 +118,13 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.showTemplateDetectedModal.set(false);
     this.searchText.set({});
     this.openSelectId.set(null);
-    if (fileInput) {
-      this.resetFileInput(fileInput);
-    }
+    if (fileInput) this.resetFileInput(fileInput);
   }
 
   onExcelFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0];
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     this.excelError.set(null);
     this.excelFileName.set(file.name);
@@ -234,12 +139,11 @@ export class ClientShipmentsUploadV3ViewComponent {
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' }) as string[][];
         const headerRow = rows?.[1] ?? [];
         const headers = headerRow
-          .map((value) => String(value).trim())
-          .filter((value) => Boolean(value));
+          .map((v) => String(v).trim())
+          .filter((v) => Boolean(v));
         this.excelHeaders.set(headers);
-        this.headerGroups.set(this.getHeaderGroups());
         this.detectTemplate(headers);
-      } catch (error) {
+      } catch {
         this.excelError.set('No se pudo leer el archivo. Verifica el formato.');
       }
     };
@@ -249,135 +153,27 @@ export class ClientShipmentsUploadV3ViewComponent {
     reader.readAsArrayBuffer(file);
   }
 
-  getOptions(): string[] {
-    return ['Opcional', ...this.getFieldOptions().map((option) => option.id)];
-  }
-
-  getAvailableOptions(header: string): string[] {
-    const options = this.getOptions();
+  /** Opciones del dropdown = columnas del Excel */
+  getDropdownOptions(fieldId: string): string[] {
+    const headers = this.excelHeaders();
     const selected = this.selectedMappings();
-    const used = new Set(Object.entries(selected)
-      .filter(([key, value]) => key !== header && value && value !== 'Opcional')
-      .map(([, value]) => value));
-    return options.filter((option) => !used.has(option));
+    const used = new Set(
+      Object.entries(selected)
+        .filter(([k, v]) => k !== fieldId && v)
+        .map(([, v]) => v)
+    );
+    return ['Opcional', ...headers.filter((h) => !used.has(h))];
   }
 
-  getFilteredOptions(header: string, rowKey: string): string[] {
-    const query = this.normalizeForSearch(this.getSearchValue(rowKey));
-    const options = this.getAvailableOptions(header);
-    if (!query) {
-      return options;
-    }
-    return options.filter((option) =>
-      this.normalizeForSearch(this.getOptionLabel(option)).includes(query));
+  getFilteredOptions(fieldId: string): string[] {
+    const options = this.getDropdownOptions(fieldId);
+    const query = this.normalizeForSearch(this.getSearchValue(fieldId));
+    if (!query) return options;
+    return options.filter((o) => this.normalizeForSearch(o).includes(query));
   }
 
-  mappedCount(): number {
-    const selected = this.selectedMappings();
-    return Object.values(selected).filter((value) => value && value !== 'Opcional').length;
-  }
-
-  totalHeaders(): number {
-    return this.excelHeaders().length;
-  }
-
-  progressPercent(): number {
-    const total = this.totalHeaders();
-    if (!total) {
-      return 0;
-    }
-    return Math.round((this.mappedCount() / total) * 100);
-  }
-
-  /** Para el anillo de progreso: stroke-dashoffset (circunferencia ≈ 125.66 con r=20). */
-  progressRingDashOffset(): number {
-    const circumference = 2 * Math.PI * 20;
-    return circumference * (1 - this.progressPercent() / 100);
-  }
-
-  selectOption(header: string, value: string): void {
-    this.selectedMappings.update((current) => ({ ...current, [header]: value }));
-  }
-
-  isSelected(header: string, value: string): boolean {
-    return this.selectedMappings()[header] === value;
-  }
-
-  @HostListener('document:click')
-  closeSelects(): void {
-    this.openSelectId.set(null);
-  }
-
-  /** Identificador único por fila: evita que dropdowns con mismo header (ej. PROVINCIA) se abran ambos. */
-  getRowKey(sectionId: string, index: number): string {
-    return `${sectionId}-${index}`;
-  }
-
-  toggleSelect(rowKey: string, header: string): void {
-    if (this.openSelectId() === rowKey) {
-      this.openSelectId.set(null);
-      return;
-    }
-    this.openSelectId.set(rowKey);
-    this.searchText.update((current) => ({
-      ...current,
-      [rowKey]: current[rowKey] ?? ''
-    }));
-    this.focusSearchInput(rowKey);
-  }
-
-  isSelectOpen(rowKey: string): boolean {
-    return this.openSelectId() === rowKey;
-  }
-
-  setSearchValue(rowKey: string, value: string): void {
-    this.searchText.update((current) => ({ ...current, [rowKey]: value }));
-  }
-
-  getSearchValue(rowKey: string): string {
-    return this.searchText()[rowKey] ?? '';
-  }
-
-  private focusSearchInput(rowKey: string): void {
-    setTimeout(() => {
-      const input = document.getElementById(this.getSearchInputId(rowKey)) as HTMLInputElement | null;
-      input?.focus();
-      input?.select();
-    }, 0);
-  }
-
-  /** Id DOM-safe para inputs y cards. */
-  getCardId(header: string): string {
-    return header.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
-  }
-
-  getSearchInputId(rowKey: string): string {
-    return `search-${rowKey.replace(/[^a-zA-Z0-9-_]/g, '_')}`;
-  }
-
-  getSelectedLabel(header: string): string {
-    return this.getOptionLabel(this.selectedMappings()[header]);
-  }
-
-  /** True si la card aún no tiene un campo asignado o está en "Opcional" (falta por definir). */
-  isCardPending(header: string): boolean {
-    const value = this.selectedMappings()[header];
-    return !value || value === 'Opcional';
-  }
-
-  getOptionLabel(optionId?: string): string {
-    if (!optionId) {
-      return 'Seleccionar campo';
-    }
-    if (optionId === 'Opcional') {
-      return 'Opcional';
-    }
-    const option = this.getFieldOptions().find((item) => item.id === optionId);
-    return option?.displayLabel ?? optionId;
-  }
-
-  private normalizeForSearch(value: string): string {
-    return (value ?? '')
+  private normalizeForSearch(v: string): string {
+    return (v ?? '')
       .toString()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -385,21 +181,93 @@ export class ClientShipmentsUploadV3ViewComponent {
       .trim();
   }
 
-  private detectTemplate(headers: string[]): void {
-    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
-    if (!clientId || !headers.length) {
+  selectOption(fieldId: string, excelHeader: string): void {
+    this.selectedMappings.update((curr) => ({ ...curr, [fieldId]: excelHeader }));
+    this.openSelectId.set(null);
+  }
+
+  isSelected(fieldId: string, excelHeader: string): boolean {
+    return this.selectedMappings()[fieldId] === excelHeader;
+  }
+
+  getSelectedLabel(fieldId: string): string {
+    const v = this.selectedMappings()[fieldId];
+    return v || 'Seleccionar campo';
+  }
+
+  isCardPending(fieldId: string): boolean {
+    const v = this.selectedMappings()[fieldId];
+    return !v || v === 'Opcional';
+  }
+
+  @HostListener('document:click')
+  closeSelects(): void {
+    this.openSelectId.set(null);
+  }
+
+  toggleSelect(fieldId: string): void {
+    if (this.openSelectId() === fieldId) {
+      this.openSelectId.set(null);
       return;
     }
+    this.openSelectId.set(fieldId);
+    this.searchText.update((c) => ({ ...c, [fieldId]: c[fieldId] ?? '' }));
+    setTimeout(() => {
+      const el = document.getElementById(`search-${fieldId}`) as HTMLInputElement | null;
+      el?.focus();
+      el?.select();
+    }, 0);
+  }
+
+  isSelectOpen(fieldId: string): boolean {
+    return this.openSelectId() === fieldId;
+  }
+
+  setSearchValue(fieldId: string, value: string): void {
+    this.searchText.update((c) => ({ ...c, [fieldId]: value }));
+  }
+
+  getSearchValue(fieldId: string): string {
+    return this.searchText()[fieldId] ?? '';
+  }
+
+  mappedCount(): number {
+    return Object.values(this.selectedMappings()).filter((v) => v && v !== 'Opcional').length;
+  }
+
+  totalFields(): number {
+    return this.standardSections.reduce((sum, s) => sum + s.fields.length, 0);
+  }
+
+  progressPercent(): number {
+    const total = this.totalFields();
+    return total ? Math.round((this.mappedCount() / total) * 100) : 0;
+  }
+
+  progressRingDashOffset(): number {
+    return 2 * Math.PI * 20 * (1 - this.progressPercent() / 100);
+  }
+
+  getSectionTitleShort(id: string): string {
+    const m: Record<string, string> = { pickup: 'Recojo', delivery: 'Entrega', package: 'Paquete' };
+    return m[id] ?? id;
+  }
+
+  private detectTemplate(headers: string[]): void {
+    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (!clientId || !headers.length) return;
+
     this.templateError.set(null);
     this.importsService.detectMapping({ client_id: clientId, headers }).subscribe({
-      next: (response) => {
-        const result = response?.result ?? null;
+      next: (res) => {
+        const result = res?.result ?? null;
         this.templateResult.set(result);
-        const hasTemplate = this.hasDetectResult(result);
-        if (hasTemplate && result) {
-          this.applyDetectedTemplate(result, headers);
+        if (result?.mapping && Object.keys(result.mapping).length > 0) {
+          this.applyDetectedTemplate(result);
+          this.showTemplateDetectedModal.set(true);
+        } else {
+          this.showTemplateDetectedModal.set(false);
         }
-        queueMicrotask(() => this.showTemplateDetectedModal.set(hasTemplate));
       },
       error: () => {
         this.templateError.set('No se pudo validar el template.');
@@ -408,34 +276,28 @@ export class ClientShipmentsUploadV3ViewComponent {
     });
   }
 
-  /**
-   * Aplica el template detectado al formulario: preselecciona en cada card
-   * el campo estándar que corresponde según el mapping (apiKey → nombre columna Excel).
-   */
-  private applyDetectedTemplate(result: ImportMappingDetectResult, currentHeaders: string[]): void {
+  private applyDetectedTemplate(result: ImportMappingDetectResult): void {
     const apiKeyToFieldId = this.getApiKeyToFieldIdMap();
-    const normalizedToHeader = new Map<string, string>();
-    currentHeaders.forEach((h) => normalizedToHeader.set(this.normalizeForSearch(h), h));
-
+    const headers = this.excelHeaders();
     const next: Record<string, string> = {};
-    Object.entries(result.mapping).forEach(([apiKey, mappingHeaderName]) => {
+
+    Object.entries(result.mapping).forEach(([apiKey, excelHeaderName]) => {
       const fieldId = apiKeyToFieldId[apiKey];
       if (!fieldId) return;
-      const normalized = this.normalizeForSearch(mappingHeaderName);
-      const currentHeader = normalizedToHeader.get(normalized);
-      if (currentHeader != null) {
-        next[currentHeader] = fieldId;
-      }
+      const match = headers.find((h) => this.normalizeForSearch(h) === this.normalizeForSearch(excelHeaderName));
+      if (match) next[fieldId] = match;
     });
+
     this.selectedMappings.update((prev) => ({ ...prev, ...next }));
   }
 
-  /** Mapa apiKey (ej. pickup.address) → fieldId (ej. pickup_address) para aplicar template. */
   private getApiKeyToFieldIdMap(): Record<string, string> {
     const map: Record<string, string> = {};
-    Object.entries(this.fieldKeyMap).forEach(([fieldId, apiKey]) => {
-      map[apiKey] = fieldId;
-    });
+    this.standardSections.forEach((s) =>
+      s.fields.forEach((f) => {
+        map[f.apiKey] = f.id;
+      })
+    );
     return map;
   }
 
@@ -443,19 +305,9 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.showTemplateDetectedModal.set(false);
   }
 
-  /** Indica si la API devolvió un template válido (con mapping no vacío). */
-  private hasDetectResult(result: ImportMappingDetectResult | null | undefined): boolean {
-    return result != null && typeof result.mapping === 'object' && Object.keys(result.mapping).length > 0;
-  }
-
-  getFieldIcon(fieldId: string): string {
-    return this.fieldIconMap[fieldId] ?? 'list_alt';
-  }
-
   createTemplate(): void {
-    if (this.mappingLoading()) {
-      return;
-    }
+    if (this.mappingLoading()) return;
+
     const clientId = this.storageService.getItem(LocalStorageEnums.ID);
     const headers = this.excelHeaders();
     if (!clientId || !headers.length) {
@@ -464,17 +316,18 @@ export class ClientShipmentsUploadV3ViewComponent {
     }
 
     const selections = this.selectedMappings();
-    const mapping = this.getFieldOptions().reduce<Record<string, string>>((acc, option) => {
-      const header = Object.entries(selections).find(([, value]) => value === option.id)?.[0];
-      acc[option.apiKey] = header ?? 'Opcional';
-      return acc;
-    }, {});
+    const mapping: Record<string, string> = {};
+    this.standardSections.forEach((s) =>
+      s.fields.forEach((f) => {
+        mapping[f.apiKey] = selections[f.id] ?? 'Opcional';
+      })
+    );
 
     this.mappingError.set(null);
     this.mappingLoading.set(true);
     this.importsService.createMapping({ client_id: clientId, headers, mapping }).subscribe({
-      next: (response) => {
-        this.mappingResult.set(response?.result ?? null);
+      next: (res) => {
+        this.mappingResult.set(res?.result ?? null);
         this.mappingLoading.set(false);
       },
       error: () => {
@@ -483,213 +336,4 @@ export class ClientShipmentsUploadV3ViewComponent {
       }
     });
   }
-
-  getTopSections(): HeaderGroup[] {
-    return this.headerGroups().slice(0, 2);
-  }
-
-  getAccordionSections(): HeaderGroup[] {
-    return this.headerGroups().slice(2);
-  }
-
-  getSectionTitleShort(sectionId: string): string {
-    const map: Record<string, string> = {
-      pickup: 'Recojo',
-      delivery: 'Entrega',
-      package: 'Paquete'
-    };
-    return map[sectionId] ?? sectionId;
-  }
-
-  /**
-   * Si el mismo header aparece varias veces en el Excel (ej. CELULAR en Recojo y Entrega),
-   * devuelve "CELULAR 1", "CELULAR 2" etc. para que el usuario distinga cuál es cuál.
-   */
-  getDisplayHeader(header: string, sectionId: string, index: number): string {
-    const groups = this.headerGroups();
-    const flat: { header: string; sectionId: string; idx: number }[] = [];
-    groups.forEach((g) => {
-      g.headers.forEach((h, i) => flat.push({ header: h, sectionId: g.id, idx: i }));
-    });
-    const sameHeader = flat.filter((x) => x.header === header);
-    if (sameHeader.length <= 1) {
-      return header;
-    }
-    const pos = flat.findIndex((x) => x.sectionId === sectionId && x.idx === index);
-    if (pos === -1) return header;
-    const occurrenceInSame = flat.slice(0, pos + 1).filter((x) => x.header === header).length;
-    return `${header} ${occurrenceInSame}`;
-  }
-
-  /**
-   * Mueve una cabecera dentro de la misma sección o a otra sección (drag and drop).
-   */
-  drop(event: CdkDragDrop<string[]>): void {
-    const prevData = event.previousContainer.data;
-    const currData = event.container.data;
-    const groups = this.headerGroups();
-    const prevIdx = groups.findIndex((g) => g.headers === prevData);
-    const currIdx = groups.findIndex((g) => g.headers === currData);
-    if (prevIdx === -1 || currIdx === -1) return;
-
-    if (prevIdx === currIdx) {
-      const newHeaders = [...prevData];
-      moveItemInArray(newHeaders, event.previousIndex, event.currentIndex);
-      this.headerGroups.update((gs) =>
-        gs.map((g, i) => (i === prevIdx ? { ...g, headers: newHeaders } : g))
-      );
-    } else {
-      const newPrev = [...prevData];
-      const newCurr = [...currData];
-      transferArrayItem(newPrev, newCurr, event.previousIndex, event.currentIndex);
-      this.headerGroups.update((gs) =>
-        gs.map((g, i) =>
-          i === prevIdx ? { ...g, headers: newPrev } : i === currIdx ? { ...g, headers: newCurr } : g
-        )
-      );
-    }
-  }
-
-  toggleAccordion(sectionId: string): void {
-    this.accordionOpen.update((current) => ({
-      ...current,
-      [sectionId]: !current[sectionId]
-    }));
-  }
-
-  isAccordionOpen(sectionId: string): boolean {
-    return Boolean(this.accordionOpen()[sectionId]);
-  }
-
-  private getFieldOptions(): Array<{
-    id: string;
-    label: string;
-    apiKey: string;
-    displayLabel: string;
-  }> {
-    return [
-      { id: 'order_client_code', label: 'Código cliente', displayLabel: 'Código cliente', apiKey: this.getApiKeyForField('order_client_code') },
-      { id: 'order_guide_number', label: 'N° de guía', displayLabel: 'N° de guía', apiKey: this.getApiKeyForField('order_guide_number') },
-      { id: 'order_request_date', label: 'Fecha de solicitud', displayLabel: 'Fecha de solicitud', apiKey: this.getApiKeyForField('order_request_date') },
-      { id: 'pickup_country', label: 'País', displayLabel: 'País (Recojo)', apiKey: this.getApiKeyForField('pickup_country') },
-      { id: 'pickup_company', label: 'Nombre de empresa (Punto de recojo)', displayLabel: 'Nombre de empresa (Recojo)', apiKey: this.getApiKeyForField('pickup_company') },
-      { id: 'pickup_contact', label: 'Nombre de contacto', displayLabel: 'Nombre de contacto (Recojo)', apiKey: this.getApiKeyForField('pickup_contact') },
-      { id: 'pickup_phone', label: 'Celular', displayLabel: 'Celular (Recojo)', apiKey: this.getApiKeyForField('pickup_phone') },
-      { id: 'pickup_address', label: 'Dirección de recojo', displayLabel: 'Dirección de recojo', apiKey: this.getApiKeyForField('pickup_address') },
-      { id: 'pickup_reference', label: 'Referencia especificar piso/oficina/número de tienda', displayLabel: 'Referencia (Recojo)', apiKey: this.getApiKeyForField('pickup_reference') },
-      { id: 'pickup_district', label: 'Distrito', displayLabel: 'Distrito (Recojo)', apiKey: this.getApiKeyForField('pickup_district') },
-      { id: 'pickup_province', label: 'Provincia', displayLabel: 'Provincia (Recojo)', apiKey: this.getApiKeyForField('pickup_province') },
-      { id: 'pickup_department', label: 'Departamento', displayLabel: 'Departamento (Recojo)', apiKey: this.getApiKeyForField('pickup_department') },
-      { id: 'pickup_date', label: 'Fecha de recojo', displayLabel: 'Fecha de recojo', apiKey: this.getApiKeyForField('pickup_date') },
-      { id: 'pickup_start_time', label: 'Hora inicio de recojo', displayLabel: 'Hora inicio de recojo', apiKey: this.getApiKeyForField('pickup_start_time') },
-      { id: 'pickup_end_time', label: 'Hora fin de recojo', displayLabel: 'Hora fin de recojo', apiKey: this.getApiKeyForField('pickup_end_time') },
-
-
-      { id: 'delivery_company', label: 'Nombre de empresa (Punto de entrega)', displayLabel: 'Nombre de empresa (Entrega)', apiKey: this.getApiKeyForField('delivery_company') },
-      { id: 'delivery_contact', label: 'Nombre de contacto', displayLabel: 'Nombre de contacto (Entrega)', apiKey: this.getApiKeyForField('delivery_contact') },
-      { id: 'delivery_document', label: 'DNI', displayLabel: 'DNI (Entrega)', apiKey: this.getApiKeyForField('delivery_document') },
-      { id: 'delivery_phone', label: 'Celular', displayLabel: 'Celular (Entrega)', apiKey: this.getApiKeyForField('delivery_phone') },
-      { id: 'delivery_address', label: 'Dirección', displayLabel: 'Dirección (Entrega)', apiKey: this.getApiKeyForField('delivery_address') },
-      { id: 'delivery_reference', label: 'Referencia especificar piso/oficina/número de tienda', displayLabel: 'Referencia (Entrega)', apiKey: this.getApiKeyForField('delivery_reference') },
-      { id: 'delivery_district', label: 'Distrito', displayLabel: 'Distrito (Entrega)', apiKey: this.getApiKeyForField('delivery_district') },
-      { id: 'delivery_province', label: 'Provincia', displayLabel: 'Provincia (Entrega)', apiKey: this.getApiKeyForField('delivery_province') },
-      { id: 'delivery_department', label: 'Departamento', displayLabel: 'Departamento (Entrega)', apiKey: this.getApiKeyForField('delivery_department') },
-      
-
-      { id: 'package_description', label: 'Descripción del paquete', displayLabel: 'Descripción del paquete', apiKey: this.getApiKeyForField('package_description') },
-      { id: 'package_qty', label: 'Cantidad de paquetes', displayLabel: 'Cantidad de paquetes', apiKey: this.getApiKeyForField('package_qty') },
-      { id: 'package_weight', label: 'Peso guía (KG)', displayLabel: 'Peso guía (KG)', apiKey: this.getApiKeyForField('package_weight') },
-      { id: 'package_size', label: 'Tamaño referencial guía', displayLabel: 'Tamaño referencial guía', apiKey: this.getApiKeyForField('package_size') },
-      { id: 'package_height', label: 'Alto CM', displayLabel: 'Alto CM', apiKey: this.getApiKeyForField('package_height') },
-      { id: 'package_width', label: 'Ancho CM', displayLabel: 'Ancho CM', apiKey: this.getApiKeyForField('package_width') },
-      { id: 'package_depth', label: 'Profundidad CM', displayLabel: 'Profundidad CM', apiKey: this.getApiKeyForField('package_depth') },
-      { id: 'package_volumetric', label: 'Peso volumétrico guía', displayLabel: 'Peso volumétrico guía', apiKey: this.getApiKeyForField('package_volumetric') },
-      { id: 'package_m3', label: 'M3 guía', displayLabel: 'M3 guía', apiKey: this.getApiKeyForField('package_m3') },
-      { id: 'package_value', label: 'Valor estimado (opcional)', displayLabel: 'Valor estimado (opcional)', apiKey: this.getApiKeyForField('package_value') },
-      { id: 'package_notes', label: 'Observaciones (opcional)', displayLabel: 'Observaciones (opcional)', apiKey: this.getApiKeyForField('package_notes') }
-    ];
-  }
-
-  private getApiKeyForField(fieldId: string): string {
-    return this.fieldKeyMap[fieldId] ?? fieldId;
-  }
-
-  private getHeaderGroups(): HeaderGroup[] {
-    const headers = this.excelHeaders();
-    if (!headers.length) {
-      return [];
-    }
-
-    const pickupKeywords = [
-      'recojo',
-      'recoger',
-      'retiro',
-      'retirar',
-      'pickup',
-      'pick up',
-      'origen',
-      'origin',
-      'salida'
-    ];
-    const deliveryKeywords = [
-      'entrega',
-      'entregar',
-      'delivery',
-      'destino',
-      'destination',
-      'llegada'
-    ];
-    const packageKeywords = [
-      'paquete',
-      'paquetes',
-      'bulto',
-      'bultos',
-      'caja',
-      'cajas',
-      'embalaje',
-      'mercaderia',
-      'mercancía',
-      'carga',
-      'package'
-    ];
-
-    const sections = this.standardSections.map((section) => ({
-      id: section.id,
-      title: section.title,
-      headers: [] as string[]
-    }));
-
-    const normalizedHeaders = headers.map((header) => ({
-      raw: header,
-      normalized: this.normalizeForSearch(header)
-    }));
-
-    const unassigned: string[] = [];
-    normalizedHeaders.forEach(({ raw, normalized }) => {
-      if (this.hasKeyword(normalized, pickupKeywords)) {
-        sections[0].headers.push(raw);
-        return;
-      }
-      if (this.hasKeyword(normalized, deliveryKeywords)) {
-        sections[1].headers.push(raw);
-        return;
-      }
-      if (this.hasKeyword(normalized, packageKeywords)) {
-        sections[2].headers.push(raw);
-        return;
-      }
-      unassigned.push(raw);
-    });
-
-    unassigned.forEach((header, index) => {
-      sections[index % sections.length].headers.push(header);
-    });
-
-    return sections;
-  }
-
-  private hasKeyword(value: string, keywords: string[]): boolean {
-    return keywords.some((keyword) => value.includes(this.normalizeForSearch(keyword)));
-  }
-
 }
