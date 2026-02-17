@@ -138,9 +138,10 @@ export class ClientShipmentsUploadV3ViewComponent {
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' }) as string[][];
         const headerRow = rows?.[1] ?? [];
-        const headers = headerRow
-          .map((v) => String(v).trim())
-          .filter((v) => Boolean(v));
+        const rawHeaders = headerRow
+          .map((v: unknown) => String(v).trim())
+          .filter((v: string) => Boolean(v));
+        const headers = this.disambiguateDuplicateHeaders(rawHeaders);
         this.excelHeaders.set(headers);
         this.detectTemplate(headers);
       } catch {
@@ -170,6 +171,28 @@ export class ClientShipmentsUploadV3ViewComponent {
     const query = this.normalizeForSearch(this.getSearchValue(fieldId));
     if (!query) return options;
     return options.filter((o) => this.normalizeForSearch(o).includes(query));
+  }
+
+  /**
+   * Si hay columnas repetidas en el Excel (ej. PROVINCIA en recojo y entrega),
+   * las hace únicas con sufijos: PROVINCIA__1, PROVINCIA__2, etc.
+   */
+  private disambiguateDuplicateHeaders(rawHeaders: string[]): string[] {
+    const normalizedCounts = new Map<string, number>();
+    rawHeaders.forEach((h) => {
+      const n = this.normalizeForSearch(h);
+      normalizedCounts.set(n, (normalizedCounts.get(n) ?? 0) + 1);
+    });
+
+    const occurrenceIndex = new Map<string, number>();
+    return rawHeaders.map((h) => {
+      const n = this.normalizeForSearch(h);
+      const total = normalizedCounts.get(n) ?? 1;
+      if (total <= 1) return h;
+      const idx = (occurrenceIndex.get(n) ?? 0) + 1;
+      occurrenceIndex.set(n, idx);
+      return `${h}__${idx}`;
+    });
   }
 
   private normalizeForSearch(v: string): string {
