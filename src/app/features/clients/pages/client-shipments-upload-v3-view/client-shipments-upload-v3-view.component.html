@@ -1,4 +1,9 @@
 <section class="upload-v3-page">
+  <nav class="upload-v3-breadcrumb" aria-label="Navegación">
+    <a routerLink="/clients/companies" class="upload-v3-breadcrumb-link">Mis Compañías</a>
+    <span class="upload-v3-breadcrumb-sep">/</span>
+    <span class="upload-v3-breadcrumb-current">Subir orden (Excel)</span>
+  </nav>
   @if (showTemplateDetectedModal()) {
     <app-modal title="Template anterior encontrado" size="sm" (close)="closeTemplateDetectedModal()">
       <p>Se encontró un template anterior. Se preseleccionó la asignación de columnas. Puedes revisar o ajustar.</p>
@@ -38,26 +43,28 @@
     </div>
   </header>
 
-  @if (excelError()) {
-    <div class="upload-v3-error">
-      <span class="material-symbols-outlined">error</span>
-      {{ excelError() }}
-    </div>
-  }
-  @if (mappingError()) {
-    <div class="upload-v3-error">
-      <span class="material-symbols-outlined">error</span>
-      {{ mappingError() }}
-    </div>
-  }
-  @if (orderError()) {
-    <div class="upload-v3-error">
-      <span class="material-symbols-outlined">error</span>
-      {{ orderError() }}
-    </div>
-  }
-  @if (orderResult(); as result) {
-    <div class="upload-v3-success">
+  <div class="upload-v3-messages" role="alert">
+    @if (excelError()) {
+      <div class="upload-v3-error upload-v3-message">
+        <span class="material-symbols-outlined" aria-hidden="true">error</span>
+        <span>{{ excelError() }}</span>
+      </div>
+    }
+    @if (mappingError()) {
+      <div class="upload-v3-error upload-v3-message">
+        <span class="material-symbols-outlined" aria-hidden="true">error</span>
+        <span>{{ mappingError() }}</span>
+      </div>
+    }
+    @if (orderError()) {
+      <div class="upload-v3-error upload-v3-message">
+        <span class="material-symbols-outlined" aria-hidden="true">error</span>
+        <span>{{ orderError() }}</span>
+      </div>
+    }
+  </div>
+    @if (orderResult(); as result) {
+    <div class="upload-v3-success upload-v3-message" role="status">
       <span class="material-symbols-outlined">check_circle</span>
       <div>
         <p class="upload-v3-success-title">Importación completada</p>
@@ -161,8 +168,15 @@
     <main class="upload-v3-main">
       <div class="upload-v3-sections-grid">
         @for (section of standardSections; track section.id) {
-          <div class="upload-v3-section-card">
+          <div
+            class="upload-v3-section-card"
+            [class.upload-v3-section-card--full]="section.id === 'package'"
+            [class.upload-v3-section-card--pickup]="section.id === 'pickup'"
+            [class.upload-v3-section-card--delivery]="section.id === 'delivery'"
+            [class.upload-v3-section-card--package]="section.id === 'package'"
+          >
             <div class="upload-v3-section-card-head">
+              <span class="upload-v3-section-num" [attr.aria-hidden]="true">{{ section.id === 'pickup' ? '1' : section.id === 'delivery' ? '2' : '3' }}</span>
               <h2 class="upload-v3-section-title">{{ getSectionTitleShort(section.id) }}</h2>
             </div>
             <div class="upload-v3-scrollable-content">
@@ -217,21 +231,31 @@
       </div>
 
       <footer class="upload-v3-footer">
-        <div class="upload-v3-footer-info">
-          <span class="material-symbols-outlined upload-v3-footer-icon">verified</span>
-          <p>Asigna cada campo estándar a la columna del Excel que contiene ese dato. Usa <strong>Guardar plantilla</strong> para reutilizar el mapeo o <strong>Guardar orden</strong> para enviar.</p>
-        </div>
-        <div class="upload-v3-footer-actions">
-          <button type="button" class="upload-v3-btn upload-v3-btn--ghost" (click)="onDescartar(excelInput)">
-            Descartar
-          </button>
+        <div class="upload-v3-footer-inner">
+          <p class="upload-v3-footer-tip">
+            <span class="material-symbols-outlined upload-v3-footer-icon" aria-hidden="true">lightbulb</span>
+            Asigna cada campo a la columna correcta del Excel. <strong>Guardar plantilla</strong> guarda el mapeo para la próxima vez; <strong>Guardar orden</strong> envía el archivo.
+          </p>
+          <div class="upload-v3-footer-actions">
+            <button type="button" class="upload-v3-btn upload-v3-btn--ghost" (click)="onDescartar(excelInput)">
+              Descartar y cargar otro archivo
+            </button>
+          </div>
         </div>
       </footer>
     </main>
   } @else {
     <div class="upload-v3-empty">
-      <span class="material-symbols-outlined">cloud_upload</span>
-      <p>Sube un Excel para configurar el mapeo de campos.</p>
+      <div class="upload-v3-empty-icon-wrap">
+        <span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>
+      </div>
+      <h2 class="upload-v3-empty-title">Carga tu archivo Excel</h2>
+      <p class="upload-v3-empty-text">Sube la plantilla con tus órdenes. Luego asignarás cada columna del Excel a los campos del sistema.</p>
+      <input type="file" accept=".xlsx,.csv" #emptyExcelInput hidden (change)="onExcelFileSelected($event)" />
+      <button type="button" class="upload-v3-empty-btn" (click)="resetFileInput(emptyExcelInput); emptyExcelInput.click()">
+        <span class="material-symbols-outlined">upload_file</span>
+        Elegir archivo Excel
+      </button>
     </div>
   }
 </section>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
@@ -24,7 +24,7 @@ type StandardSection = {
 @Component({
   selector: 'app-client-shipments-upload-v3-view',
   standalone: true,
-  imports: [CommonModule, ModalComponent],
+  imports: [CommonModule, ModalComponent, RouterLink],
   templateUrl: './client-shipments-upload-v3-view.component.html',
   styleUrl: './client-shipments-upload-v3-view.component.css'
 })

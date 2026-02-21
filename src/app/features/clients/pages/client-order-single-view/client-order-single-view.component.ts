@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
@@ -22,7 +22,7 @@ type StandardSection = {
 @Component({
   selector: 'app-client-order-single-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './client-order-single-view.component.html',
   styleUrl: './client-order-single-view.component.css'
 })
@@ -120,6 +120,12 @@ export class ClientOrderSingleViewComponent {
       package: 'Datos de paquete'
     };
     return map[sectionId] ?? sectionId;
+  }
+
+  private readonly requiredApiKeys = ['order.tracking_number', 'order.request_date', 'pickup.address', 'delivery.address'];
+
+  isRequiredField(apiKey: string): boolean {
+    return this.requiredApiKeys.includes(apiKey);
   }
 
   onSubmit(): void {

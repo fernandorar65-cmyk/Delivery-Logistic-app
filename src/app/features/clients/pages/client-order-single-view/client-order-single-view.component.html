@@ -1,42 +1,63 @@
 <section class="single-order-page">
+  <nav class="single-order-breadcrumb" aria-label="Navegación">
+    <a routerLink="/clients/companies" class="single-order-breadcrumb-link">Mis Compañías</a>
+    <span class="single-order-breadcrumb-sep">/</span>
+    <span class="single-order-breadcrumb-current">Ingreso manual</span>
+  </nav>
+
   <header class="single-order-header">
     <p class="single-order-badge">Ingreso manual</p>
-    <h1 class="single-order-title">Nueva orden (un solo envío)</h1>
+    <h1 class="single-order-title">Nueva orden</h1>
     <p class="single-order-subtitle">
-      Completa los campos manualmente. Los mismos datos que en la plantilla Excel, sin subir archivo.
+      Completa los campos a continuación. Son los mismos datos que en la plantilla Excel, sin subir archivo.
     </p>
   </header>
 
-  @if (submitError()) {
-    <div class="single-order-error">
-      <span class="material-symbols-outlined">error</span>
-      {{ submitError() }}
-    </div>
-  }
-  @if (submitSuccess()) {
-    <div class="single-order-success">
-      <span class="material-symbols-outlined">check_circle</span>
-      <p>Orden creada correctamente.</p>
-    </div>
-  }
+  <div class="single-order-messages">
+    @if (submitError()) {
+      <div class="single-order-error single-order-message" role="alert">
+        <span class="material-symbols-outlined" aria-hidden="true">error</span>
+        <span>{{ submitError() }}</span>
+      </div>
+    }
+    @if (submitSuccess()) {
+      <div class="single-order-success single-order-message" role="status">
+        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+        <p>Orden creada correctamente. Puedes registrar otra si lo deseas.</p>
+      </div>
+    }
+  </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="single-order-form">
     <div class="single-order-sections-grid">
       @for (section of standardSections; track section.id) {
-        <div class="single-order-section-card">
+        <div
+          class="single-order-section-card"
+          [class.single-order-section-card--full]="section.id === 'package'"
+          [class.single-order-section-card--pickup]="section.id === 'pickup'"
+          [class.single-order-section-card--delivery]="section.id === 'delivery'"
+          [class.single-order-section-card--package]="section.id === 'package'"
+        >
           <div class="single-order-section-head">
+            <span class="single-order-section-num" aria-hidden="true">{{ section.id === 'pickup' ? '1' : section.id === 'delivery' ? '2' : '3' }}</span>
             <h2 class="single-order-section-title">{{ getSectionTitleShort(section.id) }}</h2>
           </div>
           <div class="single-order-fields">
             @for (field of section.fields; track field.id) {
               <div class="single-order-field">
-                <label [for]="'field-' + field.id" class="single-order-label">{{ field.label }}</label>
+                <label [for]="'field-' + field.id" class="single-order-label">
+                  {{ field.label }}
+                  @if (isRequiredField(field.apiKey)) {
+                    <span class="single-order-required" aria-label="Obligatorio">*</span>
+                  }
+                </label>
                 <input
                   [id]="'field-' + field.id"
                   [type]="getInputType(field)"
                   class="single-order-input"
                   [formControlName]="field.apiKey"
                   [placeholder]="field.label"
+                  [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
                 />
               </div>
             }
@@ -46,19 +67,25 @@
     </div>
 
     <footer class="single-order-footer">
-      <button
-        type="submit"
-        class="single-order-btn single-order-btn--primary"
-        [disabled]="submitLoading()"
-      >
-        @if (submitLoading()) {
-          <span class="single-order-spinner"></span>
-          Guardando...
-        } @else {
-          <span class="material-symbols-outlined">save</span>
-          Guardar orden
-        }
-      </button>
+      <div class="single-order-footer-inner">
+        <p class="single-order-footer-hint">
+          <span class="material-symbols-outlined single-order-footer-icon" aria-hidden="true">lightbulb</span>
+          <span><span class="single-order-required">*</span> Campos obligatorios: N° de guía, Fecha de solicitud, Dirección de recojo y Dirección de entrega.</span>
+        </p>
+        <button
+          type="submit"
+          class="single-order-btn single-order-btn--primary"
+          [disabled]="submitLoading()"
+        >
+          @if (submitLoading()) {
+            <span class="single-order-spinner"></span>
+            Guardando...
+          } @else {
+            <span class="material-symbols-outlined" aria-hidden="true">save</span>
+            Guardar orden
+          }
+        </button>
+      </div>
     </footer>
   </form>
 </section>
