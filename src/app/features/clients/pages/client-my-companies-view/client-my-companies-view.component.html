@@ -116,8 +116,11 @@
               <td class="company-since">{{ company.since }}</td>
               <td class="text-right">
                 <div class="company-actions">
-                  <button type="button" class="action-btn action-btn-upload" title="Subir orden" (click)="goToUploadOrder(company)">
+                  <button type="button" class="action-btn action-btn-upload" title="Subir orden (Excel)" (click)="goToUploadOrder(company)">
                     <app-hero-icon name="arrow-up-tray" [size]="18"></app-hero-icon>
+                  </button>
+                  <button type="button" class="action-btn action-btn-single" title="Ingreso manual (una orden)" (click)="goToSingleOrder(company)">
+                    <app-hero-icon name="plus" [size]="18"></app-hero-icon>
                   </button>
                   <button type="button" class="action-btn action-btn-default" title="Ver detalles" (click)="onViewDetails(company)">
                     <app-hero-icon name="eye" [size]="18"></app-hero-icon>

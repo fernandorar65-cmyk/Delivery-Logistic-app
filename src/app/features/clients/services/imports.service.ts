@@ -19,6 +19,13 @@ export interface ImportExecutionParams {
   run_async?: boolean;
 }
 
+/** Payload para crear una sola orden (ingreso manual, sin Excel). */
+export interface SingleOrderParams {
+  client_id: string;
+  company_id?: string;
+  order: Record<string, string>;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -49,6 +56,18 @@ export class ImportsService {
     return this.http.post<ImportExecutionResponse>(
       `${environment.apiUrl}/imports/executions/`,
       form
+    );
+  }
+
+  /**
+   * Crea una sola orden (ingreso manual).
+   * POST /api/v1/imports/single-order/ (JSON).
+   * Ajusta la URL si tu backend usa otra ruta.
+   */
+  createSingleOrder(params: SingleOrderParams): Observable<{ result?: unknown }> {
+    return this.http.post<{ result?: unknown }>(
+      `${environment.apiUrl}/imports/single-order/`,
+      { ...params }
     );
   }
 }

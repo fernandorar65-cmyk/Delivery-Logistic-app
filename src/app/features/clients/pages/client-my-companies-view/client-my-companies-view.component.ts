@@ -82,6 +82,13 @@ export class ClientMyCompaniesViewComponent implements OnInit {
     }
   }
 
+  goToSingleOrder(company: ClientCompanyView): void {
+    const companyId = company?.companyId;
+    if (companyId) {
+      this.router.navigate(['/clients/single-order'], { queryParams: { company_id: companyId } });
+    }
+  }
+
   onViewDetails(company: ClientCompanyView): void {
     // TODO: navegar a detalle o abrir modal
   }

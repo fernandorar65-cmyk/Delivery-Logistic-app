@@ -138,6 +138,13 @@ export const routes: Routes = [
           .then(m => m.ClientShipmentsUploadV3ViewComponent)
       },
       {
+        path: 'clients/single-order',
+        canActivate: [roleGuard],
+        data: { roles: ['client'] },
+        loadComponent: () => import('@app/features/clients/pages/client-order-single-view/client-order-single-view.component')
+          .then(m => m.ClientOrderSingleViewComponent)
+      },
+      {
         path: 'clients/:id',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },

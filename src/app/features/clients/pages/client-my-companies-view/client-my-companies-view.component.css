@@ -297,6 +297,16 @@
   color: #0f766e;
 }
 
+.action-btn-single {
+  color: #7c3aed;
+  background: transparent;
+}
+
+.action-btn-single:hover {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
 .action-btn-default {
   color: #137fec;
   background: transparent;

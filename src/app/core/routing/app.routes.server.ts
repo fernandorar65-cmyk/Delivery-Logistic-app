@@ -35,6 +35,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'clients/single-order',
+    renderMode: RenderMode.Server
+  },
+  {
     path: 'providers',
     renderMode: RenderMode.Server
   },

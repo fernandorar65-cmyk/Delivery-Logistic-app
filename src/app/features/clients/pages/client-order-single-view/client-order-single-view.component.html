@@ -1,0 +1,64 @@
+<section class="single-order-page">
+  <header class="single-order-header">
+    <p class="single-order-badge">Ingreso manual</p>
+    <h1 class="single-order-title">Nueva orden (un solo envío)</h1>
+    <p class="single-order-subtitle">
+      Completa los campos manualmente. Los mismos datos que en la plantilla Excel, sin subir archivo.
+    </p>
+  </header>
+
+  @if (submitError()) {
+    <div class="single-order-error">
+      <span class="material-symbols-outlined">error</span>
+      {{ submitError() }}
+    </div>
+  }
+  @if (submitSuccess()) {
+    <div class="single-order-success">
+      <span class="material-symbols-outlined">check_circle</span>
+      <p>Orden creada correctamente.</p>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="single-order-form">
+    <div class="single-order-sections-grid">
+      @for (section of standardSections; track section.id) {
+        <div class="single-order-section-card">
+          <div class="single-order-section-head">
+            <h2 class="single-order-section-title">{{ getSectionTitleShort(section.id) }}</h2>
+          </div>
+          <div class="single-order-fields">
+            @for (field of section.fields; track field.id) {
+              <div class="single-order-field">
+                <label [for]="'field-' + field.id" class="single-order-label">{{ field.label }}</label>
+                <input
+                  [id]="'field-' + field.id"
+                  [type]="getInputType(field)"
+                  class="single-order-input"
+                  [formControlName]="field.apiKey"
+                  [placeholder]="field.label"
+                />
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <footer class="single-order-footer">
+      <button
+        type="submit"
+        class="single-order-btn single-order-btn--primary"
+        [disabled]="submitLoading()"
+      >
+        @if (submitLoading()) {
+          <span class="single-order-spinner"></span>
+          Guardando...
+        } @else {
+          <span class="material-symbols-outlined">save</span>
+          Guardar orden
+        }
+      </button>
+    </footer>
+  </form>
+</section>
