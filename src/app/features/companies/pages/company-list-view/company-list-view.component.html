@@ -55,6 +55,7 @@
         [getStatusLabel]="getStatusLabel.bind(this)"
         (edit)="openEditCompanyModal($event)"
         (remove)="openDeleteConfirm($event)"
+        (uploadOrder)="goToUploadOrder($event)"
       ></app-companies-table>
 
       <app-pagination

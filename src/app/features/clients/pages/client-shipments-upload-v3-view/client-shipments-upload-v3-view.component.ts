@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
@@ -30,6 +31,10 @@ type StandardSection = {
 export class ClientShipmentsUploadV3ViewComponent {
   private importsService = inject(ImportsService);
   private storageService = inject(StorageService);
+  private route = inject(ActivatedRoute);
+
+  /** company_id pasado desde Companies (query param); se envía en el body de la ejecución. */
+  companyId = signal<string | null>(null);
 
   openSelectId = signal<string | null>(null);
   excelHeaders = signal<string[]>([]);
@@ -114,6 +119,13 @@ export class ClientShipmentsUploadV3ViewComponent {
 
   /** fieldId -> columna Excel seleccionada */
   selectedMappings = signal<Record<string, string>>({});
+
+  constructor() {
+    this.route.queryParams.subscribe(params => {
+      const id = params['company_id'];
+      this.companyId.set(typeof id === 'string' && id.length > 0 ? id : null);
+    });
+  }
 
   resetFileInput(input: HTMLInputElement): void {
     input.value = '';
@@ -436,12 +448,15 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.orderResult.set(null);
     this.orderLoading.set(true);
 
+    const companyId = this.companyId();
     const runExecution = (mappingId: string) =>
       this.importsService.executeExecution({
         file,
         client_id: clientId,
         mapping_id: mappingId,
-        run_async: false
+        ...(companyId ? { company_id: companyId } : {}),
+        skip_duplicates: true,
+        run_async: true
       });
 
     const mappingId = this.mappingResult()?.mapping_id;

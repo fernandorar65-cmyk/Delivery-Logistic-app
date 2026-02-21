@@ -42,6 +42,11 @@
             </td>
             <td class="actions-cell">
               <div class="action-buttons">
+                @if (company.id) {
+                  <button (click)="uploadOrder.emit(company)" class="action-btn" title="Subir orden">
+                    <app-hero-icon name="arrow-up-tray" [size]="16"></app-hero-icon>
+                  </button>
+                }
                 <button (click)="edit.emit(company)" class="action-btn edit-btn" title="Editar">
                   <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
                 </button>

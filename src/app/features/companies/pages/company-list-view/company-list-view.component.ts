@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CompanyService } from '@app/features/companies/services/company.service';
 import { Company, CompanyCreate } from '@app/features/companies/models/company.model';
@@ -34,6 +35,7 @@ import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-moda
 export class CompanyListViewComponent {
   private companyService = inject(CompanyService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   
   companies = signal<Company[]>([]);
   filteredCompanies = signal<Company[]>([]);
@@ -282,6 +284,13 @@ export class CompanyListViewComponent {
     this.companyForm.reset();
     this.formError.set(null);
     this.showModal.set(true);
+  }
+
+  goToUploadOrder(company: Company): void {
+    const id = company?.id;
+    if (id) {
+      this.router.navigate(['/clients/shipments-upload'], { queryParams: { company_id: id } });
+    }
   }
 
   openEditCompanyModal(company: Company) {

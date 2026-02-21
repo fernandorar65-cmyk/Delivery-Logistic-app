@@ -271,29 +271,50 @@
   display: inline-flex;
   gap: 0.5rem;
   justify-content: flex-end;
+  align-items: center;
 }
 
-.action-link {
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border: none;
-  background: transparent;
-  color: #137fec;
-  font-weight: 600;
-  font-size: 0.8rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  padding: 0.3rem 0.4rem;
-  border-radius: 0.4rem;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.action-link:hover {
+.action-btn-upload {
+  color: #0d9488;
+  background: transparent;
+}
+
+.action-btn-upload:hover {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.action-btn-default {
+  color: #137fec;
+  background: transparent;
+}
+
+.action-btn-default:hover {
   background: #e0f2fe;
+  color: #0c63d4;
 }
 
-.action-link.danger {
+.action-btn-danger {
   color: #ef4444;
+  background: transparent;
 }
 
-.action-link.danger:hover {
+.action-btn-danger:hover {
   background: #fee2e2;
+  color: #dc2626;
 }
 
 .client-companies-footer {

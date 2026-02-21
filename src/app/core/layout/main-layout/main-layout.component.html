@@ -181,6 +181,8 @@
           <span>Mis Compañías</span>
         </a>
 
+        <!-- Subir Orden se accede desde la sección Companies (botón por empresa) -->
+        <!--
         <a *ngIf="canAccess([UserTypes.CLIENT])" routerLink="/clients/shipments-upload" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: false}" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -190,6 +192,7 @@
           </svg>
           <span>Subir Orden</span>
         </a>
+        -->
 
         <a *ngIf="canAccess([UserTypes.ADMIN])" routerLink="/companies" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: false}" class="nav-item">

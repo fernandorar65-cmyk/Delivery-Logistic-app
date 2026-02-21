@@ -116,8 +116,15 @@
               <td class="company-since">{{ company.since }}</td>
               <td class="text-right">
                 <div class="company-actions">
-                  <button type="button" class="action-link">Ver detalles</button>
-                  <button type="button" class="action-link danger">Finalizar</button>
+                  <button type="button" class="action-btn action-btn-upload" title="Subir orden" (click)="goToUploadOrder(company)">
+                    <app-hero-icon name="arrow-up-tray" [size]="18"></app-hero-icon>
+                  </button>
+                  <button type="button" class="action-btn action-btn-default" title="Ver detalles" (click)="onViewDetails(company)">
+                    <app-hero-icon name="eye" [size]="18"></app-hero-icon>
+                  </button>
+                  <button type="button" class="action-btn action-btn-danger" title="Finalizar" (click)="onFinalize(company)">
+                    <app-hero-icon name="trash" [size]="18"></app-hero-icon>
+                  </button>
                 </div>
               </td>
             </tr>

@@ -20,6 +20,7 @@ export class CompaniesTableComponent {
 
   @Output() edit = new EventEmitter<Company>();
   @Output() remove = new EventEmitter<string>();
+  @Output() uploadOrder = new EventEmitter<Company>();
 }
 
 

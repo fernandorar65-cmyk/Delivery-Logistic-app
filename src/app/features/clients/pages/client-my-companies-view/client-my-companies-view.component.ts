@@ -1,20 +1,23 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
+import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ClientCompaniesFacade, ClientCompanyView } from '@app/features/clients/facades/client-companies.facade';
 
 @Component({
   selector: 'app-client-my-companies-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmptyStateComponent, LoadingCardComponent],
+  imports: [CommonModule, FormsModule, EmptyStateComponent, LoadingCardComponent, HeroIconComponent],
   templateUrl: './client-my-companies-view.component.html',
   styleUrl: './client-my-companies-view.component.css'
 })
 export class ClientMyCompaniesViewComponent implements OnInit {
   private clientCompaniesFacade = inject(ClientCompaniesFacade);
+  private router = inject(Router);
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -70,6 +73,21 @@ export class ClientMyCompaniesViewComponent implements OnInit {
   setStatusFilter(value: string): void {
     this.statusFilter.set(value);
     this.statusOpen.set(false);
+  }
+
+  goToUploadOrder(company: ClientCompanyView): void {
+    const companyId = company?.companyId;
+    if (companyId) {
+      this.router.navigate(['/clients/shipments-upload'], { queryParams: { company_id: companyId } });
+    }
+  }
+
+  onViewDetails(company: ClientCompanyView): void {
+    // TODO: navegar a detalle o abrir modal
+  }
+
+  onFinalize(company: ClientCompanyView): void {
+    // TODO: confirmar y finalizar relación
   }
 
   private loadCompanies(): void {
