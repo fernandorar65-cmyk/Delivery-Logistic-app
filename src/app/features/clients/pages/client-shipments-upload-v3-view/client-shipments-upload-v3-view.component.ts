@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
+import { switchMap } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
-import { ImportMappingCreateResult, ImportMappingDetectResult } from '@app/features/clients/models/imports.model';
+import { ImportExecutionResult, ImportMappingCreateResult, ImportMappingDetectResult } from '@app/features/clients/models/imports.model';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
 type StandardField = {
@@ -33,6 +34,8 @@ export class ClientShipmentsUploadV3ViewComponent {
   openSelectId = signal<string | null>(null);
   excelHeaders = signal<string[]>([]);
   excelFileName = signal<string | null>(null);
+  /** Archivo Excel actual (para enviarlo en ejecución). */
+  currentExcelFile = signal<File | null>(null);
   excelError = signal<string | null>(null);
   searchText = signal<Record<string, string>>({});
   templateResult = signal<ImportMappingDetectResult | null>(null);
@@ -40,15 +43,26 @@ export class ClientShipmentsUploadV3ViewComponent {
   mappingLoading = signal(false);
   mappingError = signal<string | null>(null);
   mappingResult = signal<ImportMappingCreateResult | null>(null);
+  orderLoading = signal(false);
+  orderError = signal<string | null>(null);
+  orderResult = signal<ImportExecutionResult | null>(null);
   showTemplateDetectedModal = signal(false);
 
-  /** Campos estándar EN DURO: lo que se envía al API. */
+  /** Claves obligatorias según la API: order.tracking_number, order.request_date y al menos una dirección. */
+  private readonly requiredMappingKeys = [
+    'order.tracking_number',
+    'order.request_date'
+  ] as const;
+  private readonly requiredAddressKeys = ['pickup.address', 'delivery.address'] as const;
+
+  /** Campos estándar EN DURO: lo que se envía al API. Clave = campo sistema, valor = nombre columna Excel. */
   readonly standardSections: StandardSection[] = [
     {
       id: 'pickup',
       title: 'Datos de recojo',
       fields: [
         { id: 'order_client_code', label: 'Código cliente', apiKey: 'order.client_code' },
+        { id: 'order_tracking_number', label: 'N° de guía', apiKey: 'order.tracking_number' },
         { id: 'order_request_date', label: 'Fecha de solicitud', apiKey: 'order.request_date' },
         { id: 'pickup_company', label: 'Nombre de empresa (Recojo)', apiKey: 'pickup.company_name' },
         { id: 'pickup_contact', label: 'Nombre de contacto (Recojo)', apiKey: 'pickup.contact_name' },
@@ -109,11 +123,14 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.excelHeaders.set([]);
     this.selectedMappings.set({});
     this.excelFileName.set(null);
+    this.currentExcelFile.set(null);
     this.excelError.set(null);
     this.templateResult.set(null);
     this.templateError.set(null);
     this.mappingError.set(null);
     this.mappingResult.set(null);
+    this.orderError.set(null);
+    this.orderResult.set(null);
     this.showTemplateDetectedModal.set(false);
     this.searchText.set({});
     this.openSelectId.set(null);
@@ -127,6 +144,8 @@ export class ClientShipmentsUploadV3ViewComponent {
 
     this.excelError.set(null);
     this.excelFileName.set(file.name);
+    this.currentExcelFile.set(file);
+    this.orderResult.set(null);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -327,6 +346,38 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.showTemplateDetectedModal.set(false);
   }
 
+  /** Construye el objeto mapping: clave = campo del sistema, valor = nombre de columna del Excel. */
+  private buildMapping(): Record<string, string> {
+    const selections = this.selectedMappings();
+    const mapping: Record<string, string> = {};
+    this.standardSections.forEach((s) =>
+      s.fields.forEach((f) => {
+        mapping[f.apiKey] = selections[f.id] ?? 'Opcional';
+      })
+    );
+    return mapping;
+  }
+
+  /**
+   * Valida campos obligatorios de la API: order.tracking_number, order.request_date
+   * y al menos una dirección (pickup.address o delivery.address).
+   * Retorna mensaje de error o null si es válido.
+   */
+  private validateRequiredMapping(mapping: Record<string, string>): string | null {
+    const hasValue = (v: string) => v && v !== 'Opcional';
+    for (const key of this.requiredMappingKeys) {
+      if (!hasValue(mapping[key])) {
+        const label = key === 'order.tracking_number' ? 'N° de guía' : 'Fecha de solicitud';
+        return `Falta mapear el campo obligatorio: ${label} (${key}). Asigna una columna del Excel.`;
+      }
+    }
+    const hasAddress = this.requiredAddressKeys.some((key) => hasValue(mapping[key]));
+    if (!hasAddress) {
+      return 'Debes mapear al menos una dirección: Dirección de recojo o Dirección (Entrega).';
+    }
+    return null;
+  }
+
   createTemplate(): void {
     if (this.mappingLoading()) return;
 
@@ -337,13 +388,12 @@ export class ClientShipmentsUploadV3ViewComponent {
       return;
     }
 
-    const selections = this.selectedMappings();
-    const mapping: Record<string, string> = {};
-    this.standardSections.forEach((s) =>
-      s.fields.forEach((f) => {
-        mapping[f.apiKey] = selections[f.id] ?? 'Opcional';
-      })
-    );
+    const mapping = this.buildMapping();
+    const validationError = this.validateRequiredMapping(mapping);
+    if (validationError) {
+      this.mappingError.set(validationError);
+      return;
+    }
 
     this.mappingError.set(null);
     this.mappingLoading.set(true);
@@ -355,6 +405,67 @@ export class ClientShipmentsUploadV3ViewComponent {
       error: () => {
         this.mappingError.set('No se pudo guardar el template.');
         this.mappingLoading.set(false);
+      }
+    });
+  }
+
+  /** Ejecuta la importación: envía el Excel y el mapeo (crea el mapeo si hace falta). */
+  saveOrder(): void {
+    if (this.orderLoading()) return;
+
+    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
+    const file = this.currentExcelFile();
+    const headers = this.excelHeaders();
+    if (!clientId || !headers.length) {
+      this.orderError.set('Debes cargar un Excel válido antes de guardar la orden.');
+      return;
+    }
+    if (!file) {
+      this.orderError.set('No hay archivo. Vuelve a cargar el Excel.');
+      return;
+    }
+
+    const mapping = this.buildMapping();
+    const validationError = this.validateRequiredMapping(mapping);
+    if (validationError) {
+      this.orderError.set(validationError);
+      return;
+    }
+
+    this.orderError.set(null);
+    this.orderResult.set(null);
+    this.orderLoading.set(true);
+
+    const runExecution = (mappingId: string) =>
+      this.importsService.executeExecution({
+        file,
+        client_id: clientId,
+        mapping_id: mappingId,
+        run_async: false
+      });
+
+    const mappingId = this.mappingResult()?.mapping_id;
+    const request = mappingId
+      ? runExecution(mappingId)
+      : this.importsService.createMapping({ client_id: clientId, headers, mapping }).pipe(
+          switchMap((res) => {
+            const id = res?.result?.mapping_id;
+            if (!id) throw new Error('No se obtuvo mapping_id');
+            this.mappingResult.set(res?.result ?? null);
+            return runExecution(id);
+          })
+        );
+
+    request.subscribe({
+      next: (res) => {
+        this.orderLoading.set(false);
+        const result = res?.result ?? null;
+        this.orderResult.set(result ? { ...result } : null);
+      },
+      error: (err) => {
+        this.orderLoading.set(false);
+        const msg = err?.error?.errors?.[0] ?? err?.message ?? 'No se pudo ejecutar la importación.';
+        this.orderError.set(typeof msg === 'string' ? msg : 'Error al guardar la orden.');
       }
     });
   }

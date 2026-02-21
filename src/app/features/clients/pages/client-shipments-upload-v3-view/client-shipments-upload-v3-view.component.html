@@ -50,6 +50,37 @@
       {{ mappingError() }}
     </div>
   }
+  @if (orderError()) {
+    <div class="upload-v3-error">
+      <span class="material-symbols-outlined">error</span>
+      {{ orderError() }}
+    </div>
+  }
+  @if (orderResult(); as result) {
+    <div class="upload-v3-success">
+      <span class="material-symbols-outlined">check_circle</span>
+      <div>
+        <p class="upload-v3-success-title">Importación completada</p>
+        <p class="upload-v3-success-detail">
+          @if (result.total_rows != null) {
+            {{ result.success_rows ?? 0 }} de {{ result.total_rows }} filas procesadas correctamente.
+            @if ((result.error_rows ?? 0) > 0) {
+              <span class="upload-v3-success-errors">{{ result.error_rows }} con error.</span>
+            }
+          } @else {
+            Estado: {{ result.status }}.
+          }
+        </p>
+        @if (result.row_errors && result.row_errors.length) {
+          <ul class="upload-v3-row-errors">
+            @for (err of result.row_errors; track err.row_number + err.field) {
+              <li>Fila {{ err.row_number }} ({{ err.field }}): {{ err.message }}</li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+  }
 
   @if (excelHeaders().length) {
     <header class="upload-v3-header-sticky">
@@ -92,6 +123,36 @@
           <button type="button" class="upload-v3-btn upload-v3-btn--secondary" (click)="resetFileInput(excelInput); excelInput.click()">
             <span class="material-symbols-outlined">refresh</span>
             Cambiar
+          </button>
+          <button
+            type="button"
+            class="upload-v3-btn upload-v3-btn--secondary"
+            (click)="createTemplate()"
+            [disabled]="mappingLoading()"
+            title="Guardar mapeo para usarlo en futuros envíos"
+          >
+            @if (mappingLoading()) {
+              <span class="upload-v3-btn-spinner"></span>
+              Guardando...
+            } @else {
+              <span class="material-symbols-outlined">save</span>
+              Guardar plantilla
+            }
+          </button>
+          <button
+            type="button"
+            class="upload-v3-btn upload-v3-btn--primary"
+            (click)="saveOrder()"
+            [disabled]="orderLoading()"
+            title="Enviar orden con el Excel actual"
+          >
+            @if (orderLoading()) {
+              <span class="upload-v3-btn-spinner"></span>
+              Guardando...
+            } @else {
+              <span class="material-symbols-outlined">upload</span>
+              Guardar orden
+            }
           </button>
         </div>
       </div>
@@ -158,19 +219,11 @@
       <footer class="upload-v3-footer">
         <div class="upload-v3-footer-info">
           <span class="material-symbols-outlined upload-v3-footer-icon">verified</span>
-          <p>Asigna cada campo estándar a la columna del Excel que contiene ese dato.</p>
+          <p>Asigna cada campo estándar a la columna del Excel que contiene ese dato. Usa <strong>Guardar plantilla</strong> para reutilizar el mapeo o <strong>Guardar orden</strong> para enviar.</p>
         </div>
         <div class="upload-v3-footer-actions">
           <button type="button" class="upload-v3-btn upload-v3-btn--ghost" (click)="onDescartar(excelInput)">
             Descartar
-          </button>
-          <button
-            type="button"
-            class="upload-v3-btn upload-v3-btn--primary"
-            (click)="createTemplate()"
-            [disabled]="mappingLoading()"
-          >
-            @if (mappingLoading()) { Validando... } @else { Confirmar y validar datos }
           </button>
         </div>
       </footer>

@@ -160,6 +160,51 @@
   font-weight: 600;
 }
 
+/* ----- Resultado ejecución (éxito) ----- */
+.upload-v3-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #15803d;
+}
+
+.upload-v3-success .material-symbols-outlined {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.upload-v3-success-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.upload-v3-success-detail {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #166534;
+}
+
+.upload-v3-success-errors {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.upload-v3-row-errors {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.75rem;
+  color: #92400e;
+}
+
+.upload-v3-row-errors li {
+  margin: 0.2rem 0;
+}
+
 /* ----- Header sticky (con Excel cargado) ----- */
 .upload-v3-header-sticky {
   background: rgba(255, 255, 255, 0.9);
@@ -261,6 +306,7 @@
 
 .upload-v3-header-right {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: clamp(0.5rem, 1.5vw, 1rem);
 }
@@ -349,6 +395,19 @@
   color: #334155;
 }
 
+.upload-v3-btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: upload-v3-spin 0.7s linear infinite;
+}
+
+@keyframes upload-v3-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ----- Main: grid de secciones ----- */
 .upload-v3-main {
   display: flex;
@@ -425,6 +484,7 @@
   overflow-x: hidden;
   padding: 0 clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 2vw, 1.5rem);
   scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
 }
 
 .upload-v3-scrollable-content::-webkit-scrollbar {
@@ -470,6 +530,23 @@
   padding: clamp(0.6rem, 1.5vw, 0.9rem) 0;
   border-bottom: 1px solid #f8fafc;
   transition: background 0.2s ease;
+}
+
+@media (max-width: 480px) {
+  .upload-v3-mapping-row {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+  }
+
+  .upload-v3-mapping-label-wrap {
+    flex: 1 1 100%;
+  }
+
+  .upload-v3-mapping-select-wrap {
+    width: 100%;
+    flex: 1 1 100%;
+  }
 }
 
 .upload-v3-mapping-row:last-child {
@@ -744,9 +821,41 @@
   justify-content: flex-end;
 }
 
-/* Ocultar nombre de archivo en móvil si aprieta */
+/* Breakpoints móvil */
 @media (max-width: 36rem) {
   .upload-v3-file-info {
     display: none;
+  }
+
+  .upload-v3-header-right {
+    flex-wrap: wrap;
+  }
+
+  .upload-v3-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .upload-v3-footer-actions {
+    flex-direction: column;
+  }
+
+  .upload-v3-footer-actions .upload-v3-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 30rem) {
+  .upload-v3-page {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .upload-v3-section-card-head {
+    padding: 0.75rem 0.75rem 0;
+  }
+
+  .upload-v3-scrollable-content {
+    padding: 0 0.75rem 0.75rem;
   }
 }

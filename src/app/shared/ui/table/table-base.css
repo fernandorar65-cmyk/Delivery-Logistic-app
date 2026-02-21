@@ -8,6 +8,7 @@
 
 .table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
@@ -62,4 +63,21 @@
 
 .p-8 {
   padding: 2rem;
+}
+
+/* Tabla responsive: min-width para permitir scroll horizontal en móvil */
+@media (max-width: 640px) {
+  .data-table {
+    min-width: 520px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .table-card {
+    border-radius: 0.75rem;
+  }
 }

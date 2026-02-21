@@ -1,15 +1,16 @@
 .dashboard-container {
-  padding: 0.6rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
   max-width: 1800px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .shipments-section {
   background: white;
-  border-radius: 12px;
-  padding: 0.9rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: clamp(0.75rem, 2vw, 12px);
+  padding: clamp(0.75rem, 2vw, 1rem);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
 }
 
@@ -19,12 +20,12 @@
 }
 
 .shipments-section .pagination-info {
-  font-size: 0.7rem;
+  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
 }
 
 .shipments-section .pagination-btn,
 .shipments-section .pagination-number {
-  font-size: 0.7rem;
+  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
   padding: 0.2rem 0.45rem;
   min-width: 1.6rem;
   height: 1.6rem;
@@ -32,7 +33,22 @@
 
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 1rem;
+    padding: 0.75rem;
+  }
+
+  .shipments-section {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0.5rem;
+  }
+
+  .shipments-section {
+    padding: 0.6rem;
+    border-radius: 0.75rem;
   }
 }
 

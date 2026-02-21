@@ -7,8 +7,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: clamp(0.75rem, 2vw, 2rem);
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .app-modal-container {
@@ -77,4 +80,15 @@
 .app-modal-body {
   padding: clamp(1rem, 2vw, 1.5rem);
   overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .app-modal-container {
+    margin: auto 0.5rem;
+    max-height: 85vh;
+  }
+
+  .app-modal-container.sm {
+    width: calc(100% - 1rem);
+  }
 }
