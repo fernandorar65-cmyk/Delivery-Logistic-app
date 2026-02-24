@@ -2,14 +2,14 @@
   <nav class="single-order-breadcrumb" aria-label="Navegación">
     <a routerLink="/clients/companies" class="single-order-breadcrumb-link">Mis Compañías</a>
     <span class="single-order-breadcrumb-sep">/</span>
-    <span class="single-order-breadcrumb-current">Ingreso manual</span>
+    <span class="single-order-breadcrumb-current">Nueva orden</span>
   </nav>
 
   <header class="single-order-header">
-    <p class="single-order-badge">Ingreso manual</p>
+    <p class="single-order-badge">Premium Logistics</p>
     <h1 class="single-order-title">Nueva orden</h1>
     <p class="single-order-subtitle">
-      Completa los campos a continuación. Son los mismos datos que en la plantilla Excel, sin subir archivo.
+      Complete los tres pasos: punto de recojo, destino de entrega y detalles del paquete.
     </p>
   </header>
 
@@ -28,64 +28,201 @@
     }
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="single-order-form">
-    <div class="single-order-sections-grid">
-      @for (section of standardSections; track section.id) {
-        <div
-          class="single-order-section-card"
-          [class.single-order-section-card--full]="section.id === 'package'"
-          [class.single-order-section-card--pickup]="section.id === 'pickup'"
-          [class.single-order-section-card--delivery]="section.id === 'delivery'"
-          [class.single-order-section-card--package]="section.id === 'package'"
-        >
-          <div class="single-order-section-head">
-            <span class="single-order-section-num" aria-hidden="true">{{ section.id === 'pickup' ? '1' : section.id === 'delivery' ? '2' : '3' }}</span>
-            <h2 class="single-order-section-title">{{ getSectionTitleShort(section.id) }}</h2>
-          </div>
-          <div class="single-order-fields">
-            @for (field of section.fields; track field.id) {
-              <div class="single-order-field">
-                <label [for]="'field-' + field.id" class="single-order-label">
-                  {{ field.label }}
-                  @if (isRequiredField(field.apiKey)) {
-                    <span class="single-order-required" aria-label="Obligatorio">*</span>
-                  }
-                </label>
-                <input
-                  [id]="'field-' + field.id"
-                  [type]="getInputType(field)"
-                  class="single-order-input"
-                  [formControlName]="field.apiKey"
-                  [placeholder]="field.label"
-                  [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
-                />
-              </div>
-            }
-          </div>
+  <!-- Progress Stepper (estilo Premium Logistics) -->
+  <div class="wizard-stepper" role="progressbar" [attr.aria-valuenow]="currentStep()" aria-valuemin="1" aria-valuemax="3">
+    <div class="wizard-stepper-line wizard-stepper-line--bg"></div>
+    <div class="wizard-stepper-line wizard-stepper-line--fill" [style.width.%]="((currentStep() - 1) / (totalSteps - 1)) * 100"></div>
+    @for (step of [1, 2, 3]; track step) {
+      <div class="wizard-stepper-step" [class.wizard-stepper-step--current]="currentStep() === step" [class.wizard-stepper-step--completed]="isStepCompleted(step)">
+        <div class="wizard-stepper-circle">
+          @if (isStepCompleted(step)) {
+            <span class="material-symbols-outlined wizard-stepper-check">check</span>
+          } @else {
+            <span class="wizard-stepper-num">{{ step }}</span>
+          }
         </div>
-      }
+        <span class="wizard-stepper-label">{{ stepLabels[step - 1] }}</span>
+      </div>
+    }
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="single-order-form">
+    <div class="wizard-card">
+      <div class="wizard-card-header">
+        <h2 class="wizard-card-title">{{ stepLabels[currentStep() - 1] }}</h2>
+        <p class="wizard-card-subtitle">{{ stepSubtitles[currentStep() - 1] }}</p>
+      </div>
+
+      <div class="wizard-card-content" [class.wizard-card-content--two-cols]="currentStep() <= 2">
+        <!-- Paso 1: Recojo -->
+        @if (currentStep() === 1) {
+          <div class="wizard-form-col">
+            <div class="wizard-form-grid">
+              @for (field of standardSections[0].fields; track field.id) {
+                <div class="single-order-field" [class.single-order-field--full]="isFullWidthField(field)">
+                  <label [for]="'field-' + field.id" class="single-order-label">
+                    {{ field.label }}
+                    @if (isRequiredField(field.apiKey)) {
+                      <span class="single-order-required" aria-label="Obligatorio">*</span>
+                    }
+                  </label>
+                  <input
+                    [id]="'field-' + field.id"
+                    [type]="getInputType(field)"
+                    class="single-order-input"
+                    [formControlName]="field.apiKey"
+                    [placeholder]="field.label"
+                    [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                  />
+                </div>
+              }
+            </div>
+          </div>
+          <div class="wizard-map-col">
+            <div class="wizard-map-wrap">
+              <p class="wizard-map-title">Punto de recojo (clic en el mapa)</p>
+              <div #pickupMap class="single-order-map-container single-order-map-container--wizard"></div>
+              <p class="single-order-coords">
+                Lat: <strong>{{ form.get('pickup.latitude')?.value || '—' }}</strong>
+                &nbsp;|&nbsp;
+                Lng: <strong>{{ form.get('pickup.longitude')?.value || '—' }}</strong>
+              </p>
+            </div>
+          </div>
+        }
+
+        <!-- Paso 2: Entrega -->
+        @if (currentStep() === 2) {
+          <div class="wizard-form-col">
+            <div class="wizard-form-grid">
+              @for (field of standardSections[1].fields; track field.id) {
+                <div class="single-order-field" [class.single-order-field--full]="isFullWidthField(field)">
+                  <label [for]="'field-' + field.id" class="single-order-label">
+                    {{ field.label }}
+                    @if (isRequiredField(field.apiKey)) {
+                      <span class="single-order-required" aria-label="Obligatorio">*</span>
+                    }
+                  </label>
+                  <input
+                    [id]="'field-' + field.id"
+                    [type]="getInputType(field)"
+                    class="single-order-input"
+                    [formControlName]="field.apiKey"
+                    [placeholder]="field.label"
+                    [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                  />
+                </div>
+              }
+            </div>
+            <div class="wizard-info-box">
+              <span class="material-symbols-outlined wizard-info-icon">info</span>
+              <p>El mensajero llamará al receptor al llegar a la ubicación si no se encuentra en el domicilio.</p>
+            </div>
+          </div>
+          <div class="wizard-map-col">
+            <div class="wizard-map-wrap">
+              <p class="wizard-map-title">Punto de entrega</p>
+              <div #deliveryMap class="single-order-map-container single-order-map-container--wizard"></div>
+              <p class="single-order-coords">
+                Lat: <strong>{{ form.get('delivery.latitude')?.value || '—' }}</strong>
+                &nbsp;|&nbsp;
+                Lng: <strong>{{ form.get('delivery.longitude')?.value || '—' }}</strong>
+              </p>
+            </div>
+          </div>
+        }
+
+        <!-- Paso 3: Paquete -->
+        @if (currentStep() === 3) {
+          <div class="wizard-form-col wizard-form-col--full">
+            <div class="wizard-form-grid">
+              @for (field of standardSections[2].fields; track field.id) {
+                <div class="single-order-field" [class.single-order-field--full]="isFullWidthField(field)">
+                  <label [for]="'field-' + field.id" class="single-order-label">
+                    {{ field.label }}
+                    @if (isRequiredField(field.apiKey)) {
+                      <span class="single-order-required" aria-label="Obligatorio">*</span>
+                    }
+                  </label>
+                  <input
+                    [id]="'field-' + field.id"
+                    [type]="getInputType(field)"
+                    class="single-order-input"
+                    [formControlName]="field.apiKey"
+                    [placeholder]="field.label"
+                    [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                  />
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Navigation Footer (estilo Premium Logistics) -->
+      <div class="wizard-footer">
+        <div class="wizard-footer-left">
+          @if (currentStep() > 1) {
+            <button type="button" class="single-order-btn single-order-btn--secondary" (click)="prevStep()">
+              <span class="material-symbols-outlined">arrow_back</span>
+              Anterior
+            </button>
+          }
+        </div>
+        <div class="wizard-footer-right">
+          @if (currentStep() < totalSteps) {
+            <button type="button" class="single-order-btn single-order-btn--primary" (click)="nextStep()">
+              Continuar
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          } @else {
+            <button
+              type="submit"
+              class="single-order-btn single-order-btn--primary"
+              [disabled]="submitLoading()"
+            >
+              @if (submitLoading()) {
+                <span class="single-order-spinner"></span>
+                Guardando...
+              } @else {
+                <span class="material-symbols-outlined">save</span>
+                Guardar orden
+              }
+            </button>
+          }
+        </div>
+      </div>
     </div>
 
-    <footer class="single-order-footer">
-      <div class="single-order-footer-inner">
-        <p class="single-order-footer-hint">
-          <span class="material-symbols-outlined single-order-footer-icon" aria-hidden="true">lightbulb</span>
-          <span><span class="single-order-required">*</span> Campos obligatorios: N° de guía, Fecha de solicitud, Dirección de recojo y Dirección de entrega.</span>
-        </p>
-        <button
-          type="submit"
-          class="single-order-btn single-order-btn--primary"
-          [disabled]="submitLoading()"
-        >
-          @if (submitLoading()) {
-            <span class="single-order-spinner"></span>
-            Guardando...
-          } @else {
-            <span class="material-symbols-outlined" aria-hidden="true">save</span>
-            Guardar orden
-          }
-        </button>
+    <!-- Summary cards (Premium Logistics) -->
+    <div class="wizard-summary">
+      <div class="wizard-summary-card">
+        <div class="wizard-summary-icon">
+          <span class="material-symbols-outlined">schedule</span>
+        </div>
+        <div>
+          <p class="wizard-summary-label">Entrega estimada</p>
+          <p class="wizard-summary-value">Según disponibilidad</p>
+        </div>
       </div>
-    </footer>
+      <div class="wizard-summary-card">
+        <div class="wizard-summary-icon">
+          <span class="material-symbols-outlined">payments</span>
+        </div>
+        <div>
+          <p class="wizard-summary-label">Costo estimado</p>
+          <p class="wizard-summary-value">Según tarifa</p>
+        </div>
+      </div>
+      <div class="wizard-summary-card">
+        <div class="wizard-summary-icon">
+          <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+        <div>
+          <p class="wizard-summary-label">Servicio</p>
+          <p class="wizard-summary-value">Envío estándar</p>
+        </div>
+      </div>
+    </div>
   </form>
 </section>

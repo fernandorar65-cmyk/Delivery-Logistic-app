@@ -1,17 +1,17 @@
 :host {
-  --single-order-bg: #f8fafc;
-  --single-order-brand: #2563eb;
+  --single-order-bg: #f6f7f8;
+  --single-order-brand: #137fec;
   --single-order-slate: #64748b;
   --single-order-soft-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
-  --single-order-deep-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --single-order-deep-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
 }
 
 .single-order-page {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0.75rem clamp(1rem, 4vw, 2.5rem) 6rem;
-  max-width: 120rem;
+  padding: 3rem 1.5rem 6rem;
+  max-width: 75rem;
   margin: 0 auto;
   min-height: 100%;
   width: 100%;
@@ -76,6 +76,312 @@
   color: var(--single-order-slate);
   max-width: 42rem;
   font-size: 0.95rem;
+}
+
+/* ========== Wizard Stepper (Premium Logistics) ========== */
+.wizard-stepper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 56rem;
+  margin: 0 auto 3rem;
+  padding: 0 0.5rem;
+}
+
+.wizard-stepper-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.wizard-stepper-line--bg {
+  width: 100%;
+  background: #e2e8f0;
+}
+
+.wizard-stepper-line--fill {
+  background: var(--single-order-brand);
+  transition: width 0.5s ease;
+}
+
+.wizard-stepper-step {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  max-width: 10rem;
+}
+
+.wizard-stepper-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wizard-stepper-step--current .wizard-stepper-circle {
+  width: 3rem;
+  height: 3rem;
+  background: var(--single-order-brand);
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(19, 127, 236, 0.25);
+  outline: 4px solid #fff;
+  outline-offset: -2px;
+}
+
+.wizard-stepper-step--completed .wizard-stepper-circle {
+  background: var(--single-order-brand);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(19, 127, 236, 0.2);
+}
+
+.wizard-stepper-check {
+  font-size: 1.25rem;
+}
+
+.wizard-stepper-num {
+  line-height: 1;
+}
+
+.wizard-stepper-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+}
+
+.wizard-stepper-step:not(.wizard-stepper-step--current):not(.wizard-stepper-step--completed) .wizard-stepper-label {
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* ========== Wizard Card ========== */
+.wizard-card {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: var(--single-order-deep-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+  border: 1px solid #f1f5f9;
+}
+
+.wizard-card-header {
+  padding: 2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.wizard-card-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.wizard-card-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  color: #64748b;
+}
+
+.wizard-card-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.wizard-card-content--two-cols {
+  flex-direction: row;
+}
+
+.wizard-form-col {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.wizard-form-col--full {
+  max-width: 100%;
+}
+
+@media (max-width: 64rem) {
+  .wizard-card-content--two-cols {
+    flex-direction: column;
+  }
+}
+
+.wizard-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+  align-content: start;
+}
+
+.wizard-form-grid .single-order-field {
+  min-width: 0;
+}
+
+.wizard-form-grid .single-order-field--full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 36rem) {
+  .wizard-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wizard-map-col {
+  width: 50%;
+  min-height: 300px;
+  background: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 64rem) {
+  .wizard-map-col {
+    width: 100%;
+    min-height: 280px;
+  }
+}
+
+.wizard-map-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  min-height: 0;
+}
+
+.wizard-map-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.wizard-info-box {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(19, 127, 236, 0.05);
+  border: 1px solid rgba(19, 127, 236, 0.15);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.wizard-info-box .wizard-info-icon {
+  color: var(--single-order-brand);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.wizard-info-box p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #1e5bb5;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* Wizard footer (Anterior / Continuar) */
+.wizard-footer {
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.wizard-footer-left,
+.wizard-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wizard-summary {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 48rem) {
+  .wizard-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wizard-summary-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--single-order-soft-shadow);
+}
+
+.wizard-summary-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wizard-summary-icon .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: #64748b;
+}
+
+.wizard-summary-label {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.wizard-summary-value {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.single-order-map-container--wizard {
+  height: 100%;
+  min-height: 280px;
+  flex: 1;
 }
 
 .single-order-messages {
@@ -285,11 +591,11 @@
 
 .single-order-input {
   width: 100%;
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 1rem;
   font-size: 0.9rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  background: #fff;
+  background: #f8fafc;
   color: #0f172a;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -302,7 +608,7 @@
 .single-order-input:focus {
   outline: none;
   border-color: var(--single-order-brand);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 2px rgba(19, 127, 236, 0.2);
 }
 
 .single-order-input::placeholder {
@@ -379,12 +685,23 @@
 .single-order-btn--primary {
   background: var(--single-order-brand);
   color: #fff;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 14px rgba(19, 127, 236, 0.25);
 }
 
 .single-order-btn--primary:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #0d6ad4;
   transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(19, 127, 236, 0.35);
+}
+
+.single-order-btn--secondary {
+  background: transparent;
+  color: #475569;
+  font-weight: 700;
+}
+
+.single-order-btn--secondary:hover {
+  color: #0f172a;
 }
 
 .single-order-btn:disabled {
@@ -403,6 +720,40 @@
 
 @keyframes single-order-spin {
   to { transform: rotate(360deg); }
+}
+
+/* OpenStreetMap / Leaflet */
+.single-order-map-block {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.single-order-map-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.single-order-map-container {
+  width: 100%;
+  height: 220px;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.single-order-coords {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.single-order-coords strong {
+  color: #0f172a;
+  font-family: ui-monospace, monospace;
 }
 
 @media (max-width: 48rem) {

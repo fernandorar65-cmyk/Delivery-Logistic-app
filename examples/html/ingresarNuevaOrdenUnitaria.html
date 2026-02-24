@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Nueva Orden - Premium Logistics</title>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-slate-900 dark:text-slate-100">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-3xl">local_shipping</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Premium Logistics</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium text-primary border-b-2 border-primary py-1" href="#">Orders</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Fleet</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Reports</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="Professional profile picture of a male executive" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBtxKOfRjrNN794iW4YX4V_cbSKWDxgNMf0KHX6j2DJ9l5Mf-_2MdY1T30-5myOPzFD8mLoVnTmg0qVCH2IyLApCWtGyv1m-SBR5fw__YSjvbnf3BuIAIduz38m-LFxImvu7KC8WD4yPGEPpFBoE8xCVTCvtYY47jekcRnyWeQa5ip1AzqIHeFz7G4zjuVCJIfrnkD7DaOX-a7j2FzeFdGu2kjQjvGLhuQIsOaxCLsG_U5vit8bqnZsFfwm3cf9LbtFjJm2m8h0rWMn");'></div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto py-12 px-6">
+<!-- Progress Stepper -->
+<div class="mb-12">
+<div class="flex items-center justify-between max-w-4xl mx-auto relative">
+<!-- Progress Line -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-800 -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-1/2 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-500"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="size-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">check</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">Punto de Recojo</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="size-12 rounded-full bg-primary text-white flex items-center justify-center font-bold ring-4 ring-white dark:ring-background-dark shadow-xl">
+                        2
+                    </div>
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">Destino de Entrega</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold">
+                        3
+                    </div>
+<span class="text-sm font-medium text-slate-500">Detalles del Paquete</span>
+</div>
+</div>
+</div>
+<!-- Wizard Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden flex flex-col min-h-[600px] border border-slate-100 dark:border-slate-800">
+<!-- Card Header -->
+<div class="p-8 border-b border-slate-100 dark:border-slate-800">
+<h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Destino de Entrega</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Defina la ubicación exacta y los detalles del receptor para la entrega final.</p>
+</div>
+<!-- Card Content: Two Column Layout for Step 2 -->
+<div class="flex flex-1 flex-col lg:flex-row">
+<!-- Form Section -->
+<div class="w-full lg:w-1/2 p-8 space-y-6 overflow-y-auto">
+<div class="space-y-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Dirección de Destino</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">location_on</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/50 outline-none transition-all" type="text" value="Av. Paseo de la Reforma 222, Ciudad de México"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Número Int./Depto</label>
+<input class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/50 outline-none" placeholder="Ej: Torre B, 402" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Referencia</label>
+<input class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/50 outline-none" placeholder="Frente al parque" type="text"/>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Datos del Receptor</h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Nombre Completo</label>
+<input class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/50 outline-none" placeholder="Nombre de quien recibe" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Teléfono de Contacto</label>
+<input class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/50 outline-none" placeholder="+52 55 0000 0000" type="tel"/>
+</div>
+</div>
+</div>
+<div class="bg-primary/5 rounded-lg p-4 border border-primary/10 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-xs text-primary/80 font-medium">El mensajero llamará al receptor al llegar a la ubicación si no se encuentra en el domicilio.</p>
+</div>
+</div>
+</div>
+<!-- Map Section -->
+<div class="w-full lg:w-1/2 min-h-[300px] relative bg-slate-100 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Interactive high resolution city map with delivery route" data-location="Mexico City" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCV-OnZizlcC8mO3-JtWih_KOVkO9fWloCkAFXdEh_iU7WohU5rxreJzZ2IwI5Xuw2TzvtsPglmRF5tIq72lrS-316vEDB-ybnKQU9YA3unMuXh4n4fIOOngH8Ftz5toNG8q23W2fTJ_IaXiqo_7ov_R2HJrKj0teW_dtGZoNiJT_77y5SeRPXsTJtaQakVp12enp6nGU_S-Ba9nZlVMVR0NkatBUy02mM065HTAlJHL-4RN0HO6EdH5JnWChFAbFB23temqmMpFHxj");'>
+</div>
+<!-- Map Pin Overlay -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary drop-shadow-xl">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1">location_on</span>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 px-3 py-1 rounded shadow-lg whitespace-nowrap text-xs font-bold border border-slate-200 dark:border-slate-700">
+                            Punto de Entrega
+                        </div>
+</div>
+<!-- Map Controls -->
+<div class="absolute right-4 top-4 flex flex-col gap-2">
+<button class="size-10 bg-white dark:bg-slate-900 rounded shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="size-10 bg-white dark:bg-slate-900 rounded shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Navigation Footer -->
+<div class="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<button class="flex items-center gap-2 px-6 py-3 text-slate-600 dark:text-slate-400 font-bold hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+                    Anterior
+                </button>
+<div class="flex items-center gap-4">
+<button class="px-6 py-3 text-slate-500 font-medium text-sm hover:underline">
+                        Guardar Borrador
+                    </button>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
+                        Continuar
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Summary Floating Sidebar Preview (Optional refinement) -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 opacity-80">
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">schedule</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">Entrega Estimada</p>
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">Hoy, 18:30 - 19:30</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">payments</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">Costo Estimado</p>
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">$125.00 MXN</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+<div class="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">package_2</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400">Servicio</p>
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">Express Premium</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -52,8 +52,13 @@ export class ClientShipmentsUploadV3ViewComponent {
   orderError = signal<string | null>(null);
   orderResult = signal<ImportExecutionResult | null>(null);
   showTemplateDetectedModal = signal(false);
+  showHeaderErrorModal = signal(false);
+  headerErrorMessage = signal<string | null>(null);
 
-  /** Claves obligatorias según la API: order.tracking_number, order.request_date y al menos una dirección. */
+  /** Mínimo de celdas no vacías para considerar una fila como fila de cabeceras. */
+  private readonly minHeaderColumns = 6;
+
+  /** Claves obligatorias según la API: order.tracking_number, order.request_date y ambas direcciones. */
   private readonly requiredMappingKeys = [
     'order.tracking_number',
     'order.request_date'
@@ -144,6 +149,8 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.orderError.set(null);
     this.orderResult.set(null);
     this.showTemplateDetectedModal.set(false);
+    this.showHeaderErrorModal.set(false);
+    this.headerErrorMessage.set(null);
     this.searchText.set({});
     this.openSelectId.set(null);
     if (fileInput) this.resetFileInput(fileInput);
@@ -167,7 +174,19 @@ export class ClientShipmentsUploadV3ViewComponent {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' }) as string[][];
-        const headerRow = rows?.[1] ?? [];
+        const headerRowIndex = this.findHeaderRowIndex(rows);
+        if (headerRowIndex === null) {
+          this.headerErrorMessage.set(
+            `No se encontró una fila de cabeceras válida en las primeras 3 filas del Excel. ` +
+            `Se espera al menos ${this.minHeaderColumns} columnas con nombre. Revisa el archivo e intenta de nuevo.`
+          );
+          this.showHeaderErrorModal.set(true);
+          this.excelHeaders.set([]);
+          this.currentExcelFile.set(null);
+          this.excelFileName.set(null);
+          return;
+        }
+        const headerRow = rows[headerRowIndex] ?? [];
         const rawHeaders = headerRow
           .map((v: unknown) => String(v).trim())
           .filter((v: string) => Boolean(v));
@@ -182,6 +201,28 @@ export class ClientShipmentsUploadV3ViewComponent {
       this.excelError.set('No se pudo leer el archivo. Intenta nuevamente.');
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  /**
+   * Busca la fila de cabeceras en las primeras 3 filas (índices 0, 1, 2).
+   * Una fila válida tiene al menos minHeaderColumns celdas no vacías.
+   * Retorna el índice de la fila o null si ninguna cumple.
+   */
+  private findHeaderRowIndex(rows: string[][]): number | null {
+    if (!rows?.length) return null;
+    for (let i = 0; i <= 2 && i < rows.length; i++) {
+      const row = rows[i] ?? [];
+      const nonEmpty = row
+        .map((v: unknown) => String(v).trim())
+        .filter((v: string) => Boolean(v));
+      if (nonEmpty.length >= this.minHeaderColumns) return i;
+    }
+    return null;
+  }
+
+  closeHeaderErrorModal(): void {
+    this.showHeaderErrorModal.set(false);
+    this.headerErrorMessage.set(null);
   }
 
   /** Opciones del dropdown = columnas del Excel */

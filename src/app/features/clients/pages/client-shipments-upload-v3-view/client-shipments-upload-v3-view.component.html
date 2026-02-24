@@ -14,6 +14,16 @@
       </div>
     </app-modal>
   }
+  @if (showHeaderErrorModal()) {
+    <app-modal title="Cabeceras no válidas" size="sm" (close)="closeHeaderErrorModal()">
+      <p>{{ headerErrorMessage() }}</p>
+      <div class="upload-v3-modal-actions">
+        <button type="button" class="upload-v3-btn upload-v3-btn--primary" (click)="closeHeaderErrorModal()">
+          Entendido
+        </button>
+      </div>
+    </app-modal>
+  }
 
   <header class="upload-v3-header" [class.collapsed]="excelHeaders().length">
     <div>

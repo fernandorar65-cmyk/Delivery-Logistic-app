@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
+import type { Map, Marker } from 'leaflet';
 
 type StandardField = {
   id: string;
@@ -26,16 +27,35 @@ type StandardSection = {
   templateUrl: './client-order-single-view.component.html',
   styleUrl: './client-order-single-view.component.css'
 })
-export class ClientOrderSingleViewComponent {
+export class ClientOrderSingleViewComponent implements AfterViewInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private importsService = inject(ImportsService);
   private storageService = inject(StorageService);
 
+  @ViewChild('pickupMap') pickupMapRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('deliveryMap') deliveryMapRef!: ElementRef<HTMLDivElement>;
+
   companyId = signal<string | null>(null);
   submitLoading = signal(false);
   submitError = signal<string | null>(null);
   submitSuccess = signal<boolean>(false);
+  mapReady = signal(false);
+
+  readonly totalSteps = 3;
+  currentStep = signal(1);
+  readonly stepLabels = ['Punto de Recojo', 'Destino de Entrega', 'Detalles del Paquete'] as const;
+  readonly stepSubtitles = [
+    'Indique la dirección y datos del punto donde se recogerá el paquete.',
+    'Defina la ubicación exacta y los detalles del receptor para la entrega final.',
+    'Complete las características del paquete a enviar.'
+  ] as const;
+
+  private pickupMapInstance: Map | null = null;
+  private deliveryMapInstance: Map | null = null;
+  private pickupMarker: Marker | null = null;
+  private deliveryMarker: Marker | null = null;
+  private leafletLib: typeof import('leaflet') | null = null;
 
   readonly standardSections: StandardSection[] = [
     {
@@ -106,7 +126,73 @@ export class ClientOrderSingleViewComponent {
         controls[field.apiKey] = [''];
       }
     }
+    controls['pickup.latitude'] = [''];
+    controls['pickup.longitude'] = [''];
+    controls['delivery.latitude'] = [''];
+    controls['delivery.longitude'] = [''];
     this.form = this.fb.group(controls);
+  }
+
+  ngAfterViewInit(): void {
+    if (typeof window === 'undefined') return;
+    setTimeout(() => this.initLeafletMaps(), 150);
+  }
+
+  private async initLeafletMaps(): Promise<void> {
+    try {
+      const L = await import('leaflet');
+      this.leafletLib = L.default;
+      this.fixLeafletIcon(this.leafletLib);
+      if (this.pickupMapRef?.nativeElement) {
+        this.initMap(this.leafletLib, 'pickup');
+      }
+      if (this.deliveryMapRef?.nativeElement) {
+        this.initMap(this.leafletLib, 'delivery');
+      }
+      this.mapReady.set(true);
+    } catch (err) {
+      console.warn('Leaflet no cargado:', err);
+    }
+  }
+
+  private fixLeafletIcon(L: typeof import('leaflet')): void {
+    const DefaultIcon = (L as unknown as { Icon: { Default: { prototype: { _getIconUrl?: unknown }; mergeOptions: (o: object) => void } } }).Icon?.Default;
+    if (DefaultIcon?.prototype && '_getIconUrl' in DefaultIcon.prototype) {
+      delete (DefaultIcon.prototype as { _getIconUrl?: unknown })._getIconUrl;
+    }
+    if (DefaultIcon?.mergeOptions) {
+      DefaultIcon.mergeOptions({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+      });
+    }
+  }
+
+  private initMap(L: typeof import('leaflet'), type: 'pickup' | 'delivery'): void {
+    const el = type === 'pickup' ? this.pickupMapRef?.nativeElement : this.deliveryMapRef?.nativeElement;
+    if (!el) return;
+    const latKey = type === 'pickup' ? 'pickup.latitude' : 'delivery.latitude';
+    const lngKey = type === 'pickup' ? 'pickup.longitude' : 'delivery.longitude';
+    const center: [number, number] = [-12.0464, -77.0428];
+    const map = L.map(el, { center, zoom: 13 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    const marker = L.marker(center).addTo(map);
+    map.on('click', (e: { latlng: { lat: number; lng: number } }) => {
+      marker.setLatLng(e.latlng);
+      this.form.get(latKey)?.setValue(e.latlng.lat.toFixed(6));
+      this.form.get(lngKey)?.setValue(e.latlng.lng.toFixed(6));
+    });
+    if (type === 'pickup') {
+      this.pickupMapInstance = map;
+      this.pickupMarker = marker;
+    } else {
+      this.deliveryMapInstance = map;
+      this.deliveryMarker = marker;
+    }
+    setTimeout(() => map.invalidateSize(), 200);
   }
 
   getInputType(field: StandardField): string {
@@ -126,6 +212,47 @@ export class ClientOrderSingleViewComponent {
 
   isRequiredField(apiKey: string): boolean {
     return this.requiredApiKeys.includes(apiKey);
+  }
+
+  isStepCompleted(step: number): boolean {
+    return this.currentStep() > step;
+  }
+
+  nextStep(): void {
+    if (this.currentStep() < this.totalSteps) {
+      this.currentStep.update(s => s + 1);
+      this.resizeMapForCurrentStep();
+    }
+  }
+
+  prevStep(): void {
+    if (this.currentStep() > 1) {
+      this.currentStep.update(s => s - 1);
+      this.resizeMapForCurrentStep();
+    }
+  }
+
+  private resizeMapForCurrentStep(): void {
+    setTimeout(() => {
+      const step = this.currentStep();
+      if (step === 1 && this.pickupMapInstance) this.pickupMapInstance.invalidateSize();
+      if (step === 2) {
+        if (this.deliveryMapInstance) {
+          this.deliveryMapInstance.invalidateSize();
+        } else if (this.leafletLib && this.deliveryMapRef?.nativeElement) {
+          this.initMap(this.leafletLib, 'delivery');
+        }
+      }
+    }, 150);
+  }
+
+  isFullWidthField(field: StandardField): boolean {
+    const fullIds = [
+      'pickup_company', 'pickup_address', 'pickup_reference',
+      'delivery_company', 'delivery_address', 'delivery_reference',
+      'package_description', 'package_notes'
+    ];
+    return fullIds.includes(field.id);
   }
 
   onSubmit(): void {
