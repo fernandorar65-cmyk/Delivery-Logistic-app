@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, NgZone, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ImportsService } from '@app/features/clients/services/imports.service';
@@ -32,6 +32,7 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
   private route = inject(ActivatedRoute);
   private importsService = inject(ImportsService);
   private storageService = inject(StorageService);
+  private ngZone = inject(NgZone);
 
   @ViewChild('pickupMap') pickupMapRef!: ElementRef<HTMLDivElement>;
   @ViewChild('deliveryMap') deliveryMapRef!: ElementRef<HTMLDivElement>;
@@ -123,14 +124,31 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
     const controls: Record<string, unknown> = {};
     for (const section of this.standardSections) {
       for (const field of section.fields) {
-        controls[field.apiKey] = [''];
+        controls[field.id] = [''];
       }
     }
-    controls['pickup.latitude'] = [''];
-    controls['pickup.longitude'] = [''];
-    controls['delivery.latitude'] = [''];
-    controls['delivery.longitude'] = [''];
+    controls['pickup_latitude'] = [''];
+    controls['pickup_longitude'] = [''];
+    controls['delivery_latitude'] = [''];
+    controls['delivery_longitude'] = [''];
     this.form = this.fb.group(controls);
+  }
+
+  /** Mapeo de clave del formulario (sin puntos) a apiKey para el backend. */
+  private formKeyToApiKey(formKey: string): string | null {
+    const map: Record<string, string> = {
+      pickup_latitude: 'pickup.latitude',
+      pickup_longitude: 'pickup.longitude',
+      delivery_latitude: 'delivery.latitude',
+      delivery_longitude: 'delivery.longitude'
+    };
+    if (map[formKey]) return map[formKey];
+    for (const section of this.standardSections) {
+      for (const field of section.fields) {
+        if (field.id === formKey) return field.apiKey;
+      }
+    }
+    return null;
   }
 
   ngAfterViewInit(): void {
@@ -172,8 +190,8 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
   private initMap(L: typeof import('leaflet'), type: 'pickup' | 'delivery'): void {
     const el = type === 'pickup' ? this.pickupMapRef?.nativeElement : this.deliveryMapRef?.nativeElement;
     if (!el) return;
-    const latKey = type === 'pickup' ? 'pickup.latitude' : 'delivery.latitude';
-    const lngKey = type === 'pickup' ? 'pickup.longitude' : 'delivery.longitude';
+    const latKey = type === 'pickup' ? 'pickup_latitude' : 'delivery_latitude';
+    const lngKey = type === 'pickup' ? 'pickup_longitude' : 'delivery_longitude';
     const center: [number, number] = [-12.0464, -77.0428];
     const map = L.map(el, { center, zoom: 13 });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -182,8 +200,12 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
     const marker = L.marker(center).addTo(map);
     map.on('click', (e: { latlng: { lat: number; lng: number } }) => {
       marker.setLatLng(e.latlng);
-      this.form.get(latKey)?.setValue(e.latlng.lat.toFixed(6));
-      this.form.get(lngKey)?.setValue(e.latlng.lng.toFixed(6));
+      const lat = e.latlng.lat.toFixed(6);
+      const lng = e.latlng.lng.toFixed(6);
+      this.ngZone.run(() => {
+        this.form.get(latKey)?.setValue(lat);
+        this.form.get(lngKey)?.setValue(lng);
+      });
     });
     if (type === 'pickup') {
       this.pickupMapInstance = map;
@@ -264,12 +286,14 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
       return;
     }
 
-    const raw = this.form.getRawValue();
+    const raw = this.form.getRawValue() as Record<string, unknown>;
     const order: Record<string, string> = {};
-    for (const key of Object.keys(raw)) {
-      const v = raw[key];
+    for (const formKey of Object.keys(raw)) {
+      const apiKey = this.formKeyToApiKey(formKey);
+      if (!apiKey) continue;
+      const v = raw[formKey];
       if (v != null && String(v).trim() !== '') {
-        order[key] = String(v).trim();
+        order[apiKey] = String(v).trim();
       }
     }
 

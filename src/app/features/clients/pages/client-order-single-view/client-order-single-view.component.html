@@ -5,14 +5,6 @@
     <span class="single-order-breadcrumb-current">Nueva orden</span>
   </nav>
 
-  <header class="single-order-header">
-    <p class="single-order-badge">Premium Logistics</p>
-    <h1 class="single-order-title">Nueva orden</h1>
-    <p class="single-order-subtitle">
-      Complete los tres pasos: punto de recojo, destino de entrega y detalles del paquete.
-    </p>
-  </header>
-
   <div class="single-order-messages">
     @if (submitError()) {
       <div class="single-order-error single-order-message" role="alert">
@@ -70,7 +62,7 @@
                     [id]="'field-' + field.id"
                     [type]="getInputType(field)"
                     class="single-order-input"
-                    [formControlName]="field.apiKey"
+                    [formControlName]="field.id"
                     [placeholder]="field.label"
                     [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
                   />
@@ -79,14 +71,23 @@
             </div>
           </div>
           <div class="wizard-map-col">
-            <div class="wizard-map-wrap">
-              <p class="wizard-map-title">Punto de recojo (clic en el mapa)</p>
-              <div #pickupMap class="single-order-map-container single-order-map-container--wizard"></div>
-              <p class="single-order-coords">
-                Lat: <strong>{{ form.get('pickup.latitude')?.value || '—' }}</strong>
-                &nbsp;|&nbsp;
-                Lng: <strong>{{ form.get('pickup.longitude')?.value || '—' }}</strong>
-              </p>
+            <div class="wizard-map-card">
+              <div class="wizard-map-card-header">
+                <span class="material-symbols-outlined wizard-map-icon wizard-map-icon--pickup">location_on</span>
+                <div>
+                  <p class="wizard-map-title">Punto de recojo</p>
+                  <p class="wizard-map-hint">Clic en el mapa para marcar la ubicación</p>
+                </div>
+              </div>
+              <div class="wizard-map-container-inner">
+                <div #pickupMap class="single-order-map-container single-order-map-container--wizard"></div>
+              </div>
+              <div class="wizard-map-coords">
+                <span class="wizard-map-coords-label">Coordenadas</span>
+                <span class="wizard-map-coords-value">
+                  {{ form.get('pickup_latitude')?.value || '—' }}, {{ form.get('pickup_longitude')?.value || '—' }}
+                </span>
+              </div>
             </div>
           </div>
         }
@@ -107,7 +108,7 @@
                     [id]="'field-' + field.id"
                     [type]="getInputType(field)"
                     class="single-order-input"
-                    [formControlName]="field.apiKey"
+                    [formControlName]="field.id"
                     [placeholder]="field.label"
                     [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
                   />
@@ -120,14 +121,23 @@
             </div>
           </div>
           <div class="wizard-map-col">
-            <div class="wizard-map-wrap">
-              <p class="wizard-map-title">Punto de entrega</p>
-              <div #deliveryMap class="single-order-map-container single-order-map-container--wizard"></div>
-              <p class="single-order-coords">
-                Lat: <strong>{{ form.get('delivery.latitude')?.value || '—' }}</strong>
-                &nbsp;|&nbsp;
-                Lng: <strong>{{ form.get('delivery.longitude')?.value || '—' }}</strong>
-              </p>
+            <div class="wizard-map-card">
+              <div class="wizard-map-card-header">
+                <span class="material-symbols-outlined wizard-map-icon wizard-map-icon--delivery">flag</span>
+                <div>
+                  <p class="wizard-map-title">Punto de entrega</p>
+                  <p class="wizard-map-hint">Clic en el mapa para marcar la ubicación</p>
+                </div>
+              </div>
+              <div class="wizard-map-container-inner">
+                <div #deliveryMap class="single-order-map-container single-order-map-container--wizard"></div>
+              </div>
+              <div class="wizard-map-coords">
+                <span class="wizard-map-coords-label">Coordenadas</span>
+                <span class="wizard-map-coords-value">
+                  {{ form.get('delivery_latitude')?.value || '—' }}, {{ form.get('delivery_longitude')?.value || '—' }}
+                </span>
+              </div>
             </div>
           </div>
         }
@@ -148,7 +158,7 @@
                     [id]="'field-' + field.id"
                     [type]="getInputType(field)"
                     class="single-order-input"
-                    [formControlName]="field.apiKey"
+                    [formControlName]="field.id"
                     [placeholder]="field.label"
                     [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
                   />
