@@ -32,6 +32,9 @@ type RoutePolyline = {
   getBounds: () => { getNorth: () => number; getSouth: () => number; getWest: () => number; getEast: () => number };
 };
 
+/** Tile layer de Leaflet con addTo y remove */
+type TileLayerRef = { addTo: (m: LeafletMap) => unknown; remove: () => void };
+
 @Component({
   selector: 'app-orders-map-view',
   standalone: true,
@@ -47,6 +50,15 @@ export class OrdersMapViewComponent implements AfterViewInit {
   statusFilter = signal<OrderStatus | 'all'>('all');
   /** IDs de órdenes seleccionadas (se puede elegir más de una) */
   selectedOrderIds = signal<Set<string>>(new Set());
+
+  /** Tipo de mapa: 'map' (callejero) o 'satellite' */
+  mapType = signal<'map' | 'satellite'>('map');
+
+  setMapType(type: 'map' | 'satellite'): void {
+    if (this.mapType() === type) return;
+    this.mapType.set(type);
+    this.switchBaseLayer(type);
+  }
 
   /** Indica si una orden está seleccionada (para marcar la tarjeta y el checkbox) */
   isOrderSelected(orderId: string): boolean {
@@ -154,6 +166,10 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private polylines: RoutePolyline[] = [];
   /** Polylines actualmente visibles en el mapa (varias si hay selección múltiple) */
   private polylinesOnMap: RoutePolyline[] = [];
+  /** Capas base del mapa (callejero y satélite) para alternar */
+  private osmLayer: TileLayerRef | null = null;
+  private satelliteLayer: TileLayerRef | null = null;
+  private currentBaseLayer: TileLayerRef | null = null;
   /** Leaflet (default export); tipado flexible por incompatibilidad con @types/leaflet */
   private leafletLib: unknown = null;
 
@@ -287,7 +303,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const leafletModule = await import('leaflet');
       const L = leafletModule.default as {
         map: (el: HTMLElement, opts: object) => LeafletMap;
-        tileLayer: (url: string, opts: object) => { addTo: (m: LeafletMap) => unknown };
+        tileLayer: (url: string, opts: object) => TileLayerRef;
         divIcon: (opts: object) => unknown;
         marker: (latlng: [number, number], opts: object) => LeafletMarker;
         polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
@@ -301,9 +317,22 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
       const center: [number, number] = [-12.0464, -77.0428];
       const map = L.map(el, { center, zoom: 12 });
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+      const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
+      });
+      const satellite = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+          attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
+          maxZoom: 19
+        }
+      );
+
+      this.osmLayer = osm;
+      this.satelliteLayer = satellite;
+      this.currentBaseLayer = osm;
+      osm.addTo(map);
 
       this.mapInstance = map;
       this.addMarkers(map);
@@ -312,6 +341,16 @@ export class OrdersMapViewComponent implements AfterViewInit {
     } catch (err) {
       console.warn('Leaflet no cargado:', err);
     }
+  }
+
+  /** Cambia la capa base entre callejero y satélite. */
+  private switchBaseLayer(type: 'map' | 'satellite'): void {
+    if (!this.mapInstance) return;
+    const layer = type === 'satellite' ? this.satelliteLayer : this.osmLayer;
+    if (!layer) return;
+    if (this.currentBaseLayer) this.currentBaseLayer.remove();
+    layer.addTo(this.mapInstance);
+    this.currentBaseLayer = layer;
   }
 
   private fixLeafletIcon(L: unknown): void {

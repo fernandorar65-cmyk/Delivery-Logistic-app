@@ -127,8 +127,22 @@
     <div class="orders-map-wrap">
       <div class="orders-map-toolbar">
         <div class="orders-map-type">
-          <button type="button" class="orders-map-type-btn orders-map-type-btn--active">Mapa</button>
-          <button type="button" class="orders-map-type-btn">Satélite</button>
+          <button
+            type="button"
+            class="orders-map-type-btn"
+            [class.orders-map-type-btn--active]="mapType() === 'map'"
+            (click)="setMapType('map')"
+          >
+            Mapa
+          </button>
+          <button
+            type="button"
+            class="orders-map-type-btn"
+            [class.orders-map-type-btn--active]="mapType() === 'satellite'"
+            (click)="setMapType('satellite')"
+          >
+            Satélite
+          </button>
         </div>
       </div>
       <div #mapContainer class="orders-map-container"></div>
