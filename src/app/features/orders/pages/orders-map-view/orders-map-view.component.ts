@@ -43,7 +43,13 @@ export class OrdersMapViewComponent implements AfterViewInit {
   @ViewChild('mapContainer') mapContainerRef!: ElementRef<HTMLDivElement>;
 
   searchText = signal('');
-  selectedOrderId = signal<string | null>(null);
+  /** IDs de órdenes seleccionadas (se puede elegir más de una) */
+  selectedOrderIds = signal<Set<string>>(new Set());
+
+  /** Indica si una orden está seleccionada (para marcar la tarjeta y el checkbox) */
+  isOrderSelected(orderId: string): boolean {
+    return this.selectedOrderIds().has(orderId);
+  }
 
   /** Datos hardcodeados de órdenes con ubicación de recojo y entrega */
   orders = signal<OrderWithLocation[]>([
@@ -135,8 +141,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private markers: LeafletMarker[] = [];
   /** Polylines de rutas (no se añaden al mapa hasta que se selecciona una orden) */
   private polylines: RoutePolyline[] = [];
-  /** Polyline actualmente visible en el mapa (solo una a la vez) */
-  private selectedPolylineOnMap: RoutePolyline | null = null;
+  /** Polylines actualmente visibles en el mapa (varias si hay selección múltiple) */
+  private polylinesOnMap: RoutePolyline[] = [];
   /** Leaflet (default export); tipado flexible por incompatibilidad con @types/leaflet */
   private leafletLib: unknown = null;
 
@@ -189,64 +195,72 @@ export class OrdersMapViewComponent implements AfterViewInit {
   }
 
   selectOrder(order: OrderWithLocation): void {
-    this.selectedOrderId.set(order.id);
+    this.toggleOrderSelection(order);
+  }
 
-    // Quitar la ruta que estaba visible
-    if (this.selectedPolylineOnMap) {
-      this.selectedPolylineOnMap.remove();
-      this.selectedPolylineOnMap = null;
-    }
+  /** Conmuta la selección de una orden (permite selección múltiple). */
+  toggleOrderSelection(order: OrderWithLocation): void {
+    const current = this.selectedOrderIds();
+    const next = new Set(current);
+    if (next.has(order.id)) next.delete(order.id);
+    else next.add(order.id);
+    this.selectedOrderIds.set(next);
+    this.updateMapPolylinesAndView();
+  }
 
-    if (!this.mapInstance) return;
-
-    const index = this.orders().findIndex(o => o.id === order.id);
-    if (index >= 0 && this.polylines[index]) {
-      this.polylines[index].addTo(this.mapInstance);
-      this.selectedPolylineOnMap = this.polylines[index];
-      this.flyToRoute(order, this.polylines[index]);
-    } else {
-      this.flyToOrder(order);
-    }
+  /** Selecciona todas las órdenes visibles (filtradas). */
+  selectAllOrders(): void {
+    const ids = this.getFilteredOrders().map(o => o.id);
+    this.selectedOrderIds.set(new Set(ids));
+    this.updateMapPolylinesAndView();
   }
 
   clearSelection(): void {
-    this.selectedOrderId.set(null);
-    if (this.selectedPolylineOnMap) {
-      this.selectedPolylineOnMap.remove();
-      this.selectedPolylineOnMap = null;
-    }
+    this.selectedOrderIds.set(new Set());
+    this.removeAllPolylinesFromMap();
   }
 
-  /** Centra el mapa en la ruta seleccionada (punto de partida, llegada y trayectoria visibles). */
-  private flyToRoute(order: OrderWithLocation, polyline: RoutePolyline): void {
-    if (!this.mapInstance) return;
-    try {
-      const bounds = polyline.getBounds();
-      const b: [number, number][] = [
-        [bounds.getSouth(), bounds.getWest()],
-        [bounds.getNorth(), bounds.getEast()]
-      ];
-      this.mapInstance.flyToBounds(b as [number, number][], {
-        padding: [60, 60],
-        maxZoom: 14,
-        duration: 0.6
-      });
-    } catch {
-      this.flyToOrder(order);
-    }
+  /** Quita todas las polylines del mapa. */
+  private removeAllPolylinesFromMap(): void {
+    this.polylinesOnMap.forEach(p => p.remove());
+    this.polylinesOnMap = [];
   }
 
-  private flyToOrder(order: OrderWithLocation): void {
+  /** Actualiza qué rutas se muestran en el mapa y centra la vista en ellas. */
+  private updateMapPolylinesAndView(): void {
+    this.removeAllPolylinesFromMap();
     if (!this.mapInstance) return;
-    const bounds: [number, number][] = [
-      [order.pickupLat, order.pickupLng],
-      [order.lat, order.lng]
-    ];
-    this.mapInstance.flyToBounds(bounds as [number, number][], {
-      padding: [60, 60],
-      maxZoom: 14,
-      duration: 0.5
-    });
+
+    const ids = this.selectedOrderIds();
+    if (ids.size === 0) return;
+
+    const orders = this.orders();
+    const bounds: [number, number][] = [];
+
+    for (let i = 0; i < orders.length; i++) {
+      if (!ids.has(orders[i].id)) continue;
+      const poly = this.polylines[i];
+      if (!poly) continue;
+      poly.addTo(this.mapInstance);
+      this.polylinesOnMap.push(poly);
+      try {
+        const b = poly.getBounds();
+        bounds.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]);
+      } catch {
+        bounds.push([orders[i].pickupLat, orders[i].pickupLng], [orders[i].lat, orders[i].lng]);
+      }
+    }
+
+    if (bounds.length > 0) {
+      const south = Math.min(...bounds.map(p => p[0]));
+      const north = Math.max(...bounds.map(p => p[0]));
+      const west = Math.min(...bounds.map(p => p[1]));
+      const east = Math.max(...bounds.map(p => p[1]));
+      this.mapInstance.flyToBounds(
+        [[south, west], [north, east]] as [number, number][],
+        { padding: [60, 60], maxZoom: 14, duration: 0.6 }
+      );
+    }
   }
 
   ngAfterViewInit(): void {
@@ -325,9 +339,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
         ],
         {
           color,
-          weight: 4,
-          opacity: 0.75,
-          dashArray: isInProgress ? undefined : '8, 8'
+          weight: 8,
+          opacity: 0.92,
+          dashArray: isInProgress ? undefined : '10, 10'
         }
       ) as unknown as RoutePolyline;
       this.polylines.push(routeLine);
@@ -341,8 +355,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
           </div>
           <span class="orders-marker-label">Inicio</span>
         `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 36]
+        iconSize: [44, 44],
+        iconAnchor: [22, 44]
       });
       const startMarker = L.marker([order.pickupLat, order.pickupLng], { icon: startIcon })
         .addTo(map)
@@ -358,8 +372,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
           </div>
           <span class="orders-marker-label">Llegada</span>
         `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 40]
+        iconSize: [48, 48],
+        iconAnchor: [24, 48]
       });
 
       const marker = L.marker([order.lat, order.lng], { icon })

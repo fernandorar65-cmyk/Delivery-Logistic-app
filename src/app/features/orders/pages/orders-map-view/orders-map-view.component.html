@@ -18,17 +18,22 @@
       </div>
       <div class="orders-actions">
         <span class="orders-routes-badge">Rutas {{ getFilteredOrders().length }}</span>
-        <button type="button" class="orders-btn-link">Seleccionar todas</button>
+        <button type="button" class="orders-btn-link" (click)="selectAllOrders()">Seleccionar todas</button>
       </div>
       <div class="orders-list">
         @for (order of getFilteredOrders(); track order.id) {
           <article
             class="orders-card"
-            [class.orders-card--selected]="selectedOrderId() === order.id"
-            (click)="selectOrder(order)"
+            [class.orders-card--selected]="isOrderSelected(order.id)"
+            (click)="toggleOrderSelection(order)"
           >
             <div class="orders-card-main">
-              <input type="checkbox" class="orders-card-checkbox" (click)="$event.stopPropagation()" />
+              <input
+                type="checkbox"
+                class="orders-card-checkbox"
+                [checked]="isOrderSelected(order.id)"
+                (click)="$event.stopPropagation(); toggleOrderSelection(order)"
+              />
               <div class="orders-card-body">
                 <p class="orders-card-route">Ruta {{ order.routeId }}</p>
                 <p class="orders-card-date">{{ order.date }}</p>
@@ -64,10 +69,10 @@
         </div>
       </div>
       <div #mapContainer class="orders-map-container"></div>
-      @if (selectedOrderId()) {
+      @if (selectedOrderIds().size > 0) {
         <div class="orders-map-legend">
           <span class="material-symbols-outlined">inventory_2</span>
-          <span>Punto de entrega seleccionado</span>
+          <span>{{ selectedOrderIds().size }} entrega(s) seleccionada(s)</span>
           <button type="button" class="orders-legend-close" (click)="clearSelection()">Cerrar</button>
         </div>
       }
