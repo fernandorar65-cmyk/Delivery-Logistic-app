@@ -57,3 +57,116 @@ button {
   -webkit-font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
 }
+
+/* Tarjetas flotantes del mapa de órdenes (tooltips Leaflet) */
+.leaflet-tooltip.orders-map-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+}
+
+.leaflet-tooltip.orders-map-tooltip .leaflet-tooltip-inner {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 320px;
+  position: relative;
+}
+
+.leaflet-tooltip .orders-map-infocard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: #ffffff !important;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  min-width: 0;
+}
+
+.leaflet-tooltip .orders-map-infocard--destino {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+}
+
+.leaflet-tooltip .orders-map-infocard-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.leaflet-tooltip .orders-map-infocard-badge .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.leaflet-tooltip .orders-map-infocard-badge--green {
+  background: #059669;
+}
+
+.leaflet-tooltip .orders-map-infocard-badge--rose {
+  background: #e11d48;
+}
+
+.leaflet-tooltip .orders-map-infocard-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.leaflet-tooltip .orders-map-infocard-caption {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.leaflet-tooltip .orders-map-infocard-title {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.leaflet-tooltip .orders-map-infocard-status {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #059669;
+}
+
+.leaflet-tooltip .orders-map-infocard-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  left: 50%;
+  margin-left: -8px;
+}
+
+.leaflet-tooltip .orders-map-infocard-arrow--top {
+  border-top: 8px solid #fff;
+  top: -7px;
+  filter: drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.08));
+}
+
+.leaflet-tooltip .orders-map-infocard-arrow--bottom {
+  border-top: 8px solid #fff;
+  border-bottom: none;
+  bottom: -7px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+}

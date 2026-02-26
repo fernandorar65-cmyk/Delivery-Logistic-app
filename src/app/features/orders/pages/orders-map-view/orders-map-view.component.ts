@@ -163,7 +163,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private mapInstance: LeafletMap | null = null;
   private markers: LeafletMarker[] = [];
   /** Polylines de rutas (no se añaden al mapa hasta que se selecciona una orden) */
-  private polylines: RoutePolyline[] = [];
+  private polylinesTrack: RoutePolyline[] = [];
+  private polylinesDash: RoutePolyline[] = [];
   /** Polylines actualmente visibles en el mapa (varias si hay selección múltiple) */
   private polylinesOnMap: RoutePolyline[] = [];
   /** Capas base del mapa (callejero y satélite) para alternar */
@@ -248,6 +249,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
   clearSelection(): void {
     this.selectedOrderIds.set(new Set());
     this.removeAllPolylinesFromMap();
+    this.updateTooltipsVisibility();
   }
 
   /** Quita todas las polylines del mapa. */
@@ -259,6 +261,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
   /** Actualiza qué rutas se muestran en el mapa y centra la vista en ellas. */
   private updateMapPolylinesAndView(): void {
     this.removeAllPolylinesFromMap();
+    this.updateTooltipsVisibility();
     if (!this.mapInstance) return;
 
     const ids = this.selectedOrderIds();
@@ -269,15 +272,23 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
     for (let i = 0; i < orders.length; i++) {
       if (!ids.has(orders[i].id)) continue;
-      const poly = this.polylines[i];
-      if (!poly) continue;
-      poly.addTo(this.mapInstance);
-      this.polylinesOnMap.push(poly);
-      try {
-        const b = poly.getBounds();
-        bounds.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]);
-      } catch {
-        bounds.push([orders[i].pickupLat, orders[i].pickupLng], [orders[i].lat, orders[i].lng]);
+      const polyTrack = this.polylinesTrack[i];
+      const polyDash = this.polylinesDash[i];
+      if (polyTrack) {
+        polyTrack.addTo(this.mapInstance);
+        this.polylinesOnMap.push(polyTrack);
+      }
+      if (polyDash) {
+        polyDash.addTo(this.mapInstance);
+        this.polylinesOnMap.push(polyDash);
+      }
+      if (polyTrack) {
+        try {
+          const b = polyTrack.getBounds();
+          bounds.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]);
+        } catch {
+          bounds.push([orders[i].pickupLat, orders[i].pickupLng], [orders[i].lat, orders[i].lng]);
+        }
       }
     }
 
@@ -290,6 +301,23 @@ export class OrdersMapViewComponent implements AfterViewInit {
         [[south, west], [north, east]] as [number, number][],
         { padding: [60, 60], maxZoom: 14, duration: 0.6 }
       );
+    }
+  }
+
+  /** Muestra las tarjetas de detalle solo en los marcadores de las órdenes seleccionadas; oculta el resto. */
+  private updateTooltipsVisibility(): void {
+    const ids = this.selectedOrderIds();
+    const orders = this.orders();
+    for (let i = 0; i < orders.length; i++) {
+      const startMarker = this.markers[i * 2] as LeafletMarker & { openTooltip?: () => void; closeTooltip?: () => void };
+      const destMarker = this.markers[i * 2 + 1] as LeafletMarker & { openTooltip?: () => void; closeTooltip?: () => void };
+      const selected = ids.has(orders[i].id);
+      if (startMarker?.openTooltip && startMarker?.closeTooltip) {
+        selected ? startMarker.openTooltip() : startMarker.closeTooltip();
+      }
+      if (destMarker?.openTooltip && destMarker?.closeTooltip) {
+        selected ? destMarker.openTooltip() : destMarker.closeTooltip();
+      }
     }
   }
 
@@ -337,6 +365,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
       this.mapInstance = map;
       this.addMarkers(map);
       this.loadRoutesAndUpdatePolylines(map);
+      this.updateTooltipsVisibility();
       setTimeout(() => map.invalidateSize(), 200);
     } catch (err) {
       console.warn('Leaflet no cargado:', err);
@@ -371,35 +400,64 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private addMarkers(map: LeafletMap): void {
     const L = this.leafletLib as {
       divIcon: (opts: object) => unknown;
-      marker: (latlng: [number, number], opts: object) => LeafletMarker;
+      marker: (latlng: [number, number], opts: object) => LeafletMarker & { bindTooltip: (content: string, opts?: object) => void };
       polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
     };
     if (!L?.divIcon || !L?.marker) return;
     this.markers = [];
-    this.polylines = [];
+    this.polylinesTrack = [];
+    this.polylinesDash = [];
 
     for (const order of this.orders()) {
       const isAlert = order.status === 'alert';
       const isInProgress = order.status === 'in_progress';
       const color = isAlert ? '#dc2626' : isInProgress ? '#2563eb' : '#059669';
       const iconName = isInProgress ? 'local_shipping' : 'inventory_2';
+      const statusText = isInProgress ? 'En movimiento' : this.getStatusLabel(order.status);
 
-      // Línea de ruta: se crea pero NO se añade al mapa; solo se muestra al seleccionar la orden
-      const routeLine = L.polyline(
-        [
-          [order.pickupLat, order.pickupLng],
-          [order.lat, order.lng]
-        ],
-        {
-          color,
-          weight: 8,
-          opacity: 0.92,
-          dashArray: isInProgress ? undefined : '10, 10'
-        }
-      ) as unknown as RoutePolyline;
-      this.polylines.push(routeLine);
+      const latlngs: [number, number][] = [
+        [order.pickupLat, order.pickupLng],
+        [order.lat, order.lng]
+      ];
 
-      // Marcador de inicio (recojo) — icono de auto/camión
+      // Pista base (línea suave detrás)
+      const routeTrack = L.polyline(latlngs, {
+        color,
+        weight: 10,
+        opacity: 0.35,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }) as unknown as RoutePolyline;
+      this.polylinesTrack.push(routeTrack);
+
+      // Línea punteada animada (avanzando como en el HTML de referencia)
+      const routeDash = L.polyline(latlngs, {
+        color,
+        weight: 4,
+        opacity: 1,
+        dashArray: '8, 12',
+        lineCap: 'round',
+        lineJoin: 'round',
+        className: 'orders-route-line-animated'
+      }) as unknown as RoutePolyline;
+      this.polylinesDash.push(routeDash);
+
+      // Tarjeta de ubicación actual (punto de salida)
+      const ubicacionCard = `
+        <div class="orders-map-infocard orders-map-infocard--ubicacion">
+          <div class="orders-map-infocard-badge orders-map-infocard-badge--green">
+            <span class="material-symbols-outlined">local_shipping</span>
+          </div>
+          <div class="orders-map-infocard-body">
+            <p class="orders-map-infocard-caption">UBICACIÓN ACTUAL</p>
+            <p class="orders-map-infocard-title">${this.escapeHtml(order.driverName)} (${this.escapeHtml(order.vehiclePlate)})</p>
+            <p class="orders-map-infocard-status">${this.escapeHtml(statusText)}</p>
+          </div>
+        </div>
+        <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
+      `;
+
+      // Marcador de inicio (recojo) — icono de bandera + tooltip con tarjeta
       const startIcon = L.divIcon({
         className: 'orders-marker orders-marker--start',
         html: `
@@ -414,9 +472,30 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const startMarker = L.marker([order.pickupLat, order.pickupLng], { icon: startIcon })
         .addTo(map)
         .on('click', () => this.selectOrder(order));
+      startMarker.bindTooltip(ubicacionCard, {
+        permanent: false,
+        direction: 'bottom',
+        offset: [0, 32],
+        className: 'orders-map-tooltip orders-map-tooltip--ubicacion',
+        opacity: 1
+      });
       this.markers.push(startMarker);
 
-      // Marcador de llegada (entrega) — paquete o camión según estado
+      // Tarjeta de destino (punto de llegada) — con icono como en el modelo base
+      const destinoCard = `
+        <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
+        <div class="orders-map-infocard orders-map-infocard--destino">
+          <div class="orders-map-infocard-badge orders-map-infocard-badge--rose">
+            <span class="material-symbols-outlined">location_on</span>
+          </div>
+          <div class="orders-map-infocard-body">
+            <p class="orders-map-infocard-caption">DESTINO</p>
+            <p class="orders-map-infocard-title">${this.escapeHtml(order.address)}</p>
+          </div>
+        </div>
+      `;
+
+      // Marcador de llegada (entrega) — paquete o camión + tooltip con tarjeta
       const icon = L.divIcon({
         className: 'orders-marker',
         html: `
@@ -432,10 +511,24 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const marker = L.marker([order.lat, order.lng], { icon })
         .addTo(map)
         .on('click', () => this.selectOrder(order));
+      marker.bindTooltip(destinoCard, {
+        permanent: false,
+        direction: 'bottom',
+        offset: [0, 32],
+        className: 'orders-map-tooltip orders-map-tooltip--destino',
+        opacity: 1
+      });
 
       (marker as unknown as { _orderId: string })._orderId = order.id;
       this.markers.push(marker);
     }
+  }
+
+  private escapeHtml(text: string): string {
+    const div = typeof document !== 'undefined' ? document.createElement('div') : null;
+    if (!div) return text;
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   /** Pide a OSRM la ruta por carretera para cada orden y actualiza las polylines cuando responden. */
@@ -443,8 +536,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
     const list = this.orders();
     list.forEach((order, index) => {
       this.fetchRouteOSRM(order.pickupLat, order.pickupLng, order.lat, order.lng).then(coords => {
-        if (coords.length > 0 && this.polylines[index]) {
-          this.polylines[index].setLatLngs(coords);
+        if (coords.length > 0) {
+          if (this.polylinesTrack[index]) this.polylinesTrack[index].setLatLngs(coords);
+          if (this.polylinesDash[index]) this.polylinesDash[index].setLatLngs(coords);
         }
       });
     });
