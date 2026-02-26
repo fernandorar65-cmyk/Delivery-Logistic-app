@@ -1,68 +1,131 @@
 <section class="orders-page">
-  <header class="orders-header">
-    <h1 class="orders-title">Entregas</h1>
-    <p class="orders-subtitle">Ubicación de paquetes según destino de entrega</p>
-  </header>
-
   <div class="orders-layout">
     <aside class="orders-sidebar">
-      <div class="orders-search-wrap">
-        <span class="material-symbols-outlined orders-search-icon">search</span>
-        <input
-          type="text"
-          class="orders-search-input"
-          placeholder="Buscar en esta sección..."
-          [value]="searchText()"
-          (input)="searchText.set($any($event.target).value)"
-        />
-      </div>
-      <div class="orders-actions">
-        <span class="orders-routes-badge">Rutas {{ getFilteredOrders().length }}</span>
-        <button type="button" class="orders-btn-link" (click)="selectAllOrders()">Seleccionar todas</button>
-      </div>
-      <div class="orders-list">
-        @for (order of getFilteredOrders(); track order.id) {
-          <article
-            class="orders-card"
-            [class.orders-card--selected]="isOrderSelected(order.id)"
-            (click)="toggleOrderSelection(order)"
+      <div class="orders-sidebar-inner">
+        <div class="orders-sidebar-header">
+          <div class="orders-sidebar-title-row">
+            <h1 class="orders-sidebar-title">Entregas Hoy</h1>
+            <span class="orders-routes-badge">{{ getFilteredOrders().length }} RUTAS</span>
+          </div>
+          <p class="orders-sidebar-subtitle">Ubicación de flota y estados de entrega en tiempo real.</p>
+        </div>
+        <div class="orders-search-row">
+          <div class="orders-search-wrap">
+            <span class="material-symbols-outlined orders-search-icon">search</span>
+            <input
+              type="text"
+              class="orders-search-input"
+              placeholder="Filtrar por ruta o chofer..."
+              [value]="searchText()"
+              (input)="searchText.set($any($event.target).value)"
+            />
+          </div>
+          <button type="button" class="orders-filter-btn" title="Filtros">
+            <span class="material-symbols-outlined">filter_list</span>
+          </button>
+        </div>
+        <div class="orders-pills">
+          <button
+            type="button"
+            class="orders-pill"
+            [class.orders-pill--active]="statusFilter() === 'all'"
+            (click)="setStatusFilter('all')"
           >
-            <div class="orders-card-main">
-              <input
-                type="checkbox"
-                class="orders-card-checkbox"
-                [checked]="isOrderSelected(order.id)"
-                (click)="$event.stopPropagation(); toggleOrderSelection(order)"
-              />
-              <div class="orders-card-body">
-                <p class="orders-card-route">Ruta {{ order.routeId }}</p>
-                <p class="orders-card-date">{{ order.date }}</p>
-                <p class="orders-card-driver">{{ order.driverName }} - {{ order.vehiclePlate }}</p>
+            Todas
+          </button>
+          <button
+            type="button"
+            class="orders-pill"
+            [class.orders-pill--active]="statusFilter() === 'in_progress'"
+            (click)="setStatusFilter('in_progress')"
+          >
+            En Curso ({{ getCountByStatus('in_progress') }})
+          </button>
+          <button
+            type="button"
+            class="orders-pill"
+            [class.orders-pill--active]="statusFilter() === 'alert'"
+            (click)="setStatusFilter('alert')"
+          >
+            Alerta ({{ getCountByStatus('alert') }})
+          </button>
+          <button
+            type="button"
+            class="orders-pill"
+            [class.orders-pill--active]="statusFilter() === 'pending'"
+            (click)="setStatusFilter('pending')"
+          >
+            Pendiente ({{ getCountByStatus('pending') }})
+          </button>
+          <button
+            type="button"
+            class="orders-pill"
+            [class.orders-pill--active]="statusFilter() === 'delivered'"
+            (click)="setStatusFilter('delivered')"
+          >
+            Finalizado ({{ getCountByStatus('delivered') }})
+          </button>
+        </div>
+        <div class="orders-list custom-scrollbar">
+          @for (order of getFilteredOrders(); track order.id) {
+            <article
+              class="orders-card"
+              [class.orders-card--selected]="isOrderSelected(order.id)"
+              [class.orders-card--delivered]="order.status === 'delivered'"
+              (click)="toggleOrderSelection(order)"
+            >
+              <div class="orders-card-top">
+                <div>
+                  <h3 class="orders-card-route">RUTA {{ order.routeId }}</h3>
+                  <p class="orders-card-date">
+                    <span class="material-symbols-outlined orders-card-date-icon">calendar_today</span>
+                    {{ order.date }}
+                  </p>
+                </div>
                 <span class="orders-card-status" [ngClass]="getStatusClass(order.status)">
                   {{ getStatusLabel(order.status) }}
                 </span>
-                @if (order.isExclusive) {
-                  <span class="orders-card-tag">Exclusiva</span>
-                }
-                <div class="orders-card-meta">
-                  <span class="orders-card-task-count">{{ order.taskCount }} tareas</span>
-                  <span class="orders-card-avatar">{{ order.driverName.charAt(0) }}</span>
+              </div>
+              <div class="orders-card-grid">
+                <div class="orders-card-meta-item">
+                  <div class="orders-card-meta-icon">
+                    <span class="material-symbols-outlined">person</span>
+                  </div>
+                  <div>
+                    <p class="orders-card-meta-label">Conductor</p>
+                    <p class="orders-card-meta-value">{{ order.driverName }}</p>
+                  </div>
+                </div>
+                <div class="orders-card-meta-item">
+                  <div class="orders-card-meta-icon">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                  </div>
+                  <div>
+                    <p class="orders-card-meta-label">Placa</p>
+                    <p class="orders-card-meta-value">{{ order.vehiclePlate }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </article>
-        } @empty {
-          <p class="orders-empty">No hay órdenes que coincidan con la búsqueda.</p>
-        }
+              <div class="orders-card-footer">
+                <div class="orders-card-avatars">
+                  <span class="orders-card-avatar">{{ order.driverName.charAt(0) }}</span>
+                  <span class="orders-card-avatar orders-card-avatar--accent">{{ order.taskCount }}</span>
+                </div>
+                <button type="button" class="orders-card-details-btn" (click)="toggleOrderSelection(order); $event.stopPropagation()">
+                  Ver Detalles
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <p class="orders-empty">No hay órdenes que coincidan con el filtro.</p>
+          }
+        </div>
       </div>
     </aside>
 
     <div class="orders-map-wrap">
       <div class="orders-map-toolbar">
-        <div class="orders-map-toggles">
-          <button type="button" class="orders-toggle-btn orders-toggle-btn--active">Ruta</button>
-          <button type="button" class="orders-toggle-btn">Orden</button>
-        </div>
         <div class="orders-map-type">
           <button type="button" class="orders-map-type-btn orders-map-type-btn--active">Mapa</button>
           <button type="button" class="orders-map-type-btn">Satélite</button>
@@ -70,10 +133,39 @@
       </div>
       <div #mapContainer class="orders-map-container"></div>
       @if (selectedOrderIds().size > 0) {
-        <div class="orders-map-legend">
-          <span class="material-symbols-outlined">inventory_2</span>
-          <span>{{ selectedOrderIds().size }} entrega(s) seleccionada(s)</span>
-          <button type="button" class="orders-legend-close" (click)="clearSelection()">Cerrar</button>
+        <div class="orders-map-summary">
+          <div class="orders-map-summary-head">
+            <div class="orders-map-summary-head-left">
+              <div class="orders-map-summary-icon-wrap">
+                <span class="material-symbols-outlined orders-map-summary-icon">route</span>
+              </div>
+              <div>
+                <p class="orders-map-summary-caption">RESUMEN RUTA</p>
+                <p class="orders-map-summary-route">{{ selectedOrderIds().size }} entrega(s) seleccionada(s)</p>
+              </div>
+            </div>
+            <span class="orders-map-summary-pct">—</span>
+          </div>
+          <div class="orders-map-summary-progress">
+            <div class="orders-map-summary-bar-wrap">
+              <div class="orders-map-summary-bar" style="width: 60%"></div>
+            </div>
+            <p class="orders-map-summary-meta">Progreso general</p>
+          </div>
+          <div class="orders-map-summary-grid">
+            <div class="orders-map-summary-box">
+              <p class="orders-map-summary-box-label">Tiempo Est.</p>
+              <p class="orders-map-summary-box-value">—</p>
+            </div>
+            <div class="orders-map-summary-box">
+              <p class="orders-map-summary-box-label">Distancia</p>
+              <p class="orders-map-summary-box-value">—</p>
+            </div>
+          </div>
+          <button type="button" class="orders-map-summary-cta" (click)="clearSelection()">
+            <span class="material-symbols-outlined">visibility</span>
+            Detalles Completos
+          </button>
         </div>
       }
     </div>

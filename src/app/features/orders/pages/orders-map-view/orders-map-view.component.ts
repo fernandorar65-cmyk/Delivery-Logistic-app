@@ -43,12 +43,23 @@ export class OrdersMapViewComponent implements AfterViewInit {
   @ViewChild('mapContainer') mapContainerRef!: ElementRef<HTMLDivElement>;
 
   searchText = signal('');
+  /** Filtro por estado: 'all' | 'in_progress' | 'alert' | 'pending' | 'delivered' */
+  statusFilter = signal<OrderStatus | 'all'>('all');
   /** IDs de órdenes seleccionadas (se puede elegir más de una) */
   selectedOrderIds = signal<Set<string>>(new Set());
 
   /** Indica si una orden está seleccionada (para marcar la tarjeta y el checkbox) */
   isOrderSelected(orderId: string): boolean {
     return this.selectedOrderIds().has(orderId);
+  }
+
+  setStatusFilter(status: OrderStatus | 'all'): void {
+    this.statusFilter.set(status);
+  }
+
+  getCountByStatus(status: OrderStatus | 'all'): number {
+    if (status === 'all') return this.orders().length;
+    return this.orders().filter(o => o.status === status).length;
   }
 
   /** Datos hardcodeados de órdenes con ubicación de recojo y entrega */
@@ -184,8 +195,11 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
   getFilteredOrders(): OrderWithLocation[] {
     const q = this.searchText().toLowerCase().trim();
-    if (!q) return this.orders();
-    return this.orders().filter(
+    const status = this.statusFilter();
+    let list = this.orders();
+    if (status !== 'all') list = list.filter(o => o.status === status);
+    if (!q) return list;
+    return list.filter(
       o =>
         o.routeId.toLowerCase().includes(q) ||
         o.trackingNumber.toLowerCase().includes(q) ||

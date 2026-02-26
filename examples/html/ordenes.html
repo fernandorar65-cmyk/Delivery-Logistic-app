@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LOGISAAS - Centro de Control Premium</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3B82F6",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0F172A",
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E293B",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                    },
+                },
+            },
+        };
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+<style>
+        .map-gradient-overlay {
+            background: linear-gradient(to right, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0) 100%);
+        }
+        .animated-line {
+            stroke-dasharray: 10;
+            animation: dash 20s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 transition-colors duration-300 overflow-hidden h-screen flex flex-col">
+<nav class="h-16 border-b border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex items-center justify-between px-6 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">L</div>
+<span class="text-xl font-bold tracking-tight">LOGISAAS</span>
+</div>
+<div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full w-96">
+<span class="material-icons-round text-slate-400 text-lg mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full p-0 placeholder-slate-400" placeholder="Buscar pedido, chofer o cliente..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-all" onclick="toggleDarkMode()">
+<span class="material-icons-round dark:hidden">dark_mode</span>
+<span class="material-icons-round hidden dark:block">light_mode</span>
+</button>
+<div class="relative">
+<span class="material-icons-round p-2 text-slate-500 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+</div>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+<div class="flex items-center gap-3 pl-2">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-semibold">Carlos Mendoza</p>
+<p class="text-[10px] text-slate-500">Administrador</p>
+</div>
+<img alt="Avatar Usuario" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJzkUid1fSO5DOb1xPB9329NK4WZwoZygZVb_uv7xH3X2P3ASz--9hwleS369H2jqVWdYjxHswCqcJJPx0AItDJ9PpbfTqlyIj2WXCC2znq93yROCzaMkrPcae55Dd2MSNDGzg7deX4HjDPjEZySb4GuUoL-DzWxKu7Xyjn8u6qJkQcGn86bcyCaW6zyZXQHHe5ZjChtu5SK4ny7kD-gradaHWKLoRkHzPOu0MTD0pZ3YVWCzSvA1KH6gNGniBtTIQPvcDOWoSbybr"/>
+</div>
+</div>
+</nav>
+<div class="flex-1 flex overflow-hidden">
+<aside class="w-20 lg:w-64 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col py-6 overflow-y-auto">
+<div class="px-4 mb-6">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mb-4 hidden lg:block">Menú Principal</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all group" href="#">
+<span class="material-icons-round">dashboard</span>
+<span class="font-medium hidden lg:block">Panel de Control</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-xl transition-all group" href="#">
+<span class="material-icons-round">local_shipping</span>
+<span class="font-medium hidden lg:block">Rutas y Entregas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all group" href="#">
+<span class="material-icons-round">analytics</span>
+<span class="font-medium hidden lg:block">Estadísticas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all group" href="#">
+<span class="material-icons-round">people</span>
+<span class="font-medium hidden lg:block">Usuarios</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all group" href="#">
+<span class="material-icons-round">settings</span>
+<span class="font-medium hidden lg:block">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto px-6">
+<div class="bg-gradient-to-br from-primary to-blue-600 p-4 rounded-2xl text-white hidden lg:block">
+<p class="text-xs font-medium opacity-80">Soporte Premium</p>
+<p class="text-sm font-bold mt-1">¿Necesitas ayuda?</p>
+<button class="mt-3 w-full bg-white/20 hover:bg-white/30 backdrop-blur-md py-2 rounded-lg text-xs font-semibold transition-all">Contactar</button>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex relative">
+<div class="w-[450px] flex flex-col bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm z-10 border-r border-slate-200 dark:border-slate-800">
+<div class="p-6 pb-4">
+<div class="flex items-center justify-between mb-2">
+<h1 class="text-2xl font-bold">Entregas Hoy</h1>
+<span class="px-2.5 py-1 bg-primary text-white text-[10px] font-bold rounded-full">24 RUTAS</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Ubicación de flota y estados de entrega en tiempo real.</p>
+<div class="flex gap-2 mb-4">
+<div class="relative flex-1">
+<span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary" placeholder="Filtrar por ruta o chofer..." type="text"/>
+</div>
+<button class="p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-500">
+<span class="material-icons-round text-sm">filter_list</span>
+</button>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-primary text-white shadow-lg shadow-primary/20">Todas</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">En Curso (12)</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Alerta (2)</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar px-6 space-y-4 pb-8">
+<div class="group bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-primary shadow-xl shadow-primary/5 cursor-pointer transform transition-all hover:scale-[1.01]">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">RUTA 7D02B66G1DEC98GBM</h3>
+<p class="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+<span class="material-icons-round text-[14px]">calendar_today</span> 30/06/2025
+                                </p>
+</div>
+<span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">En Curso</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-round text-slate-500 text-lg">person</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight leading-none">Conductor</p>
+<p class="text-xs font-semibold">Carlos López</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-round text-slate-500 text-lg">minor_crash</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight leading-none">Placa</p>
+<p class="text-xs font-semibold">MIN-789</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border-2 border-white dark:border-slate-800 bg-blue-500 flex items-center justify-center text-[10px] text-white font-bold">C</div>
+<div class="w-7 h-7 rounded-full border-2 border-white dark:border-slate-800 bg-emerald-500 flex items-center justify-center text-[10px] text-white font-bold">8</div>
+</div>
+<button class="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+                                Ver Detalles <span class="material-icons-round text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="group bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 hover:border-red-200 dark:hover:border-red-900/50 shadow-sm cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-red-500 transition-colors">RUTA 9F03C77H2EFD09HCN</h3>
+<p class="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+<span class="material-icons-round text-[14px]">calendar_today</span> 01/07/2025
+                                </p>
+</div>
+<span class="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold rounded-full uppercase tracking-wider">En Alerta</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4 opacity-75">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-round text-slate-500 text-lg">person</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight leading-none">Conductor</p>
+<p class="text-xs font-semibold">Ernesto Pérez</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-round text-slate-500 text-lg">minor_crash</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight leading-none">Placa</p>
+<p class="text-xs font-semibold">M-TURBO</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
+<span class="text-[10px] text-red-500 font-bold flex items-center gap-1">
+<span class="material-icons-round text-xs">warning</span> Retraso de 15m
+                            </span>
+<span class="text-xs font-bold text-slate-400">12 tareas restantes</span>
+</div>
+</div>
+<div class="group bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">RUTA 8E01A55F0CDB87FAL</h3>
+<p class="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+<span class="material-icons-round text-[14px]">calendar_today</span> 01/07/2025
+                                </p>
+</div>
+<span class="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Pendiente</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-round text-slate-500 text-lg">person</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight leading-none">Conductor</p>
+<p class="text-xs font-semibold">Juan Pérez</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-round text-slate-500 text-lg">minor_crash</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight leading-none">Placa</p>
+<p class="text-xs font-semibold">ABC-123</p>
+</div>
+</div>
+</div>
+</div>
+<div class="group bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm opacity-60 cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-3">
+<h3 class="font-bold text-slate-900 dark:text-white">RUTA 8E01A55F0CDB7FAL</h3>
+<span class="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Finalizado</span>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-xs font-medium">Completado hoy 14:30</p>
+<span class="text-xs font-bold text-slate-500">3 tareas</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1 relative bg-slate-200 dark:bg-slate-950">
+<div class="absolute inset-0 overflow-hidden">
+<img alt="Mapa de fondo" class="w-full h-full object-cover dark:hidden opacity-50 contrast-125 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWBkcku8xTyjPkgI0FRzYespoC5soTomy7FLfZrH6Tl4V8yTz5rrkOe360uW_jnHrqezvxBtYHWRKNkISIRCvwSypYF5h84uPoNrBYcH7ofelhJmbZwkZBmgii57rDaRQqjhkMwoi0Mw2sMn-8gaY10-aGHbgTDr1ao5jq1D85ti0lwnc21KKWjACqvLh98tPVZcJ_wfYCJVZF7Z1K_qQlGpuXWSA0Kt6lr2H8QER1U_afXRq3YwacaNCyKhxZ1sHUhEbTOu7nBCj4"/>
+<div class="hidden dark:block w-full h-full bg-[#111827]">
+<img alt="Mapa oscuro" class="w-full h-full object-cover opacity-20 contrast-150 grayscale invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlqx9WYwVeP9HkxFtpAJkGNZWtNBz_6uTJb7Ja-ZD51IVkCWXpbI71fP9bAb0gTGKkVbdyldRfCJ0sa0F72o8B5EH_Pl0nnUPOAlDw7p4GeN27EK8lD9aR1KIvhIden0eeRbNUKs42fv7lzspjFb53oKQYc5nSn9DR4o4wva0DFxFkAFx1PSIQnoE6MwbmI03mQWkeWVvvY6_F_HapMlBk1FAiZwyOyjLabbauLt6il_VjMG2QU3Ii0NUsgkZfl2blamJJlbBHXMfx"/>
+</div>
+</div>
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<path d="M 300 800 Q 500 700, 450 400 T 700 300" fill="none" stroke="rgba(59, 130, 246, 0.4)" stroke-linecap="round" stroke-width="8"></path>
+<path class="animated-line" d="M 300 800 Q 500 700, 450 400 T 700 300" fill="none" stroke="#3B82F6" stroke-dasharray="8, 12" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute bottom-[20%] left-[300px] -translate-x-1/2 -translate-y-1/2 group">
+<div class="relative">
+<div class="absolute -inset-4 bg-primary/20 rounded-full animate-ping"></div>
+<div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-2xl z-10 relative">
+<span class="material-icons-round text-white">warehouse</span>
+</div>
+</div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 whitespace-nowrap">
+<p class="text-[10px] font-bold uppercase text-slate-400">Salida</p>
+<p class="text-xs font-bold">Centro Logístico Sur</p>
+</div>
+</div>
+<div class="absolute top-[400px] left-[450px] -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="flex flex-col items-center">
+<div class="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-2xl border border-primary/30 flex items-center gap-3">
+<div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white">
+<span class="material-icons-round">local_shipping</span>
+</div>
+<div class="pr-2">
+<p class="text-[9px] font-bold text-slate-400 leading-none">UBICACIÓN ACTUAL</p>
+<p class="text-xs font-bold dark:text-white">Carlos López (MIN-789)</p>
+<p class="text-[10px] text-emerald-500 font-semibold">45 km/h • En movimiento</p>
+</div>
+</div>
+<div class="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white dark:border-t-slate-800"></div>
+</div>
+</div>
+<div class="absolute top-[300px] left-[700px] -translate-x-1/2 -translate-y-1/2">
+<div class="w-12 h-12 bg-rose-500 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-800 transform rotate-45">
+<span class="material-icons-round text-white -rotate-45">location_on</span>
+</div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 whitespace-nowrap">
+<p class="text-[10px] font-bold uppercase text-slate-400">Destino</p>
+<p class="text-xs font-bold">Av. Universitaria 1205</p>
+</div>
+</div>
+<div class="absolute top-6 right-6 flex flex-col gap-2">
+<div class="flex bg-white dark:bg-slate-800 p-1 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700">
+<button class="px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold shadow-lg shadow-primary/20">Mapa</button>
+<button class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs font-bold">Satélite</button>
+</div>
+<div class="flex flex-col bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+<button class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 border-b border-slate-100 dark:border-slate-700">
+<span class="material-icons-round">add</span>
+</button>
+<button class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500">
+<span class="material-icons-round">remove</span>
+</button>
+</div>
+<button class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-primary transition-colors">
+<span class="material-icons-round">my_location</span>
+</button>
+</div>
+<div class="absolute bottom-6 left-6 right-6 md:right-auto md:w-96 p-5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-2xl flex items-center justify-center">
+<span class="material-icons-round text-primary text-3xl">route</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-400 leading-none">RESUMEN RUTA</p>
+<p class="text-lg font-bold">7D02B66G1...</p>
+</div>
+</div>
+<span class="text-2xl font-black text-primary">78%</span>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-xs font-bold mb-1.5">
+<span class="text-slate-500">Progreso General</span>
+<span class="text-primary">8 de 12 paradas</span>
+</div>
+<div class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="w-[78%] h-full bg-primary rounded-full relative">
+<div class="absolute top-0 right-0 bottom-0 w-1 bg-white/30"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Tiempo Est.</p>
+<p class="text-sm font-bold">1h 24m</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl">
+<p class="text-[10px] font-bold text-slate-400 uppercase">Distancia</p>
+<p class="text-sm font-bold">14.2 km</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition-all shadow-lg shadow-primary/30 flex items-center justify-center gap-2">
+<span class="material-icons-round text-sm">visibility</span>
+                            Detalles Completos
+                        </button>
+</div>
+</div>
+<div class="absolute inset-y-0 left-0 w-24 map-gradient-overlay pointer-events-none"></div>
+</div>
+</main>
+</div>
+
+</body></html>
