@@ -9,8 +9,13 @@ export interface OrderWithLocation {
   routeId: string;
   trackingNumber: string;
   address: string;
+  /** Coordenadas de entrega (destino / llegada) */
   lat: number;
   lng: number;
+  /** Coordenadas de recojo (origen / punto de inicio de la ruta) */
+  pickupLat: number;
+  pickupLng: number;
+  pickupAddress?: string;
   status: OrderStatus;
   driverName: string;
   vehiclePlate: string;
@@ -18,6 +23,14 @@ export interface OrderWithLocation {
   taskCount: number;
   isExclusive?: boolean;
 }
+
+/** Polyline de Leaflet con métodos que usamos para mostrar/ocultar y encuadrar */
+type RoutePolyline = {
+  addTo: (m: LeafletMap) => unknown;
+  remove: () => void;
+  setLatLngs: (latlngs: [number, number][]) => void;
+  getBounds: () => { getNorth: () => number; getSouth: () => number; getWest: () => number; getEast: () => number };
+};
 
 @Component({
   selector: 'app-orders-map-view',
@@ -32,7 +45,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
   searchText = signal('');
   selectedOrderId = signal<string | null>(null);
 
-  /** Datos hardcodeados de órdenes con ubicación de entrega */
+  /** Datos hardcodeados de órdenes con ubicación de recojo y entrega */
   orders = signal<OrderWithLocation[]>([
     {
       id: '1',
@@ -41,6 +54,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
       address: 'Av. Javier Prado 1234, San Isidro',
       lat: -12.0875,
       lng: -77.0502,
+      pickupLat: -12.0760,
+      pickupLng: -77.0422,
+      pickupAddress: 'Almacén Central, Miraflores',
       status: 'in_progress',
       driverName: 'Juan Pérez',
       vehiclePlate: 'ABC 123',
@@ -55,6 +71,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
       address: 'Av. Brasil 2345, Lima',
       lat: -12.0625,
       lng: -77.0378,
+      pickupLat: -12.0464,
+      pickupLng: -77.0428,
+      pickupAddress: 'Centro de distribución, Cercado',
       status: 'pending',
       driverName: 'María García',
       vehiclePlate: 'XYZ 456',
@@ -68,6 +87,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
       address: 'Calle Los Olivos 456, Los Olivos',
       lat: -11.9822,
       lng: -77.0712,
+      pickupLat: -12.0200,
+      pickupLng: -77.0500,
+      pickupAddress: 'Depósito Norte, Independencia',
       status: 'delivered',
       driverName: 'Carlos López',
       vehiclePlate: 'MIN 789',
@@ -81,6 +103,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
       address: 'Av. La Marina 789, San Miguel',
       lat: -12.0789,
       lng: -77.0812,
+      pickupLat: -12.0650,
+      pickupLng: -77.0650,
+      pickupAddress: 'Base San Isidro',
       status: 'alert',
       driverName: 'Ernesto Pérez',
       vehiclePlate: 'Miniturbo',
@@ -95,6 +120,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
       address: 'Jr. de la Unión 321, Cercado',
       lat: -12.0464,
       lng: -77.0428,
+      pickupLat: -12.0550,
+      pickupLng: -77.0300,
+      pickupAddress: 'Punto de recojo, Lince',
       status: 'in_progress',
       driverName: 'Ana Martínez',
       vehiclePlate: 'DEF 101',
@@ -105,8 +133,34 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
   private mapInstance: LeafletMap | null = null;
   private markers: LeafletMarker[] = [];
+  /** Polylines de rutas (no se añaden al mapa hasta que se selecciona una orden) */
+  private polylines: RoutePolyline[] = [];
+  /** Polyline actualmente visible en el mapa (solo una a la vez) */
+  private selectedPolylineOnMap: RoutePolyline | null = null;
   /** Leaflet (default export); tipado flexible por incompatibilidad con @types/leaflet */
   private leafletLib: unknown = null;
+
+  /** Obtiene la ruta por carretera entre dos puntos usando OSRM (gratuito, sin API key). */
+  private async fetchRouteOSRM(
+    pickupLat: number,
+    pickupLng: number,
+    destLat: number,
+    destLng: number
+  ): Promise<[number, number][]> {
+    const coords = `${pickupLng},${pickupLat};${destLng},${destLat}`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const data = await res.json();
+      const coordsGeo = data?.routes?.[0]?.geometry?.coordinates as [number, number][] | undefined;
+      if (!coordsGeo?.length) return [];
+      // GeoJSON es [lng, lat]; Leaflet usa [lat, lng]
+      return coordsGeo.map(([lng, lat]: [number, number]) => [lat, lng]);
+    } catch {
+      return [];
+    }
+  }
 
   getStatusLabel(status: OrderStatus): string {
     const labels: Record<OrderStatus, string> = {
@@ -136,16 +190,63 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
   selectOrder(order: OrderWithLocation): void {
     this.selectedOrderId.set(order.id);
-    this.flyToOrder(order);
+
+    // Quitar la ruta que estaba visible
+    if (this.selectedPolylineOnMap) {
+      this.selectedPolylineOnMap.remove();
+      this.selectedPolylineOnMap = null;
+    }
+
+    if (!this.mapInstance) return;
+
+    const index = this.orders().findIndex(o => o.id === order.id);
+    if (index >= 0 && this.polylines[index]) {
+      this.polylines[index].addTo(this.mapInstance);
+      this.selectedPolylineOnMap = this.polylines[index];
+      this.flyToRoute(order, this.polylines[index]);
+    } else {
+      this.flyToOrder(order);
+    }
   }
 
   clearSelection(): void {
     this.selectedOrderId.set(null);
+    if (this.selectedPolylineOnMap) {
+      this.selectedPolylineOnMap.remove();
+      this.selectedPolylineOnMap = null;
+    }
+  }
+
+  /** Centra el mapa en la ruta seleccionada (punto de partida, llegada y trayectoria visibles). */
+  private flyToRoute(order: OrderWithLocation, polyline: RoutePolyline): void {
+    if (!this.mapInstance) return;
+    try {
+      const bounds = polyline.getBounds();
+      const b: [number, number][] = [
+        [bounds.getSouth(), bounds.getWest()],
+        [bounds.getNorth(), bounds.getEast()]
+      ];
+      this.mapInstance.flyToBounds(b as [number, number][], {
+        padding: [60, 60],
+        maxZoom: 14,
+        duration: 0.6
+      });
+    } catch {
+      this.flyToOrder(order);
+    }
   }
 
   private flyToOrder(order: OrderWithLocation): void {
     if (!this.mapInstance) return;
-    this.mapInstance.flyTo([order.lat, order.lng], 15, { duration: 0.5 });
+    const bounds: [number, number][] = [
+      [order.pickupLat, order.pickupLng],
+      [order.lat, order.lng]
+    ];
+    this.mapInstance.flyToBounds(bounds as [number, number][], {
+      padding: [60, 60],
+      maxZoom: 14,
+      duration: 0.5
+    });
   }
 
   ngAfterViewInit(): void {
@@ -161,6 +262,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
         tileLayer: (url: string, opts: object) => { addTo: (m: LeafletMap) => unknown };
         divIcon: (opts: object) => unknown;
         marker: (latlng: [number, number], opts: object) => LeafletMarker;
+        polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
         Icon?: { Default?: { prototype: { _getIconUrl?: unknown }; mergeOptions: (o: object) => void } };
       };
       this.leafletLib = L;
@@ -177,6 +279,7 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
       this.mapInstance = map;
       this.addMarkers(map);
+      this.loadRoutesAndUpdatePolylines(map);
       setTimeout(() => map.invalidateSize(), 200);
     } catch (err) {
       console.warn('Leaflet no cargado:', err);
@@ -202,9 +305,11 @@ export class OrdersMapViewComponent implements AfterViewInit {
     const L = this.leafletLib as {
       divIcon: (opts: object) => unknown;
       marker: (latlng: [number, number], opts: object) => LeafletMarker;
+      polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
     };
     if (!L?.divIcon || !L?.marker) return;
     this.markers = [];
+    this.polylines = [];
 
     for (const order of this.orders()) {
       const isAlert = order.status === 'alert';
@@ -212,12 +317,46 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const color = isAlert ? '#dc2626' : isInProgress ? '#2563eb' : '#059669';
       const iconName = isInProgress ? 'local_shipping' : 'inventory_2';
 
+      // Línea de ruta: se crea pero NO se añade al mapa; solo se muestra al seleccionar la orden
+      const routeLine = L.polyline(
+        [
+          [order.pickupLat, order.pickupLng],
+          [order.lat, order.lng]
+        ],
+        {
+          color,
+          weight: 4,
+          opacity: 0.75,
+          dashArray: isInProgress ? undefined : '8, 8'
+        }
+      ) as unknown as RoutePolyline;
+      this.polylines.push(routeLine);
+
+      // Marcador de inicio (recojo) — icono de auto/camión
+      const startIcon = L.divIcon({
+        className: 'orders-marker orders-marker--start',
+        html: `
+          <div class="orders-marker-circle" style="background-color:#6366f1; border-color:#4f46e5">
+            <span class="material-symbols-outlined orders-marker-icon">flag</span>
+          </div>
+          <span class="orders-marker-label">Inicio</span>
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36]
+      });
+      const startMarker = L.marker([order.pickupLat, order.pickupLng], { icon: startIcon })
+        .addTo(map)
+        .on('click', () => this.selectOrder(order));
+      this.markers.push(startMarker);
+
+      // Marcador de llegada (entrega) — paquete o camión según estado
       const icon = L.divIcon({
         className: 'orders-marker',
         html: `
           <div class="orders-marker-circle" style="background-color:${color}">
             <span class="material-symbols-outlined orders-marker-icon">${iconName}</span>
           </div>
+          <span class="orders-marker-label">Llegada</span>
         `,
         iconSize: [40, 40],
         iconAnchor: [20, 40]
@@ -230,5 +369,17 @@ export class OrdersMapViewComponent implements AfterViewInit {
       (marker as unknown as { _orderId: string })._orderId = order.id;
       this.markers.push(marker);
     }
+  }
+
+  /** Pide a OSRM la ruta por carretera para cada orden y actualiza las polylines cuando responden. */
+  private loadRoutesAndUpdatePolylines(map: LeafletMap): void {
+    const list = this.orders();
+    list.forEach((order, index) => {
+      this.fetchRouteOSRM(order.pickupLat, order.pickupLng, order.lat, order.lng).then(coords => {
+        if (coords.length > 0 && this.polylines[index]) {
+          this.polylines[index].setLatLngs(coords);
+        }
+      });
+    });
   }
 }

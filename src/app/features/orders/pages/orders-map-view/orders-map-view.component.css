@@ -357,6 +357,26 @@
   color: #fff !important;
 }
 
+:host ::ng-deep .orders-marker-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #334155;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+:host ::ng-deep .orders-marker--start .orders-marker-circle {
+  width: 36px;
+  height: 36px;
+}
+
+:host ::ng-deep .orders-marker--start .orders-marker-icon {
+  font-size: 18px !important;
+}
+
 @media (max-width: 768px) {
   .orders-layout {
     flex-direction: column;
