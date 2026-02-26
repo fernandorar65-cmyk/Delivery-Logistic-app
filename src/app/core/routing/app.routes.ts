@@ -33,6 +33,13 @@ export const routes: Routes = [
           .then(m => m.DashboardViewComponent)
       },
       {
+        path: 'orders',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'company', 'provider', 'client'] },
+        loadComponent: () => import('@app/features/orders/pages/orders-map-view/orders-map-view.component')
+          .then(m => m.OrdersMapViewComponent)
+      },
+      {
         path: 'providers',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },

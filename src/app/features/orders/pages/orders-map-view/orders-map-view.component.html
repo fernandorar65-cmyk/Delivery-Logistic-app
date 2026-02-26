@@ -1,0 +1,76 @@
+<section class="orders-page">
+  <header class="orders-header">
+    <h1 class="orders-title">Entregas</h1>
+    <p class="orders-subtitle">Ubicación de paquetes según destino de entrega</p>
+  </header>
+
+  <div class="orders-layout">
+    <aside class="orders-sidebar">
+      <div class="orders-search-wrap">
+        <span class="material-symbols-outlined orders-search-icon">search</span>
+        <input
+          type="text"
+          class="orders-search-input"
+          placeholder="Buscar en esta sección..."
+          [value]="searchText()"
+          (input)="searchText.set($any($event.target).value)"
+        />
+      </div>
+      <div class="orders-actions">
+        <span class="orders-routes-badge">Rutas {{ getFilteredOrders().length }}</span>
+        <button type="button" class="orders-btn-link">Seleccionar todas</button>
+      </div>
+      <div class="orders-list">
+        @for (order of getFilteredOrders(); track order.id) {
+          <article
+            class="orders-card"
+            [class.orders-card--selected]="selectedOrderId() === order.id"
+            (click)="selectOrder(order)"
+          >
+            <div class="orders-card-main">
+              <input type="checkbox" class="orders-card-checkbox" (click)="$event.stopPropagation()" />
+              <div class="orders-card-body">
+                <p class="orders-card-route">Ruta {{ order.routeId }}</p>
+                <p class="orders-card-date">{{ order.date }}</p>
+                <p class="orders-card-driver">{{ order.driverName }} - {{ order.vehiclePlate }}</p>
+                <span class="orders-card-status" [ngClass]="getStatusClass(order.status)">
+                  {{ getStatusLabel(order.status) }}
+                </span>
+                @if (order.isExclusive) {
+                  <span class="orders-card-tag">Exclusiva</span>
+                }
+                <div class="orders-card-meta">
+                  <span class="orders-card-task-count">{{ order.taskCount }} tareas</span>
+                  <span class="orders-card-avatar">{{ order.driverName.charAt(0) }}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        } @empty {
+          <p class="orders-empty">No hay órdenes que coincidan con la búsqueda.</p>
+        }
+      </div>
+    </aside>
+
+    <div class="orders-map-wrap">
+      <div class="orders-map-toolbar">
+        <div class="orders-map-toggles">
+          <button type="button" class="orders-toggle-btn orders-toggle-btn--active">Ruta</button>
+          <button type="button" class="orders-toggle-btn">Orden</button>
+        </div>
+        <div class="orders-map-type">
+          <button type="button" class="orders-map-type-btn orders-map-type-btn--active">Mapa</button>
+          <button type="button" class="orders-map-type-btn">Satélite</button>
+        </div>
+      </div>
+      <div #mapContainer class="orders-map-container"></div>
+      @if (selectedOrderId()) {
+        <div class="orders-map-legend">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span>Punto de entrega seleccionado</span>
+          <button type="button" class="orders-legend-close" (click)="clearSelection()">Cerrar</button>
+        </div>
+      }
+    </div>
+  </div>
+</section>

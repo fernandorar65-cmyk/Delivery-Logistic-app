@@ -1,0 +1,373 @@
+.orders-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: #f1f5f9;
+}
+
+.orders-header {
+  flex-shrink: 0;
+  padding: 1rem 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.orders-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.orders-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.orders-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Panel izquierdo */
+.orders-sidebar {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.orders-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.orders-search-icon {
+  font-size: 1.25rem;
+  color: #94a3b8;
+}
+
+.orders-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  background: transparent;
+}
+
+.orders-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.orders-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.orders-routes-badge {
+  padding: 0.35rem 0.75rem;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+}
+
+.orders-btn-link {
+  background: none;
+  border: none;
+  font-size: 0.8125rem;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.orders-btn-link:hover {
+  text-decoration: underline;
+}
+
+.orders-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.orders-card {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.orders-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.orders-card--selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.orders-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.orders-card-checkbox {
+  margin-top: 0.25rem;
+  accent-color: #2563eb;
+}
+
+.orders-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.orders-card-route {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.orders-card-date {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.orders-card-driver {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #475569;
+}
+
+.orders-card-status {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+}
+
+.orders-status--pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.orders-status--in_progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.orders-status--delivered {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.orders-status--alert {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.orders-card-tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: #fed7aa;
+  color: #c2410c;
+  border-radius: 0.2rem;
+}
+
+.orders-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.orders-card-task-count {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.orders-card-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orders-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* Mapa */
+.orders-map-wrap {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #e2e8f0;
+}
+
+.orders-map-toolbar {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.orders-map-toolbar > * {
+  pointer-events: auto;
+}
+
+.orders-map-toggles,
+.orders-map-type {
+  display: flex;
+  gap: 0;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.orders-toggle-btn,
+.orders-map-type-btn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: #fff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.orders-toggle-btn:hover,
+.orders-map-type-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.orders-toggle-btn--active,
+.orders-map-type-btn--active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.orders-map-container {
+  flex: 1;
+  min-height: 400px;
+  width: 100%;
+}
+
+.orders-map-legend {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  font-size: 0.8125rem;
+  color: #334155;
+}
+
+.orders-map-legend .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: #2563eb;
+}
+
+.orders-legend-close {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: #f1f5f9;
+  font-size: 0.75rem;
+  color: #475569;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.orders-legend-close:hover {
+  background: #e2e8f0;
+}
+
+/* Marcadores Leaflet personalizados */
+:host ::ng-deep .orders-marker {
+  background: none !important;
+  border: none !important;
+}
+
+:host ::ng-deep .orders-marker-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  border: 3px solid #fff;
+}
+
+:host ::ng-deep .orders-marker-icon {
+  font-size: 22px !important;
+  color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  .orders-layout {
+    flex-direction: column;
+  }
+
+  .orders-sidebar {
+    width: 100%;
+    max-height: 40vh;
+  }
+
+  .orders-map-container {
+    min-height: 50vh;
+  }
+}
