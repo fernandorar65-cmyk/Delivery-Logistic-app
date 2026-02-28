@@ -17,6 +17,8 @@ import {
   STANDARD_SECTIONS,
   MIN_HEADER_COLUMNS,
   SECTION_TITLE_SHORT,
+  DATE_API_KEYS,
+  TIME_API_KEYS,
   type StandardSection
 } from './client-shipments-upload-v3-view.constants';
 import {
@@ -389,11 +391,23 @@ export class ClientShipmentsUploadV3ViewComponent {
       });
 
     const mappingId = this.mappingResult()?.mapping_id;
+    const dateColumnNames = new Set<string>();
+    for (const apiKey of DATE_API_KEYS) {
+      const col = mapping[apiKey];
+      if (col && col !== 'Opcional') dateColumnNames.add(normalizeHeaderValue(col));
+    }
+    const timeColumnNames = new Set<string>();
+    for (const apiKey of TIME_API_KEYS) {
+      const col = mapping[apiKey];
+      if (col && col !== 'Opcional') timeColumnNames.add(normalizeHeaderValue(col));
+    }
     const fileToSend$ = from(
       this.excelHelper.buildExcelWithNormalizedHeaders(
         file,
         this.headerRowIndex(),
-        normalizedHeadersForExecution
+        normalizedHeadersForExecution,
+        dateColumnNames,
+        timeColumnNames
       )
     );
 

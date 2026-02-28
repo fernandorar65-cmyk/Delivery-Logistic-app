@@ -24,6 +24,12 @@ export const REQUIRED_MAPPING_KEYS = [
 
 export const REQUIRED_ADDRESS_KEYS = ['pickup.address', 'delivery.address'] as const;
 
+/** API keys que corresponden a campos de fecha (se normalizan a ISO para PostgreSQL). */
+export const DATE_API_KEYS = ['order.request_date', 'pickup.date'] as const;
+
+/** API keys que corresponden a campos de hora (se normalizan a HH:MM:SS para PostgreSQL). */
+export const TIME_API_KEYS = ['pickup.time_from', 'pickup.time_to'] as const;
+
 export const STANDARD_SECTIONS: StandardSection[] = [
   {
     id: 'pickup',

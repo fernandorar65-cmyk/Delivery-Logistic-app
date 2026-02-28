@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
-import { findHeaderRowIndex } from '../pages/client-shipments-upload-v3-view/client-shipments-upload-v3-view.utils';
+import {
+  findHeaderRowIndex,
+  parseDateForPostgres,
+  parseTimeForPostgres
+} from '../pages/client-shipments-upload-v3-view/client-shipments-upload-v3-view.utils';
 
 export interface ParseExcelSuccess {
   headerRowIndex: number;
@@ -70,16 +74,19 @@ export class ExcelImportHelperService {
   }
 
   /**
-   * Genera una copia del Excel con la fila de cabeceras reemplazada y colocada como
-   * primera fila (índice 0). El backend espera que la primera fila del archivo
-   * sean las cabeceras; si en el Excel original las cabeceras estaban en fila 1 o 2
-   * (con títulos de sección arriba), se eliminan esas filas para que la cabecera
-   * quede en la fila 0.
+   * Genera el Excel que se enviará al backend. El backend exige que la **primera fila**
+   * sea la de cabeceras; en el archivo del usuario las cabeceras pueden estar en una fila
+   * inferior (p. ej. fila 2 si hay títulos arriba). Por eso eliminamos todas las filas
+   * por encima de la fila de cabeceras detectada: así la fila 0 del archivo generado
+   * es siempre la de headers y el resto son registros.
+   * Además reemplaza la cabecera por la normalizada y formatea fechas/horas para PostgreSQL.
    */
   async buildExcelWithNormalizedHeaders(
     file: File,
     headerRowIndex: number,
-    normalizedHeaders: string[]
+    normalizedHeaders: string[],
+    dateColumnNames: Set<string> = new Set(),
+    timeColumnNames: Set<string> = new Set()
   ): Promise<File> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -94,13 +101,28 @@ export class ExcelImportHelperService {
             defval: ''
           }) as unknown[][];
 
-          const originalHeaderRow = (rows[headerRowIndex] ?? []) as unknown[];
+          // Eliminar filas por encima de la cabecera: el archivo enviado tendrá fila 0 = headers.
+          const rowsFromHeader = rows.slice(headerRowIndex) as unknown[][];
+          const originalHeaderRow = (rowsFromHeader[0] ?? []) as unknown[];
           const newHeaderRow: unknown[] = [...normalizedHeaders];
           while (newHeaderRow.length < originalHeaderRow.length) newHeaderRow.push('');
 
-          // Dejar solo desde la fila de cabeceras hacia abajo, con la cabecera en posición 0
-          const rowsFromHeader = rows.slice(headerRowIndex) as unknown[][];
           rowsFromHeader[0] = newHeaderRow;
+
+          const needFormat = dateColumnNames.size > 0 || timeColumnNames.size > 0;
+          if (needFormat) {
+            for (let r = 1; r < rowsFromHeader.length; r++) {
+              const row = rowsFromHeader[r] as unknown[];
+              for (let c = 0; c < normalizedHeaders.length && c < row.length; c++) {
+                const header = normalizedHeaders[c];
+                if (dateColumnNames.has(header)) {
+                  row[c] = parseDateForPostgres(row[c]);
+                } else if (timeColumnNames.has(header)) {
+                  row[c] = parseTimeForPostgres(row[c]);
+                }
+              }
+            }
+          }
 
           const newSheet = XLSX.utils.aoa_to_sheet(rowsFromHeader as string[][]);
           workbook.Sheets[sheetName] = newSheet;
