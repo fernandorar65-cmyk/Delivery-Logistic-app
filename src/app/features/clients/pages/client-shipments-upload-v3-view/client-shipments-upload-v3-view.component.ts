@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { switchMap } from 'rxjs';
+import { from, switchMap } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { ImportsService } from '@app/features/clients/services/imports.service';
 import { StorageService } from '@app/core/storage/storage.service';
@@ -54,6 +54,8 @@ export class ClientShipmentsUploadV3ViewComponent {
   showTemplateDetectedModal = signal(false);
   showHeaderErrorModal = signal(false);
   headerErrorMessage = signal<string | null>(null);
+  /** Índice de la fila de cabeceras en el Excel (0, 1 o 2) para reescribirla al subir la orden. */
+  headerRowIndex = signal<number>(0);
 
   /** Mínimo de celdas no vacías para considerar una fila como fila de cabeceras. */
   private readonly minHeaderColumns = 6;
@@ -151,6 +153,7 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.showTemplateDetectedModal.set(false);
     this.showHeaderErrorModal.set(false);
     this.headerErrorMessage.set(null);
+    this.headerRowIndex.set(0);
     this.searchText.set({});
     this.openSelectId.set(null);
     if (fileInput) this.resetFileInput(fileInput);
@@ -186,11 +189,13 @@ export class ClientShipmentsUploadV3ViewComponent {
           this.excelFileName.set(null);
           return;
         }
+        this.headerRowIndex.set(headerRowIndex);
         const headerRow = rows[headerRowIndex] ?? [];
         const rawHeaders = headerRow
           .map((v: unknown) => String(v).trim())
           .filter((v: string) => Boolean(v));
-        const headers = this.disambiguateDuplicateHeaders(rawHeaders);
+        const normalizedHeaders = rawHeaders.map((h: string) => h.trim().toLowerCase());
+        const headers = this.disambiguateDuplicateHeaders(normalizedHeaders);
         this.excelHeaders.set(headers);
         this.detectTemplate(headers);
       } catch {
@@ -352,7 +357,8 @@ export class ClientShipmentsUploadV3ViewComponent {
     if (!clientId || !headers.length) return;
 
     this.templateError.set(null);
-    this.importsService.detectMapping({ client_id: clientId, headers }).subscribe({
+    const normalizedHeaders = this.normalizeHeaders(headers);
+    this.importsService.detectMapping({ client_id: clientId, headers: normalizedHeaders }).subscribe({
       next: (res) => {
         const result = res?.result ?? null;
         this.templateResult.set(result);
@@ -378,7 +384,7 @@ export class ClientShipmentsUploadV3ViewComponent {
     Object.entries(result.mapping).forEach(([apiKey, excelHeaderName]) => {
       const fieldId = apiKeyToFieldId[apiKey];
       if (!fieldId) return;
-      const match = headers.find((h) => this.normalizeForSearch(h) === this.normalizeForSearch(excelHeaderName));
+      const match = headers.find((h) => this.normalizeHeaderValue(h) === this.normalizeHeaderValue(excelHeaderName));
       if (match) next[fieldId] = match;
     });
 
@@ -411,11 +417,7 @@ export class ClientShipmentsUploadV3ViewComponent {
     return mapping;
   }
 
-  /**
-   * Valida campos obligatorios de la API: order.tracking_number, order.request_date
-   * y al menos una dirección (pickup.address o delivery.address).
-   * Retorna mensaje de error o null si es válido.
-   */
+
   private validateRequiredMapping(mapping: Record<string, string>): string | null {
     const hasValue = (v: string) => v && v !== 'Opcional';
     for (const key of this.requiredMappingKeys) {
@@ -450,7 +452,16 @@ export class ClientShipmentsUploadV3ViewComponent {
 
     this.mappingError.set(null);
     this.mappingLoading.set(true);
-    this.importsService.createMapping({ client_id: clientId, headers, mapping }).subscribe({
+
+    console.log('[Guardar plantilla] Headers originales:', headers);
+    let normalizeHeaders = this.normalizeHeaders(headers);
+    console.log('[Guardar plantilla] Headers normalizados:', normalizeHeaders);
+
+
+    const normalizedMapping = this.normalizeMappingValues(mapping);
+    const payload = { client_id: clientId, headers: normalizeHeaders, mapping: normalizedMapping };
+    console.log('[Guardar plantilla] Payload enviado al API:', JSON.parse(JSON.stringify(payload)));
+    this.importsService.createMapping(payload).subscribe({
       next: (res) => {
         this.mappingResult.set(res?.result ?? null);
         this.mappingLoading.set(false);
@@ -462,7 +473,63 @@ export class ClientShipmentsUploadV3ViewComponent {
     });
   }
 
-  /** Ejecuta la importación: envía el Excel y el mapeo (crea el mapeo si hace falta). */
+  normalizeHeaders(headers: string[]): string[] {
+    return headers.map((h) => this.normalizeHeaderValue(h));
+  }
+
+  /** Misma normalización que los headers: trim, toLowerCase y sin espacios. Para comparar o enviar un solo valor. */
+  private normalizeHeaderValue(s: string): string {
+    return (s ?? '').trim().toLowerCase().replace(/\s+/g, '');
+  }
+
+  /** Normaliza los valores del mapping (nombres de columna Excel) con la misma lógica que los headers: trim, toLowerCase y sin espacios internos. */
+  private normalizeMappingValues(mapping: Record<string, string>): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(mapping)) {
+      result[key] = this.normalizeHeaderValue(value ?? '');
+    }
+    return result;
+  }
+
+  /**
+   * Genera una copia del Excel con la fila de cabeceras reemplazada por nuestra nomenclatura
+   * (normalizada y con __1, __2 para duplicados), para que coincida con el mapping al subir la orden.
+   */
+  private buildExcelWithNormalizedHeaders(
+    file: File,
+    headerRowIndex: number,
+    normalizedHeaders: string[]
+  ): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = new Uint8Array(reader.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' }) as unknown[][];
+          const originalHeaderRow = (rows[headerRowIndex] ?? []) as unknown[];
+          const newHeaderRow: unknown[] = [...normalizedHeaders];
+          while (newHeaderRow.length < originalHeaderRow.length) newHeaderRow.push('');
+          rows[headerRowIndex] = newHeaderRow;
+          const newSheet = XLSX.utils.aoa_to_sheet(rows as string[][]);
+          workbook.Sheets[sheetName] = newSheet;
+          const out = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
+          const blob = new Blob([out], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          });
+          resolve(new File([blob], file.name, { type: blob.type }));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  /** Ejecuta la importación. Si no existe plantilla guardada, la guarda primero y luego ejecuta. */
   saveOrder(): void {
     if (this.orderLoading()) return;
 
@@ -490,27 +557,50 @@ export class ClientShipmentsUploadV3ViewComponent {
     this.orderLoading.set(true);
 
     const companyId = this.companyId();
-    const runExecution = (mappingId: string) =>
+    const normalizedHeadersForExecution = this.normalizeHeaders(headers);
+    console.log('[Guardar orden] Cabeceras del Excel que se envían (normalizadas, con __1/__2):', normalizedHeadersForExecution);
+
+    const runExecution = (mappingId: string, fileToSend: File) =>
       this.importsService.executeExecution({
-        file,
+        file: fileToSend,
         client_id: clientId,
         mapping_id: mappingId,
+        headers: normalizedHeadersForExecution,
         ...(companyId ? { company_id: companyId } : {}),
         skip_duplicates: true,
         run_async: true
       });
 
     const mappingId = this.mappingResult()?.mapping_id;
-    const request = mappingId
-      ? runExecution(mappingId)
-      : this.importsService.createMapping({ client_id: clientId, headers, mapping }).pipe(
+    const fileToSend$ = from(
+      this.buildExcelWithNormalizedHeaders(file, this.headerRowIndex(), normalizedHeadersForExecution)
+    );
+    const request = fileToSend$.pipe(
+      switchMap((modifiedFile) => {
+        console.log('[Guardar orden] Archivo Excel generado con cabecera reemplazada. Cabeceras en el archivo:', normalizedHeadersForExecution);
+        if (mappingId) {
+          return runExecution(mappingId, modifiedFile);
+        }
+        const normalizedMapping = this.normalizeMappingValues(mapping);
+        const payload = {
+          client_id: clientId,
+          headers: normalizedHeadersForExecution,
+          mapping: normalizedMapping
+        };
+        console.log(
+          '[Guardar orden → crear plantilla] Payload enviado al API:',
+          JSON.parse(JSON.stringify(payload))
+        );
+        return this.importsService.createMapping(payload).pipe(
           switchMap((res) => {
             const id = res?.result?.mapping_id;
             if (!id) throw new Error('No se obtuvo mapping_id');
             this.mappingResult.set(res?.result ?? null);
-            return runExecution(id);
+            return runExecution(id, modifiedFile);
           })
         );
+      })
+    );
 
     request.subscribe({
       next: (res) => {

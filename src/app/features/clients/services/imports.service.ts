@@ -14,6 +14,8 @@ export interface ImportExecutionParams {
   file: File;
   client_id: string;
   mapping_id: string;
+  /** Cabeceras normalizadas (con sufijos __1, __2 para duplicados). Opcional. */
+  headers?: string[];
   company_id?: string;
   skip_duplicates?: boolean;
   run_async?: boolean;
@@ -49,6 +51,9 @@ export class ImportsService {
     form.append('file', params.file, params.file.name);
     form.append('client_id', params.client_id);
     form.append('mapping_id', params.mapping_id);
+    if (params.headers != null && params.headers.length > 0) {
+      form.append('headers', JSON.stringify(params.headers));
+    }
     if (params.company_id != null) form.append('company_id', params.company_id);
     if (params.skip_duplicates != null) form.append('skip_duplicates', String(params.skip_duplicates));
     if (params.run_async != null) form.append('run_async', String(params.run_async));

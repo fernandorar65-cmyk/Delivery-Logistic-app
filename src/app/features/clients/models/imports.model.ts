@@ -7,6 +7,9 @@ export interface ImportMappingDetectResult {
   mapping: ImportMappingRecord;
 }
 
+/** Payload para crear/guardar plantilla. El endpoint debe persistir:
+ * - headers: cabeceras del Excel en lowercase y con trim.
+ * - mapping: solo los valores (nombres de columna Excel) en lowercase y trim; las claves son del sistema. */
 export interface ImportMappingCreateRequest {
   client_id: string;
   headers: string[];
