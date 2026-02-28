@@ -410,7 +410,7 @@ export class ClientShipmentsUploadV3ViewComponent {
         run_async: this.runAsync()
       });
 
-    const mappingId = this.mappingResult()?.mapping_id;
+    const mappingId = this.mappingResult()?.mapping_id ?? this.templateResult()?.mapping_id;
     const dateColumnNames = new Set<string>();
     for (const apiKey of DATE_API_KEYS) {
       const col = mapping[apiKey];
