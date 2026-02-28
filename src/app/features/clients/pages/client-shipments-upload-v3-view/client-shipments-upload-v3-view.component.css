@@ -454,6 +454,169 @@
   to { transform: rotate(360deg); }
 }
 
+/* Configuración de Carga: botón + dropdown */
+.upload-v3-config-wrap {
+  position: relative;
+}
+
+.upload-v3-btn--config .upload-v3-config-chevron {
+  transition: transform 0.25s ease;
+}
+
+.upload-v3-btn--config-open .upload-v3-config-chevron {
+  transform: rotate(180deg);
+}
+
+.upload-v3-btn--config-open.upload-v3-btn--secondary {
+  background: #f1f5f9;
+  border-color: var(--upload-v3-brand-blue);
+  color: var(--upload-v3-brand-blue);
+}
+
+.upload-v3-config-dropdown {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 18rem;
+  max-width: 22rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.06);
+  padding: 0.75rem 0;
+  z-index: 60;
+  animation: upload-v3-dropdownIn 0.2s ease;
+}
+
+@keyframes upload-v3-dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.upload-v3-config-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.upload-v3-config-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  transition: background 0.15s ease;
+}
+
+.upload-v3-config-option:hover {
+  background: #f8fafc;
+}
+
+.upload-v3-config-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.upload-v3-config-option-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.upload-v3-config-option-desc {
+  font-size: 0.7rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.upload-v3-toggle--standalone {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.upload-v3-config-footer {
+  padding: 0.5rem 1rem 0;
+  margin-top: 0.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.upload-v3-btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Toggles (switch con bolita) — reutilizado dentro del dropdown */
+.upload-v3-order-toggles {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  flex-wrap: wrap;
+}
+
+.upload-v3-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: clamp(0.6rem, 1.3vw, 0.7rem);
+  font-weight: 600;
+  color: #475569;
+  user-select: none;
+}
+
+.upload-v3-toggle input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-v3-toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 2.25rem;
+  height: 1.2rem;
+  background: #cbd5e1;
+  border-radius: 999px;
+  transition: background 0.25s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.upload-v3-toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease;
+}
+
+.upload-v3-toggle input:checked + .upload-v3-toggle-slider {
+  background: var(--upload-v3-brand-blue);
+}
+
+.upload-v3-toggle input:checked + .upload-v3-toggle-slider::after {
+  transform: translateX(1.05rem);
+}
+
+.upload-v3-toggle-label {
+  white-space: nowrap;
+}
+
 /* ----- Main: grid de secciones ----- */
 .upload-v3-main {
   display: flex;

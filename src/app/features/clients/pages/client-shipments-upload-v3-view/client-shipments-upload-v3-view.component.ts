@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { from, switchMap } from 'rxjs';
 import { ImportsService } from '@app/features/clients/services/imports.service';
@@ -64,6 +64,26 @@ export class ClientShipmentsUploadV3ViewComponent {
   orderLoading = signal(false);
   orderError = signal<string | null>(null);
   orderResult = signal<ImportExecutionResult | null>(null);
+
+  /** Opciones de envío (toggle junto a Guardar orden). */
+  skipDuplicates = signal(true);
+  runAsync = signal(true);
+
+  /** Dropdown Configuración de Carga (abrir/cerrar). */
+  showUploadConfigDropdown = signal(false);
+
+  @ViewChild('configDropdownWrap') configDropdownWrap?: ElementRef<HTMLElement>;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showUploadConfigDropdown()) return;
+    const wrap = this.configDropdownWrap?.nativeElement;
+    if (wrap && !wrap.contains(event.target as Node)) this.showUploadConfigDropdown.set(false);
+  }
+
+  toggleUploadConfigDropdown(): void {
+    this.showUploadConfigDropdown.update((v) => !v);
+  }
 
   showTemplateDetectedModal = signal(false);
   showHeaderErrorModal = signal(false);
@@ -386,8 +406,8 @@ export class ClientShipmentsUploadV3ViewComponent {
         mapping_id: mappingId,
         headers: normalizedHeadersForExecution,
         ...(companyId ? { company_id: companyId } : {}),
-        skip_duplicates: true,
-        run_async: true
+        skip_duplicates: this.skipDuplicates(),
+        run_async: this.runAsync()
       });
 
     const mappingId = this.mappingResult()?.mapping_id;

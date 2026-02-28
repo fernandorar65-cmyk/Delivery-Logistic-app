@@ -141,21 +141,62 @@
             <span class="material-symbols-outlined">refresh</span>
             Cambiar
           </button>
-          <button
-            type="button"
-            class="upload-v3-btn upload-v3-btn--secondary"
-            (click)="createTemplate()"
-            [disabled]="mappingLoading()"
-            title="Guardar mapeo para usarlo en futuros envíos"
-          >
-            @if (mappingLoading()) {
-              <span class="upload-v3-btn-spinner"></span>
-              Guardando...
-            } @else {
-              <span class="material-symbols-outlined">save</span>
-              Guardar plantilla
+          <div class="upload-v3-config-wrap" #configDropdownWrap>
+            <button
+              type="button"
+              class="upload-v3-btn upload-v3-btn--secondary upload-v3-btn--config"
+              [class.upload-v3-btn--config-open]="showUploadConfigDropdown()"
+              (click)="toggleUploadConfigDropdown()"
+              title="Opciones de subida y plantilla"
+            >
+              <span class="material-symbols-outlined">tune</span>
+              Configuración de Carga
+              <span class="material-symbols-outlined upload-v3-config-chevron">expand_more</span>
+            </button>
+            @if (showUploadConfigDropdown()) {
+              <div class="upload-v3-config-dropdown" (click)="$event.stopPropagation()">
+                <div class="upload-v3-config-options">
+                  <div class="upload-v3-config-option">
+                    <div class="upload-v3-config-option-text">
+                      <span class="upload-v3-config-option-title">Omitir registros duplicados</span>
+                      <span class="upload-v3-config-option-desc">Evita entradas repetidas en la importación</span>
+                    </div>
+                    <label class="upload-v3-toggle upload-v3-toggle--standalone">
+                      <input type="checkbox" [checked]="skipDuplicates()" (change)="skipDuplicates.set($any($event.target).checked)" />
+                      <span class="upload-v3-toggle-slider"></span>
+                    </label>
+                  </div>
+                  <div class="upload-v3-config-option">
+                    <div class="upload-v3-config-option-text">
+                      <span class="upload-v3-config-option-title">Procesar en segundo plano</span>
+                      <span class="upload-v3-config-option-desc">Recibe una notificación al finalizar</span>
+                    </div>
+                    <label class="upload-v3-toggle upload-v3-toggle--standalone">
+                      <input type="checkbox" [checked]="runAsync()" (change)="runAsync.set($any($event.target).checked)" />
+                      <span class="upload-v3-toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="upload-v3-config-footer">
+                  <button
+                    type="button"
+                    class="upload-v3-btn upload-v3-btn--secondary upload-v3-btn--full"
+                    (click)="createTemplate(); showUploadConfigDropdown.set(false)"
+                    [disabled]="mappingLoading()"
+                    title="Guardar mapeo para usarlo en futuros envíos"
+                  >
+                    @if (mappingLoading()) {
+                      <span class="upload-v3-btn-spinner"></span>
+                      Guardando...
+                    } @else {
+                      <span class="material-symbols-outlined">save</span>
+                      Guardar como plantilla
+                    }
+                  </button>
+                </div>
+              </div>
             }
-          </button>
+          </div>
           <button
             type="button"
             class="upload-v3-btn upload-v3-btn--primary"
