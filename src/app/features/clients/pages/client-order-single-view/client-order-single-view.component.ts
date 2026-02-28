@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, inject, NgZone, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ImportsService } from '@app/features/clients/services/imports.service';
+import { OrdersService } from '@app/features/clients/services/orders.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import type { Map, Marker } from 'leaflet';
+import type { ManualOrderCreatePayload, ManualOrderSize } from '@app/features/clients/models/manual-order.model';
 
 type StandardField = {
   id: string;
@@ -30,7 +31,7 @@ type StandardSection = {
 export class ClientOrderSingleViewComponent implements AfterViewInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
-  private importsService = inject(ImportsService);
+  private ordersService = inject(OrdersService);
   private storageService = inject(StorageService);
   private ngZone = inject(NgZone);
 
@@ -90,6 +91,7 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
         { id: 'delivery_phone', label: 'Celular (Entrega)', apiKey: 'delivery.phone' },
         { id: 'delivery_address', label: 'Dirección (Entrega)', apiKey: 'delivery.address' },
         { id: 'delivery_reference', label: 'Referencia (Entrega)', apiKey: 'delivery.reference' },
+        { id: 'delivery_country', label: 'País (Entrega)', apiKey: 'delivery.country' },
         { id: 'delivery_district', label: 'Distrito (Entrega)', apiKey: 'delivery.district' },
         { id: 'delivery_province', label: 'Provincia (Entrega)', apiKey: 'delivery.province' },
         { id: 'delivery_department', label: 'Departamento (Entrega)', apiKey: 'delivery.department' }
@@ -230,7 +232,36 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
     return map[sectionId] ?? sectionId;
   }
 
-  private readonly requiredApiKeys = ['order.tracking_number', 'order.request_date', 'pickup.address', 'delivery.address'];
+  private readonly requiredApiKeys = [
+    'order.tracking_number',
+    'order.request_date',
+    'pickup.contact_name',
+    'pickup.contact_phone',
+    'pickup.address',
+    'pickup.reference',
+    'pickup.country',
+    'pickup.department',
+    'pickup.province',
+    'pickup.district',
+    'delivery.contact_name',
+    'delivery.contact_phone',
+    'delivery.address',
+    'delivery.reference',
+    'delivery.country',
+    'delivery.department',
+    'delivery.province',
+    'delivery.district',
+    'package.description',
+    'package.quantity',
+    'package.size',
+    'package.weight',
+    'package.height',
+    'package.width',
+    'package.length'
+  ];
+
+  /** Tamaños válidos para el API (POST /orders/). */
+  readonly packageSizes: ManualOrderSize[] = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'CUSTOM'];
 
   isRequiredField(apiKey: string): boolean {
     return this.requiredApiKeys.includes(apiKey);
@@ -272,9 +303,111 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
     const fullIds = [
       'pickup_company', 'pickup_address', 'pickup_reference',
       'delivery_company', 'delivery_address', 'delivery_reference',
+      'delivery_country',
       'package_description', 'package_notes'
     ];
     return fullIds.includes(field.id);
+  }
+
+  /** Convierte valor de input time (HH:MM o HH:MM:SS) a HH:MM. */
+  private toHHMM(value: unknown): string {
+    const s = (value ?? '').toString().trim();
+    const match = s.match(/^(\d{1,2}):(\d{2})/);
+    if (match) return `${match[1].padStart(2, '0')}:${match[2]}`;
+    return '00:00';
+  }
+
+  /** Convierte fecha YYYY-MM-DD + hora opcional a ISO datetime. */
+  private toISODateTime(dateStr: string, timeHHMM: string = '00:00'): string {
+    if (!dateStr || !dateStr.trim()) return '';
+    const [h, m] = timeHHMM.split(':').map(x => x.padStart(2, '0'));
+    return `${dateStr.trim()}T${h}:${m}:00Z`;
+  }
+
+  private buildPayload(): ManualOrderCreatePayload | null {
+    const raw = this.form.getRawValue() as Record<string, unknown>;
+    const get = (key: string): string => (raw[key] != null && String(raw[key]).trim() !== '') ? String(raw[key]).trim() : '';
+    const companyId = this.companyId();
+    const clientId = this.storageService.getItem(LocalStorageEnums.ID);
+    if (!companyId || !clientId) return null;
+
+    const requestDate = get('order_request_date');
+    const pickupDate = get('pickup_date');
+    const fromTime = this.toHHMM(raw['pickup_start_time']);
+    const toTime = this.toHHMM(raw['pickup_end_time']);
+
+    const pickup: ManualOrderCreatePayload['pickup'] = {
+      contact_name: get('pickup_contact'),
+      contact_phone: get('pickup_phone'),
+      address: get('pickup_address'),
+      reference: get('pickup_reference'),
+      country: get('pickup_country'),
+      department: get('pickup_department'),
+      province: get('pickup_province'),
+      district: get('pickup_district')
+    };
+    const latPickup = get('pickup_latitude');
+    const lngPickup = get('pickup_longitude');
+    if (latPickup && lngPickup) {
+      pickup.latitude = latPickup;
+      pickup.longitude = lngPickup;
+    }
+
+    const delivery: ManualOrderCreatePayload['delivery'] = {
+      contact_name: get('delivery_contact'),
+      contact_phone: get('delivery_phone'),
+      address: get('delivery_address'),
+      reference: get('delivery_reference'),
+      country: get('delivery_country'),
+      department: get('delivery_department'),
+      province: get('delivery_province'),
+      district: get('delivery_district')
+    };
+    const latDel = get('delivery_latitude');
+    const lngDel = get('delivery_longitude');
+    if (latDel && lngDel) {
+      delivery.latitude = latDel;
+      delivery.longitude = lngDel;
+    }
+
+    const sizeRaw = get('package_size').toUpperCase();
+    const validSizes: ManualOrderSize[] = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'CUSTOM'];
+    const size: ManualOrderSize = validSizes.includes(sizeRaw as ManualOrderSize) ? (sizeRaw as ManualOrderSize) : 'M';
+
+    const qty = Math.max(1, parseInt(get('package_qty') || '1', 10));
+    const weight = get('package_weight') || '1';
+    const height = get('package_height') || '1';
+    const width = get('package_width') || '1';
+    const length = get('package_depth') || '1';
+
+    const pkg: ManualOrderCreatePayload['packages'][0] = {
+      description: get('package_description') || 'Paquete',
+      quantity: qty,
+      size,
+      weight_kg: weight,
+      height_cm: height,
+      width_cm: width,
+      length_cm: length
+    };
+    const vol = get('package_volumetric');
+    const m3 = get('package_m3');
+    if (vol) pkg.volumetric_weight = vol;
+    if (m3) pkg.m3 = m3;
+
+    return {
+      company_id: companyId,
+      client_id: clientId,
+      tracking_number: get('order_tracking_number'),
+      request_date: this.toISODateTime(requestDate, '00:00'),
+      pickup_date: this.toISODateTime(pickupDate, fromTime),
+      pickup_date_from: fromTime,
+      pickup_date_to: toTime,
+      estimated_value: get('package_value') || '0',
+      observations: get('package_notes') || undefined,
+      pickup,
+      delivery,
+      packages: [pkg]
+    };
   }
 
   onSubmit(): void {
@@ -285,31 +418,39 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
       this.submitError.set('Debes iniciar sesión.');
       return;
     }
-
-    const raw = this.form.getRawValue() as Record<string, unknown>;
-    const order: Record<string, string> = {};
-    for (const formKey of Object.keys(raw)) {
-      const apiKey = this.formKeyToApiKey(formKey);
-      if (!apiKey) continue;
-      const v = raw[formKey];
-      if (v != null && String(v).trim() !== '') {
-        order[apiKey] = String(v).trim();
-      }
+    const companyId = this.companyId();
+    if (!companyId) {
+      this.submitError.set('Falta la compañía. Entra desde Mis Compañías y haz clic en "Ingreso manual".');
+      return;
     }
 
-    const required: string[] = ['order.tracking_number', 'order.request_date', 'pickup.address', 'delivery.address'];
-    const missing = required.filter(k => !order[k]);
-    if (missing.length) {
-      this.submitError.set('Completa los campos obligatorios: N° de guía, Fecha de solicitud, Dirección de recojo y Dirección de entrega.');
+    const payload = this.buildPayload();
+    if (!payload) {
+      this.submitError.set('Faltan datos obligatorios.');
+      return;
+    }
+
+    const required: (keyof ManualOrderCreatePayload)[] = ['tracking_number', 'request_date', 'pickup_date_from', 'pickup_date_to'];
+    for (const key of required) {
+      if (!payload[key] || String(payload[key]).trim() === '') {
+        this.submitError.set('Completa todos los campos obligatorios: N° de guía, Fecha de solicitud, Fecha y horario de recojo, direcciones y paquete.');
+        return;
+      }
+    }
+    const stopKeys: (keyof ManualOrderCreatePayload['pickup'])[] = ['contact_name', 'contact_phone', 'address', 'reference', 'country', 'department', 'province', 'district'];
+    for (const key of stopKeys) {
+      if (!payload.pickup[key]?.trim() || !payload.delivery[key]?.trim()) {
+        this.submitError.set('Completa todos los campos obligatorios de recojo y entrega (contacto, dirección, país, departamento, provincia, distrito).');
+        return;
+      }
+    }
+    if (!payload.packages.length || !payload.packages[0].description?.trim()) {
+      this.submitError.set('Completa los datos del paquete (descripción, cantidad, tamaño, peso y dimensiones).');
       return;
     }
 
     this.submitLoading.set(true);
-    this.importsService.createSingleOrder({
-      client_id: clientId,
-      company_id: this.companyId() ?? undefined,
-      order
-    }).subscribe({
+    this.ordersService.createOrder(payload).subscribe({
       next: () => {
         this.submitLoading.set(false);
         this.submitSuccess.set(true);
@@ -317,7 +458,10 @@ export class ClientOrderSingleViewComponent implements AfterViewInit {
       },
       error: (err) => {
         this.submitLoading.set(false);
-        const msg = err?.error?.errors?.[0] ?? err?.message ?? 'No se pudo crear la orden.';
+        const errors = err?.error?.errors;
+        const msg = Array.isArray(errors) && errors.length > 0
+          ? (errors[0]?.detail ?? errors[0]?.code ?? JSON.stringify(errors[0]))
+          : err?.message ?? 'No se pudo crear la orden.';
         this.submitError.set(typeof msg === 'string' ? msg : 'Error al guardar.');
       }
     });

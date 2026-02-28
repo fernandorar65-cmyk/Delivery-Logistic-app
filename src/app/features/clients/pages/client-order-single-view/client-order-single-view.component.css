@@ -740,6 +740,11 @@
   margin: 0;
 }
 
+.single-order-select {
+  cursor: pointer;
+  appearance: auto;
+}
+
 /* Footer fijo abajo para que el CTA siempre sea visible */
 .single-order-footer {
   position: sticky;

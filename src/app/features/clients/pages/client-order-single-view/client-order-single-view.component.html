@@ -154,14 +154,28 @@
                       <span class="single-order-required" aria-label="Obligatorio">*</span>
                     }
                   </label>
-                  <input
-                    [id]="'field-' + field.id"
-                    [type]="getInputType(field)"
-                    class="single-order-input"
-                    [formControlName]="field.id"
-                    [placeholder]="field.label"
-                    [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
-                  />
+                  @if (field.apiKey === 'package.size') {
+                    <select
+                      [id]="'field-' + field.id"
+                      class="single-order-input single-order-select"
+                      [formControlName]="field.id"
+                      [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                    >
+                      <option value="">Seleccione tamaño</option>
+                      @for (sz of packageSizes; track sz) {
+                        <option [value]="sz">{{ sz }}</option>
+                      }
+                    </select>
+                  } @else {
+                    <input
+                      [id]="'field-' + field.id"
+                      [type]="getInputType(field)"
+                      class="single-order-input"
+                      [formControlName]="field.id"
+                      [placeholder]="field.label"
+                      [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                    />
+                  }
                 </div>
               }
             </div>
