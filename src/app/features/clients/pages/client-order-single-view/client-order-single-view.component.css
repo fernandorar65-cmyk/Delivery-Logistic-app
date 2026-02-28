@@ -118,6 +118,13 @@
   gap: 0.75rem;
   flex: 1;
   max-width: 10rem;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
 }
 
 .wizard-stepper-circle {
@@ -743,6 +750,104 @@
 .single-order-select {
   cursor: pointer;
   appearance: auto;
+}
+
+/* Dropdown custom (mismo diseño que subida masiva Excel) */
+.single-order-select-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.single-order-custom-select {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+}
+
+.single-order-custom-select:hover {
+  border-color: #cbd5e1;
+}
+
+.single-order-custom-select .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: #94a3b8;
+}
+
+.single-order-select-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  min-width: 100%;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+  padding: 0.4rem;
+  z-index: 20;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.single-order-select-search {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  margin-bottom: 0.35rem;
+  box-sizing: border-box;
+}
+
+.single-order-select-search:focus {
+  border-color: var(--single-order-brand);
+  box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.15);
+}
+
+.single-order-select-option {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.single-order-select-option:hover {
+  background: rgba(19, 127, 236, 0.1);
+  color: #1d4ed8;
+}
+
+.single-order-select-option--active {
+  background: var(--single-order-brand);
+  color: #fff;
+}
+
+.single-order-select-empty {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
 /* Footer fijo abajo para que el CTA siempre sea visible */

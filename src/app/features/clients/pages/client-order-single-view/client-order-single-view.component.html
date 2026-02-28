@@ -25,7 +25,14 @@
     <div class="wizard-stepper-line wizard-stepper-line--bg"></div>
     <div class="wizard-stepper-line wizard-stepper-line--fill" [style.width.%]="((currentStep() - 1) / (totalSteps - 1)) * 100"></div>
     @for (step of [1, 2, 3]; track step) {
-      <div class="wizard-stepper-step" [class.wizard-stepper-step--current]="currentStep() === step" [class.wizard-stepper-step--completed]="isStepCompleted(step)">
+      <button
+        type="button"
+        class="wizard-stepper-step"
+        [class.wizard-stepper-step--current]="currentStep() === step"
+        [class.wizard-stepper-step--completed]="isStepCompleted(step)"
+        (click)="goToStep(step)"
+        [attr.aria-current]="currentStep() === step ? 'step' : null"
+      >
         <div class="wizard-stepper-circle">
           @if (isStepCompleted(step)) {
             <span class="material-symbols-outlined wizard-stepper-check">check</span>
@@ -34,7 +41,7 @@
           }
         </div>
         <span class="wizard-stepper-label">{{ stepLabels[step - 1] }}</span>
-      </div>
+      </button>
     }
   </div>
 
@@ -58,14 +65,55 @@
                       <span class="single-order-required" aria-label="Obligatorio">*</span>
                     }
                   </label>
-                  <input
-                    [id]="'field-' + field.id"
-                    [type]="getInputType(field)"
-                    class="single-order-input"
-                    [formControlName]="field.id"
-                    [placeholder]="field.label"
-                    [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
-                  />
+                  @if (isLocationDropdown(field.apiKey)) {
+                    <div class="single-order-select-wrap" (click)="$event.stopPropagation()">
+                      <button
+                        type="button"
+                        class="single-order-custom-select"
+                        (click)="toggleLocationSelect(field.id)"
+                        [attr.aria-expanded]="isLocationSelectOpen(field.id)"
+                        [attr.aria-haspopup]="'listbox'"
+                        [id]="'field-' + field.id"
+                      >
+                        <span>{{ getLocationSelectedLabel(field.id, field.apiKey) }}</span>
+                        <span class="material-symbols-outlined">expand_more</span>
+                      </button>
+                      @if (isLocationSelectOpen(field.id)) {
+                        <div class="single-order-select-menu">
+                          <input
+                            type="text"
+                            class="single-order-select-search"
+                            placeholder="Buscar..."
+                            [id]="'location-search-' + field.id"
+                            [value]="getLocationSearchValue(field.id)"
+                            (input)="setLocationSearchValue(field.id, $any($event.target).value)"
+                            (click)="$event.stopPropagation()"
+                          />
+                          @for (opt of getFilteredLocationOptions(field.id, field.apiKey); track opt.value) {
+                            <button
+                              type="button"
+                              class="single-order-select-option"
+                              [class.single-order-select-option--active]="form.get(field.id)?.value === opt.value"
+                              (click)="selectLocationOption(field.id, opt.value); $event.stopPropagation()"
+                            >
+                              {{ opt.label }}
+                            </button>
+                          } @empty {
+                            <div class="single-order-select-empty">Sin coincidencias</div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <input
+                      [id]="'field-' + field.id"
+                      [type]="getInputType(field)"
+                      class="single-order-input"
+                      [formControlName]="field.id"
+                      [placeholder]="field.label"
+                      [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                    />
+                  }
                 </div>
               }
             </div>
@@ -104,14 +152,55 @@
                       <span class="single-order-required" aria-label="Obligatorio">*</span>
                     }
                   </label>
-                  <input
-                    [id]="'field-' + field.id"
-                    [type]="getInputType(field)"
-                    class="single-order-input"
-                    [formControlName]="field.id"
-                    [placeholder]="field.label"
-                    [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
-                  />
+                  @if (isLocationDropdown(field.apiKey)) {
+                    <div class="single-order-select-wrap" (click)="$event.stopPropagation()">
+                      <button
+                        type="button"
+                        class="single-order-custom-select"
+                        (click)="toggleLocationSelect(field.id)"
+                        [attr.aria-expanded]="isLocationSelectOpen(field.id)"
+                        [attr.aria-haspopup]="'listbox'"
+                        [id]="'field-' + field.id"
+                      >
+                        <span>{{ getLocationSelectedLabel(field.id, field.apiKey) }}</span>
+                        <span class="material-symbols-outlined">expand_more</span>
+                      </button>
+                      @if (isLocationSelectOpen(field.id)) {
+                        <div class="single-order-select-menu">
+                          <input
+                            type="text"
+                            class="single-order-select-search"
+                            placeholder="Buscar..."
+                            [id]="'location-search-' + field.id"
+                            [value]="getLocationSearchValue(field.id)"
+                            (input)="setLocationSearchValue(field.id, $any($event.target).value)"
+                            (click)="$event.stopPropagation()"
+                          />
+                          @for (opt of getFilteredLocationOptions(field.id, field.apiKey); track opt.value) {
+                            <button
+                              type="button"
+                              class="single-order-select-option"
+                              [class.single-order-select-option--active]="form.get(field.id)?.value === opt.value"
+                              (click)="selectLocationOption(field.id, opt.value); $event.stopPropagation()"
+                            >
+                              {{ opt.label }}
+                            </button>
+                          } @empty {
+                            <div class="single-order-select-empty">Sin coincidencias</div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <input
+                      [id]="'field-' + field.id"
+                      [type]="getInputType(field)"
+                      class="single-order-input"
+                      [formControlName]="field.id"
+                      [placeholder]="field.label"
+                      [attr.aria-required]="isRequiredField(field.apiKey) ? 'true' : null"
+                    />
+                  }
                 </div>
               }
             </div>
