@@ -1,0 +1,28 @@
+<div class="stats-grid">
+  @for (stat of stats; track stat.label) {
+    <div class="stat-card" [class]="stat.iconColor ? 'stat-' + stat.iconColor : ''">
+      <div class="stat-header">
+        <p class="stat-label">{{ stat.label }}</p>
+        @if (stat.icon) {
+          <div class="stat-icon" [class]="'icon-' + (stat.iconColor || 'gray')">
+            <app-hero-icon [name]="stat.icon" [size]="20"></app-hero-icon>
+          </div>
+        }
+      </div>
+      <div class="stat-content">
+        <p class="stat-value">{{ stat.value }}</p>
+        @if (stat.subtitle) {
+          <p class="stat-subtitle" [class.trend-up]="stat.trend === 'up'" [class.trend-down]="stat.trend === 'down'">
+            @if (stat.trend === 'up') {
+              <app-hero-icon name="arrow-trending-up" [size]="14"></app-hero-icon>
+            }
+            @if (stat.trend === 'down') {
+              <app-hero-icon name="arrow-trending-down" [size]="14"></app-hero-icon>
+            }
+            {{ stat.trendValue ?? stat.subtitle }}
+          </p>
+        }
+      </div>
+    </div>
+  }
+</div>

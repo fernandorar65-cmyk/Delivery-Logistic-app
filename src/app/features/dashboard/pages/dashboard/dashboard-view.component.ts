@@ -156,9 +156,12 @@ export class DashboardViewComponent {
       return;
     }
     const result = response?.result ?? null;
-    if (result?.id) {
-      this.storageService.setItem(LocalStorageEnums.USER_ID, result.user_id);
-      this.storageService.setItem(LocalStorageEnums.ID, result.id);
+    if (!result) return;
+    const entityId =
+      result.id ?? result.client_id ?? result.company_id ?? result.provider_id ?? null;
+    if (entityId != null) {
+      this.storageService.setItem(LocalStorageEnums.USER_ID, result.user_id ?? '');
+      this.storageService.setItem(LocalStorageEnums.ID, String(entityId));
     }
     if (result?.user_type) {
       this.storageService.setItem(LocalStorageEnums.USER_TYPE, result.user_type);
