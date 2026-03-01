@@ -1,58 +1,11 @@
 <div class="app-container">
-  <!-- Header Superior -->
-  <header class="top-header">
-    <div class="header-left">
-      <div class="logo-container">
-        <div class="logo-icon">P</div>
-        <span class="logo-text">{{ title() }}</span>
-      </div>
-    </div>
-
-    <div class="header-center">
-      <div class="search-container">
-        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-        <input type="text" placeholder="Buscar pedido, chofer o cliente..." class="search-input">
-      </div>
-    </div>
-
-    <div class="header-right">
-      <app-match-requests-panel *ngIf="canAccess([UserTypes.PROVIDER, UserTypes.CLIENT])"></app-match-requests-panel>
-      <button class="icon-button" title="Ayuda">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-          <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-      </button>
-      <button class="icon-button logout-button" title="Cerrar Sesión" (click)="logout()">
-        <app-hero-icon name="arrow-right-on-rectangle" [size]="20"></app-hero-icon>
-      </button>
-      <div class="user-menu">
-        <div class="user-avatar">A</div>
-        <div class="user-info">
-          <span class="user-name">{{ userEmail() || 'Usuario' }}</span>
-          <span class="user-role">{{ getRoleLabel() }}</span>
-        </div>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </div>
-    </div>
-  </header>
-
   <div class="layout-body">
-    <!-- Sidebar de Navegación -->
+    <!-- Sidebar de Navegación (estilo Diamond: colapsado, se extiende al hover) -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <span>Menú Principal</span>
+          <div class="sidebar-logo-icon">P</div>
+          <span class="sidebar-title-text">Menú Principal</span>
         </div>
       </div>
 
@@ -64,7 +17,7 @@
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
-          <span>Panel de Control</span>
+          <span class="nav-item-label">Panel de Control</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.ADMIN, UserTypes.COMPANY, UserTypes.PROVIDER, UserTypes.CLIENT])" routerLink="/orders" routerLinkActive="active"
@@ -74,7 +27,7 @@
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
             <line x1="12" y1="22.08" x2="12" y2="12"></line>
           </svg>
-          <span>Órdenes</span>
+          <span class="nav-item-label">Órdenes</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.ADMIN, UserTypes.COMPANY])" routerLink="/clients" routerLinkActive="active"
@@ -85,7 +38,7 @@
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
-          <span>Clientes</span>
+          <span class="nav-item-label">Clientes</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.COMPANY])" routerLink="/companies/status-groups" routerLinkActive="active"
@@ -94,7 +47,7 @@
             <path d="M9 12.75 11.25 15 15 9.75"></path>
             <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
           </svg>
-          <span>Grupos de Estados</span>
+          <span class="nav-item-label">Grupos de Estados</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.ADMIN, UserTypes.COMPANY])" routerLink="/providers" routerLinkActive="active"
@@ -104,7 +57,7 @@
             <path d="M2 17l10 5 10-5"></path>
             <path d="M2 12l10 5 10-5"></path>
           </svg>
-          <span>Providers</span>
+          <span class="nav-item-label">Providers</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.PROVIDER])" [routerLink]="['/providers', userId(), 'vehicles']"
@@ -116,7 +69,7 @@
             <circle cx="7.5" cy="17.5" r="2.5"></circle>
             <circle cx="17.5" cy="17.5" r="2.5"></circle>
           </svg>
-          <span>Mis Vehículos</span>
+          <span class="nav-item-label">Mis Vehículos</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.ADMIN, UserTypes.PROVIDER])" routerLink="/providers/orders" routerLinkActive="active"
@@ -127,7 +80,7 @@
             <path d="M7 11h6"></path>
             <path d="M7 15h4"></path>
           </svg>
-          <span>Pedidos</span>
+          <span class="nav-item-label">Pedidos</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.PROVIDER])" routerLink="/providers/companies" routerLinkActive="active"
@@ -141,7 +94,7 @@
             <path d="M14 12h3"></path>
             <path d="M14 16h3"></path>
           </svg>
-          <span>Empresas</span>
+          <span class="nav-item-label">Empresas</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.PROVIDER])" [routerLink]="['/providers','usuarios-internos']" routerLinkActive="active"
@@ -152,7 +105,7 @@
             <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
-          <span>Usuarios Internos</span>
+          <span class="nav-item-label">Usuarios Internos</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.COMPANY]) && userId()" [routerLink]="['/companies', userId(), 'usuarios-internos']"
@@ -163,7 +116,7 @@
             <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
-          <span>Usuarios Internos</span>
+          <span class="nav-item-label">Usuarios Internos</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.CLIENT]) && userId()" [routerLink]="['/clients', userId(), 'usuarios-internos']"
@@ -174,7 +127,7 @@
             <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
-          <span>Usuarios Internos</span>
+          <span class="nav-item-label">Usuarios Internos</span>
         </a>
 
         <a *ngIf="canAccess([UserTypes.CLIENT])" routerLink="/clients/companies" routerLinkActive="active"
@@ -188,7 +141,7 @@
             <path d="M14 12h3"></path>
             <path d="M14 16h3"></path>
           </svg>
-          <span>Mis Compañías</span>
+          <span class="nav-item-label">Mis Compañías</span>
         </a>
 
         <!-- Subir Orden se accede desde la sección Companies (botón por empresa) -->
@@ -200,7 +153,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          <span>Subir Orden</span>
+          <span class="nav-item-label">Subir Orden</span>
         </a>
         -->
 
@@ -212,15 +165,60 @@
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
-          <span>Empresas (check)</span>
+          <span class="nav-item-label">Empresas (check)</span>
         </a>
 
       </nav>
     </aside>
 
-    <!-- Contenido Principal -->
-    <main class="main-content">
-      <router-outlet />
-    </main>
+    <!-- Área de contenido: header + contenido principal (el toolbar no ocupa todo el ancho de la web) -->
+    <div class="content-area">
+      <header class="top-header">
+        <div class="header-left">
+          <div class="logo-container">
+            <div class="logo-icon">P</div>
+            <span class="logo-text">{{ title() }}</span>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <div class="search-container">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" placeholder="Buscar pedido, chofer o cliente..." class="search-input">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <app-match-requests-panel *ngIf="canAccess([UserTypes.PROVIDER, UserTypes.CLIENT])"></app-match-requests-panel>
+          <button class="icon-button" title="Ayuda">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+          <button class="icon-button logout-button" title="Cerrar Sesión" (click)="logout()">
+            <app-hero-icon name="arrow-right-on-rectangle" [size]="20"></app-hero-icon>
+          </button>
+          <div class="user-menu">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <span class="user-name">{{ userEmail() || 'Usuario' }}</span>
+              <span class="user-role">{{ getRoleLabel() }}</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <router-outlet />
+      </main>
+    </div>
   </div>
 </div>

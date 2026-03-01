@@ -1,10 +1,10 @@
-/* Variables alineadas con formv3 */
+/* Variables alineadas con PrimeNG Diamond / design tokens */
 :host {
-  --upload-v3-bg-main: #f8fafc;
-  --upload-v3-brand-blue: #2563eb;
-  --upload-v3-slate-blue: #64748b;
-  --upload-v3-soft-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
-  --upload-v3-deep-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --upload-v3-bg-main: var(--p-surface-ground);
+  --upload-v3-brand-blue: var(--p-primary-color);
+  --upload-v3-slate-blue: var(--p-text-color-secondary);
+  --upload-v3-soft-shadow: var(--p-shadow);
+  --upload-v3-deep-shadow: var(--p-shadow-md);
 }
 
 .upload-v3-page {

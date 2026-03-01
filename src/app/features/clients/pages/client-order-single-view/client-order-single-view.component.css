@@ -1,9 +1,9 @@
 :host {
-  --single-order-bg: #f6f7f8;
-  --single-order-brand: #137fec;
-  --single-order-slate: #64748b;
-  --single-order-soft-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
-  --single-order-deep-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+  --single-order-bg: var(--p-surface-ground);
+  --single-order-brand: var(--p-primary-color);
+  --single-order-slate: var(--p-text-color-secondary);
+  --single-order-soft-shadow: var(--p-shadow);
+  --single-order-deep-shadow: var(--p-shadow-lg);
 }
 
 .single-order-page {
