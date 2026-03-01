@@ -6,7 +6,8 @@ import {
   InternalUserCreate,
   InternalUserListResponse,
   InternalUserOwnerType,
-  InternalUserResponse
+  InternalUserResponse,
+  InternalUserUpdate
 } from '@app/features/internal-users/models/internal-user.model';
 
 @Injectable({
@@ -22,6 +23,15 @@ export class InternalUsersService {
 
   create(ownerType: InternalUserOwnerType, ownerId: string, payload: InternalUserCreate): Observable<InternalUserResponse> {
     return this.http.post<InternalUserResponse>(`${this.getBasePath(ownerType, ownerId)}/`, payload);
+  }
+
+  update(
+    ownerType: InternalUserOwnerType,
+    ownerId: string,
+    userId: string,
+    payload: InternalUserUpdate
+  ): Observable<InternalUserResponse> {
+    return this.http.patch<InternalUserResponse>(`${this.getBasePath(ownerType, ownerId)}/${userId}/`, payload);
   }
 
   remove(ownerType: InternalUserOwnerType, ownerId: string, userId: string): Observable<void> {

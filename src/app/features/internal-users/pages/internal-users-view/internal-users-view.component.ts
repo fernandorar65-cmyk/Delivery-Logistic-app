@@ -6,7 +6,8 @@ import { finalize } from 'rxjs';
 import {
   InternalUser,
   InternalUserCreate,
-  InternalUserOwnerType
+  InternalUserOwnerType,
+  InternalUserUpdate
 } from '@app/features/internal-users/models/internal-user.model';
 import { InternalUsersService } from '@app/features/internal-users/services/internal-users.service';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
@@ -40,6 +41,8 @@ export class InternalUsersViewComponent implements OnInit {
   modalOpen = signal(false);
   formLoading = signal(false);
   formError = signal<string | null>(null);
+  /** Usuario en edición; si es distinto de null, el modal está en modo edición. */
+  editTargetUser = signal<InternalUser | null>(null);
   deleteConfirmOpen = signal(false);
   deleteTargetUser = signal<InternalUser | null>(null);
   deleteError = signal<string | null>(null);
@@ -134,13 +137,28 @@ export class InternalUsersViewComponent implements OnInit {
   }
 
   openCreate(): void {
+    this.editTargetUser.set(null);
     this.formError.set(null);
     this.userForm.reset();
     this.modalOpen.set(true);
   }
 
+  openEdit(user: InternalUser): void {
+    if (!user?.id) return;
+    this.editTargetUser.set(user);
+    this.formError.set(null);
+    this.userForm.patchValue({
+      email: this.getUserEmail(user),
+      first_name: user.user?.first_name ?? user.first_name ?? '',
+      last_name: user.user?.last_name ?? user.last_name ?? '',
+      password: ''
+    });
+    this.modalOpen.set(true);
+  }
+
   closeModal(): void {
     this.modalOpen.set(false);
+    this.editTargetUser.set(null);
     this.formError.set(null);
   }
 
@@ -166,6 +184,32 @@ export class InternalUsersViewComponent implements OnInit {
 
     this.formLoading.set(true);
     this.formError.set(null);
+
+    const editingUser = this.editTargetUser();
+    if (editingUser?.id) {
+      const updatePayload: InternalUserUpdate = {
+        ...payloadBase
+      };
+      if (formValue.password && String(formValue.password).trim()) {
+        updatePayload.password = formValue.password.trim();
+      }
+      this.usersService.update(ownerType, ownerId, String(editingUser.id), updatePayload)
+        .pipe(finalize(() => this.formLoading.set(false)))
+        .subscribe({
+          next: (response) => {
+            if (hasApiErrors(response)) {
+              this.formError.set(formatApiErrors(response.errors));
+              return;
+            }
+            this.closeModal();
+            this.loadUsers();
+          },
+          error: (err) => {
+            this.formError.set(formatApiErrors(err?.error?.errors ?? err?.errors ?? err?.message));
+          }
+        });
+      return;
+    }
 
     const createPayload: InternalUserCreate = {
       ...payloadBase,

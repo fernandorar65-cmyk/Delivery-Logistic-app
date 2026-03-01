@@ -1,6 +1,5 @@
 <div class="dashboard-container">
-
-  <!-- Cards de Métricas -->
+  <!-- Fila 1: 4 cards de métricas -->
   <app-dashboard-metrics
     [totalShipments]="totalShipments()"
     [totalShipmentsChange]="totalShipmentsChange()"
@@ -11,33 +10,82 @@
     [activeIncidentsChange]="activeIncidentsChange()"
   ></app-dashboard-metrics>
 
-  <!-- Gestión de Envíos -->
-  <div class="shipments-section">
-    <app-dashboard-shipments-header></app-dashboard-shipments-header>
+  <!-- Fila 2: Gráficos (Resumen ingresos + Ventas por categoría) -->
+  <div class="dashboard-charts">
+    <p-card styleClass="shadow-2">
+      <ng-template #header>
+        <div class="flex justify-content-between align-items-center w-full">
+          <span class="font-semibold text-lg">Resumen de ingresos</span>
+          <p-select [options]="periodOptions" optionLabel="label" [(ngModel)]="selectedPeriod" [style]="{ width: '8rem' }" />
+        </div>
+      </ng-template>
+      <p-chart type="bar" [data]="revenueChartData" [options]="revenueChartOptions" />
+    </p-card>
+    <p-card styleClass="shadow-2">
+      <ng-template #header>
+        <div class="flex justify-content-between align-items-center w-full">
+          <span class="font-semibold text-lg">Ventas por categoría</span>
+          <p-button icon="pi pi-cog" [rounded]="true" [text]="true" pTooltip="Opciones" />
+        </div>
+      </ng-template>
+      <p-chart type="pie" [data]="categoryChartData" [options]="categoryChartOptions" />
+    </p-card>
+  </div>
 
-    <!-- Tabs -->
-    <app-dashboard-shipments-tabs
-      [activeTab]="activeTab()"
-      [incidentsCount]="getIncidentsCount()"
-      (tabChange)="setActiveTab($event)"
-    ></app-dashboard-shipments-tabs>
-
-    <!-- Tabla de Envíos -->
-    <app-dashboard-shipments-table
-      [shipments]="getFilteredShipments()"
-      [loading]="loading()"
-    ></app-dashboard-shipments-table>
-
-    <!-- Paginación -->
-    <app-pagination
-      [totalItems]="totalShipmentsCount()"
-      [currentPage]="currentPage()"
-      [pageSize]="5"
-      itemLabel="envío"
-      itemLabelPlural="envíos"
-      (previous)="goToPreviousPage()"
-      (next)="goToNextPage()"
-    ></app-pagination>
+  <!-- Fila 3: Tabla Envíos recientes + Panel Destacados -->
+  <div class="dashboard-bottom">
+    <div class="shipments-section">
+      <div class="section-header mb-3">
+        <h2 class="text-xl font-semibold m-0">Envíos recientes</h2>
+        <p class="text-color-secondary text-sm m-0 mt-1">Últimos envíos y estado.</p>
+      </div>
+      <p-toolbar styleClass="border-none p-0 mb-3">
+        <ng-template #start>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-search" />
+            <input type="text" pInputText placeholder="Buscar..." class="w-full" style="min-width: 14rem" />
+          </p-iconField>
+        </ng-template>
+        <ng-template #end>
+          <p-button icon="pi pi-filter" label="Filtros" severity="secondary" [outlined]="true" />
+          <p-button icon="pi pi-upload" [rounded]="true" [text]="true" pTooltip="Exportar" />
+        </ng-template>
+      </p-toolbar>
+      <app-dashboard-shipments-tabs
+        [activeTab]="activeTab()"
+        [incidentsCount]="getIncidentsCount()"
+        (tabChange)="setActiveTab($event)"
+      ></app-dashboard-shipments-tabs>
+      <app-dashboard-shipments-table
+        [shipments]="getFilteredShipments()"
+        [loading]="loading()"
+      ></app-dashboard-shipments-table>
+      <app-pagination
+        [totalItems]="totalShipmentsCount()"
+        [currentPage]="currentPage()"
+        [pageSize]="5"
+        itemLabel="envío"
+        itemLabelPlural="envíos"
+        (previous)="goToPreviousPage()"
+        (next)="goToNextPage()"
+      ></app-pagination>
+    </div>
+    <p-card styleClass="shadow-2 top-products">
+      <ng-template #header>
+        <span class="font-semibold text-lg">Destacados</span>
+      </ng-template>
+      <ul class="top-products-list">
+        @for (item of topProducts(); track item.name) {
+          <li class="flex align-items-center gap-2 py-2 border-bottom-1 surface-border">
+            <p-avatar [label]="item.initials" shape="circle" styleClass="bg-primary" [style]="{ width: '2.5rem', height: '2.5rem' }" />
+            <div class="flex-1">
+              <div class="font-medium">{{ item.name }}</div>
+              <div class="text-sm text-color-secondary">{{ item.detail }}</div>
+            </div>
+            <span class="font-semibold text-primary">{{ item.value }}</span>
+          </li>
+        }
+      </ul>
+    </p-card>
   </div>
 </div>
-

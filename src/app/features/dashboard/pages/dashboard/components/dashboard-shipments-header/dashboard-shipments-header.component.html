@@ -1,16 +1,17 @@
-<div class="shipments-header">
-  <div>
-    <h2 class="shipments-title">Gestión de Envíos</h2>
-    <p class="shipments-subtitle">Visualiza y gestiona el estado de todos los pedidos.</p>
-  </div>
-  <div class="shipments-actions">
-    <button class="btn btn-secondary">
-      <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
-      Filtros
-    </button>
-    <button class="btn btn-primary" type="button" disabled title="Próximamente">
-      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
-      Nuevo Envío
-    </button>
-  </div>
+<div class="section-header mb-3">
+  <h2 class="text-xl font-semibold m-0">Gestión de Envíos</h2>
+  <p class="text-color-secondary text-sm m-0 mt-1">Visualiza y gestiona el estado de todos los pedidos.</p>
 </div>
+<p-toolbar styleClass="border-none p-0 mb-3">
+  <ng-template #start>
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Buscar envíos..." class="w-full" style="min-width: 14rem" />
+    </p-iconField>
+  </ng-template>
+  <ng-template #end>
+    <p-button icon="pi pi-filter" label="Filtros" severity="secondary" [outlined]="true" />
+    <p-button icon="pi pi-download" label="Exportar" severity="secondary" [outlined]="true" />
+    <p-button icon="pi pi-plus" label="Nuevo Envío" [disabled]="true" pTooltip="Próximamente" />
+  </ng-template>
+</p-toolbar>

@@ -1,5 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProviderService } from '@app/features/providers/services/provider.service';
 import { CompanyService } from '@app/features/companies/services/company.service';
 import { ClientService } from '@app/features/clients/services/client.service';
@@ -7,23 +8,42 @@ import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { Shipment } from './dashboard-view.types';
 import { DashboardMetricsComponent } from './components/dashboard-metrics/dashboard-metrics.component';
-import { DashboardShipmentsHeaderComponent } from './components/dashboard-shipments-header/dashboard-shipments-header.component';
 import { DashboardShipmentsTabsComponent, DashboardTab } from './components/dashboard-shipments-tabs/dashboard-shipments-tabs.component';
 import { DashboardShipmentsTableComponent } from './components/dashboard-shipments-table/dashboard-shipments-table.component';
 import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
 import { normalizeUserType } from '@app/shared/models/user-types';
+import { CardModule } from 'primeng/card';
+import { ChartModule } from 'primeng/chart';
+import { SelectModule } from 'primeng/select';
+import { ToolbarModule } from 'primeng/toolbar';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-dashboard-view',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     DashboardMetricsComponent,
-    DashboardShipmentsHeaderComponent,
     DashboardShipmentsTabsComponent,
     DashboardShipmentsTableComponent,
-    PaginationComponent
+    PaginationComponent,
+    CardModule,
+    ChartModule,
+    SelectModule,
+    ToolbarModule,
+    ButtonModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    AvatarModule,
+    TooltipModule
   ],
   templateUrl: './dashboard-view.component.html',
   styleUrl: './dashboard-view.component.css'
@@ -53,6 +73,42 @@ export class DashboardViewComponent {
   loading = signal(false);
   currentPage = signal(1);
   totalShipmentsCount = signal(128);
+
+  selectedPeriod: { label: string; value: string } = { label: 'Última semana', value: 'week' };
+  periodOptions = [
+    { label: 'Última semana', value: 'week' },
+    { label: 'Último mes', value: 'month' }
+  ];
+
+  revenueChartData = {
+    labels: ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'],
+    datasets: [
+      { label: 'Ingresos', data: [65, 59, 80, 81, 56, 55, 70], fill: false, backgroundColor: 'rgba(99, 102, 241, 0.8)', borderColor: 'rgb(99, 102, 241)' },
+      { label: 'Beneficio', data: [28, 48, 40, 45, 32, 30, 38], fill: false, backgroundColor: 'rgba(139, 92, 246, 0.6)', borderColor: 'rgb(139, 92, 246)' }
+    ]
+  };
+  revenueChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { beginAtZero: true } }
+  };
+
+  categoryChartData = {
+    labels: ['Electrónica', 'Moda', 'Hogar'],
+    datasets: [{ data: [54, 32, 14], backgroundColor: ['#6366f1', '#8b5cf6', '#a5b4fc'], hoverBackgroundColor: ['#4f46e5', '#7c3aed', '#818cf8'] }]
+  };
+  categoryChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } }
+  };
+
+  topProducts = signal<{ name: string; detail: string; value: string; initials: string }[]>([
+    { name: 'TechCorp Inc.', detail: 'Premium · 12 envíos', value: '1240', initials: 'TC' },
+    { name: 'AutoMotors', detail: 'Standard · 8 envíos', value: '856', initials: 'AM' },
+    { name: 'RetailGroup', detail: 'Recurrente · 5 envíos', value: '520', initials: 'RT' }
+  ]);
 
   constructor() {
     this.loadShipments();

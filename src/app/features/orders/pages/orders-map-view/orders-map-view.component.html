@@ -121,6 +121,72 @@
             <p class="orders-empty">No hay órdenes que coincidan con el filtro.</p>
           }
         </div>
+
+        <!-- Panel: datos hardcodeados para el mapa -->
+        <div class="orders-data-panel">
+          <button
+            type="button"
+            class="orders-data-panel-toggle"
+            (click)="showDataPanel.set(!showDataPanel())"
+          >
+            <span class="material-symbols-outlined">{{ showDataPanel() ? 'expand_less' : 'code' }}</span>
+            {{ showDataPanel() ? 'Ocultar datos' : 'Ver datos para el mapa' }}
+          </button>
+          @if (showDataPanel()) {
+            <div class="orders-data-panel-content">
+              <p class="orders-data-panel-desc">
+                Estructura de cada orden para que se pinte en el mapa. Cada ítem debe tener
+                <strong>lat/lng</strong> (destino) y <strong>pickupLat/pickupLng</strong> (origen). El mapa dibuja marcadores y la ruta entre ambos.
+              </p>
+              <div class="orders-data-table-wrap">
+                <table class="orders-data-table">
+                  <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>routeId</th>
+                      <th>trackingNumber</th>
+                      <th>address</th>
+                      <th>lat</th>
+                      <th>lng</th>
+                      <th>pickupLat</th>
+                      <th>pickupLng</th>
+                      <th>pickupAddress</th>
+                      <th>status</th>
+                      <th>driverName</th>
+                      <th>vehiclePlate</th>
+                      <th>date</th>
+                      <th>taskCount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (o of orders(); track o.id) {
+                      <tr>
+                        <td><code>{{ o.id }}</code></td>
+                        <td><code>{{ o.routeId }}</code></td>
+                        <td>{{ o.trackingNumber }}</td>
+                        <td>{{ o.address }}</td>
+                        <td><code>{{ o.lat }}</code></td>
+                        <td><code>{{ o.lng }}</code></td>
+                        <td><code>{{ o.pickupLat }}</code></td>
+                        <td><code>{{ o.pickupLng }}</code></td>
+                        <td>{{ o.pickupAddress ?? '—' }}</td>
+                        <td><span class="orders-data-status" [ngClass]="'orders-data-status--' + o.status">{{ o.status }}</span></td>
+                        <td>{{ o.driverName }}</td>
+                        <td>{{ o.vehiclePlate }}</td>
+                        <td>{{ o.date }}</td>
+                        <td>{{ o.taskCount }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <details class="orders-data-json-wrap">
+                <summary>JSON completo (copiar estructura)</summary>
+                <pre class="orders-data-json">{{ orders() | json }}</pre>
+              </details>
+            </div>
+          }
+        </div>
       </div>
     </aside>
 

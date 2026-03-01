@@ -22,6 +22,8 @@ export interface OrderWithLocation {
   date: string;
   taskCount: number;
   isExclusive?: boolean;
+  /** Puntos intermedios opcionales [lat, lng] por los que debe pasar la ruta (waypoints OSRM). */
+  waypoints?: [number, number][];
 }
 
 /** Polyline de Leaflet con métodos que usamos para mostrar/ocultar y encuadrar */
@@ -50,6 +52,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
   statusFilter = signal<OrderStatus | 'all'>('all');
   /** IDs de órdenes seleccionadas (se puede elegir más de una) */
   selectedOrderIds = signal<Set<string>>(new Set());
+
+  /** Muestra/oculta el panel con los datos raw para el mapa */
+  showDataPanel = signal(false);
 
   /** Tipo de mapa: 'map' (callejero) o 'satellite' */
   mapType = signal<'map' | 'satellite'>('map');
@@ -91,7 +96,13 @@ export class OrdersMapViewComponent implements AfterViewInit {
       vehiclePlate: 'ABC 123',
       date: '01/07/2025',
       taskCount: 5,
-      isExclusive: true
+      isExclusive: true,
+      waypoints: [
+        [-12.0740, -77.0440],
+        [-12.0710, -77.0462],
+        [-12.0795, -77.0480],
+        [-12.0835, -77.0492]
+      ]
     },
     {
       id: '2',
@@ -107,7 +118,13 @@ export class OrdersMapViewComponent implements AfterViewInit {
       driverName: 'María García',
       vehiclePlate: 'XYZ 456',
       date: '01/07/2025',
-      taskCount: 3
+      taskCount: 3,
+      waypoints: [
+        [-12.0500, -77.0415],
+        [-12.0545, -77.0400],
+        [-12.0585, -77.0388],
+        [-12.0605, -77.0392]
+      ]
     },
     {
       id: '3',
@@ -123,7 +140,14 @@ export class OrdersMapViewComponent implements AfterViewInit {
       driverName: 'Carlos López',
       vehiclePlate: 'MIN 789',
       date: '30/06/2025',
-      taskCount: 8
+      taskCount: 8,
+      waypoints: [
+        [-12.0120, -77.0550],
+        [-12.0060, -77.0580],
+        [-12.0010, -77.0605],
+        [-11.9950, -77.0640],
+        [-11.9885, -77.0680]
+      ]
     },
     {
       id: '4',
@@ -140,7 +164,14 @@ export class OrdersMapViewComponent implements AfterViewInit {
       vehiclePlate: 'Miniturbo',
       date: '01/07/2025',
       taskCount: 12,
-      isExclusive: true
+      isExclusive: true,
+      waypoints: [
+        [-12.0685, -77.0690],
+        [-12.0720, -77.0730],
+        [-12.0750, -77.0760],
+        [-12.0770, -77.0785],
+        [-12.0780, -77.0800]
+      ]
     },
     {
       id: '5',
@@ -156,12 +187,20 @@ export class OrdersMapViewComponent implements AfterViewInit {
       driverName: 'Ana Martínez',
       vehiclePlate: 'DEF 101',
       date: '01/07/2025',
-      taskCount: 2
+      taskCount: 2,
+      waypoints: [
+        [-12.0520, -77.0330],
+        [-12.0505, -77.0360],
+        [-12.0490, -77.0390],
+        [-12.0475, -77.0410]
+      ]
     }
   ]);
 
   private mapInstance: LeafletMap | null = null;
   private markers: LeafletMarker[] = [];
+  /** Marcadores de waypoints (paradas) por orden: waypointMarkers[orderIndex] = [marker, ...] */
+  private waypointMarkers: LeafletMarker[][] = [];
   /** Polylines de rutas (no se añaden al mapa hasta que se selecciona una orden) */
   private polylinesTrack: RoutePolyline[] = [];
   private polylinesDash: RoutePolyline[] = [];
@@ -181,7 +220,23 @@ export class OrdersMapViewComponent implements AfterViewInit {
     destLat: number,
     destLng: number
   ): Promise<[number, number][]> {
-    const coords = `${pickupLng},${pickupLat};${destLng},${destLat}`;
+    return this.fetchRouteOSRMWithWaypoints([
+      [pickupLat, pickupLng],
+      [destLat, destLng]
+    ]);
+  }
+
+  /**
+   * Ruta por carretera pasando por varios waypoints en orden (A → B → C → …).
+   * OSRM une los puntos siguiendo calles en el orden indicado.
+   * Inserta las coordenadas exactas de cada waypoint en la geometría para que la línea pase por los marcadores de parada.
+   */
+  private async fetchRouteOSRMWithWaypoints(
+    points: [number, number][]  // cada punto: [lat, lng]
+  ): Promise<[number, number][]> {
+    if (points.length < 2) return [];
+    // OSRM espera lng,lat;lng,lat;...
+    const coords = points.map(([lat, lng]) => `${lng},${lat}`).join(';');
     const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
     try {
       const res = await fetch(url);
@@ -190,10 +245,62 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const coordsGeo = data?.routes?.[0]?.geometry?.coordinates as [number, number][] | undefined;
       if (!coordsGeo?.length) return [];
       // GeoJSON es [lng, lat]; Leaflet usa [lat, lng]
-      return coordsGeo.map(([lng, lat]: [number, number]) => [lat, lng]);
+      let path = coordsGeo.map(([lng, lat]: [number, number]) => [lat, lng] as [number, number]);
+      // Si hay waypoints intermedios (entre inicio y fin), insertar sus coordenadas en la ruta para que la línea pase por cada parada
+      if (points.length > 2) {
+        const waypoints = points.slice(1, -1); // todos menos el primero y el último
+        path = this.insertWaypointsIntoPath(path, waypoints);
+      }
+      return path;
     } catch {
       return [];
     }
+  }
+
+  /**
+   * Inserta cada waypoint en la posición más cercana del path para que la polyline pase exactamente por cada parada.
+   * searchStart se actualiza a bestIdx+1 (no +2) para incluir el segmento que sale de la parada recién insertada.
+   */
+  private insertWaypointsIntoPath(
+    path: [number, number][],
+    waypoints: [number, number][]
+  ): [number, number][] {
+    if (waypoints.length === 0) return path;
+    let result = [...path];
+    let searchStart = 0;
+    for (const wp of waypoints) {
+      let bestIdx = searchStart;
+      let bestDistSq = Infinity;
+      for (let i = searchStart; i < result.length - 1; i++) {
+        const dSq = this.distSqToSegment(wp, result[i], result[i + 1]);
+        if (dSq < bestDistSq) {
+          bestDistSq = dSq;
+          bestIdx = i;
+        }
+      }
+      result = [...result.slice(0, bestIdx + 1), wp, ...result.slice(bestIdx + 1)];
+      searchStart = bestIdx + 1; // incluir el segmento que empieza en esta parada para la siguiente
+    }
+    return result;
+  }
+
+  /** Distancia al cuadrado de un punto al segmento [a, b] (evita Math.sqrt). */
+  private distSqToSegment(
+    p: [number, number],
+    a: [number, number],
+    b: [number, number]
+  ): number {
+    const [px, py] = p;
+    const [ax, ay] = a;
+    const [bx, by] = b;
+    const dx = bx - ax;
+    const dy = by - ay;
+    let t = dx !== 0 || dy !== 0
+      ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+      : 0;
+    const qx = ax + t * dx;
+    const qy = ay + t * dy;
+    return (px - qx) ** 2 + (py - qy) ** 2;
   }
 
   getStatusLabel(status: OrderStatus): string {
@@ -318,6 +425,16 @@ export class OrdersMapViewComponent implements AfterViewInit {
       if (destMarker?.openTooltip && destMarker?.closeTooltip) {
         selected ? destMarker.openTooltip() : destMarker.closeTooltip();
       }
+      // Mostrar/ocultar marcadores de parada según si la orden está seleccionada
+      const wpMarkers = this.waypointMarkers[i] ?? [];
+      wpMarkers.forEach(m => {
+        const layer = m as unknown as { _map?: unknown };
+        if (selected) {
+          if (this.mapInstance && !layer._map) m.addTo(this.mapInstance);
+        } else {
+          m.remove();
+        }
+      });
     }
   }
 
@@ -400,15 +517,18 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private addMarkers(map: LeafletMap): void {
     const L = this.leafletLib as {
       divIcon: (opts: object) => unknown;
-      marker: (latlng: [number, number], opts: object) => LeafletMarker & { bindTooltip: (content: string, opts?: object) => void };
+      marker: (latlng: [number, number], opts: object) => LeafletMarker & { bindTooltip: (content: string, opts?: object) => void; addTo: (m: LeafletMap) => LeafletMarker; remove: () => void };
       polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
     };
     if (!L?.divIcon || !L?.marker) return;
     this.markers = [];
+    this.waypointMarkers = [];
     this.polylinesTrack = [];
     this.polylinesDash = [];
 
-    for (const order of this.orders()) {
+    const ordersList = this.orders();
+    for (let orderIndex = 0; orderIndex < ordersList.length; orderIndex++) {
+      const order = ordersList[orderIndex];
       const isAlert = order.status === 'alert';
       const isInProgress = order.status === 'in_progress';
       const color = isAlert ? '#dc2626' : isInProgress ? '#2563eb' : '#059669';
@@ -481,6 +601,33 @@ export class OrdersMapViewComponent implements AfterViewInit {
       });
       this.markers.push(startMarker);
 
+      // Marcadores de parada (waypoints) — solo se muestran cuando la orden está seleccionada
+      this.waypointMarkers[orderIndex] = [];
+      (order.waypoints ?? []).forEach((wp, wpIndex) => {
+        const stopIcon = L.divIcon({
+          className: 'orders-marker orders-marker--waypoint',
+          html: `
+            <div class="orders-marker-circle orders-marker-circle--stop" style="background-color:#f59e0b; border-color:#d97706">
+              <span class="material-symbols-outlined orders-marker-icon">stop_circle</span>
+            </div>
+            <span class="orders-marker-label">Parada ${wpIndex + 1}</span>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 40]
+        });
+        const wpMarker = L.marker([wp[0], wp[1]], { icon: stopIcon });
+        wpMarker.bindTooltip(`Parada ${wpIndex + 1} – Punto intermedio`, {
+          permanent: false,
+          direction: 'top',
+          offset: [0, -24],
+          className: 'orders-map-tooltip orders-map-tooltip--waypoint',
+          opacity: 1
+        });
+        wpMarker.on('click', () => this.selectOrder(order));
+        this.waypointMarkers[orderIndex].push(wpMarker);
+        // No se añade al mapa aquí; se añade en updateTooltipsVisibility cuando la orden está seleccionada
+      });
+
       // Tarjeta de destino (punto de llegada) — con icono como en el modelo base
       const destinoCard = `
         <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
@@ -535,7 +682,12 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private loadRoutesAndUpdatePolylines(map: LeafletMap): void {
     const list = this.orders();
     list.forEach((order, index) => {
-      this.fetchRouteOSRM(order.pickupLat, order.pickupLng, order.lat, order.lng).then(coords => {
+      const points: [number, number][] =
+        order.waypoints?.length
+          ? [[order.pickupLat, order.pickupLng], ...order.waypoints, [order.lat, order.lng]]
+          : [[order.pickupLat, order.pickupLng], [order.lat, order.lng]];
+
+      this.fetchRouteOSRMWithWaypoints(points).then(coords => {
         if (coords.length > 0) {
           if (this.polylinesTrack[index]) this.polylinesTrack[index].setLatLngs(coords);
           if (this.polylinesDash[index]) this.polylinesDash[index].setLatLngs(coords);

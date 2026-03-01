@@ -1,54 +1,59 @@
 .dashboard-container {
-  padding: clamp(0.5rem, 2vw, 1rem);
-  max-width: 1800px;
-  width: 100%;
+  max-width: 75rem;
   margin: 0 auto;
+  padding: 0;
   box-sizing: border-box;
 }
 
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-charts p-card ::ng-deep .p-chart {
+  height: 16rem;
+}
+
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1fr 20rem;
+  gap: 1rem;
+  align-items: start;
+}
+
 .shipments-section {
-  background: white;
-  border-radius: clamp(0.75rem, 2vw, 12px);
-  padding: clamp(0.75rem, 2vw, 1rem);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  min-width: 0;
 }
 
-.shipments-section .pagination {
-  margin-top: 0.6rem;
-  padding: 0.45rem 0.75rem;
+.shipments-section ::ng-deep .pagination {
+  margin-top: 1rem;
+  padding-top: 1rem;
 }
 
-.shipments-section .pagination-info {
-  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+.top-products-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.shipments-section .pagination-btn,
-.shipments-section .pagination-number {
-  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-  padding: 0.2rem 0.45rem;
-  min-width: 1.6rem;
-  height: 1.6rem;
+.top-products-list li:last-child {
+  border-bottom: none !important;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-bottom {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 0.75rem;
-  }
-
-  .shipments-section {
-    padding: 0.75rem;
+    padding: 0;
   }
 }
-
-@media (max-width: 480px) {
-  .dashboard-container {
-    padding: 0.5rem;
-  }
-
-  .shipments-section {
-    padding: 0.6rem;
-    border-radius: 0.75rem;
-  }
-}
-

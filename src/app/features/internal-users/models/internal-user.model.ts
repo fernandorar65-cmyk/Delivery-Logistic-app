@@ -26,6 +26,14 @@ export interface InternalUserCreate {
   last_name?: string;
 }
 
+/** Payload para actualizar usuario interno (password opcional). */
+export interface InternalUserUpdate {
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  password?: string;
+}
+
 export interface InternalUserListResponse {
   errors: any[];
   result: InternalUser[];

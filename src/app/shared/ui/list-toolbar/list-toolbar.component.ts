@@ -1,16 +1,27 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
+import { ToolbarModule } from 'primeng/toolbar';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 
 /**
- * Toolbar reutilizable para vistas de listado (clientes, proveedores, empresas, etc.).
- * Incluye búsqueda opcional, acción principal opcional y proyección de contenido para filtros/acciones extra.
+ * Toolbar reutilizable para vistas de listado. Usa PrimeNG p-toolbar, p-button, p-inputText.
  */
 @Component({
   selector: 'app-list-toolbar',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeroIconComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ToolbarModule,
+    ButtonModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule
+  ],
   templateUrl: './list-toolbar.component.html',
   styleUrl: './list-toolbar.component.css'
 })

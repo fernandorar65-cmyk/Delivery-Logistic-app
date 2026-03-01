@@ -1,82 +1,64 @@
-<div class="table-card">
-  <div class="table-wrapper">
-    <table class="shipments-table data-table">
-      <thead>
+<p-card>
+  @if (loading) {
+    <div class="flex align-items-center justify-content-center gap-2 p-4">
+      <p-progressSpinner [style]="{ width: '2rem', height: '2rem' }" strokeWidth="4" />
+      <span>Cargando envíos...</span>
+    </div>
+  } @else {
+    <p-table [value]="shipments" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-sm">
+      <ng-template #header>
         <tr>
-          <th>ID ENVÍO</th>
-          <th>CLIENTE</th>
-          <th>DESTINO / ETA</th>
-          <th>VEHÍCULO</th>
-          <th>ESTADO</th>
-          <th class="actions-header">ACCIONES</th>
+          <th>ID Envío</th>
+          <th>Cliente</th>
+          <th>Destino / ETA</th>
+          <th>Vehículo</th>
+          <th>Estado</th>
+          <th style="width: 4rem">Acciones</th>
         </tr>
-      </thead>
-      <tbody>
-        @if (loading) {
-          <tr>
-            <td colspan="6" class="loading-cell">
-              <div class="loading-spinner"></div>
-              <p>Cargando envíos...</p>
-            </td>
-          </tr>
-        } @else {
-          @for (shipment of shipments; track shipment.id) {
-            <tr>
-              <td class="id-cell">#{{ shipment.id }}</td>
-              <td class="client-cell">
-                <div class="client-info">
-                  <div class="client-avatar" [class]="'avatar-' + shipment.client.avatar.toLowerCase()">
-                    {{ shipment.client.avatar }}
-                  </div>
-                  <div>
-                    <div class="client-name">{{ shipment.client.name }}</div>
-                    @if (shipment.client.type) {
-                      <div class="client-type">{{ shipment.client.type }}</div>
-                    }
-                  </div>
-                </div>
-              </td>
-              <td class="destination-cell">
-                <div class="destination-address">{{ shipment.destination }}</div>
-                <div class="destination-eta" [class.delayed]="shipment.eta.includes('Retrasado')" [class.delivered]="shipment.eta.includes('Entregado')">
-                  {{ shipment.eta }}
-                </div>
-              </td>
-              <td class="vehicle-cell">
-                @if (shipment.vehicle) {
-                  <div>
-                    <div class="vehicle-name">{{ shipment.vehicle.name }}</div>
-                    @if (shipment.vehicle.plate) {
-                      <div class="vehicle-plate">Placa: {{ shipment.vehicle.plate }}</div>
-                    }
-                  </div>
-                } @else {
-                  <a href="#" class="assign-link">Asignar</a>
+      </ng-template>
+      <ng-template #body let-shipment>
+        <tr>
+          <td>#{{ shipment.id }}</td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <p-avatar [label]="shipment.client.avatar" shape="circle" styleClass="bg-primary" />
+              <div>
+                <div class="font-medium">{{ shipment.client.name }}</div>
+                @if (shipment.client.type) {
+                  <div class="text-sm text-color-secondary">{{ shipment.client.type }}</div>
                 }
-              </td>
-              <td>
-                <span [class]="'status-badge status-' + shipment.status">
-                  @if (shipment.status === 'in-route') {
-                    <span class="status-dot"></span>
-                  } @else if (shipment.status === 'incident') {
-                    <app-hero-icon name="exclamation-triangle" [size]="12"></app-hero-icon>
-                  } @else if (shipment.status === 'delivered') {
-                    <app-hero-icon name="check" [size]="12"></app-hero-icon>
-                  } @else {
-                    <span class="status-dot"></span>
-                  }
-                  {{ shipment.statusText }}
-                </span>
-              </td>
-              <td class="actions-cell">
-                <button class="action-btn">
-                  <app-hero-icon name="ellipsis-vertical" [size]="16"></app-hero-icon>
-                </button>
-              </td>
-            </tr>
-          }
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div>{{ shipment.destination }}</div>
+            <div class="text-sm text-color-secondary">{{ shipment.eta }}</div>
+          </td>
+          <td>
+            @if (shipment.vehicle) {
+              <div>
+                <div>{{ shipment.vehicle.name }}</div>
+                @if (shipment.vehicle.plate) {
+                  <div class="text-sm text-color-secondary">Placa: {{ shipment.vehicle.plate }}</div>
+                }
+              </div>
+            } @else {
+              <a href="#" class="p-button p-button-text p-button-sm">Asignar</a>
+            }
+          </td>
+          <td>
+            <p-tag [value]="shipment.statusText" [severity]="getStatusSeverity(shipment.status)" />
+          </td>
+          <td>
+            <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true" />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6" class="text-center p-4">No hay envíos para mostrar.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</p-card>

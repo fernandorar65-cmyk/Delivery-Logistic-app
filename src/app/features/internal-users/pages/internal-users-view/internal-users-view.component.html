@@ -61,10 +61,13 @@
             </td>
             <td class="table-cell text-right">
               <div class="row-actions">
+                <!-- Botón editar oculto hasta que el endpoint PATCH esté disponible -->
                 <button
                   type="button"
                   class="action-icon"
-                  title="Editar (próximamente)">
+                  title="Editar"
+                  (click)="openEdit(user)"
+                  style="display: none;">
                   <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
                 </button>
                 <button type="button" class="action-icon danger" (click)="openDeleteConfirm(user)">
@@ -95,7 +98,10 @@
 }
 
 @if (modalOpen()) {
-<app-modal title="Nuevo usuario interno" size="lg" (close)="closeModal()">
+<app-modal
+  [title]="editTargetUser() ? 'Editar usuario interno' : 'Nuevo usuario interno'"
+  size="lg"
+  (close)="closeModal()">
   <form [formGroup]="userForm" (ngSubmit)="submit()" class="modal-form">
     @if (formError()) {
     <div class="form-error-message">
@@ -130,7 +136,7 @@
 
         <app-password-confirm
           formControlName="password"
-          [required]="true"
+          [required]="!editTargetUser()"
           placeholder="Ingrese la contraseña"
         />
       </div>
@@ -145,7 +151,7 @@
             <div class="btn-spinner"></div>
             Guardando...
           } @else {
-            Guardar interno
+            {{ editTargetUser() ? 'Guardar cambios' : 'Guardar interno' }}
           }
         </button>
     </div>

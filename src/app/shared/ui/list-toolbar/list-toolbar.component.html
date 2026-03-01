@@ -1,23 +1,22 @@
-<div class="list-toolbar">
-  @if (showSearch) {
-    <div class="list-toolbar-search">
-      <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
-      <input
-        type="text"
-        class="search-input"
-        [placeholder]="searchPlaceholder"
-        [ngModel]="searchQuery"
-        (ngModelChange)="onSearchInput($event)"
-      />
-    </div>
-  }
-  <div class="list-toolbar-actions">
+<p-toolbar>
+  <ng-template #start>
+    @if (showSearch) {
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input
+          type="text"
+          pInputText
+          [placeholder]="searchPlaceholder"
+          [ngModel]="searchQuery"
+          (ngModelChange)="onSearchInput($event)"
+        />
+      </p-iconField>
+    }
+  </ng-template>
+  <ng-template #end>
     <ng-content></ng-content>
     @if (showPrimaryAction) {
-      <button type="button" class="primary-btn" (click)="primaryAction.emit()">
-        <app-hero-icon [name]="primaryActionIcon" [size]="18"></app-hero-icon>
-        <span>{{ primaryActionLabel }}</span>
-      </button>
+      <p-button [label]="primaryActionLabel" icon="pi pi-plus" (onClick)="primaryAction.emit()" />
     }
-  </div>
-</div>
+  </ng-template>
+</p-toolbar>

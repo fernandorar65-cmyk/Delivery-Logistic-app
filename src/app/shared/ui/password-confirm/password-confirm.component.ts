@@ -126,6 +126,25 @@ export class PasswordConfirmComponent implements ControlValueAccessor, AfterView
       return null;
     }
 
+    /** Modo opcional: si se rellenó uno, ambos son obligatorios y deben coincidir. */
+    if (!this.required && (password || confirm)) {
+      if (!password || !confirm) {
+        return { required: true };
+      }
+      if (password !== confirm) {
+        return { passwordMismatch: true };
+      }
+      if (password.length < this.minLength) {
+        return {
+          minlength: {
+            requiredLength: this.minLength,
+            actualLength: password.length
+          }
+        };
+      }
+      return null;
+    }
+
     if (this.required && (!password || !confirm)) {
       return { required: true };
     }
@@ -139,7 +158,7 @@ export class PasswordConfirmComponent implements ControlValueAccessor, AfterView
       };
     }
 
-    if (password !== confirm) {
+    if (this.required && password !== confirm) {
       return { passwordMismatch: true };
     }
 
