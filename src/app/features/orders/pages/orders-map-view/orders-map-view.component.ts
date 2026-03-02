@@ -4,6 +4,59 @@ import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 
 export type OrderStatus = 'pending' | 'in_progress' | 'delivered' | 'alert';
 
+/** Respuesta de un solver VRP (Vehicle Routing Problem): rutas por vehículo y jobs no asignados */
+export interface VRPResponse {
+  code: number;
+  summary: {
+    cost: number;
+    routes: number;
+    unassigned: number;
+    delivery: number[];
+    amount: number[];
+    pickup: number[];
+    setup: number;
+    service: number;
+    duration: number;
+    waiting_time: number;
+    priority: number;
+    violations: unknown[];
+    computing_times?: { loading: number; solving: number; routing: number };
+  };
+  unassigned: Array<{ id: number; location: [number, number]; type: string }>;
+  routes: VRPRoute[];
+}
+
+/** Una ruta asignada a un vehículo */
+export interface VRPRoute {
+  vehicle: number;
+  cost: number;
+  delivery: number[];
+  amount: number[];
+  pickup: number[];
+  setup: number;
+  service: number;
+  duration: number;
+  waiting_time: number;
+  priority: number;
+  steps: VRPStep[];
+  violations: unknown[];
+}
+
+/** Paso de una ruta: start (depósito), job (entrega), end (vuelta) */
+export interface VRPStep {
+  type: 'start' | 'job' | 'end';
+  location: [number, number]; // [lng, lat]
+  id?: number;
+  job?: number;
+  setup?: number;
+  service?: number;
+  waiting_time?: number;
+  load?: number[];
+  arrival?: number;
+  duration?: number;
+  violations?: unknown[];
+}
+
 export interface OrderWithLocation {
   id: string;
   routeId: string;
@@ -22,6 +75,10 @@ export interface OrderWithLocation {
   date: string;
   taskCount: number;
   isExclusive?: boolean;
+  /** Puntos intermedios [lat, lng] por los que pasa la ruta (waypoints OSRM). */
+  waypoints?: [number, number][];
+  /** true = job no asignado (solo un punto en el mapa) */
+  isUnassigned?: boolean;
 }
 
 /** Polyline de Leaflet con métodos que usamos para mostrar/ocultar y encuadrar */
@@ -34,6 +91,126 @@ type RoutePolyline = {
 
 /** Tile layer de Leaflet con addTo y remove */
 type TileLayerRef = { addTo: (m: LeafletMap) => unknown; remove: () => void };
+
+/** Ejemplo de respuesta VRP. location en JSON es [lng, lat]. */
+const VRP_SAMPLE: VRPResponse = {
+  code: 0,
+  summary: {
+    cost: 20946,
+    routes: 2,
+    unassigned: 1,
+    delivery: [5],
+    amount: [5],
+    pickup: [0],
+    setup: 0,
+    service: 1500,
+    duration: 20946,
+    waiting_time: 0,
+    priority: 0,
+    violations: [],
+    computing_times: { loading: 443, solving: 0, routing: 0 }
+  },
+  unassigned: [{ id: 4, location: [2.41808, 49.22619], type: 'job' }],
+  routes: [
+    {
+      vehicle: 1,
+      cost: 8662,
+      delivery: [3],
+      amount: [3],
+      pickup: [0],
+      setup: 0,
+      service: 900,
+      duration: 8662,
+      waiting_time: 0,
+      priority: 0,
+      steps: [
+        { type: 'start', location: [2.35044, 48.51764], setup: 0, service: 0, waiting_time: 0, load: [3], arrival: 28800, duration: 0, violations: [] },
+        { type: 'job', location: [2.28325, 48.5958], id: 5, setup: 0, service: 300, waiting_time: 0, job: 5, load: [2], arrival: 30352, duration: 1552, violations: [] },
+        { type: 'job', location: [1.98465, 48.70329], id: 1, setup: 0, service: 300, waiting_time: 0, job: 1, load: [1], arrival: 33447, duration: 4347, violations: [] },
+        { type: 'job', location: [2.03655, 48.61128], id: 2, setup: 0, service: 300, waiting_time: 0, job: 2, load: [0], arrival: 35033, duration: 5633, violations: [] },
+        { type: 'end', location: [2.35044, 48.51764], setup: 0, service: 0, waiting_time: 0, load: [0], arrival: 38362, duration: 8662, violations: [] }
+      ],
+      violations: []
+    },
+    {
+      vehicle: 2,
+      cost: 12284,
+      delivery: [2],
+      amount: [2],
+      pickup: [0],
+      setup: 0,
+      service: 600,
+      duration: 12284,
+      waiting_time: 0,
+      priority: 0,
+      steps: [
+        { type: 'start', location: [2.35044, 48.51764], setup: 0, service: 0, waiting_time: 0, load: [2], arrival: 28800, duration: 0, violations: [] },
+        { type: 'job', location: [2.89357, 48.90736], id: 6, setup: 0, service: 300, waiting_time: 0, job: 6, load: [1], arrival: 33003, duration: 4203, violations: [] },
+        { type: 'job', location: [2.39719, 49.07611], id: 3, setup: 0, service: 300, waiting_time: 0, job: 3, load: [0], arrival: 36116, duration: 7016, violations: [] },
+        { type: 'end', location: [2.35044, 48.51764], setup: 0, service: 0, waiting_time: 0, load: [0], arrival: 41684, duration: 12284, violations: [] }
+      ],
+      violations: []
+    }
+  ]
+};
+
+/** Convierte la respuesta VRP en órdenes para el mapa. Cada ruta = una orden (inicio → paradas → destino). */
+function vrpResponseToOrders(response: VRPResponse): OrderWithLocation[] {
+  const orders: OrderWithLocation[] = [];
+  const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  for (const route of response.routes) {
+    const startStep = route.steps.find(s => s.type === 'start');
+    const jobSteps = route.steps.filter((s): s is VRPStep & { type: 'job' } => s.type === 'job');
+    if (!startStep || jobSteps.length === 0) continue;
+
+    const [pickupLng, pickupLat] = startStep.location;
+    const lastJob = jobSteps[jobSteps.length - 1];
+    const [destLng, destLat] = lastJob.location;
+    const waypoints: [number, number][] = jobSteps.slice(0, -1).map(s => [s.location[1], s.location[0]]);
+
+    orders.push({
+      id: `route-${route.vehicle}`,
+      routeId: `VRP-R${route.vehicle}`,
+      trackingNumber: `Ruta ${route.vehicle}`,
+      address: `Última entrega (Job ${lastJob.job ?? lastJob.id})`,
+      lat: destLat,
+      lng: destLng,
+      pickupLat,
+      pickupLng,
+      pickupAddress: 'Depósito',
+      status: 'in_progress',
+      driverName: `Vehículo ${route.vehicle}`,
+      vehiclePlate: `V-${route.vehicle}`,
+      date: today,
+      taskCount: jobSteps.length,
+      waypoints: waypoints.length > 0 ? waypoints : undefined
+    });
+  }
+
+  for (const u of response.unassigned) {
+    const [lng, lat] = u.location;
+    orders.push({
+      id: `unassigned-${u.id}`,
+      routeId: `NA-${u.id}`,
+      trackingNumber: `Job ${u.id} (no asignado)`,
+      address: `Job ${u.id} – Sin ruta`,
+      lat,
+      lng,
+      pickupLat: lat,
+      pickupLng: lng,
+      pickupAddress: 'N/A',
+      status: 'alert',
+      driverName: '—',
+      vehiclePlate: '—',
+      date: today,
+      taskCount: 0,
+      isUnassigned: true
+    });
+  }
+
+  return orders;
+}
 
 @Component({
   selector: 'app-orders-map-view',
@@ -74,94 +251,13 @@ export class OrdersMapViewComponent implements AfterViewInit {
     return this.orders().filter(o => o.status === status).length;
   }
 
-  /** Datos hardcodeados de órdenes con ubicación de recojo y entrega */
-  orders = signal<OrderWithLocation[]>([
-    {
-      id: '1',
-      routeId: '8E01A55F0CDB87FAL',
-      trackingNumber: 'GUIA-001',
-      address: 'Av. Javier Prado 1234, San Isidro',
-      lat: -12.0875,
-      lng: -77.0502,
-      pickupLat: -12.0760,
-      pickupLng: -77.0422,
-      pickupAddress: 'Almacén Central, Miraflores',
-      status: 'in_progress',
-      driverName: 'Juan Pérez',
-      vehiclePlate: 'ABC 123',
-      date: '01/07/2025',
-      taskCount: 5,
-      isExclusive: true
-    },
-    {
-      id: '2',
-      routeId: '8E01A55F0CDBB7FAL',
-      trackingNumber: 'GUIA-002',
-      address: 'Av. Brasil 2345, Lima',
-      lat: -12.0625,
-      lng: -77.0378,
-      pickupLat: -12.0464,
-      pickupLng: -77.0428,
-      pickupAddress: 'Centro de distribución, Cercado',
-      status: 'pending',
-      driverName: 'María García',
-      vehiclePlate: 'XYZ 456',
-      date: '01/07/2025',
-      taskCount: 3
-    },
-    {
-      id: '3',
-      routeId: '7D02B66G1DEC98GBM',
-      trackingNumber: 'GUIA-003',
-      address: 'Calle Los Olivos 456, Los Olivos',
-      lat: -11.9822,
-      lng: -77.0712,
-      pickupLat: -12.0200,
-      pickupLng: -77.0500,
-      pickupAddress: 'Depósito Norte, Independencia',
-      status: 'delivered',
-      driverName: 'Carlos López',
-      vehiclePlate: 'MIN 789',
-      date: '30/06/2025',
-      taskCount: 8
-    },
-    {
-      id: '4',
-      routeId: '9F03C77H2EFD09HCN',
-      trackingNumber: 'GUIA-004',
-      address: 'Av. La Marina 789, San Miguel',
-      lat: -12.0789,
-      lng: -77.0812,
-      pickupLat: -12.0650,
-      pickupLng: -77.0650,
-      pickupAddress: 'Base San Isidro',
-      status: 'alert',
-      driverName: 'Ernesto Pérez',
-      vehiclePlate: 'Miniturbo',
-      date: '01/07/2025',
-      taskCount: 12,
-      isExclusive: true
-    },
-    {
-      id: '5',
-      routeId: '1A04D88I3FGE10IDO',
-      trackingNumber: 'GUIA-005',
-      address: 'Jr. de la Unión 321, Cercado',
-      lat: -12.0464,
-      lng: -77.0428,
-      pickupLat: -12.0550,
-      pickupLng: -77.0300,
-      pickupAddress: 'Punto de recojo, Lince',
-      status: 'in_progress',
-      driverName: 'Ana Martínez',
-      vehiclePlate: 'DEF 101',
-      date: '01/07/2025',
-      taskCount: 2
-    }
-  ]);
+  /** Órdenes/rutas a partir del JSON VRP */
+  orders = signal<OrderWithLocation[]>(vrpResponseToOrders(VRP_SAMPLE));
 
   private mapInstance: LeafletMap | null = null;
   private markers: LeafletMarker[] = [];
+  /** Marcadores de waypoints (paradas) por orden */
+  private waypointMarkers: LeafletMarker[][] = [];
   /** Polylines de rutas (no se añaden al mapa hasta que se selecciona una orden) */
   private polylinesTrack: RoutePolyline[] = [];
   private polylinesDash: RoutePolyline[] = [];
@@ -181,7 +277,16 @@ export class OrdersMapViewComponent implements AfterViewInit {
     destLat: number,
     destLng: number
   ): Promise<[number, number][]> {
-    const coords = `${pickupLng},${pickupLat};${destLng},${destLat}`;
+    return this.fetchRouteOSRMWithWaypoints([
+      [pickupLat, pickupLng],
+      [destLat, destLng]
+    ]);
+  }
+
+  /** Ruta por carretera pasando por varios waypoints en orden (A → B → C → …). OSRM + inserción de waypoints en la geometría. */
+  private async fetchRouteOSRMWithWaypoints(points: [number, number][]): Promise<[number, number][]> {
+    if (points.length < 2) return [];
+    const coords = points.map(([lat, lng]) => `${lng},${lat}`).join(';');
     const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
     try {
       const res = await fetch(url);
@@ -189,11 +294,49 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const data = await res.json();
       const coordsGeo = data?.routes?.[0]?.geometry?.coordinates as [number, number][] | undefined;
       if (!coordsGeo?.length) return [];
-      // GeoJSON es [lng, lat]; Leaflet usa [lat, lng]
-      return coordsGeo.map(([lng, lat]: [number, number]) => [lat, lng]);
+      let path = coordsGeo.map(([lng, lat]: [number, number]) => [lat, lng] as [number, number]);
+      if (points.length > 2) {
+        const waypoints = points.slice(1, -1);
+        path = this.insertWaypointsIntoPath(path, waypoints);
+      }
+      return path;
     } catch {
       return [];
     }
+  }
+
+  private insertWaypointsIntoPath(path: [number, number][], waypoints: [number, number][]): [number, number][] {
+    if (waypoints.length === 0) return path;
+    let result = [...path];
+    let searchStart = 0;
+    for (const wp of waypoints) {
+      let bestIdx = searchStart;
+      let bestDistSq = Infinity;
+      for (let i = searchStart; i < result.length - 1; i++) {
+        const dSq = this.distSqToSegment(wp, result[i], result[i + 1]);
+        if (dSq < bestDistSq) {
+          bestDistSq = dSq;
+          bestIdx = i;
+        }
+      }
+      result = [...result.slice(0, bestIdx + 1), wp, ...result.slice(bestIdx + 1)];
+      searchStart = bestIdx + 1;
+    }
+    return result;
+  }
+
+  private distSqToSegment(p: [number, number], a: [number, number], b: [number, number]): number {
+    const [px, py] = p;
+    const [ax, ay] = a;
+    const [bx, by] = b;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const t = dx !== 0 || dy !== 0
+      ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+      : 0;
+    const qx = ax + t * dx;
+    const qy = ay + t * dy;
+    return (px - qx) ** 2 + (py - qy) ** 2;
   }
 
   getStatusLabel(status: OrderStatus): string {
@@ -318,6 +461,15 @@ export class OrdersMapViewComponent implements AfterViewInit {
       if (destMarker?.openTooltip && destMarker?.closeTooltip) {
         selected ? destMarker.openTooltip() : destMarker.closeTooltip();
       }
+      const wpMarkers = this.waypointMarkers[i] ?? [];
+      wpMarkers.forEach(m => {
+        const layer = m as unknown as { _map?: unknown };
+        if (selected) {
+          if (this.mapInstance && !layer._map) m.addTo(this.mapInstance);
+        } else {
+          m.remove();
+        }
+      });
     }
   }
 
@@ -343,8 +495,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const el = this.mapContainerRef?.nativeElement;
       if (!el) return;
 
-      const center: [number, number] = [-12.0464, -77.0428];
-      const map = L.map(el, { center, zoom: 12 });
+      const center: [number, number] = [48.75, 2.35];
+      const map = L.map(el, { center, zoom: 9 });
 
       const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -400,15 +552,18 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private addMarkers(map: LeafletMap): void {
     const L = this.leafletLib as {
       divIcon: (opts: object) => unknown;
-      marker: (latlng: [number, number], opts: object) => LeafletMarker & { bindTooltip: (content: string, opts?: object) => void };
+      marker: (latlng: [number, number], opts: object) => LeafletMarker & { bindTooltip: (content: string, opts?: object) => void; addTo: (m: LeafletMap) => LeafletMarker; remove: () => void };
       polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
     };
     if (!L?.divIcon || !L?.marker) return;
     this.markers = [];
+    this.waypointMarkers = [];
     this.polylinesTrack = [];
     this.polylinesDash = [];
 
-    for (const order of this.orders()) {
+    const ordersList = this.orders();
+    for (let orderIndex = 0; orderIndex < ordersList.length; orderIndex++) {
+      const order = ordersList[orderIndex];
       const isAlert = order.status === 'alert';
       const isInProgress = order.status === 'in_progress';
       const color = isAlert ? '#dc2626' : isInProgress ? '#2563eb' : '#059669';
@@ -420,7 +575,6 @@ export class OrdersMapViewComponent implements AfterViewInit {
         [order.lat, order.lng]
       ];
 
-      // Pista base (línea suave detrás)
       const routeTrack = L.polyline(latlngs, {
         color,
         weight: 10,
@@ -430,7 +584,6 @@ export class OrdersMapViewComponent implements AfterViewInit {
       }) as unknown as RoutePolyline;
       this.polylinesTrack.push(routeTrack);
 
-      // Línea punteada animada (avanzando como en el HTML de referencia)
       const routeDash = L.polyline(latlngs, {
         color,
         weight: 4,
@@ -442,7 +595,6 @@ export class OrdersMapViewComponent implements AfterViewInit {
       }) as unknown as RoutePolyline;
       this.polylinesDash.push(routeDash);
 
-      // Tarjeta de ubicación actual (punto de salida)
       const ubicacionCard = `
         <div class="orders-map-infocard orders-map-infocard--ubicacion">
           <div class="orders-map-infocard-badge orders-map-infocard-badge--green">
@@ -457,7 +609,6 @@ export class OrdersMapViewComponent implements AfterViewInit {
         <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
       `;
 
-      // Marcador de inicio (recojo) — icono de bandera + tooltip con tarjeta
       const startIcon = L.divIcon({
         className: 'orders-marker orders-marker--start',
         html: `
@@ -481,7 +632,31 @@ export class OrdersMapViewComponent implements AfterViewInit {
       });
       this.markers.push(startMarker);
 
-      // Tarjeta de destino (punto de llegada) — con icono como en el modelo base
+      this.waypointMarkers[orderIndex] = [];
+      (order.waypoints ?? []).forEach((wp, wpIndex) => {
+        const stopIcon = L.divIcon({
+          className: 'orders-marker orders-marker--waypoint',
+          html: `
+            <div class="orders-marker-circle orders-marker-circle--stop" style="background-color:#f59e0b; border-color:#d97706">
+              <span class="material-symbols-outlined orders-marker-icon">stop_circle</span>
+            </div>
+            <span class="orders-marker-label">Parada ${wpIndex + 1}</span>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 40]
+        });
+        const wpMarker = L.marker([wp[0], wp[1]], { icon: stopIcon });
+        wpMarker.bindTooltip(`Parada ${wpIndex + 1} – Punto intermedio`, {
+          permanent: false,
+          direction: 'top',
+          offset: [0, -24],
+          className: 'orders-map-tooltip orders-map-tooltip--waypoint',
+          opacity: 1
+        });
+        wpMarker.on('click', () => this.selectOrder(order));
+        this.waypointMarkers[orderIndex].push(wpMarker);
+      });
+
       const destinoCard = `
         <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
         <div class="orders-map-infocard orders-map-infocard--destino">
@@ -495,7 +670,6 @@ export class OrdersMapViewComponent implements AfterViewInit {
         </div>
       `;
 
-      // Marcador de llegada (entrega) — paquete o camión + tooltip con tarjeta
       const icon = L.divIcon({
         className: 'orders-marker',
         html: `
@@ -535,7 +709,18 @@ export class OrdersMapViewComponent implements AfterViewInit {
   private loadRoutesAndUpdatePolylines(map: LeafletMap): void {
     const list = this.orders();
     list.forEach((order, index) => {
-      this.fetchRouteOSRM(order.pickupLat, order.pickupLng, order.lat, order.lng).then(coords => {
+      if (order.isUnassigned) {
+        const pt: [number, number] = [order.lat, order.lng];
+        if (this.polylinesTrack[index]) this.polylinesTrack[index].setLatLngs([pt, pt]);
+        if (this.polylinesDash[index]) this.polylinesDash[index].setLatLngs([pt, pt]);
+        return;
+      }
+      const points: [number, number][] =
+        order.waypoints?.length
+          ? [[order.pickupLat, order.pickupLng], ...order.waypoints, [order.lat, order.lng]]
+          : [[order.pickupLat, order.pickupLng], [order.lat, order.lng]];
+
+      this.fetchRouteOSRMWithWaypoints(points).then(coords => {
         if (coords.length > 0) {
           if (this.polylinesTrack[index]) this.polylinesTrack[index].setLatLngs(coords);
           if (this.polylinesDash[index]) this.polylinesDash[index].setLatLngs(coords);

@@ -644,6 +644,16 @@
   font-size: 22px !important;
 }
 
+/* Marcador de parada (waypoint) */
+:host ::ng-deep .orders-marker--waypoint .orders-marker-circle {
+  width: 40px;
+  height: 40px;
+}
+
+:host ::ng-deep .orders-marker--waypoint .orders-marker-icon {
+  font-size: 20px !important;
+}
+
 /* Tooltips / tarjetas flotantes en el mapa (salida y destino) - estilos deben aplicarse al contenido inyectado por Leaflet */
 :host ::ng-deep .orders-map-container .leaflet-tooltip.orders-map-tooltip {
   background: transparent !important;
