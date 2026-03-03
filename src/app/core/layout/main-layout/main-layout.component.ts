@@ -72,6 +72,8 @@ export class MainLayoutComponent implements OnInit {
   protected readonly userEmail = signal<string | null>(null);
   protected readonly userId = signal<string | null>(null);
   protected readonly UserTypes = UserTypes;
+  /** Sidebar colapsado: solo iconos. Alternar con el botón del sidebar. */
+  protected readonly sidebarCollapsed = signal(false);
 
   /** Secciones del menú lateral (para diseño DIAMOND con títulos). */
   protected menuSections = computed<SidebarSection[]>(() => {

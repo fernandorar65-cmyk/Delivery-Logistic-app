@@ -1,4 +1,4 @@
-/* Contenedor que llena el sidebar y permite que el nav siga (sticky) */
+/* Contenedor que llena el sidebar */
 :host {
   display: flex;
   flex-direction: column;
@@ -15,17 +15,250 @@
   overflow: hidden;
 }
 
+/* Header: logo clickeable para colapsar/expandir */
 .sidebar-header {
+  flex-shrink: 0;
+  padding: 1rem 1rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  min-height: 3.5rem;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.sidebar-logo-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-logo-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
   flex-shrink: 0;
 }
 
+.sidebar-logo-icon svg {
+  display: block;
+}
+
+.sidebar-logo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+/* Navegación */
 .sidebar-nav {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 0.5rem 0 1rem;
 }
 
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar-section {
+  margin-bottom: 1rem;
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-section-title {
+  display: block;
+  padding: 0 1rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu-list li {
+  margin: 0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  color: #a0a0a0;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color 0.2s ease, background-color 0.15s ease;
+}
+
+.sidebar-link:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-link-icon {
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.sidebar-link-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-link-active.sidebar-link {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.sidebar-link-active .sidebar-link-icon {
+  color: #60a5fa;
+}
+
+/* Footer */
 .sidebar-footer {
   flex-shrink: 0;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-footer-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: opacity 0.2s ease;
+}
+
+/* ========== Estado colapsado: solo iconos ========== */
+:host-context(.sidebar-collapsed) .sidebar-header {
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  gap: 0.5rem;
+}
+
+:host-context(.sidebar-collapsed) .sidebar-brand.sidebar-logo-btn {
+  justify-content: center;
+  width: auto;
+}
+
+:host-context(.sidebar-collapsed) .sidebar-logo,
+:host-context(.sidebar-collapsed) .sidebar-footer-text,
+:host-context(.sidebar-collapsed) .sidebar-section-title,
+:host-context(.sidebar-collapsed) .sidebar-link-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  position: absolute;
+}
+
+:host-context(.sidebar-collapsed) .sidebar-link {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+:host-context(.sidebar-collapsed) .sidebar-footer {
+  padding: 0.5rem;
+  justify-content: center;
+  display: flex;
+}
+
+:host-context(.sidebar-collapsed) .sidebar-section-title {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-header {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+  }
+
+  .sidebar-logo,
+  .sidebar-footer-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .sidebar-section-title {
+    display: none;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  .sidebar-link-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .sidebar-footer {
+    padding: 0.5rem;
+    justify-content: center;
+  }
 }

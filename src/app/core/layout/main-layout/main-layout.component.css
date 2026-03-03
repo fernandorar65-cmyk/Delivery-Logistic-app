@@ -1,6 +1,7 @@
 /* ========== Contenedor principal ========== */
 .app-container {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -9,9 +10,10 @@
   display: flex;
   flex: 1;
   min-height: 0;
+  width: 100%;
 }
 
-/* ========== Sidebar estilo DIAMOND: altura total y menú que sigue ========== */
+/* ========== Sidebar: contenedor (estilos del contenido en sidebar-nav) ========== */
 .sidebar {
   width: 16rem;
   min-width: 16rem;
@@ -24,147 +26,18 @@
   position: sticky;
   top: 0;
   align-self: flex-start;
+  transition: width 0.25s ease, min-width 0.25s ease;
 }
 
-.sidebar-diamond .sidebar-header {
-  flex-shrink: 0;
-  padding: 1.25rem 1.25rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+aside.sidebar.sidebar-collapsed {
+  width: 4.5rem !important;
+  min-width: 4.5rem !important;
+  max-width: 4.5rem !important;
 }
 
-.sidebar-logo-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  flex-shrink: 0;
-}
-
-.sidebar-logo-icon svg {
-  display: block;
-}
-
-.sidebar-diamond .sidebar-logo {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.06em;
-}
-
-/* Navegación con scroll */
-.sidebar-nav {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0.5rem 0 1rem;
-}
-
-/* Scrollbar estilo DIAMOND */
-.sidebar-nav::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar-nav::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Sección: título en mayúsculas */
-.sidebar-section {
-  margin-bottom: 1rem;
-}
-
-.sidebar-section:last-child {
-  margin-bottom: 0;
-}
-
-.sidebar-section-title {
-  display: block;
-  padding: 0 1.25rem 0.5rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: #a0a0a0;
-  text-transform: uppercase;
-}
-
-.sidebar-menu-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.sidebar-menu-list li {
-  margin: 0;
-}
-
-/* Enlace: gris por defecto, azul cuando activo */
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 1.25rem;
-  color: #a0a0a0;
-  text-decoration: none;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  transition: color 0.2s ease, background-color 0.15s ease;
-}
-
-.sidebar-link:hover {
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.sidebar-link-icon {
-  font-size: 1.125rem;
-  flex-shrink: 0;
-  color: inherit;
-}
-
-.sidebar-link-text {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Activo: azul claro vibrante (estilo DIAMOND) */
-.sidebar-link-active.sidebar-link,
-.sidebar-diamond .sidebar-link-active.sidebar-link {
-  color: #60a5fa;
-  font-weight: 600;
-}
-
-.sidebar-link-active .sidebar-link-icon {
-  color: #60a5fa;
-}
-
-/* Footer del sidebar */
-.sidebar-footer {
-  flex-shrink: 0;
-  padding: 0.75rem 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.sidebar-footer-text {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-/* ========== Área de contenido ========== */
+/* ========== Área de contenido: ocupa todo el espacio restante al colapsar el sidebar ========== */
 .content-area {
-  flex: 1;
+  flex: 1 1 0%;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -251,35 +124,6 @@
   .sidebar {
     width: 4.5rem;
     min-width: 4.5rem;
-  }
-
-  .sidebar-diamond .sidebar-header {
-    padding: 1rem 0.75rem;
-    justify-content: center;
-  }
-
-  .sidebar-logo,
-  .sidebar-footer-text {
-    display: none;
-  }
-
-  .sidebar-section-title {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.625rem;
-    text-align: center;
-  }
-
-  .sidebar-link {
-    justify-content: center;
-    padding: 0.75rem;
-  }
-
-  .sidebar-link-text {
-    display: none;
-  }
-
-  .sidebar-footer {
-    padding: 0.5rem;
   }
 
   .search-field {

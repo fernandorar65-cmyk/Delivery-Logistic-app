@@ -1,8 +1,12 @@
 <div class="app-container">
   <div class="layout-body">
     <!-- Sidebar estilo DIAMOND: fondo oscuro, logo con icono, secciones con títulos, ítem activo en azul -->
-    <aside class="sidebar sidebar-diamond">
-      <app-sidebar-nav [sections]="menuSections()"></app-sidebar-nav>
+    <aside class="sidebar sidebar-diamond" [class.sidebar-collapsed]="sidebarCollapsed()">
+      <app-sidebar-nav
+        [sections]="menuSections()"
+        [collapsed]="sidebarCollapsed()"
+        (toggle)="sidebarCollapsed.set(!sidebarCollapsed())"
+      ></app-sidebar-nav>
     </aside>
 
     <div class="content-area">
