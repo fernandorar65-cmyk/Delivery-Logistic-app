@@ -1,0 +1,35 @@
+<div class="sidebar-inner">
+  <div class="sidebar-header">
+    <span class="sidebar-logo-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L22 12L12 22L2 12L12 2z"/></svg>
+    </span>
+    <span class="sidebar-logo">LOGISAAS</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    @for (section of sections(); track section.title) {
+      <div class="sidebar-section">
+        <span class="sidebar-section-title">{{ section.title }}</span>
+        <ul class="sidebar-menu-list">
+          @for (item of section.items; track item.label) {
+            <li>
+              <a
+                [routerLink]="item.routerLink"
+                routerLinkActive="sidebar-link-active"
+                [routerLinkActiveOptions]="{ exact: false }"
+                class="sidebar-link"
+              >
+                <i [class]="item.icon" class="sidebar-link-icon"></i>
+                <span class="sidebar-link-text">{{ item.label }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <span class="sidebar-footer-text">LOGISAAS</span>
+  </div>
+</div>

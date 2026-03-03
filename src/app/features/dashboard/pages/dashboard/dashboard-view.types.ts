@@ -4,6 +4,7 @@ export interface ShipmentClient {
   name: string;
   avatar: string;
   type?: string | null;
+  email?: string | null;
 }
 
 export interface ShipmentVehicle {
@@ -19,6 +20,10 @@ export interface Shipment {
   vehicle: ShipmentVehicle | null;
   status: ShipmentStatus;
   statusText: string;
+  /** Fecha del envío/orden para listado (ej. "5 May 2024") */
+  date?: string;
+  /** Ingreso asociado si aplica (ej. 59 o null para "Free") */
+  revenue?: number | null;
 }
 
 

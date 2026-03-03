@@ -1,37 +1,34 @@
 <div class="app-container">
   <div class="layout-body">
-    <!-- Sidebar oscuro estilo Diamond -->
-    <aside class="sidebar sidebar-dark">
-      <div class="sidebar-header">
-        <span class="sidebar-logo">LOGISAAS</span>
-      </div>
-      <p-menu [model]="menuItems()" styleClass="sidebar-menu border-none w-full" [style]="{ flex: 1 }" />
+    <!-- Sidebar estilo DIAMOND: fondo oscuro, logo con icono, secciones con títulos, ítem activo en azul -->
+    <aside class="sidebar sidebar-diamond">
+      <app-sidebar-nav [sections]="menuSections()"></app-sidebar-nav>
     </aside>
 
     <div class="content-area">
       <header class="top-header">
-        <p-toolbar styleClass="border-bottom-0 border-noround">
+        <p-toolbar styleClass="top-toolbar border-none">
           <ng-template #start>
             <div class="header-left flex align-items-center gap-2">
               @if (showBackLink()) {
-                <a routerLink="/dashboard" class="p-button p-button-text p-button-sm">
-                  <i class="pi pi-chevron-left mr-1"></i>
-                  Panel de control
+                <a routerLink="/dashboard" class="back-link">
+                  <i class="pi pi-chevron-left"></i>
+                  <span>Panel de control</span>
                 </a>
               }
-              <span class="font-semibold text-xl text-color">{{ sectionTitle() }}</span>
+              <span class="page-title">{{ sectionTitle() }}</span>
             </div>
           </ng-template>
           <ng-template #end>
             <p-iconField iconPosition="left" styleClass="search-field">
               <p-inputIcon styleClass="pi pi-search" />
-              <input type="text" pInputText placeholder="Buscar..." class="w-full" style="min-width: 12rem" />
+              <input type="text" pInputText placeholder="Buscar..." class="search-input" />
             </p-iconField>
             <app-match-requests-panel *ngIf="canAccess([UserTypes.PROVIDER, UserTypes.CLIENT])"></app-match-requests-panel>
             <p-button icon="pi pi-bell" [rounded]="true" [text]="true" pTooltip="Notificaciones" />
             <p-button icon="pi pi-question-circle" [rounded]="true" [text]="true" pTooltip="Ayuda" />
             <p-button icon="pi pi-sign-out" [rounded]="true" [text]="true" pTooltip="Cerrar sesión" (onClick)="logout()" />
-            <p-avatar [label]="(userEmail() || 'U').charAt(0).toUpperCase()" shape="circle" styleClass="cursor-pointer" />
+            <p-avatar [label]="(userEmail() || 'U').charAt(0).toUpperCase()" shape="circle" styleClass="header-avatar" />
           </ng-template>
         </p-toolbar>
       </header>

@@ -1,33 +1,88 @@
-.metrics-grid {
+.kpi-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
   margin-bottom: 1.5rem;
 }
 
-.stat-card .sparkline {
-  width: 5rem;
-  height: 2rem;
-  color: var(--p-primary-500);
+.kpi-card {
+  min-width: 0;
 }
 
-.stat-card .sparkline.down {
-  color: var(--p-red-500);
+.kpi-card ::ng-deep .p-card-body {
+  padding: 1.25rem;
 }
 
-.stat-card .sparkline svg {
-  width: 100%;
-  height: 100%;
+.kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.kpi-title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--p-text-muted-color);
+}
+
+.kpi-period-select ::ng-deep .p-select {
+  min-width: 10rem;
+  font-size: 0.875rem;
+}
+
+.kpi-period-select ::ng-deep .p-select .p-select-label {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.kpi-value-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--p-text-color);
+}
+
+.kpi-change-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.kpi-chart-wrap {
+  height: 6.5rem;
+  margin-top: 0.5rem;
+  min-height: 6.5rem;
+}
+
+.kpi-chart-wrap ::ng-deep .p-chart {
+  height: 100% !important;
 }
 
 @media (max-width: 1024px) {
-  .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .kpi-cards {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 600px) {
-  .metrics-grid {
-    grid-template-columns: 1fr;
+  .kpi-value {
+    font-size: 1.5rem;
+  }
+
+  .kpi-period-select ::ng-deep .p-select {
+    min-width: 9rem;
+    font-size: 0.8125rem;
+  }
+
+  .kpi-chart-wrap {
+    height: 6rem;
+    min-height: 6rem;
   }
 }

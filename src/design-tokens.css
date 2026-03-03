@@ -23,7 +23,7 @@
   --p-primary-color-text: #ffffff;
   --p-text-color: #0f172a;
   --p-text-color-secondary: #64748b;
-  --p-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --p-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --p-border-radius: 0.5rem;
   --p-border-radius-lg: 0.75rem;
   --p-focus-ring: 0 0 0 3px rgba(2, 132, 199, 0.25);

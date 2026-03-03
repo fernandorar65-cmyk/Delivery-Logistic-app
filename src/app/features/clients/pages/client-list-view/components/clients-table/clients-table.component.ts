@@ -1,15 +1,31 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { Client } from '@app/features/clients/models/client.model';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
+import { TableModule } from 'primeng/table';
+import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-clients-table',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeroIconComponent, EmptyStateComponent, LoadingCardComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    EmptyStateComponent,
+    LoadingCardComponent,
+    TableModule,
+    AvatarModule,
+    TagModule,
+    ButtonModule,
+    RippleModule,
+    TooltipModule
+  ],
   templateUrl: './clients-table.component.html',
   styleUrl: './clients-table.component.css'
 })
@@ -32,6 +48,12 @@ export class ClientsTableComponent {
       return 'Pendiente';
     }
     return 'Sin estado';
+  }
+
+  getStatusSeverity(client: Client): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    const status = (client.match_status ?? '').toLowerCase();
+    if (status === 'pending') return 'warn';
+    return 'secondary';
   }
 
   getStatusClass(client: Client): string {

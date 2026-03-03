@@ -1,15 +1,29 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { Ally } from '../../providers-list-view.types';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
+import { TableModule } from 'primeng/table';
+import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-providers-table',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeroIconComponent, EmptyStateComponent, LoadingCardComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    EmptyStateComponent,
+    LoadingCardComponent,
+    TableModule,
+    AvatarModule,
+    TagModule,
+    ButtonModule,
+    TooltipModule
+  ],
   templateUrl: './providers-table.component.html',
   styleUrl: './providers-table.component.css'
 })
@@ -45,6 +59,20 @@ export class ProvidersTableComponent {
         return 'Pendiente';
       default:
         return status;
+    }
+  }
+
+  getStatusSeverity(status?: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    if (!status) return 'secondary';
+    switch (status) {
+      case 'active':
+        return 'success';
+      case 'inactive':
+        return 'secondary';
+      case 'pending':
+        return 'warn';
+      default:
+        return 'secondary';
     }
   }
 }

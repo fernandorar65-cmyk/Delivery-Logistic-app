@@ -13,17 +13,34 @@ import { InternalUsersService } from '@app/features/internal-users/services/inte
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { formatApiErrors, hasApiErrors } from '@app/shared/utils/api-response';
 import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
 import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-modal.component';
+import { TableModule } from 'primeng/table';
+import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-internal-users-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, LoadingCardComponent, ModalComponent, HeroIconComponent, PasswordConfirmComponent, ConfirmModalComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    EmptyStateComponent,
+    LoadingCardComponent,
+    ModalComponent,
+    PasswordConfirmComponent,
+    ConfirmModalComponent,
+    TableModule,
+    AvatarModule,
+    TagModule,
+    ButtonModule,
+    TooltipModule
+  ],
   templateUrl: './internal-users-view.component.html',
   styleUrl: './internal-users-view.component.css'
 })

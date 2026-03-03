@@ -1,8 +1,9 @@
 import { Component, signal, inject, PLATFORM_ID, OnInit, computed } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from '@app/core/auth/services/auth.service';
 import { MatchRequestsPanelComponent } from '@app/core/layout/components/match-requests-panel/match-requests-panel.component';
+import { SidebarNavComponent } from '@app/core/layout/components/sidebar-nav/sidebar-nav.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { normalizeUserType, UserTypes } from '@app/shared/models/user-types';
@@ -14,6 +15,7 @@ import type { ClientResponse } from '@app/features/clients/models/client.model';
 import type { CompanyResponse } from '@app/features/companies/models/company.model';
 import type { ProviderResponse } from '@app/features/providers/models/provider.model';
 import type { MenuItem } from 'primeng/api';
+import type { SidebarSection } from '@app/core/layout/models/sidebar.model';
 import { MenuModule } from 'primeng/menu';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
@@ -22,7 +24,9 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
-import { Router } from '@angular/router';
+
+/** Sección del menú lateral (estilo DIAMOND: título en mayúsculas + ítems). */
+export type { SidebarSection } from '@app/core/layout/models/sidebar.model';
 
 @Component({
   selector: 'app-main-layout',
@@ -39,7 +43,8 @@ import { Router } from '@angular/router';
     InputTextModule,
     AvatarModule,
     TooltipModule,
-    MatchRequestsPanelComponent
+    MatchRequestsPanelComponent,
+    SidebarNavComponent
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css'
@@ -67,6 +72,70 @@ export class MainLayoutComponent implements OnInit {
   protected readonly userEmail = signal<string | null>(null);
   protected readonly userId = signal<string | null>(null);
   protected readonly UserTypes = UserTypes;
+
+  /** Secciones del menú lateral (para diseño DIAMOND con títulos). */
+  protected menuSections = computed<SidebarSection[]>(() => {
+    const principal: { label: string; icon: string; routerLink: string | string[] }[] = [];
+    const gestion: { label: string; icon: string; routerLink: string | string[] }[] = [];
+
+    if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY, UserTypes.PROVIDER, UserTypes.CLIENT])) {
+      principal.push({ label: 'Panel de Control', icon: 'pi pi-th-large', routerLink: '/dashboard' });
+    }
+    if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY, UserTypes.PROVIDER, UserTypes.CLIENT])) {
+      principal.push({ label: 'Órdenes', icon: 'pi pi-box', routerLink: '/orders' });
+    }
+
+    if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY])) {
+      gestion.push({ label: 'Clientes', icon: 'pi pi-users', routerLink: '/clients' });
+    }
+    if (this.canAccess([UserTypes.COMPANY])) {
+      gestion.push({ label: 'Grupos de Estados', icon: 'pi pi-check-circle', routerLink: '/companies/status-groups' });
+    }
+    if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY])) {
+      gestion.push({ label: 'Providers', icon: 'pi pi-layer-group', routerLink: '/providers' });
+    }
+    if (this.canAccess([UserTypes.PROVIDER]) && this.userId()) {
+      gestion.push({
+        label: 'Mis Vehículos',
+        icon: 'pi pi-truck',
+        routerLink: ['/providers', this.userId()!, 'vehicles']
+      });
+    }
+    if (this.canAccess([UserTypes.ADMIN, UserTypes.PROVIDER])) {
+      gestion.push({ label: 'Pedidos', icon: 'pi pi-list', routerLink: '/providers/orders' });
+    }
+    if (this.canAccess([UserTypes.PROVIDER])) {
+      gestion.push({ label: 'Empresas', icon: 'pi pi-building', routerLink: '/providers/companies' });
+    }
+    if (this.canAccess([UserTypes.PROVIDER])) {
+      gestion.push({ label: 'Usuarios Internos', icon: 'pi pi-users', routerLink: ['/providers', 'usuarios-internos'] });
+    }
+    if (this.canAccess([UserTypes.COMPANY]) && this.userId()) {
+      gestion.push({
+        label: 'Usuarios Internos',
+        icon: 'pi pi-users',
+        routerLink: ['/companies', this.userId()!, 'usuarios-internos']
+      });
+    }
+    if (this.canAccess([UserTypes.CLIENT]) && this.userId()) {
+      gestion.push({
+        label: 'Usuarios Internos',
+        icon: 'pi pi-users',
+        routerLink: ['/clients', this.userId()!, 'usuarios-internos']
+      });
+    }
+    if (this.canAccess([UserTypes.CLIENT])) {
+      gestion.push({ label: 'Mis Compañías', icon: 'pi pi-building', routerLink: '/clients/companies' });
+    }
+    if (this.canAccess([UserTypes.ADMIN])) {
+      gestion.push({ label: 'Empresas', icon: 'pi pi-calendar', routerLink: '/companies' });
+    }
+
+    const sections: SidebarSection[] = [];
+    if (principal.length) sections.push({ title: 'PRINCIPAL', items: principal });
+    if (gestion.length) sections.push({ title: 'GESTIÓN', items: gestion });
+    return sections;
+  });
 
   /** Modelo de menú lateral para PrimeNG p-menu (solo ítems visibles según rol). */
   protected menuItems = computed<MenuItem[]>(() => {

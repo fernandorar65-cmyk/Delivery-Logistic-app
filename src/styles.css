@@ -44,6 +44,260 @@ button {
   }
 }
 
+/* ----- PrimeNG: pulido profesional ----- */
+/* Los componentes heredan la fuente del body (Plus Jakarta Sans) */
+.p-card {
+  box-shadow: var(--p-shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.p-card:hover {
+  box-shadow: var(--p-shadow-md);
+}
+.p-card .p-card-body {
+  padding: var(--p-content-padding);
+}
+.p-card .p-card-title {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.p-button {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.p-button:focus-visible {
+  box-shadow: var(--p-focus-ring);
+}
+
+.p-inputtext {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.p-inputtext:focus {
+  box-shadow: 0 0 0 2px var(--p-primary-200);
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  background: var(--p-surface-100);
+  color: var(--p-text-color);
+  border-color: var(--p-surface-border);
+}
+.p-datatable .p-datatable-tbody > tr {
+  transition: background-color 0.15s ease;
+}
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: var(--p-surface-hover);
+}
+
+.p-toolbar {
+  background: var(--p-surface-section);
+  border-color: var(--p-surface-border);
+  border-radius: var(--p-border-radius-lg);
+}
+
+.p-tabs .p-tablist {
+  border-color: var(--p-surface-border);
+}
+.p-tabs .p-tablist .p-tablink {
+  font-weight: 500;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.p-tag {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.p-menu,
+.p-tieredmenu {
+  border-radius: var(--p-border-radius-lg);
+  box-shadow: var(--p-shadow-lg);
+  border: 1px solid var(--p-surface-border);
+}
+.p-menu .p-menuitem-link,
+.p-tieredmenu .p-menuitem-link {
+  transition: background-color 0.15s ease;
+}
+
+/* ========== Main layout: sidebar DIAMOND (global para que PrimeNG no lo pise) ========== */
+app-main-layout .app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+app-main-layout .layout-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+app-main-layout .sidebar {
+  width: 16rem !important;
+  min-width: 16rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex-shrink: 0 !important;
+  background: #1a1a2e !important;
+  overflow: hidden !important;
+}
+
+app-main-layout .sidebar-diamond .sidebar-header {
+  flex-shrink: 0;
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+app-main-layout .sidebar-logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+app-main-layout .sidebar-logo-icon svg {
+  display: block;
+}
+
+app-main-layout .sidebar-diamond .sidebar-logo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.06em;
+}
+
+app-main-layout .sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem 0 1rem;
+}
+
+app-main-layout .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+app-main-layout .sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+app-main-layout .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+app-main-layout .sidebar-section-title {
+  display: block;
+  padding: 0 1.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #a0a0a0;
+  text-transform: uppercase;
+}
+
+app-main-layout .sidebar-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+app-main-layout .sidebar-menu-list li {
+  margin: 0;
+}
+
+app-main-layout .sidebar-link {
+  display: flex !important;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  color: #a0a0a0 !important;
+  text-decoration: none !important;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color 0.2s ease, background-color 0.15s ease;
+}
+
+app-main-layout .sidebar-link:hover {
+  color: #e2e8f0 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+app-main-layout .sidebar-link-icon {
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+app-main-layout .sidebar-link-active.sidebar-link {
+  color: #60a5fa !important;
+  font-weight: 600;
+}
+
+app-main-layout .sidebar-link-active .sidebar-link-icon {
+  color: #60a5fa !important;
+}
+
+app-main-layout .sidebar-footer {
+  flex-shrink: 0;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+app-main-layout .sidebar-footer-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+app-main-layout .content-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #ffffff;
+}
+
+app-main-layout .top-header .p-toolbar {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+@media (max-width: 768px) {
+  app-main-layout .sidebar {
+    width: 4.5rem !important;
+    min-width: 4.5rem !important;
+  }
+
+  app-main-layout .sidebar-diamond .sidebar-header {
+    justify-content: center;
+  }
+
+  app-main-layout .sidebar-logo,
+  app-main-layout .sidebar-footer-text {
+    display: none;
+  }
+
+  app-main-layout .sidebar-link-text {
+    display: none;
+  }
+
+  app-main-layout .sidebar-link {
+    justify-content: center;
+    padding: 0.75rem;
+  }
+}
+
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined";
   font-weight: normal;

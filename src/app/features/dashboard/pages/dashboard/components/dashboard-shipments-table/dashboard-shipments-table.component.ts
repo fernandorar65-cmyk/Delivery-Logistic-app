@@ -1,10 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Shipment } from '../../dashboard-view.types';
 
@@ -13,11 +15,13 @@ import { Shipment } from '../../dashboard-view.types';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TableModule,
     CardModule,
     TagModule,
     AvatarModule,
     ButtonModule,
+    CheckboxModule,
     ProgressSpinnerModule
   ],
   templateUrl: './dashboard-shipments-table.component.html',

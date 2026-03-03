@@ -4,7 +4,7 @@
     <div class="form-wrapper">
       <div class="logo-section">
         <div class="logo-icon">
-          <app-hero-icon name="shield-check" [size]="24"></app-hero-icon>
+          <i class="pi pi-shield" style="font-size: 1.5rem; color: white;"></i>
         </div>
         <span class="logo-text">LOGISAAS <span class="logo-accent">PREMIUM</span></span>
       </div>
@@ -18,106 +18,86 @@
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
         @if (error()) {
-          <div class="error-message">
-            <app-hero-icon name="exclamation-circle" [size]="20"></app-hero-icon>
-            <span>{{ error() }}</span>
-          </div>
+          <p-message severity="error" styleClass="w-full mb-0">{{ error() }}</p-message>
         }
 
-        <!-- Email Field -->
+        <!-- Email con PrimeNG -->
         <div class="form-group">
           <label for="email" class="form-label">Correo Corporativo</label>
-          <div class="input-wrapper group">
+          <p-iconfield iconPosition="left" styleClass="w-full">
+            <p-inputicon styleClass="pi pi-envelope" />
             <input
               type="email"
               id="email"
               formControlName="email"
               placeholder="nombre@compania.com"
-              class="login-input"
-              [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-              required
+              pInputText
+              class="w-full"
             />
-            <div class="input-check-icon" [class.visible]="loginForm.get('email')?.valid && loginForm.get('email')?.touched">
-              <app-hero-icon name="check-circle" [size]="20"></app-hero-icon>
-            </div>
-          </div>
+          </p-iconfield>
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <span class="error-text">{{ getFieldError('email') }}</span>
+            <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('email') }}</p-message>
           }
         </div>
 
-        <!-- Password Field -->
+        <!-- Password con PrimeNG -->
         <div class="form-group">
           <div class="password-label-row">
             <label for="password" class="form-label">Contraseña</label>
             <a href="#" class="forgot-password">¿Olvidó sus datos?</a>
           </div>
-          <div class="input-wrapper">
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
-              id="password"
-              formControlName="password"
-              placeholder="••••••••"
-              class="login-input"
-              [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-              required
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="togglePasswordVisibility()"
-              tabindex="-1"
-            >
-              <app-hero-icon name="eye" [size]="20"></app-hero-icon>
-            </button>
-          </div>
+          <p-password
+            formControlName="password"
+            placeholder="••••••••"
+            [toggleMask]="true"
+            [feedback]="false"
+            styleClass="w-full"
+            [fluid]="true"
+            inputId="password"
+          />
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <span class="error-text">{{ getFieldError('password') }}</span>
+            <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('password') }}</p-message>
           }
         </div>
 
-        <!-- Remember me -->
+        <!-- Remember me con PrimeNG -->
         <div class="remember-me-group">
-          <label class="remember-label-wrapper">
-            <input
-              type="checkbox"
-              id="remember"
-              class="remember-checkbox"
-              [checked]="rememberMe()"
-              (change)="rememberMe.set($any($event.target).checked)"
+          <label class="remember-label-wrapper" for="remember">
+            <p-checkbox
+              [ngModel]="rememberMe()"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="rememberMe.set($event)"
+              [binary]="true"
+              inputId="remember"
             />
             <span class="remember-label">Mantener sesión activa</span>
           </label>
         </div>
 
-        <!-- Submit Button -->
-        <button
+        <!-- Submit con PrimeNG -->
+        <p-button
           type="submit"
-          class="btn-premium"
-          [disabled]="loginForm.invalid || loading()"
-        >
-          @if (loading()) {
-            <div class="btn-spinner"></div>
-            Iniciando sesión...
-          } @else {
-            Ingresar al Sistema
-            <app-hero-icon name="arrow-right" [size]="20" class="btn-icon"></app-hero-icon>
-          }
-        </button>
+          [label]="loading() ? 'Iniciando sesión...' : 'Ingresar al Sistema'"
+          [icon]="loading() ? 'pi pi-spin pi-spinner' : 'pi pi-arrow-right'"
+          [loading]="loading()"
+          [disabled]="loginForm.invalid"
+          styleClass="w-full"
+          iconPos="right"
+        />
       </form>
 
       <div class="form-footer">
         <div class="features-badges">
           <div class="badge-item">
-            <app-hero-icon name="verified" [size]="14"></app-hero-icon>
+            <i class="pi pi-users"></i>
             <span>Aliados</span>
           </div>
           <div class="badge-item">
-            <app-hero-icon name="location-on" [size]="14"></app-hero-icon>
+            <i class="pi pi-globe"></i>
             <span>Global</span>
           </div>
           <div class="badge-item">
-            <app-hero-icon name="support" [size]="14"></app-hero-icon>
+            <i class="pi pi-verified"></i>
             <span>24/7</span>
           </div>
         </div>
@@ -155,7 +135,11 @@
   </section>
 </main>
 
-<!-- Floating Support Button -->
-<button class="floating-support-btn">
-  <app-hero-icon name="headset-mic" [size]="24"></app-hero-icon>
-</button>
+<!-- Floating Support Button con PrimeNG -->
+<p-button
+  icon="pi pi-headphones"
+  [rounded]="true"
+  severity="secondary"
+  styleClass="floating-support-btn"
+  [raised]="true"
+/>

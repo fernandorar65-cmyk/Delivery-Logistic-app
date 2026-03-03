@@ -1,54 +1,31 @@
-<div class="metrics-grid">
-  <p-card styleClass="shadow-2 stat-card">
-    <div class="flex justify-content-between align-items-start mb-2">
-      <span class="text-color-secondary font-medium">Total Envíos</span>
-      <span class="sparkline">
-        <svg viewBox="0 0 80 28" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path [attr.d]="sparklineUp" />
-        </svg>
-      </span>
-    </div>
-    <h3 class="text-3xl font-bold m-0">{{ totalShipments | number }}</h3>
-    <p-tag [severity]="totalShipmentsChange.isPositive ? 'success' : 'danger'"
-      [value]="(totalShipmentsChange.isPositive ? '+' : '') + totalShipmentsChange.value + '% ↑'" class="mt-2" />
-  </p-card>
-
-  <p-card styleClass="shadow-2 stat-card">
-    <div class="flex justify-content-between align-items-start mb-2">
-      <span class="text-color-secondary font-medium">Entregados</span>
-      <span class="sparkline">
-        <svg viewBox="0 0 80 28" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path [attr.d]="sparklineUp" />
-        </svg>
-      </span>
-    </div>
-    <h3 class="text-3xl font-bold m-0">{{ deliveredSuccess }}%</h3>
-    <p-tag severity="success" [value]="'+' + deliveredSuccessChange.value + '% ↑'" class="mt-2" />
-  </p-card>
-
-  <p-card styleClass="shadow-2 stat-card">
-    <div class="flex justify-content-between align-items-start mb-2">
-      <span class="text-color-secondary font-medium">En espera</span>
-      <span class="sparkline down">
-        <svg viewBox="0 0 80 28" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path [attr.d]="sparklineDown" />
-        </svg>
-      </span>
-    </div>
-    <h3 class="text-3xl font-bold m-0">{{ awaitingAssignment }}</h3>
-    <p-tag severity="danger" value="-24% ↓" class="mt-2" />
-  </p-card>
-
-  <p-card styleClass="shadow-2 stat-card">
-    <div class="flex justify-content-between align-items-start mb-2">
-      <span class="text-color-secondary font-medium">Incidentes</span>
-      <span class="sparkline">
-        <svg viewBox="0 0 80 28" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path [attr.d]="sparklineUp" />
-        </svg>
-      </span>
-    </div>
-    <h3 class="text-3xl font-bold m-0">{{ activeIncidents }}</h3>
-    <p-tag severity="danger" [value]="'-' + activeIncidentsChange.value + '% ↓'" class="mt-2" />
-  </p-card>
+<div class="kpi-cards">
+  @for (card of cards; track card.title) {
+    <p-card styleClass="kpi-card shadow-2">
+      <div class="kpi-card-header">
+        <span class="kpi-title">{{ card.title }}</span>
+        <p-select
+          [options]="periodOptions"
+          optionLabel="label"
+          [(ngModel)]="card.periodOption"
+          [style]="{ width: '10rem' }"
+          styleClass="kpi-period-select"
+        />
+      </div>
+      <div class="kpi-value-row">
+        <span class="kpi-value">{{ card.value }}</span>
+        <p-tag
+          [severity]="card.changePositive ? 'success' : 'danger'"
+          [value]="(card.changePositive ? '+' : '') + card.changePercent + '%'"
+          styleClass="kpi-change-pill"
+        />
+      </div>
+      <div class="kpi-chart-wrap">
+        <p-chart
+          type="line"
+          [data]="getChartData(card)"
+          [options]="getChartOptions(card)"
+        />
+      </div>
+    </p-card>
+  }
 </div>

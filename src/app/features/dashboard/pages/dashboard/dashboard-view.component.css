@@ -1,19 +1,67 @@
 .dashboard-container {
-  max-width: 75rem;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-.dashboard-charts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.order-history-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.dashboard-charts p-card ::ng-deep .p-chart {
-  height: 16rem;
+.order-history-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--p-text-color);
+}
+
+.order-history-subtitle {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+  margin: 0.25rem 0 0 0;
+}
+
+.order-history-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pagination-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--p-surface-border);
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-page {
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 1.5rem;
+  text-align: center;
 }
 
 .dashboard-bottom {
@@ -27,11 +75,6 @@
   min-width: 0;
 }
 
-.shipments-section ::ng-deep .pagination {
-  margin-top: 1rem;
-  padding-top: 1rem;
-}
-
 .top-products-list {
   list-style: none;
   margin: 0;
@@ -43,10 +86,6 @@
 }
 
 @media (max-width: 1024px) {
-  .dashboard-charts {
-    grid-template-columns: 1fr;
-  }
-
   .dashboard-bottom {
     grid-template-columns: 1fr;
   }
@@ -55,5 +94,13 @@
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 0;
+  }
+
+  .order-history-header {
+    flex-direction: column;
+  }
+
+  .order-history-toolbar {
+    width: 100%;
   }
 }

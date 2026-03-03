@@ -1,139 +1,118 @@
 <div class="table-card">
   <div class="table-wrapper">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Aliado / Empresa</th>
-          @if (showEmail) {
-            <th>Correo</th>
-          }
-          <th>Estado</th>
-          <th>Flota</th>
-          <th>Conductores</th>
-          <th>Zona / Cobertura</th>
-          <th>Calif.</th>
-          <th class="text-right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading) {
+    @if (loading) {
+      <app-loading-card message="Cargando aliados..."></app-loading-card>
+    } @else if (error) {
+      <app-empty-state
+        icon="exclamation-triangle"
+        title="No se pudieron cargar los aliados"
+        [description]="error"
+      ></app-empty-state>
+    } @else if (allies.length === 0) {
+      <app-empty-state
+        icon="users"
+        title="No hay providers por el momento"
+        description="Cuando registres nuevos aliados aparecerán en esta lista."
+        actionLabel="Crear nuevo aliado"
+        (action)="createRequested.emit()"
+      ></app-empty-state>
+    } @else {
+      <p-table [value]="allies" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped p-datatable-sm">
+        <ng-template pTemplate="header">
           <tr>
-            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-8">
-              <app-loading-card message="Cargando aliados..."></app-loading-card>
-            </td>
+            <th>Aliado / Empresa</th>
+            @if (showEmail) {
+              <th>Correo</th>
+            }
+            <th>Estado</th>
+            <th>Flota</th>
+            <th>Conductores</th>
+            <th>Zona / Cobertura</th>
+            <th>Calif.</th>
+            <th class="text-right">Acciones</th>
           </tr>
-        } @else if (error) {
+        </ng-template>
+        <ng-template pTemplate="body" let-ally>
           <tr>
-            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-8 text-red-600">
-              <app-empty-state
-                icon="exclamation-triangle"
-                title="No se pudieron cargar los aliados"
-                [description]="error"
-              ></app-empty-state>
-            </td>
-          </tr>
-        } @else if (allies.length === 0) {
-          <tr>
-            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-8">
-              <app-empty-state
-                icon="users"
-                title="No hay providers por el momento"
-                description="Cuando registres nuevos aliados aparecerán en esta lista."
-                actionLabel="Crear nuevo aliado"
-                (action)="createRequested.emit()"
-              ></app-empty-state>
-            </td>
-          </tr>
-        } @else {
-          @for (ally of allies; track ally.id) {
-          <tr class="table-row">
-            <td class="ally-info">
-              <div class="ally-avatar">
+            <td>
+              <div class="flex align-items-center gap-2">
                 @if (ally.logo) {
-                  <img [src]="ally.logo" [alt]="ally.name" />
-                } @else if (ally.initials) {
-                  <div class="ally-initials">{{ ally.initials }}</div>
+                  <p-avatar [image]="ally.logo" shape="circle" />
                 } @else {
-                  <div class="ally-initials">{{ ally.name.charAt(0) }}</div>
+                  <p-avatar [label]="ally.initials || ally.name.charAt(0)" shape="circle" styleClass="bg-primary" />
                 }
-              </div>
-              <div class="ally-details">
-                <p class="ally-name">{{ ally.name }}</p>
-                <p class="ally-id">ID: #{{ ally.id }}</p>
+                <div>
+                  <div class="font-medium">{{ ally.name }}</div>
+                  <div class="text-sm text-color-secondary">ID: #{{ ally.id }}</div>
+                </div>
               </div>
             </td>
             @if (showEmail) {
-              <td class="ally-email">
-                {{ ally.email || ally.user_email || '-' }}
-              </td>
+              <td>{{ ally.email || ally.user_email || '-' }}</td>
             }
             <td>
-              <span class="status-badge" [class]="getStatusClass(ally.status)">
-                <span class="status-dot"></span>
-                {{ getStatusLabel(ally.status) }}
-              </span>
+              <p-tag [value]="getStatusLabel(ally.status)" [severity]="getStatusSeverity(ally.status)" />
             </td>
             <td>
-              <div class="fleet-info">
-                <div class="fleet-item">
-                  <app-hero-icon name="truck" [size]="18" class="fleet-icon"></app-hero-icon>
-                  <span class="fleet-count">{{ ally.trucks }}</span>
-                </div>
-                <div class="fleet-item" [class.opacity-40]="ally.motorcycles === 0">
-                  <app-hero-icon name="user" [size]="18" class="fleet-icon"></app-hero-icon>
-                  <span class="fleet-count">{{ ally.motorcycles }}</span>
-                </div>
+              <div class="flex gap-2 align-items-center">
+                <span class="flex align-items-center gap-1">
+                  <i class="pi pi-truck"></i>
+                  <span>{{ ally.trucks }}</span>
+                </span>
+                <span class="flex align-items-center gap-1">
+                  <i class="pi pi-user"></i>
+                  <span>{{ ally.motorcycles }}</span>
+                </span>
               </div>
             </td>
             <td>
               @if (ally.driverAvatars && ally.driverAvatars.length > 0) {
-                <div class="drivers-avatars">
+                <div class="drivers-avatars flex align-items-center gap-1">
                   @for (avatar of ally.driverAvatars.slice(0, 3); track $index) {
-                    <img [src]="avatar" [alt]="'Driver ' + ($index + 1)" class="driver-avatar" />
+                    <p-avatar [image]="avatar" shape="circle" size="normal" styleClass="avatar-small" />
                   }
                   @if (ally.drivers > ally.driverAvatars.length) {
-                    <div class="driver-avatar-more">+{{ ally.drivers - ally.driverAvatars.length }}</div>
+                    <span class="text-sm text-color-secondary">+{{ ally.drivers - ally.driverAvatars.length }}</span>
                   }
                 </div>
               } @else {
-                <span class="drivers-text">{{ ally.drivers }} Conductores</span>
+                <span>{{ ally.drivers }} Conductores</span>
               }
             </td>
+            <td>{{ ally.zone }}</td>
             <td>
-              <span class="zone-text">{{ ally.zone }}</span>
-            </td>
-            <td>
-              @if (ally.rating !== null) {
-                <div class="rating">
-                  <app-hero-icon name="star" [size]="16" class="star-icon"></app-hero-icon>
-                  <span class="rating-value">{{ ally.rating }}</span>
-                </div>
+              @if (ally.rating !== null && ally.rating !== undefined) {
+                <span class="flex align-items-center gap-1">
+                  <i class="pi pi-star-fill text-primary"></i>
+                  <span>{{ ally.rating }}</span>
+                </span>
               } @else {
-                <div class="rating">
-                  <app-hero-icon name="star" [size]="16" class="star-icon-empty"></app-hero-icon>
-                  <span class="rating-empty">-</span>
-                </div>
+                <span class="text-color-secondary">-</span>
               }
             </td>
             <td class="text-right">
-              @if (ally.id) {
-                <a
-                  class="action-btn"
-                  [routerLink]="['/providers', ally.id, 'vehicles']"
-                  [queryParams]="{ name: ally.name }"
-                  title="Ver vehículos"
-                >
-                  <app-hero-icon name="truck" [size]="20"></app-hero-icon>
-                </a>
-              }
-              <button class="action-btn" title="Más acciones">
-                <app-hero-icon name="ellipsis-vertical" [size]="20"></app-hero-icon>
-              </button>
+              <div class="flex gap-1 justify-content-end">
+                @if (ally.id) {
+                  <p-button
+                    icon="pi pi-truck"
+                    [rounded]="true"
+                    [text]="true"
+                    pTooltip="Ver vehículos"
+                    [routerLink]="['/providers', ally.id, 'vehicles']"
+                    [queryParams]="{ name: ally.name }"
+                  />
+                }
+                <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true" pTooltip="Más acciones" />
+              </div>
             </td>
           </tr>
-          }
-        }
-      </tbody>
-    </table>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td [attr.colspan]="showEmail ? 8 : 7" class="text-center p-4">No hay aliados para mostrar.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
   </div>
 </div>

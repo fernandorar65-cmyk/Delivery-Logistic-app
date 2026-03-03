@@ -23,62 +23,51 @@
       icon="users"></app-empty-state>
     } @else {
     <div class="internal-users-table-wrapper">
-      <table class="internal-users-table">
-        <thead>
+      <p-table [value]="users()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped p-datatable-sm">
+        <ng-template pTemplate="header">
           <tr>
-            <th class="table-header">Nombre completo</th>
-            <th class="table-header">Correo electrónico</th>
-            <th class="table-header">Estado</th>
-            <th class="table-header">Registro</th>
-            <th class="table-header text-right">Acciones</th>
+            <th>Nombre completo</th>
+            <th>Correo electrónico</th>
+            <th>Estado</th>
+            <th>Registro</th>
+            <th class="text-right">Acciones</th>
           </tr>
-        </thead>
-        <tbody>
-          @for (user of users(); track user.id) {
-          <tr class="table-row">
-            <td class="table-cell">
-              <div class="user-cell">
-                <div class="user-avatar">
-                  {{ (getUserDisplayName(user) || 'U').slice(0, 2) }}
-                </div>
-                <div class="user-meta">
-                  <p class="user-name">{{ getUserDisplayName(user) }}</p>
-                </div>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>
+              <div class="flex align-items-center gap-2">
+                <p-avatar [label]="(getUserDisplayName(user) || 'U').slice(0, 2)" shape="circle" styleClass="bg-primary" />
+                <span class="font-medium">{{ getUserDisplayName(user) }}</span>
               </div>
             </td>
-            <td class="table-cell">
-              <span class="cell-muted">{{ getUserEmail(user) }}</span>
+            <td>
+              <span class="text-color-secondary">{{ getUserEmail(user) }}</span>
             </td>
-            <td class="table-cell">
-              <label class="status-toggle">
-                <input type="checkbox" checked />
-                <span class="toggle-track"></span>
-                <span class="toggle-label">Activo</span>
-              </label>
+            <td>
+              <p-tag value="Activo" severity="success" />
             </td>
-            <td class="table-cell">
-              <span class="cell-muted">{{ getUserCreatedAtDisplay(user) }}</span>
+            <td>
+              <span class="text-color-secondary">{{ getUserCreatedAtDisplay(user) }}</span>
             </td>
-            <td class="table-cell text-right">
-              <div class="row-actions">
-                <!-- Botón editar oculto hasta que el endpoint PATCH esté disponible -->
-                <button
-                  type="button"
-                  class="action-icon"
-                  title="Editar"
-                  (click)="openEdit(user)"
-                  style="display: none;">
-                  <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
-                </button>
-                <button type="button" class="action-icon danger" (click)="openDeleteConfirm(user)">
-                  <app-hero-icon name="trash" [size]="16"></app-hero-icon>
-                </button>
-              </div>
+            <td class="text-right">
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                severity="danger"
+                [text]="true"
+                (onClick)="openDeleteConfirm(user)"
+                pTooltip="Eliminar"
+              />
             </td>
           </tr>
-          }
-        </tbody>
-      </table>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center p-4">No hay usuarios internos.</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
     }
   </div>
