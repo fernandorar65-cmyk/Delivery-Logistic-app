@@ -42,19 +42,28 @@
         </div>
       </div>
     </div>
-    <p-card header="Destacados" styleClass="shadow-2 top-products">
-      <ul class="top-products-list">
-        @for (item of topProducts(); track item.name) {
-          <li class="flex align-items-center gap-2 py-2 border-bottom-1 surface-border">
-            <p-avatar [label]="item.initials" shape="circle" styleClass="bg-primary" [style]="{ width: '2.5rem', height: '2.5rem' }" />
-            <div class="flex-1">
-              <div class="font-medium">{{ item.name }}</div>
-              <div class="text-sm text-color-secondary">{{ item.detail }}</div>
+    <section class="card-destacados">
+      <div class="card-destacados-header">
+        <h3 class="card-destacados-title">Destacados</h3>
+        <p class="card-destacados-subtitle">Clientes con más actividad reciente</p>
+      </div>
+      <ul class="card-destacados-list">
+        @for (item of topProducts(); track item.name; let i = $index) {
+          <li class="card-destacados-item">
+            <span class="card-destacados-rank">{{ i + 1 }}</span>
+            <p-avatar
+              [label]="item.initials"
+              shape="circle"
+              styleClass="card-destacados-avatar"
+            />
+            <div class="card-destacados-content">
+              <span class="card-destacados-name">{{ item.name }}</span>
+              <span class="card-destacados-detail">{{ item.detail }}</span>
             </div>
-            <span class="font-semibold text-primary">{{ item.value }}</span>
+            <span class="card-destacados-value">{{ item.value }}</span>
           </li>
         }
       </ul>
-    </p-card>
+    </section>
   </div>
 </div>

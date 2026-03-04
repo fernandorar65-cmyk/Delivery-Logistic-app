@@ -48,6 +48,153 @@
   padding: 1.25rem 1.25rem 0;
 }
 
+.orders-breadcrumb {
+  flex-shrink: 0;
+  padding: 0.75rem 1.25rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+}
+
+.orders-breadcrumb-link {
+  color: var(--orders-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.orders-breadcrumb-link:hover {
+  color: var(--orders-primary);
+}
+
+.orders-breadcrumb-link .pi {
+  font-size: 0.9rem;
+}
+
+.orders-breadcrumb-sep {
+  color: var(--orders-muted-light);
+}
+
+.orders-breadcrumb-current {
+  color: var(--orders-text);
+  font-weight: 600;
+}
+
+.orders-routes-badge-p {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.orders-search-iconfield {
+  flex: 1;
+}
+
+.orders-search-iconfield ::ng-deep .p-inputtext {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.orders-pills-wrap {
+  padding: 0 1.25rem 1rem;
+  flex-shrink: 0;
+}
+
+.orders-select-button ::ng-deep .p-selectbutton .p-button {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.orders-card-prime ::ng-deep .p-card {
+  border: 2px solid var(--orders-border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.orders-card-prime ::ng-deep .p-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.orders-card-prime.orders-card--selected ::ng-deep .p-card {
+  border-color: var(--orders-primary);
+  box-shadow: 0 4px 20px var(--orders-primary-shadow);
+  background: var(--orders-primary-light);
+}
+
+.orders-card-prime ::ng-deep .p-card-body {
+  padding: 1rem 1.25rem;
+}
+
+.orders-card-prime ::ng-deep .p-card-content {
+  padding: 0;
+}
+
+.orders-card-status-tag {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.orders-data-panel-prime ::ng-deep .p-panel {
+  border: 1px dashed var(--orders-border);
+  border-radius: 0.5rem;
+  background: var(--orders-bg);
+}
+
+.orders-data-panel-prime ::ng-deep .p-panel-header {
+  padding: 0.65rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--orders-muted);
+}
+
+.orders-data-panel-prime ::ng-deep .p-panel-content {
+  padding: 0.75rem;
+}
+
+.orders-map-type .p-button {
+  margin: 0;
+  border-radius: 0;
+}
+
+.orders-map-type .p-button:first-child {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.orders-map-type .p-button:last-child {
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.orders-map-summary-prime ::ng-deep .p-card {
+  padding: 1rem 1.25rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.orders-map-summary-prime ::ng-deep .p-card-body,
+.orders-map-summary-prime ::ng-deep .p-card-content {
+  padding: 0;
+}
+
+.orders-summary-progress ::ng-deep .p-progressbar {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.orders-summary-progress ::ng-deep .p-progressbar-value {
+  border-radius: 3px;
+}
+
 .orders-sidebar-title-row {
   display: flex;
   align-items: center;

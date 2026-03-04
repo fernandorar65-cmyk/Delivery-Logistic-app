@@ -1,31 +1,24 @@
 <div class="filters-card">
   <div class="filters-container">
-    <div class="search-wrapper">
-      <app-hero-icon name="magnifying-glass" [size]="20" class="search-icon"></app-hero-icon>
+    <p-iconField iconPosition="left" styleClass="search-field w-full">
+      <p-inputIcon styleClass="pi pi-search" />
       <input
         type="text"
-        class="search-input"
-        placeholder="Buscar por placa, modelo..."
-        [(ngModel)]="searchQuery"
+        pInputText
+        [ngModel]="searchQuery"
         (ngModelChange)="searchQueryChange.emit($event)"
+        placeholder="Buscar por placa, modelo..."
+        class="w-full"
       />
-    </div>
-    <div class="filters-row">
-      <select
-        class="filter-select"
-        [(ngModel)]="vehicleTypeFilter"
-        (ngModelChange)="vehicleTypeChange.emit($event)"
-      >
-        <option value="">Tipo de Vehículo</option>
-        <option value="truck">Camión</option>
-        <option value="van">Van</option>
-        <option value="motorcycle">Moto</option>
-        <option value="tractor-trailer">Tractor-remolque</option>
-      </select>
-      <button class="filter-btn">
-        <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
-        Filtrar
-      </button>
-    </div>
+    </p-iconField>
+    <p-select
+      [options]="typeOptions"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="vehicleTypeFilter"
+      (ngModelChange)="vehicleTypeChange.emit($event)"
+      placeholder="Tipo de Vehículo"
+      styleClass="filter-type-select"
+    />
   </div>
 </div>

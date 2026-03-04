@@ -2,13 +2,14 @@
   <!-- Left: Login Form -->
   <section class="login-form-section">
     <div class="form-wrapper">
-      <div class="logo-section">
+      <div class="logo-section login-anim-logo">
         <div class="logo-icon">
           <i class="pi pi-shield" aria-hidden="true"></i>
         </div>
         <span class="logo-text">LOGISAAS <span class="logo-accent">PREMIUM</span></span>
       </div>
 
+      <div class="login-card-wrap">
       <p-card styleClass="login-card" [style]="{ overflow: 'visible' }">
         <ng-template pTemplate="header">
           <div class="login-card-header">
@@ -19,7 +20,7 @@
           </div>
         </ng-template>
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form login-anim-form">
           @if (error()) {
             <p-message severity="error" styleClass="w-full login-error-msg">{{ error() }}</p-message>
           }
@@ -50,15 +51,18 @@
               <a href="#" class="forgot-password">¿Olvidó sus datos?</a>
             </div>
             <div class="login-input-wrap">
-              <p-password
-                formControlName="password"
-                placeholder="••••••••"
-                [toggleMask]="true"
-                [feedback]="false"
-                styleClass="w-full login-password-field"
-                [fluid]="true"
-                inputId="password"
-              />
+              <p-iconField iconPosition="left" styleClass="w-full login-password-icon-field">
+                <p-inputIcon styleClass="pi pi-lock" />
+                <p-password
+                  formControlName="password"
+                  placeholder="••••••••"
+                  [toggleMask]="true"
+                  [feedback]="false"
+                  styleClass="w-full login-password-field"
+                  [fluid]="true"
+                  inputId="password"
+                />
+              </p-iconField>
             </div>
             @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
               <small class="p-error block mt-1">{{ getFieldError('password') }}</small>
@@ -91,12 +95,13 @@
         <ng-template pTemplate="footer">
           <p-divider styleClass="login-divider" />
           <div class="features-badges">
-            <p-tag value="Aliados" icon="pi pi-users" styleClass="feature-tag" />
-            <p-tag value="Global" icon="pi pi-globe" styleClass="feature-tag" />
-            <p-tag value="24/7" icon="pi pi-verified" styleClass="feature-tag" />
+            <p-tag value="Aliados" icon="pi pi-users" styleClass="feature-tag login-anim-tag" />
+            <p-tag value="Global" icon="pi pi-globe" styleClass="feature-tag login-anim-tag" />
+            <p-tag value="24/7" icon="pi pi-verified" styleClass="feature-tag login-anim-tag" />
           </div>
         </ng-template>
       </p-card>
+      </div>
     </div>
   </section>
 
@@ -104,7 +109,7 @@
   <section class="login-hero-section">
     <div class="hero-background"></div>
     <div class="gradient-overlay"></div>
-    <div class="hero-content">
+    <div class="hero-content login-anim-hero">
       <div class="hero-badge">
         <span class="badge-dot"></span>
         Sistema Operativo Live

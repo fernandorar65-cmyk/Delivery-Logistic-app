@@ -10,6 +10,23 @@
   min-height: 100%;
 }
 
+.breadcrumb-link .pi {
+  font-size: 1rem;
+}
+
+/* PrimeNG: botón registrar y paginador */
+:host ::ng-deep .btn-register-vehicle.p-button {
+  font-weight: 600;
+}
+
+:host ::ng-deep .vehicles-paginator.p-paginator {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding: 0.5rem 1rem;
+}
+
 /* Breadcrumb */
 .breadcrumb {
   display: flex;

@@ -2,14 +2,14 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { VehicleService } from '@app/features/vehicles/services/vehicle.service';
+import { PaginatorModule } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
 import { Vehicle } from '@app/features/vehicles/models/vehicle.model';
 import { StatCard } from './vehicle-list-view.types';
 import { VehiclesStatsComponent } from './components/vehicles-stats/vehicles-stats.component';
 import { VehiclesFiltersComponent } from './components/vehicles-filters/vehicles-filters.component';
 import { VehiclesTableComponent } from './components/vehicles-table/vehicles-table.component';
-import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { VehiclesCreateModalComponent } from './components/vehicles-create-modal/vehicles-create-modal.component';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
@@ -23,11 +23,11 @@ import { normalizeUserType } from '@app/shared/models/user-types';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    HeroIconComponent,
     VehiclesStatsComponent,
     VehiclesFiltersComponent,
     VehiclesTableComponent,
-    PaginationComponent,
+    PaginatorModule,
+    ButtonModule,
     VehiclesCreateModalComponent
   ],
   templateUrl: './vehicle-list-view.component.html',
@@ -369,6 +369,8 @@ export class VehicleListViewComponent implements OnInit {
   currentPage = signal(1);
   totalItems = signal(0);
   itemsPerPage = 10;
+  first = signal(0);
+  rows = signal(10);
 
   get providerLabel(): string {
     const name = this.providerName();
@@ -436,9 +438,9 @@ export class VehicleListViewComponent implements OnInit {
   // Vehículos paginados
   get paginatedVehicles(): Vehicle[] {
     const filtered = this.filteredVehicles;
-    const start = (this.currentPage() - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return filtered.slice(start, end);
+    const start = this.first();
+    const pageSize = this.rows();
+    return filtered.slice(start, start + pageSize);
   }
 
   // Métodos para la paginación
@@ -470,6 +472,11 @@ export class VehicleListViewComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage.set(page);
     }
+  }
+
+  onPageChange(event: { first?: number; rows?: number }): void {
+    this.first.set(event.first ?? 0);
+    this.rows.set(event.rows ?? 10);
   }
 
   // Etiquetas y estados se resuelven en el componente de tabla.

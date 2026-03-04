@@ -1,6 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, signal, ViewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TagModule } from 'primeng/tag';
+import { CardModule } from 'primeng/card';
+import { PanelModule } from 'primeng/panel';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { FormsModule } from '@angular/forms';
 
 export type OrderStatus = 'pending' | 'in_progress' | 'delivered' | 'alert';
 
@@ -215,7 +226,20 @@ function vrpResponseToOrders(response: VRPResponse): OrderWithLocation[] {
 @Component({
   selector: 'app-orders-map-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    ButtonModule,
+    SelectButtonModule,
+    TagModule,
+    CardModule,
+    PanelModule,
+    ProgressBarModule
+  ],
   templateUrl: './orders-map-view.component.html',
   styleUrl: './orders-map-view.component.css'
 })
@@ -225,6 +249,14 @@ export class OrdersMapViewComponent implements AfterViewInit {
   searchText = signal('');
   /** Filtro por estado: 'all' | 'in_progress' | 'alert' | 'pending' | 'delivered' */
   statusFilter = signal<OrderStatus | 'all'>('all');
+  /** Opciones para el SelectButton de filtro por estado */
+  statusFilterOptions = [
+    { label: 'Todas', value: 'all' as const },
+    { label: 'En Curso', value: 'in_progress' as const },
+    { label: 'Alerta', value: 'alert' as const },
+    { label: 'Pendiente', value: 'pending' as const },
+    { label: 'Finalizado', value: 'delivered' as const }
+  ];
   /** IDs de órdenes seleccionadas (se puede elegir más de una) */
   selectedOrderIds = signal<Set<string>>(new Set());
 
@@ -375,6 +407,17 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
   getStatusClass(status: OrderStatus): string {
     return `orders-status--${status}`;
+  }
+
+  /** Severidad PrimeNG para p-tag según estado */
+  getStatusSeverity(status: OrderStatus | string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
+    const map: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary'> = {
+      pending: 'warn',
+      in_progress: 'success',
+      delivered: 'secondary',
+      alert: 'danger'
+    };
+    return map[status] ?? 'info';
   }
 
   getFilteredOrders(): OrderWithLocation[] {
