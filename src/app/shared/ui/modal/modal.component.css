@@ -1,94 +1,28 @@
-.app-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0.75rem, 2vw, 2rem);
-  padding-top: max(0.75rem, env(safe-area-inset-top));
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  z-index: 1000;
-  overflow-y: auto;
-}
-
-.app-modal-container {
-  width: min(100%, 95rem);
-  max-height: 90vh;
-  background: #ffffff;
+/* Ajustes para p-dialog (PrimeNG) manteniendo aspecto del modal anterior */
+:host ::ng-deep .app-modal-dialog.p-dialog {
   border-radius: 1rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 25px 45px -18px rgba(15, 23, 42, 0.35);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
-.app-modal-container.sm {
-  width: min(100%, 26rem);
-}
-
-.app-modal-container.md {
-  width: min(100%, 36rem);
-}
-
-.app-modal-container.lg {
-  width: min(100%, 48rem);
-}
-
-.app-modal-container.xl {
-  width: min(100%, 64rem);
-}
-
-.app-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+:host ::ng-deep .app-modal-dialog .p-dialog-header {
   padding: clamp(1rem, 2vw, 1.5rem);
   border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
-  position: sticky;
-  top: 0;
-  z-index: 1;
 }
 
-.app-modal-title {
-  margin: 0;
+:host ::ng-deep .app-modal-dialog .p-dialog-title {
   font-size: clamp(1.1rem, 2.8vw, 1.5rem);
   font-weight: 800;
   color: #0f172a;
 }
 
-.app-modal-close {
-  border: none;
-  background: transparent;
-  color: #94a3b8;
-  padding: 0.4rem;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.app-modal-close:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-.app-modal-body {
+:host ::ng-deep .app-modal-dialog .p-dialog-content {
   padding: clamp(1rem, 2vw, 1.5rem);
-  overflow-y: auto;
 }
 
 @media (max-width: 480px) {
-  .app-modal-container {
-    margin: auto 0.5rem;
-    max-height: 85vh;
-  }
-
-  .app-modal-container.sm {
-    width: calc(100% - 1rem);
+  :host ::ng-deep .app-modal-dialog.p-dialog {
+    margin: 0.5rem;
+    max-height: calc(100vh - 1rem);
   }
 }

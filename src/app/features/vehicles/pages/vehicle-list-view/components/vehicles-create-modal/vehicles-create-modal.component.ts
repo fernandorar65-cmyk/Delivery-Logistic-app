@@ -1,6 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
@@ -12,7 +16,16 @@ interface SelectOption {
 @Component({
   selector: 'app-vehicles-create-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent, ModalComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HeroIconComponent,
+    ModalComponent,
+    InputTextModule,
+    SelectModule,
+    ButtonModule,
+    MessageModule
+  ],
   templateUrl: './vehicles-create-modal.component.html',
   styleUrl: './vehicles-create-modal.component.css'
 })

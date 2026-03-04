@@ -4,31 +4,34 @@
   [showClose]="false"
   (close)="close.emit()"
 >
-  <div class="confirm-modal-icon" [class.danger]="danger">
-    <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
-  </div>
-  <p class="confirm-modal-message">{{ message }}</p>
+  <div class="confirm-modal-content">
+    <div class="confirm-modal-body">
+      <div class="confirm-modal-icon-wrap" [class.danger]="danger" [class.primary]="!danger">
+        <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+      </div>
+      <div class="confirm-modal-text">
+        <p class="confirm-modal-message">{{ message }}</p>
+        @if (error) {
+          <p-message severity="error" styleClass="confirm-modal-error-msg w-full mt-2">{{ error }}</p-message>
+        }
+      </div>
+    </div>
 
-  @if (error) {
-    <div class="confirm-modal-error">{{ error }}</div>
-  }
-
-  <div class="confirm-modal-actions">
-    <button
-      type="button"
-      class="confirm-btn"
-      [class.danger]="danger"
-      (click)="confirm.emit()"
-      [disabled]="loading"
-    >
-      @if (loading) {
-        Procesando...
-      } @else {
-        {{ confirmLabel }}
-      }
-    </button>
-    <button type="button" class="confirm-btn secondary" (click)="close.emit()" [disabled]="loading">
-      {{ cancelLabel }}
-    </button>
+    <div class="confirm-modal-actions">
+      <p-button
+        [label]="cancelLabel"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="loading"
+        (onClick)="close.emit()"
+      />
+      <p-button
+        [label]="loading ? 'Procesando...' : confirmLabel"
+        [loading]="loading"
+        [disabled]="loading"
+        [severity]="danger ? 'danger' : 'primary'"
+        (onClick)="confirm.emit()"
+      />
+    </div>
   </div>
 </app-modal>

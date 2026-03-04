@@ -4,10 +4,12 @@
       <h1 class="page-title">Administración de Compañías Clientes</h1>
       <p class="page-subtitle">Gestione sus clientes finales y sus entidades operativas.</p>
     </div>
-    <button (click)="openNewCompanyModal()" class="btn btn-primary">
-      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
-      Agregar Nueva Compañía
-    </button>
+    <p-button
+      label="Agregar Nueva Compañía"
+      icon="pi pi-plus"
+      (onClick)="openNewCompanyModal()"
+      styleClass="btn-add-company"
+    />
   </div>
 
   @if (loading()) {
@@ -48,7 +50,6 @@
     } @else {
       <app-companies-table
         [companies]="paginatedCompanies"
-        [getCompanyColor]="getCompanyColor.bind(this)"
         [getCompanyInitials]="getCompanyInitials.bind(this)"
         [getSectorClass]="getSectorClass.bind(this)"
         [getStatusClass]="getStatusClass.bind(this)"
@@ -58,19 +59,15 @@
         (uploadOrder)="goToUploadOrder($event)"
       ></app-companies-table>
 
-      <app-pagination
-        [startItem]="startItem"
-        [endItem]="endItem"
-        [totalItems]="filteredCompanies().length"
-        [currentPage]="currentPage()"
-        [totalPages]="totalPages"
-        [pages]="getPageNumbers()"
-        itemLabel="compañía"
-        itemLabelPlural="compañías"
-        (previous)="previousPage()"
-        (next)="nextPage()"
-        (goTo)="goToPage($event)"
-      ></app-pagination>
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="filteredCompanies().length"
+        [rowsPerPageOptions]="[5, 10, 20, 30]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="companies-paginator"
+        [showFirstLastIcon]="true"
+      />
     }
   }
 

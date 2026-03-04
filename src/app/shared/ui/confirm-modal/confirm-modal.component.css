@@ -1,68 +1,64 @@
-.confirm-modal-icon {
+.confirm-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.confirm-modal-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.confirm-modal-icon-wrap {
+  flex-shrink: 0;
   width: 3rem;
   height: 3rem;
-  border-radius: 999px;
-  display: inline-flex;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: #fee2e2;
+}
+
+.confirm-modal-icon-wrap.danger {
+  background: #fef2f2;
   color: #dc2626;
-  margin-bottom: 0.75rem;
+}
+
+.confirm-modal-icon-wrap.primary {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.confirm-modal-icon-wrap .pi {
+  font-size: 1.5rem;
+}
+
+.confirm-modal-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .confirm-modal-message {
-  margin: 0.5rem 0 0;
-  color: #64748b;
-  font-size: 0.95rem;
-}
-
-.confirm-modal-error {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  color: #b91c1c;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 0.6rem;
-  padding: 0.6rem 0.75rem;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #475569;
 }
 
 .confirm-modal-actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
 }
 
-.confirm-btn {
-  border-radius: 0.65rem;
-  border: 1px solid transparent;
-  padding: 0.7rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+:host ::ng-deep .confirm-modal-error-msg.p-message {
+  margin: 0;
 }
 
-.confirm-btn.secondary {
-  background: #f8fafc;
-  color: #475569;
-}
-
-.confirm-btn.secondary:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.confirm-btn.danger {
-  background: #ef4444;
-  color: #ffffff;
-}
-
-.confirm-btn.danger:hover {
-  background: #dc2626;
-}
-
-.confirm-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+:host ::ng-deep .confirm-modal-error-msg.p-message .p-message-wrapper {
+  padding: 0.5rem 0.75rem;
 }

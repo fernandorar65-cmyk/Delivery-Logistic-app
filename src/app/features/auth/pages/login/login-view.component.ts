@@ -13,6 +13,10 @@ import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MessageModule } from 'primeng/message';
+import { CardModule } from 'primeng/card';
+import { TagModule } from 'primeng/tag';
+import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-login-view',
@@ -27,7 +31,11 @@ import { MessageModule } from 'primeng/message';
     ButtonModule,
     IconFieldModule,
     InputIconModule,
-    MessageModule
+    MessageModule,
+    CardModule,
+    TagModule,
+    DividerModule,
+    TooltipModule
   ],
   templateUrl: './login-view.component.html',
   styleUrl: './login-view.component.css'

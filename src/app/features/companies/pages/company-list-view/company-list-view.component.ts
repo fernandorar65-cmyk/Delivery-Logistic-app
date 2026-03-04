@@ -7,7 +7,8 @@ import { Company, CompanyCreate } from '@app/features/companies/models/company.m
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { CompaniesToolbarComponent } from './components/companies-toolbar/companies-toolbar.component';
 import { CompaniesTableComponent } from './components/companies-table/companies-table.component';
-import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
+import { PaginatorModule } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
 import { CompaniesFormModalComponent } from './components/companies-form-modal/companies-form-modal.component';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
@@ -23,7 +24,8 @@ import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-moda
     HeroIconComponent,
     CompaniesToolbarComponent,
     CompaniesTableComponent,
-    PaginationComponent,
+    PaginatorModule,
+    ButtonModule,
     CompaniesFormModalComponent,
     EmptyStateComponent,
     LoadingCardComponent,
@@ -46,6 +48,9 @@ export class CompanyListViewComponent {
   hasNext = signal(false);
   hasPrevious = signal(false);
   itemsPerPage = 10;
+  /** Paginación PrimeNG */
+  first = signal(0);
+  rows = signal(10);
   
   // Search and filters
   searchQuery = signal('');
@@ -255,9 +260,14 @@ export class CompanyListViewComponent {
   }
 
   get paginatedCompanies(): Company[] {
-    const start = (this.currentPage() - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.filteredCompanies().slice(start, end);
+    const start = this.first();
+    const pageSize = this.rows();
+    return this.filteredCompanies().slice(start, start + pageSize);
+  }
+
+  onPageChange(event: { first?: number; rows?: number }): void {
+    this.first.set(event.first ?? 0);
+    this.rows.set(event.rows ?? 10);
   }
 
   nextPage() {

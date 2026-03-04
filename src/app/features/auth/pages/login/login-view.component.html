@@ -1,111 +1,106 @@
 <main class="login-main">
-  <!-- Left Side: Login Form -->
+  <!-- Left: Login Form -->
   <section class="login-form-section">
     <div class="form-wrapper">
       <div class="logo-section">
         <div class="logo-icon">
-          <i class="pi pi-shield" style="font-size: 1.5rem; color: white;"></i>
+          <i class="pi pi-shield" aria-hidden="true"></i>
         </div>
         <span class="logo-text">LOGISAAS <span class="logo-accent">PREMIUM</span></span>
       </div>
 
-      <div class="form-header">
-        <h1 class="form-title">Acceso Seguro</h1>
-        <p class="form-subtitle">
-          Gestione su cadena de suministro con los más altos estándares de seguridad y eficiencia.
-        </p>
-      </div>
-
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        @if (error()) {
-          <p-message severity="error" styleClass="w-full mb-0">{{ error() }}</p-message>
-        }
-
-        <!-- Email con PrimeNG -->
-        <div class="form-group">
-          <label for="email" class="form-label">Correo Corporativo</label>
-          <p-iconfield iconPosition="left" styleClass="w-full">
-            <p-inputicon styleClass="pi pi-envelope" />
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              placeholder="nombre@compania.com"
-              pInputText
-              class="w-full"
-            />
-          </p-iconfield>
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('email') }}</p-message>
-          }
-        </div>
-
-        <!-- Password con PrimeNG -->
-        <div class="form-group">
-          <div class="password-label-row">
-            <label for="password" class="form-label">Contraseña</label>
-            <a href="#" class="forgot-password">¿Olvidó sus datos?</a>
+      <p-card styleClass="login-card" [style]="{ overflow: 'visible' }">
+        <ng-template pTemplate="header">
+          <div class="login-card-header">
+            <h1 class="form-title">Acceso Seguro</h1>
+            <p class="form-subtitle">
+              Gestione su cadena de suministro con los más altos estándares de seguridad y eficiencia.
+            </p>
           </div>
-          <p-password
-            formControlName="password"
-            placeholder="••••••••"
-            [toggleMask]="true"
-            [feedback]="false"
-            styleClass="w-full"
-            [fluid]="true"
-            inputId="password"
-          />
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('password') }}</p-message>
-          }
-        </div>
+        </ng-template>
 
-        <!-- Remember me con PrimeNG -->
-        <div class="remember-me-group">
-          <label class="remember-label-wrapper" for="remember">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          @if (error()) {
+            <p-message severity="error" styleClass="w-full login-error-msg">{{ error() }}</p-message>
+          }
+
+          <div class="form-group">
+            <label for="email" class="form-label">Correo Corporativo</label>
+            <div class="login-input-wrap">
+              <p-iconField iconPosition="left" styleClass="w-full login-input-field">
+                <p-inputIcon styleClass="pi pi-envelope" />
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  placeholder="nombre@compania.com"
+                  pInputText
+                  class="w-full"
+                />
+              </p-iconField>
+            </div>
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <small class="p-error block mt-1">{{ getFieldError('email') }}</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <div class="password-label-row">
+              <label for="password" class="form-label">Contraseña</label>
+              <a href="#" class="forgot-password">¿Olvidó sus datos?</a>
+            </div>
+            <div class="login-input-wrap">
+              <p-password
+                formControlName="password"
+                placeholder="••••••••"
+                [toggleMask]="true"
+                [feedback]="false"
+                styleClass="w-full login-password-field"
+                [fluid]="true"
+                inputId="password"
+              />
+            </div>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <small class="p-error block mt-1">{{ getFieldError('password') }}</small>
+            }
+          </div>
+
+          <div class="remember-me-group">
             <p-checkbox
               [ngModel]="rememberMe()"
               [ngModelOptions]="{ standalone: true }"
               (ngModelChange)="rememberMe.set($event)"
               [binary]="true"
               inputId="remember"
+              styleClass="remember-checkbox-p"
             />
-            <span class="remember-label">Mantener sesión activa</span>
-          </label>
-        </div>
+            <label for="remember" class="remember-label">Mantener sesión activa</label>
+          </div>
 
-        <!-- Submit con PrimeNG -->
-        <p-button
-          type="submit"
-          [label]="loading() ? 'Iniciando sesión...' : 'Ingresar al Sistema'"
-          [icon]="loading() ? 'pi pi-spin pi-spinner' : 'pi pi-arrow-right'"
-          [loading]="loading()"
-          [disabled]="loginForm.invalid"
-          styleClass="w-full"
-          iconPos="right"
-        />
-      </form>
+          <p-button
+            type="submit"
+            [label]="loading() ? 'Iniciando sesión...' : 'Ingresar al Sistema'"
+            [icon]="loading() ? 'pi pi-spin pi-spinner' : 'pi pi-arrow-right'"
+            [loading]="loading()"
+            [disabled]="loginForm.invalid"
+            styleClass="w-full login-submit-btn"
+            iconPos="right"
+          />
+        </form>
 
-      <div class="form-footer">
-        <div class="features-badges">
-          <div class="badge-item">
-            <i class="pi pi-users"></i>
-            <span>Aliados</span>
+        <ng-template pTemplate="footer">
+          <p-divider styleClass="login-divider" />
+          <div class="features-badges">
+            <p-tag value="Aliados" icon="pi pi-users" styleClass="feature-tag" />
+            <p-tag value="Global" icon="pi pi-globe" styleClass="feature-tag" />
+            <p-tag value="24/7" icon="pi pi-verified" styleClass="feature-tag" />
           </div>
-          <div class="badge-item">
-            <i class="pi pi-globe"></i>
-            <span>Global</span>
-          </div>
-          <div class="badge-item">
-            <i class="pi pi-verified"></i>
-            <span>24/7</span>
-          </div>
-        </div>
-      </div>
+        </ng-template>
+      </p-card>
     </div>
   </section>
 
-  <!-- Right Side: Visual Hero Area -->
+  <!-- Right: Hero -->
   <section class="login-hero-section">
     <div class="hero-background"></div>
     <div class="gradient-overlay"></div>
@@ -129,17 +124,15 @@
         </div>
       </div>
     </div>
-    <div class="hero-footer-text">
-      Premium Logistics Hub // v4.0.2
-    </div>
+    <div class="hero-footer-text">Premium Logistics Hub // v4.0.2</div>
   </section>
 </main>
 
-<!-- Floating Support Button con PrimeNG -->
 <p-button
   icon="pi pi-headphones"
   [rounded]="true"
   severity="secondary"
   styleClass="floating-support-btn"
   [raised]="true"
+  pTooltip="Soporte"
 />

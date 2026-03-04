@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 
 @Component({
   selector: 'app-confirm-modal',
   standalone: true,
-  imports: [CommonModule, HeroIconComponent, ModalComponent],
+  imports: [CommonModule, ButtonModule, MessageModule, ModalComponent],
   templateUrl: './confirm-modal.component.html',
   styleUrl: './confirm-modal.component.css'
 })

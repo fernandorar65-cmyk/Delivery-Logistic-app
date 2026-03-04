@@ -1,6 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, computed, inject, signal, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs';
 import {
@@ -23,6 +24,11 @@ import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { SelectModule } from 'primeng/select';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-internal-users-view',
@@ -30,6 +36,7 @@ import { TooltipModule } from 'primeng/tooltip';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     EmptyStateComponent,
     LoadingCardComponent,
     ModalComponent,
@@ -39,7 +46,12 @@ import { TooltipModule } from 'primeng/tooltip';
     AvatarModule,
     TagModule,
     ButtonModule,
-    TooltipModule
+    TooltipModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    SelectModule,
+    PaginatorModule
   ],
   templateUrl: './internal-users-view.component.html',
   styleUrl: './internal-users-view.component.css'
@@ -54,6 +66,57 @@ export class InternalUsersViewComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   users = signal<InternalUser[]>([]);
+
+  /** Búsqueda global (nombre + email) */
+  keywordSearch = signal('');
+  /** Filtro por nombre */
+  filterName = signal('');
+  /** Filtro por correo */
+  filterEmail = signal('');
+  /** Filtro por estado: 'all' | 'activo' */
+  filterStatus = signal<string>('all');
+  /** Paginación */
+  first = signal(0);
+  rows = signal(10);
+
+  readonly statusFilterOptions = [
+    { label: 'Todos', value: 'all' },
+    { label: 'Activo', value: 'activo' }
+  ];
+
+  /** Lista filtrada por búsqueda y filtros de columna */
+  filteredUsers = computed(() => {
+    const list = this.users();
+    const keyword = (this.keywordSearch() || '').trim().toLowerCase();
+    const name = (this.filterName() || '').trim().toLowerCase();
+    const email = (this.filterEmail() || '').trim().toLowerCase();
+    const status = this.filterStatus();
+    if (!keyword && !name && !email && status === 'all') {
+      return list;
+    }
+    return list.filter((user) => {
+      const displayName = (this.getUserDisplayName(user) || '').toLowerCase();
+      const userEmail = (this.getUserEmail(user) || '').toLowerCase();
+      if (keyword && !displayName.includes(keyword) && !userEmail.includes(keyword)) {
+        return false;
+      }
+      if (name && !displayName.includes(name)) return false;
+      if (email && !userEmail.includes(email)) return false;
+      if (status === 'activo') {
+        // Por ahora todos están "Activo"; si en el futuro hay inactivos, filtrar aquí
+        return true;
+      }
+      return true;
+    });
+  });
+
+  /** Página actual de usuarios (para la tabla) */
+  paginatedUsers = computed(() => {
+    const list = this.filteredUsers();
+    const start = this.first();
+    const pageSize = this.rows();
+    return list.slice(start, start + pageSize);
+  });
 
   modalOpen = signal(false);
   formLoading = signal(false);
@@ -299,6 +362,23 @@ export class InternalUsersViewComponent implements OnInit {
   getUserCreatedAtDisplay(user: InternalUser): string {
     const rawDate = user.user?.created_at ?? user.created_at;
     return this.formatDate(rawDate);
+  }
+
+  onPageChange(event: { first?: number; rows?: number }): void {
+    this.first.set(event.first ?? 0);
+    this.rows.set(event.rows ?? 10);
+  }
+
+  onKeywordSearch(event: Event): void {
+    this.keywordSearch.set((event.target as HTMLInputElement).value);
+  }
+
+  onFilterName(event: Event): void {
+    this.filterName.set((event.target as HTMLInputElement).value);
+  }
+
+  onFilterEmail(event: Event): void {
+    this.filterEmail.set((event.target as HTMLInputElement).value);
   }
 
   getFieldError(fieldName: string): string {

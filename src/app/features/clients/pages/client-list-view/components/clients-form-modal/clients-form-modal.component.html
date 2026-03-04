@@ -4,148 +4,117 @@
   (close)="close.emit()"
 >
   <form [formGroup]="clientForm" (ngSubmit)="submit.emit($event)" class="modal-form">
-      @if (formError) {
-        <div class="form-error-message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <span>{{ formError }}</span>
-        </div>
-      }
+    @if (formError) {
+      <p-message severity="error" styleClass="w-full mb-3">{{ formError }}</p-message>
+    }
+    @if (showEmailCheck && checkError) {
+      <p-message severity="warn" styleClass="w-full mb-3">{{ checkError }}</p-message>
+    }
+    @if (showEmailCheck && checkSuccess) {
+      <p-message severity="success" styleClass="w-full mb-3">{{ checkSuccess }}</p-message>
+    }
 
-      @if (showEmailCheck && checkError) {
-        <div class="form-error-message form-check-message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <span>{{ checkError }}</span>
-        </div>
-      }
-      @if (showEmailCheck && checkSuccess) {
-        <div class="form-success-message form-check-message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m4.5 12.75 6 6 9-13.5"></path>
-          </svg>
-          <span>{{ checkSuccess }}</span>
-        </div>
-      }
+    <div class="form-section">
+      <h3 class="section-title">Información Básica</h3>
 
-      <div class="form-section">
-        <h3 class="section-title">Información Básica</h3>
-        
-        <div class="form-group">
-          <label for="email">
-            Email <span class="required">*</span>
-          </label>
-          <div class="email-row">
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <div class="email-row">
+          <p-iconField iconPosition="left" styleClass="flex-1">
+            <p-inputIcon styleClass="pi pi-envelope" />
             <input
               type="email"
               id="email"
+              pInputText
               formControlName="email"
               placeholder="correo@ejemplo.com"
-              [class.invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched"
+              class="w-full"
             />
-            @if (showEmailCheck) {
-              <button
-                type="button"
-                class="email-check-btn"
-                (click)="verifyEmail.emit()"
-                [disabled]="checkLoading"
-              >
-                Verificar
-              </button>
-            }
-          </div>
-          @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
-            <span class="error-text">{{ getFieldError('email') }}</span>
-          }
+          </p-iconField>
           @if (showEmailCheck) {
-            @if (emailStatus === 'checking') {
-              <span class="email-status">Verificando correo...</span>
-            } @else if (emailStatus === 'exists') {
-              <span class="email-status email-status-warning">El cliente ya existe. Se enviará solicitud.</span>
-            } @else if (emailStatus === 'unique') {
-              <span class="email-status email-status-success">Correo disponible para registrar.</span>
-            }
+            <p-button
+              type="button"
+              label="Verificar"
+              severity="secondary"
+              (onClick)="verifyEmail.emit()"
+              [loading]="checkLoading"
+              [disabled]="checkLoading"
+              styleClass="ml-2"
+            />
           }
         </div>
+        @if (clientForm.get('email')?.invalid && clientForm.get('email')?.touched) {
+          <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('email') }}</p-message>
+        }
+        @if (showEmailCheck && emailStatus === 'checking') {
+          <span class="email-status">Verificando correo...</span>
+        }
+        @if (showEmailCheck && emailStatus === 'exists') {
+          <span class="email-status email-status-warning">El cliente ya existe. Se enviará solicitud.</span>
+        }
+        @if (showEmailCheck && emailStatus === 'unique') {
+          <span class="email-status email-status-success">Correo disponible para registrar.</span>
+        }
+      </div>
 
-        <div class="form-group">
-          <label for="client_name">
-            Nombre del Cliente <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="client_name"
-            formControlName="client_name"
-            placeholder="Ingrese el nombre del cliente"
-            [class.invalid]="clientForm.get('client_name')?.invalid && clientForm.get('client_name')?.touched"
-          />
-          @if (clientForm.get('client_name')?.invalid && clientForm.get('client_name')?.touched) {
-            <span class="error-text">{{ getFieldError('client_name') }}</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="ruc">
-            RUC <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="ruc"
-            formControlName="ruc"
-            placeholder="Ingrese el RUC"
-            [class.invalid]="clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched"
-          />
-          @if (clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched) {
-            <span class="error-text">{{ getFieldError('ruc') }}</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="description">
-            Descripción
-          </label>
-          <textarea
-            id="description"
-            formControlName="description"
-            placeholder="Describe brevemente al cliente"
-          ></textarea>
-        </div>
-
-        <app-password-confirm
-          formControlName="password"
-          [required]="!isEditMode"
-          placeholder="Ingrese la contraseña"
-          optionalLabel="(opcional - dejar en blanco para no cambiar)"
+      <div class="form-group">
+        <label for="client_name">Nombre del Cliente <span class="required">*</span></label>
+        <input
+          type="text"
+          id="client_name"
+          pInputText
+          formControlName="client_name"
+          placeholder="Ingrese el nombre del cliente"
+          class="w-full"
         />
+        @if (clientForm.get('client_name')?.invalid && clientForm.get('client_name')?.touched) {
+          <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('client_name') }}</p-message>
+        }
       </div>
 
-      <div class="modal-actions">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="close.emit()"
-          [disabled]="formLoading"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="clientForm.invalid || formLoading"
-        >
-          @if (formLoading) {
-            <div class="btn-spinner"></div>
-            Guardando...
-          } @else {
-            {{ isEditMode ? 'Guardar Cambios' : 'Crear Cliente' }}
-          }
-        </button>
+      <div class="form-group">
+        <label for="ruc">RUC <span class="required">*</span></label>
+        <input
+          type="text"
+          id="ruc"
+          pInputText
+          formControlName="ruc"
+          placeholder="Ingrese el RUC"
+          class="w-full"
+        />
+        @if (clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched) {
+          <p-message severity="error" styleClass="w-full mt-1">{{ getFieldError('ruc') }}</p-message>
+        }
       </div>
-    </form>
+
+      <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea
+          id="description"
+          pInputTextarea
+          formControlName="description"
+          placeholder="Describe brevemente al cliente"
+          rows="3"
+          class="w-full"
+        ></textarea>
+      </div>
+
+      <app-password-confirm
+        formControlName="password"
+        [required]="!isEditMode"
+        placeholder="Ingrese la contraseña"
+        optionalLabel="(opcional - dejar en blanco para no cambiar)"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <p-button label="Cancelar" severity="secondary" (onClick)="close.emit()" [disabled]="formLoading" />
+      <p-button
+        [label]="formLoading ? 'Guardando...' : (isEditMode ? 'Guardar Cambios' : 'Crear Cliente')"
+        [loading]="formLoading"
+        [disabled]="clientForm.invalid || formLoading"
+        type="submit"
+      />
+    </div>
+  </form>
 </app-modal>

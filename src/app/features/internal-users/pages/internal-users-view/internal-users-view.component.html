@@ -7,68 +7,158 @@
         Administra los accesos internos del proveedor.
       </p>
     </div>
-    <button type="button" class="btn btn-primary" (click)="openCreate()">
-      Agregar usuario
-    </button>
+    <p-button
+      label="Agregar usuario"
+      icon="pi pi-plus"
+      (onClick)="openCreate()"
+      styleClass="btn-add-user"
+    />
   </header>
 
   <div class="internal-users-card">
     @if (loading()) {
-    <app-loading-card message="Cargando usuarios internos..."></app-loading-card>
+      <app-loading-card message="Cargando usuarios internos..."></app-loading-card>
     } @else if (error()) {
-    <app-empty-state title="No se pudieron cargar los usuarios" [description]="error()"
-      icon="exclamation-triangle"></app-empty-state>
+      <app-empty-state
+        title="No se pudieron cargar los usuarios"
+        [description]="error()"
+        icon="exclamation-triangle"
+      ></app-empty-state>
     } @else if (users().length === 0) {
-    <app-empty-state title="No hay usuarios internos" description="Cuando agregues usuarios internos aparecerán aquí."
-      icon="users"></app-empty-state>
+      <app-empty-state
+        title="No hay usuarios internos"
+        description="Cuando agregues usuarios internos aparecerán aquí."
+        icon="users"
+      ></app-empty-state>
     } @else {
-    <div class="internal-users-table-wrapper">
-      <p-table [value]="users()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped p-datatable-sm">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Nombre completo</th>
-            <th>Correo electrónico</th>
-            <th>Estado</th>
-            <th>Registro</th>
-            <th class="text-right">Acciones</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-user>
-          <tr>
-            <td>
-              <div class="flex align-items-center gap-2">
-                <p-avatar [label]="(getUserDisplayName(user) || 'U').slice(0, 2)" shape="circle" styleClass="bg-primary" />
-                <span class="font-medium">{{ getUserDisplayName(user) }}</span>
-              </div>
-            </td>
-            <td>
-              <span class="text-color-secondary">{{ getUserEmail(user) }}</span>
-            </td>
-            <td>
-              <p-tag value="Activo" severity="success" />
-            </td>
-            <td>
-              <span class="text-color-secondary">{{ getUserCreatedAtDisplay(user) }}</span>
-            </td>
-            <td class="text-right">
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                severity="danger"
-                [text]="true"
-                (onClick)="openDeleteConfirm(user)"
-                pTooltip="Eliminar"
-              />
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5" class="text-center p-4">No hay usuarios internos.</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
+      <div class="table-toolbar">
+        <p-iconField iconPosition="left" styleClass="keyword-search-field">
+          <p-inputIcon styleClass="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [value]="keywordSearch()"
+            (input)="onKeywordSearch($event)"
+            placeholder="Buscar por nombre o correo..."
+            class="w-full"
+          />
+        </p-iconField>
+      </div>
+
+      <div class="internal-users-table-wrapper">
+        <p-table
+          [value]="paginatedUsers()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass="internal-users-datatable p-datatable-sm p-datatable-gridlines"
+          [rowHover]="true"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="min-width: 12rem">Usuario</th>
+              <th style="min-width: 10rem">Correo electrónico</th>
+              <th style="width: 8rem">Estado</th>
+              <th style="min-width: 10rem">Registro</th>
+              <th style="width: 7rem" class="text-right">Acciones</th>
+            </tr>
+            <tr class="filter-row">
+              <th>
+                <input
+                  type="text"
+                  pInputText
+                  [value]="filterName()"
+                  (input)="onFilterName($event)"
+                  placeholder="Buscar por nombre"
+                  class="filter-input w-full"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  pInputText
+                  [value]="filterEmail()"
+                  (input)="onFilterEmail($event)"
+                  placeholder="Buscar por correo"
+                  class="filter-input w-full"
+                />
+              </th>
+              <th>
+                <p-select
+                  [options]="statusFilterOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  [ngModel]="filterStatus()"
+                  (ngModelChange)="filterStatus.set($event)"
+                  placeholder="Estado"
+                  styleClass="filter-select w-full"
+                />
+              </th>
+              <th></th>
+              <th class="text-right"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr>
+              <td>
+                <div class="user-cell-inline">
+                  <p-avatar
+                    [label]="(getUserDisplayName(user) || 'U').slice(0, 2).toUpperCase()"
+                    shape="circle"
+                    styleClass="user-avatar-inline"
+                  />
+                  <span class="user-name-inline">{{ getUserDisplayName(user) }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="text-color-secondary">{{ getUserEmail(user) }}</span>
+              </td>
+              <td>
+                <p-tag value="Activo" severity="success" styleClass="status-tag" />
+              </td>
+              <td>
+                <span class="text-color-secondary">{{ getUserCreatedAtDisplay(user) }}</span>
+              </td>
+              <td class="text-right">
+                <div class="row-actions-inline">
+                  <p-button
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    severity="secondary"
+                    [text]="true"
+                    (onClick)="openEdit(user)"
+                    pTooltip="Editar"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    severity="danger"
+                    [text]="true"
+                    (onClick)="openDeleteConfirm(user)"
+                    pTooltip="Eliminar"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="text-center p-4">
+                {{ filteredUsers().length === 0 ? 'No hay resultados con los filtros aplicados.' : 'No hay usuarios internos.' }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="filteredUsers().length"
+        [rowsPerPageOptions]="[5, 10, 20, 30]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="internal-users-paginator"
+        [showFirstLastIcon]="true"
+      />
     }
   </div>
 </section>

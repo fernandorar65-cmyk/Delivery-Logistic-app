@@ -1,14 +1,30 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
-import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
+import { PasswordConfirmComponent } from '@app/shared/ui/password-confirm/password-confirm.component';
 
 @Component({
   selector: 'app-companies-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent, ModalComponent, PasswordConfirmComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ModalComponent,
+    PasswordConfirmComponent,
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    MessageModule,
+    IconFieldModule,
+    InputIconModule
+  ],
   templateUrl: './companies-form-modal.component.html',
   styleUrl: './companies-form-modal.component.css'
 })
