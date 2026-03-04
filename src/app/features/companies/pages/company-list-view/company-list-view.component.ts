@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CompanyService } from '@app/features/companies/services/company.service';
 import { Company, CompanyCreate } from '@app/features/companies/models/company.model';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { CompaniesToolbarComponent } from './components/companies-toolbar/companies-toolbar.component';
 import { CompaniesTableComponent } from './components/companies-table/companies-table.component';
 import { PaginatorModule } from 'primeng/paginator';
@@ -21,7 +20,6 @@ import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-moda
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    HeroIconComponent,
     CompaniesToolbarComponent,
     CompaniesTableComponent,
     PaginatorModule,
