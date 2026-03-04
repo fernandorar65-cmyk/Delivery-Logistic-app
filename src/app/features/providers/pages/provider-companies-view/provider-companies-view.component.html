@@ -5,142 +5,176 @@
     <span>Mis Clientes</span>
   </div>
 
-  <header class="provider-companies-header">
+  <header class="provider-companies-header header-card">
     <div>
+      <p class="provider-companies-eyebrow">Mis clientes</p>
       <h2 class="provider-companies-title">Mis Compañías Asociadas</h2>
       <p class="provider-companies-subtitle">
         Gestiona tus relaciones comerciales y vínculos activos con clientes corporativos.
       </p>
     </div>
+    <p-button
+      label="Actualizar"
+      icon="pi pi-refresh"
+      (onClick)="loadCompanies()"
+      styleClass="btn-refresh"
+    />
   </header>
 
-  <div class="provider-companies-filters">
-    <label class="filter-search">
-      <span class="filter-search-icon">🔍</span>
-      <input
-        type="text"
-        class="filter-input"
-        placeholder="Buscar por nombre de compañía o ID..."
-        [(ngModel)]="searchQuery"
-      />
-    </label>
-    <div class="filter-chips">
-      <div class="status-dropdown" (click)="$event.stopPropagation()">
-        <button type="button" class="filter-select-trigger" (click)="toggleStatusMenu()">
-          Estado: {{ getStatusFilterLabel() }}
-          <span class="filter-chip-icon">▾</span>
-        </button>
-        @if (statusOpen()) {
-          <div class="filter-select-menu">
-            <button
-              type="button"
-              class="filter-select-option"
-              [class.active]="statusFilter() === ''"
-              (click)="setStatusFilter('')"
-            >
-              Todos los estados
-            </button>
-            <button
-              type="button"
-              class="filter-select-option"
-              [class.active]="statusFilter() === 'active'"
-              (click)="setStatusFilter('active')"
-            >
-              Activo
-            </button>
-            <button
-              type="button"
-              class="filter-select-option"
-              [class.active]="statusFilter() === 'pending'"
-              (click)="setStatusFilter('pending')"
-            >
-              Pendiente
-            </button>
-            <button
-              type="button"
-              class="filter-select-option"
-              [class.active]="statusFilter() === 'inactive'"
-              (click)="setStatusFilter('inactive')"
-            >
-              Inactivo
-            </button>
-          </div>
-        }
+  <div class="provider-companies-card">
+    @if (loading()) {
+      <app-loading-card message="Cargando empresas..."></app-loading-card>
+    } @else if (error()) {
+      <app-empty-state
+        title="No se pudo cargar"
+        [description]="error()!"
+        icon="exclamation-triangle"
+      ></app-empty-state>
+    } @else if (companies().length === 0) {
+      <app-empty-state
+        title="Sin empresas asociadas"
+        description="Cuando tengas empresas vinculadas aparecerán aquí."
+        icon="building-office-2"
+      ></app-empty-state>
+    } @else {
+      <div class="table-toolbar">
+        <p-iconField iconPosition="left" styleClass="keyword-search-field">
+          <p-inputIcon styleClass="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [value]="keywordSearch()"
+            (input)="onKeywordSearch($event)"
+            placeholder="Buscar por nombre o ID..."
+            class="w-full"
+          />
+        </p-iconField>
       </div>
-      <div class="filter-chip">
-        {{ getStatusFilterLabel() }}
-      </div>
-    </div>
-  </div>
 
-  @if (loading()) {
-    <app-loading-card text="Cargando empresas..." />
-  } @else if (error()) {
-    <app-empty-state title="No se pudo cargar" description="{{ error() }}" icon="exclamation-triangle" />
-  } @else if (filteredCompanies().length === 0) {
-    <app-empty-state
-      title="Sin empresas asociadas"
-      description="Cuando tengas empresas vinculadas aparecerán aquí."
-      icon="building-office-2"
-    ></app-empty-state>
-  } @else {
-    <div class="provider-companies-table">
-      <table class="companies-table">
-        <thead>
-          <tr>
-            <th>Compañía</th>
-            <th>ID</th>
-            <th>Rubro</th>
-            <th>Estado</th>
-            <th>Relación</th>
-            <th class="text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (company of filteredCompanies(); track company.id) {
+      <div class="provider-companies-table-wrapper">
+        <p-table
+          [value]="paginatedCompanies()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass="provider-companies-datatable p-datatable-sm p-datatable-gridlines"
+          [rowHover]="true"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="min-width: 12rem">Compañía</th>
+              <th style="min-width: 8rem">ID</th>
+              <th style="min-width: 8rem">Rubro</th>
+              <th style="width: 8rem">Estado</th>
+              <th style="min-width: 8rem">Relación</th>
+              <th style="width: 7rem" class="text-right">Acciones</th>
+            </tr>
+            <tr class="filter-row">
+              <th>
+                <input
+                  type="text"
+                  pInputText
+                  [value]="filterName()"
+                  (input)="onFilterName($event)"
+                  placeholder="Buscar por nombre"
+                  class="filter-input w-full"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  pInputText
+                  [value]="filterId()"
+                  (input)="onFilterId($event)"
+                  placeholder="Buscar por ID"
+                  class="filter-input w-full"
+                />
+              </th>
+              <th></th>
+              <th>
+                <p-select
+                  [options]="statusFilterOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  [ngModel]="filterStatus()"
+                  (ngModelChange)="filterStatus.set($event)"
+                  placeholder="Estado"
+                  styleClass="filter-select w-full"
+                />
+              </th>
+              <th></th>
+              <th class="text-right"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-company>
             <tr>
               <td>
-                <div class="company-cell">
-                  <div class="company-avatar">{{ company.name.slice(0, 2) }}</div>
+                <div class="company-cell-inline">
+                  <p-avatar
+                    [label]="getCompanyInitials(company.name)"
+                    shape="circle"
+                    styleClass="company-avatar-inline"
+                  />
                   <div>
-                    <p class="company-name">{{ company.name }}</p>
-                    <p class="company-subtitle">{{ company.industry }}</p>
+                    <span class="company-name-inline">{{ company.name }}</span>
+                    <span class="company-industry-inline">{{ company.industry }}</span>
                   </div>
                 </div>
               </td>
-              <td class="company-id">{{ company.companyId }}</td>
-              <td class="company-industry">{{ company.industry }}</td>
               <td>
-                <span class="company-status" [ngClass]="company.status">
-                  <span class="status-dot"></span>
-                  {{ getStatusLabel(company.status) }}
-                </span>
+                <span class="text-color-secondary">{{ company.companyId }}</span>
               </td>
-              <td class="company-since">{{ company.since }}</td>
+              <td>
+                <span class="text-color-secondary">{{ company.industry }}</span>
+              </td>
+              <td>
+                <p-tag
+                  [value]="getStatusLabel(company.status)"
+                  [severity]="getStatusSeverity(company.status)"
+                  styleClass="status-tag"
+                />
+              </td>
+              <td>
+                <span class="text-color-secondary">{{ company.since }}</span>
+              </td>
               <td class="text-right">
-                <div class="company-actions">
-                  <button type="button" class="action-link">Ver detalles</button>
-                  <button type="button" class="action-link danger">Finalizar</button>
+                <div class="row-actions-inline">
+                  <p-button
+                    icon="pi pi-eye"
+                    [rounded]="true"
+                    severity="secondary"
+                    [text]="true"
+                    pTooltip="Ver detalles"
+                  />
+                  <p-button
+                    icon="pi pi-times"
+                    [rounded]="true"
+                    severity="danger"
+                    [text]="true"
+                    pTooltip="Finalizar"
+                  />
                 </div>
               </td>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <div class="provider-companies-footer">
-      <p>
-        Mostrando
-        <span class="footer-strong">{{ filteredCompanies().length }}</span>
-        de
-        <span class="footer-strong">{{ companies().length }}</span>
-        compañías asociadas
-      </p>
-      <div class="footer-actions">
-        <button type="button" class="footer-button" disabled>Anterior</button>
-        <button type="button" class="footer-button">Siguiente</button>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                {{ filteredCompanies().length === 0 ? 'No hay resultados con los filtros aplicados.' : 'No hay compañías.' }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
-    </div>
-  }
+
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="filteredCompanies().length"
+        [rowsPerPageOptions]="[5, 10, 20, 30]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="provider-companies-paginator"
+        [showFirstLastIcon]="true"
+      />
+    }
+  </div>
 </section>

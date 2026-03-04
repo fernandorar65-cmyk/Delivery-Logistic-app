@@ -4,21 +4,40 @@
   padding: 1.5rem;
 }
 
+/* ----- Header (mismo estilo que usuarios internos / empresas) ----- */
 .provider-orders-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
 }
 
-.provider-orders-title {
-  font-size: 1.25rem;
+.header-card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 20px -16px rgba(15, 23, 42, 0.2);
+}
+
+.provider-orders-eyebrow {
+  font-size: 0.85rem;
   font-weight: 600;
+  color: #64748b;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.provider-orders-title {
   margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111418;
 }
 
 .provider-orders-subtitle {
-  margin: 0.25rem 0 0;
+  margin: 0.5rem 0 0;
   color: #64748b;
   font-size: 0.95rem;
 }
@@ -32,85 +51,130 @@
   background: #fef3c7;
   color: #b45309;
   font-weight: 600;
+  font-size: 0.9375rem;
 }
 
-.provider-orders-list {
-  display: grid;
-  gap: 1rem;
+.provider-orders-count .pi {
+  font-size: 1rem;
 }
 
-.provider-order-card {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
+/* ----- Card de contenido ----- */
+.provider-orders-card {
+  background: #ffffff;
   border-radius: 1rem;
+  padding: 1.25rem;
   border: 1px solid #e2e8f0;
-  background: #fff;
+  box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.25);
 }
 
-.provider-order-id {
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.table-toolbar .keyword-search-field {
+  max-width: 20rem;
+}
+
+.provider-orders-table-wrapper {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+
+/* ----- Fila de filtros ----- */
+.filter-row th {
+  padding: 0.5rem 1rem !important;
+  vertical-align: middle;
+  background: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.filter-input,
+:host ::ng-deep .filter-select .p-select {
+  font-size: 0.875rem;
+}
+
+/* ----- Paginador ----- */
+:host ::ng-deep .provider-orders-paginator.p-paginator {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding: 0.5rem 1rem;
+}
+
+/* ----- Tabla PrimeNG ----- */
+:host ::ng-deep .provider-orders-datatable.p-datatable .p-datatable-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+}
+
+:host ::ng-deep .provider-orders-datatable.p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+:host ::ng-deep .provider-orders-datatable.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .provider-orders-datatable.p-datatable .p-datatable-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+:host ::ng-deep .provider-orders-datatable.p-datatable .p-datatable-tbody > tr:hover {
+  background: #f8fafc;
+}
+
+/* ----- Celdas ----- */
+.order-id-cell {
   font-weight: 600;
-  margin: 0;
   color: #0f172a;
+  font-family: ui-monospace, monospace;
 }
 
-.provider-order-client {
-  margin: 0.25rem 0 0;
-  font-weight: 500;
+.order-client-cell {
+  font-weight: 600;
+  color: #1e293b;
 }
 
-.provider-order-route {
-  margin: 0.35rem 0 0;
+.text-color-secondary {
   color: #64748b;
-  font-size: 0.9rem;
 }
 
-.provider-order-meta {
-  display: grid;
-  justify-items: end;
-  gap: 0.5rem;
-}
-
-.provider-order-status {
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
+:host ::ng-deep .status-tag.p-tag {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.625rem;
   font-weight: 600;
 }
 
-.provider-order-status.pending {
-  background: #fef3c7;
-  color: #b45309;
+.row-actions-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-content: flex-end;
 }
 
-.provider-order-status.in_progress {
-  background: #dbeafe;
-  color: #2563eb;
+.text-right {
+  text-align: right;
 }
 
-.provider-order-status.completed {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.provider-order-time {
-  color: #94a3b8;
-  font-size: 0.85rem;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .provider-orders-header {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .provider-order-card {
-    flex-direction: column;
-  }
-
-  .provider-order-meta {
-    width: 100%;
-    justify-items: start;
   }
 }

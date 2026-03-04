@@ -1,38 +1,147 @@
 <section class="provider-orders-page">
-  <header class="provider-orders-header">
+  <header class="provider-orders-header header-card">
     <div>
-      <p class="provider-orders-title">Pedidos de Providers</p>
-      <p class="provider-orders-subtitle">Seguimiento de órdenes asignadas a aliados.</p>
+      <p class="provider-orders-eyebrow">Gestión</p>
+      <h2 class="provider-orders-title">Pedidos de Providers</h2>
+      <p class="provider-orders-subtitle">
+        Seguimiento de órdenes asignadas a aliados.
+      </p>
     </div>
     <div class="provider-orders-count">
-      <app-hero-icon name="clipboard-document-list" [size]="18"></app-hero-icon>
-      <span>{{ orders().length }}</span>
+      <i class="pi pi-inbox"></i>
+      <span>{{ orders().length }} pedido(s)</span>
     </div>
   </header>
 
-  @if (orders().length === 0) {
-    <app-empty-state
-      title="No hay pedidos asignados"
-      description="Cuando se asignen nuevas órdenes, aparecerán aquí."
-      icon="clipboard-document-list"
-    ></app-empty-state>
-  } @else {
-    <div class="provider-orders-list">
-      @for (order of orders(); track order.id) {
-        <article class="provider-order-card">
-          <div>
-            <p class="provider-order-id">{{ order.id }}</p>
-            <p class="provider-order-client">{{ order.client }}</p>
-            <p class="provider-order-route">{{ order.route }}</p>
-          </div>
-          <div class="provider-order-meta">
-            <span class="provider-order-status" [ngClass]="order.status">
-              {{ getStatusLabel(order.status) }}
-            </span>
-            <span class="provider-order-time">{{ order.time }}</span>
-          </div>
-        </article>
-      }
-    </div>
-  }
+  <div class="provider-orders-card">
+    @if (orders().length === 0) {
+      <app-empty-state
+        title="No hay pedidos asignados"
+        description="Cuando se asignen nuevas órdenes, aparecerán aquí."
+        icon="clipboard-document-list"
+      ></app-empty-state>
+    } @else {
+      <div class="table-toolbar">
+        <p-iconField iconPosition="left" styleClass="keyword-search-field">
+          <p-inputIcon styleClass="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [value]="keywordSearch()"
+            (input)="onKeywordSearch($event)"
+            placeholder="Buscar por ID, cliente o ruta..."
+            class="w-full"
+          />
+        </p-iconField>
+      </div>
+
+      <div class="provider-orders-table-wrapper">
+        <p-table
+          [value]="paginatedOrders()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass="provider-orders-datatable p-datatable-sm p-datatable-gridlines"
+          [rowHover]="true"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="min-width: 7rem">ID</th>
+              <th style="min-width: 12rem">Cliente</th>
+              <th style="min-width: 12rem">Ruta</th>
+              <th style="width: 8rem">Estado</th>
+              <th style="min-width: 8rem">Tiempo</th>
+              <th style="width: 7rem" class="text-right">Acciones</th>
+            </tr>
+            <tr class="filter-row">
+              <th>
+                <input
+                  type="text"
+                  pInputText
+                  [value]="filterId()"
+                  (input)="onFilterId($event)"
+                  placeholder="Buscar por ID"
+                  class="filter-input w-full"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  pInputText
+                  [value]="filterClient()"
+                  (input)="onFilterClient($event)"
+                  placeholder="Buscar por cliente"
+                  class="filter-input w-full"
+                />
+              </th>
+              <th></th>
+              <th>
+                <p-select
+                  [options]="statusFilterOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  [ngModel]="filterStatus()"
+                  (ngModelChange)="filterStatus.set($event)"
+                  placeholder="Estado"
+                  styleClass="filter-select w-full"
+                />
+              </th>
+              <th></th>
+              <th class="text-right"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-order>
+            <tr>
+              <td>
+                <span class="order-id-cell">{{ order.id }}</span>
+              </td>
+              <td>
+                <span class="order-client-cell">{{ order.client }}</span>
+              </td>
+              <td>
+                <span class="text-color-secondary">{{ order.route }}</span>
+              </td>
+              <td>
+                <p-tag
+                  [value]="getStatusLabel(order.status)"
+                  [severity]="getStatusSeverity(order.status)"
+                  styleClass="status-tag"
+                />
+              </td>
+              <td>
+                <span class="text-color-secondary">{{ order.time }}</span>
+              </td>
+              <td class="text-right">
+                <div class="row-actions-inline">
+                  <p-button
+                    icon="pi pi-eye"
+                    [rounded]="true"
+                    severity="secondary"
+                    [text]="true"
+                    pTooltip="Ver detalle"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                {{ filteredOrders().length === 0 ? 'No hay resultados con los filtros aplicados.' : 'No hay pedidos.' }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="filteredOrders().length"
+        [rowsPerPageOptions]="[5, 10, 20, 30]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="provider-orders-paginator"
+        [showFirstLastIcon]="true"
+      />
+    }
+  </div>
 </section>

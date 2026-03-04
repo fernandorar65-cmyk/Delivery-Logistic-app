@@ -1,29 +1,44 @@
-<app-modal
-  title="Confirmar Baja de Vehículo"
-  size="sm"
-  [showClose]="false"
-  (close)="close.emit()"
+<p-dialog
+  header="Confirmar baja de vehículo"
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [breakpoints]="{ '960px': '90vw' }"
+  (onHide)="onHide()"
+  styleClass="vehicle-delete-dialog"
 >
-  <div class="vehicle-delete-icon">
-    <app-hero-icon name="exclamation-triangle" [size]="24"></app-hero-icon>
+  <div class="vehicle-delete-content">
+    <div class="vehicle-delete-icon-wrap">
+      <i class="pi pi-exclamation-triangle"></i>
+    </div>
+    <p class="vehicle-delete-text">
+      ¿Estás seguro de que deseas dar de baja este vehículo? Esta acción es irreversible.
+    </p>
+    @if (deleteError) {
+      <div class="vehicle-delete-error" role="alert">
+        <i class="pi pi-times-circle"></i>
+        <span>{{ deleteError }}</span>
+      </div>
+    }
   </div>
-  <p class="vehicle-delete-text">¿Estás seguro de que deseas dar de baja este vehículo?</p>
-  <span class="vehicle-delete-warning">ESTA ACCIÓN ES IRREVERSIBLE.</span>
-
-  @if (deleteError) {
-    <div class="vehicle-delete-error">{{ deleteError }}</div>
-  }
-
-  <div class="vehicle-delete-actions">
-    <button class="vehicle-delete-btn danger" (click)="confirm.emit()" [disabled]="deleteLoading">
-      @if (deleteLoading) {
-        Procesando...
-      } @else {
-        Confirmar Baja
-      }
-    </button>
-    <button class="vehicle-delete-btn" (click)="close.emit()" type="button">
-      Mantener Vehículo
-    </button>
-  </div>
-</app-modal>
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Mantener vehículo"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="onHide()"
+      [disabled]="deleteLoading"
+    />
+    <p-button
+      [label]="deleteLoading ? 'Procesando...' : 'Confirmar baja'"
+      severity="danger"
+      icon="pi pi-times-circle"
+      (onClick)="confirm.emit()"
+      [loading]="deleteLoading"
+      [disabled]="deleteLoading"
+    />
+  </ng-template>
+</p-dialog>

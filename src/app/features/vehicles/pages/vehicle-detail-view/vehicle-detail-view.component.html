@@ -1,68 +1,73 @@
 <div class="vehicle-detail-page">
-  <div class="breadcrumb">
-    <a routerLink="/dashboard" class="breadcrumb-link">
-      <app-hero-icon name="squares-2x2" [size]="16"></app-hero-icon>
-      <span>Inicio</span>
-    </a>
-    <span class="breadcrumb-separator">/</span>
-    <a routerLink="/providers" class="breadcrumb-link">Providers</a>
-    <span class="breadcrumb-separator">/</span>
-    <a [routerLink]="['/providers', providerId(), 'vehicles']" class="breadcrumb-link">Vehículos</a>
-    <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-current">Detalle</span>
-  </div>
+  <p-breadcrumb [model]="breadcrumbItems()" styleClass="vehicle-detail-breadcrumb"></p-breadcrumb>
 
   @if (loading()) {
-    <div class="vehicle-card vehicle-state">
+    <p-card styleClass="vehicle-state-card">
       <app-loading-card message="Cargando vehículo..."></app-loading-card>
-    </div>
+    </p-card>
   } @else if (error()) {
-    <div class="vehicle-card vehicle-state error">
+    <p-card styleClass="vehicle-state-card vehicle-state-error">
       <app-empty-state
         icon="exclamation-triangle"
         title="No se pudo cargar el vehículo"
-        [description]="error()"
+        [description]="error()!"
       ></app-empty-state>
-    </div>
+    </p-card>
   } @else if (!vehicle()) {
-    <div class="vehicle-card vehicle-state">
+    <p-card styleClass="vehicle-state-card">
       <app-empty-state
         icon="truck"
         title="No se encontró el vehículo"
       ></app-empty-state>
-    </div>
+    </p-card>
   } @else {
-    <div class="vehicle-summary-card">
-      <div class="vehicle-summary-media">
-        <div
-          class="vehicle-summary-image"
-          [style.background-image]="vehicle()?.image ? 'url(' + vehicle()!.image + ')' : 'none'"
-        >
-          @if (!vehicle()?.image) {
-            <app-hero-icon name="truck" [size]="28"></app-hero-icon>
+    <p-card styleClass="vehicle-summary-card">
+      <ng-template pTemplate="header">
+        <div class="vehicle-summary-header-row">
+          @if (vehicle()?.image) {
+            <div
+              class="vehicle-summary-image"
+              [style.background-image]="'url(' + vehicle()!.image + ')'"
+            ></div>
+          } @else {
+            <p-avatar
+              icon="pi pi-truck"
+              shape="square"
+              size="xlarge"
+              styleClass="vehicle-summary-avatar"
+            />
           }
-        </div>
-        <span class="vehicle-status-pill" [class]="getStatusClass(vehicle()?.status)">
-          {{ getStatusLabel(vehicle()?.status) }}
-        </span>
-      </div>
-      <div class="vehicle-summary-content">
-        <div class="vehicle-summary-header">
-          <div>
-            <h1>{{ vehicle()?.license_plate }}</h1>
-            <p>{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }} • {{ vehicle()?.year || '-' }}</p>
+          <div class="vehicle-summary-heading">
+            <h1 class="vehicle-summary-title">{{ vehicle()?.license_plate }}</h1>
+            <p class="vehicle-summary-subtitle">{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }} • {{ vehicle()?.year || '-' }}</p>
+            <p-tag
+              [value]="getStatusLabel(vehicle()?.status)"
+              [severity]="getStatusSeverity(vehicle()?.status)"
+              styleClass="vehicle-status-tag"
+            />
           </div>
           <div class="vehicle-summary-actions">
-            <button class="primary-btn" (click)="openEditModal()">
-              <app-hero-icon name="pencil" [size]="18"></app-hero-icon>
-              Editar Información
-            </button>
-            <button class="danger-btn" (click)="openDeleteModal()">
-              <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
-              Dar de Baja
-            </button>
+            <p-button
+              label="Editar Información"
+              icon="pi pi-pencil"
+              (onClick)="openEditModal()"
+              styleClass="btn-edit"
+              pTooltip="Modificar datos del vehículo"
+            />
+            <p-button
+              label="Dar de Baja"
+              icon="pi pi-times-circle"
+              severity="danger"
+              [outlined]="true"
+              (onClick)="openDeleteModal()"
+              styleClass="btn-delete"
+              pTooltip="Dar de baja este vehículo"
+            />
           </div>
         </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <p-divider type="solid" styleClass="vehicle-summary-divider" />
         <div class="vehicle-summary-meta">
           <div class="meta-item">
             <span class="meta-label">Provider</span>
@@ -81,144 +86,149 @@
             <span class="meta-value">{{ vehicle()?.body_type || '-' }}</span>
           </div>
         </div>
-      </div>
-    </div>
+      </ng-template>
+    </p-card>
 
     <div class="vehicle-detail-grid">
-      <section class="vehicle-card tech-details-card">
-        <div class="card-header tech-card-header">
-          <div class="tech-header-content">
-            <div class="tech-header-icon">
-              <app-hero-icon name="wrench-screwdriver" [size]="16"></app-hero-icon>
-            </div>
-            <h3>Detalles Técnicos</h3>
-          </div>
-        </div>
-        <div class="tech-details-body">
-          <div class="tech-section">
-            <h4 class="tech-section-title">Identificación</h4>
-            <div class="tech-grid">
-              <div class="tech-item">
-                <span class="tech-label">Marca / Modelo</span>
-                <span class="tech-value">{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }}</span>
-              </div>
-              <div class="tech-item">
-                <span class="tech-label">Color</span>
-                <span class="tech-value">{{ vehicle()?.color || '-' }}</span>
-              </div>
-              <div class="tech-item">
-                <span class="tech-label">Tipo de Carrocería</span>
-                <span class="tech-value">{{ vehicle()?.body_type || '-' }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="tech-section">
-            <h4 class="tech-section-title">Pesos y Dimensiones</h4>
-            <div class="tech-grid">
-              <div class="tech-item">
-                <span class="tech-label">Capacidad de Carga</span>
-                <span class="tech-value">{{ vehicle()?.net_capacity_kg ?? '-' }} <small>kg</small></span>
-              </div>
-              <div class="tech-item">
-                <span class="tech-label">Peso en tara</span>
-                <span class="tech-value">{{ vehicle()?.tara_kg ?? '-' }} <small>kg</small></span>
-              </div>
-              <div class="tech-item">
-                <span class="tech-label">Peso bruto</span>
-                <span class="tech-value">{{ vehicle()?.gross_weight_kg ?? '-' }} <small>kg</small></span>
-              </div>
-              <div class="tech-item tech-item-full">
-                <span class="tech-label">Dimensiones (L × A × H)</span>
-                <span class="tech-value">
-                  {{ vehicle()?.length_m ?? '-' }} × {{ vehicle()?.width_m ?? '-' }} × {{ vehicle()?.height_m ?? '-' }} <small>m</small>
-                </span>
+      <p-card styleClass="vehicle-detail-card tech-details-card">
+        <ng-template pTemplate="title">
+          <span class="card-title-with-icon">
+            <i class="pi pi-wrench"></i>
+            Detalles Técnicos
+          </span>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="tech-details-body">
+            <div class="tech-section">
+              <h4 class="tech-section-title">Identificación</h4>
+              <div class="tech-grid">
+                <div class="tech-item">
+                  <span class="tech-label">Marca / Modelo</span>
+                  <span class="tech-value">{{ vehicle()?.brand || '-' }} {{ vehicle()?.model || '' }}</span>
+                </div>
+                <div class="tech-item">
+                  <span class="tech-label">Color</span>
+                  <span class="tech-value">{{ vehicle()?.color || '-' }}</span>
+                </div>
+                <div class="tech-item">
+                  <span class="tech-label">Tipo de Carrocería</span>
+                  <span class="tech-value">{{ vehicle()?.body_type || '-' }}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="tech-section tech-section-meta">
-            <div class="tech-meta-row">
-              <div class="tech-meta-item">
-                <span class="tech-label">Creado</span>
-                <span class="tech-value tech-value-mono">{{ formatDate(vehicle()?.created_at) }}</span>
+            <p-divider type="solid" styleClass="tech-divider" />
+            <div class="tech-section">
+              <h4 class="tech-section-title">Pesos y Dimensiones</h4>
+              <div class="tech-grid">
+                <div class="tech-item">
+                  <span class="tech-label">Capacidad de Carga</span>
+                  <span class="tech-value">{{ vehicle()?.net_capacity_kg ?? '-' }} <small>kg</small></span>
+                </div>
+                <div class="tech-item">
+                  <span class="tech-label">Peso en tara</span>
+                  <span class="tech-value">{{ vehicle()?.tara_kg ?? '-' }} <small>kg</small></span>
+                </div>
+                <div class="tech-item">
+                  <span class="tech-label">Peso bruto</span>
+                  <span class="tech-value">{{ vehicle()?.gross_weight_kg ?? '-' }} <small>kg</small></span>
+                </div>
+                <div class="tech-item tech-item-full">
+                  <span class="tech-label">Dimensiones (L × A × H)</span>
+                  <span class="tech-value">
+                    {{ vehicle()?.length_m ?? '-' }} × {{ vehicle()?.width_m ?? '-' }} × {{ vehicle()?.height_m ?? '-' }} <small>m</small>
+                  </span>
+                </div>
               </div>
-              <div class="tech-meta-item">
-                <span class="tech-label">Actualizado</span>
-                <span class="tech-value tech-value-mono">{{ formatDate(vehicle()?.updated_at) }}</span>
+            </div>
+            <div class="tech-section tech-section-meta">
+              <div class="tech-meta-row">
+                <div class="tech-meta-item">
+                  <span class="tech-label">Creado</span>
+                  <span class="tech-value tech-value-mono">{{ formatDate(vehicle()?.created_at) }}</span>
+                </div>
+                <div class="tech-meta-item">
+                  <span class="tech-label">Actualizado</span>
+                  <span class="tech-value tech-value-mono">{{ formatDate(vehicle()?.updated_at) }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </ng-template>
+      </p-card>
 
-      <section class="vehicle-card">
-        <div class="card-header">
-          <h3>Documentación Vigente</h3>
-          <button class="link-btn">Gestionar Todo</button>
-        </div>
-        <div class="card-list">
-          <div class="doc-item">
-            <div class="doc-icon">
-              <app-hero-icon name="folder" [size]="18"></app-hero-icon>
-            </div>
-            <div>
-              <p>SOAT - Seguro Obligatorio</p>
-              <span>Póliza #{{ vehicle()?.id || '0000' }}</span>
-            </div>
-            <div class="doc-status ok">VIGENTE</div>
+      <p-card styleClass="vehicle-detail-card">
+        <ng-template pTemplate="header">
+          <div class="card-header-row">
+            <span class="card-header-title">Documentación Vigente</span>
+            <p-button label="Gestionar Todo" link size="small" styleClass="link-btn" />
           </div>
-          <div class="doc-item warning">
-            <div class="doc-icon warn">
-              <app-hero-icon name="exclamation-triangle" [size]="18"></app-hero-icon>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="doc-list">
+            <div class="doc-item">
+              <div class="doc-icon doc-icon-ok">
+                <i class="pi pi-folder"></i>
+              </div>
+              <div>
+                <p>SOAT - Seguro Obligatorio</p>
+                <span>Póliza #{{ vehicle()?.id || '0000' }}</span>
+              </div>
+              <p-tag value="VIGENTE" severity="success" styleClass="doc-status-tag" />
             </div>
-            <div>
-              <p>Revisión Técnico Mecánica</p>
-              <span>Certificado #{{ vehicle()?.id || '0000' }}</span>
+            <div class="doc-item doc-item-warning">
+              <div class="doc-icon doc-icon-warn">
+                <i class="pi pi-exclamation-triangle"></i>
+              </div>
+              <div>
+                <p>Revisión Técnico Mecánica</p>
+                <span>Certificado #{{ vehicle()?.id || '0000' }}</span>
+              </div>
+              <p-tag value="POR VENCER" severity="warn" styleClass="doc-status-tag" />
             </div>
-            <div class="doc-status warn">POR VENCER</div>
           </div>
-        </div>
-      </section>
+        </ng-template>
+      </p-card>
 
-      <section class="vehicle-card metrics-card">
-        <div class="metrics-inner">
-          <h3 class="metrics-title">Métricas de Rendimiento</h3>
+      <p-card styleClass="vehicle-detail-card metrics-card">
+        <ng-template pTemplate="title">
+          <span>Métricas de Rendimiento</span>
+        </ng-template>
+        <ng-template pTemplate="content">
           <div class="metrics-row">
-          <div class="metric-block metric-block-fuel">
-            <div class="metric-block-icon">
-              <app-hero-icon name="bolt" [size]="18"></app-hero-icon>
-            </div>
-            <div class="metric-block-content">
-              <span class="metric-block-label">Consumo de Combustible</span>
-              <strong class="metric-block-value">32.5 L/100km</strong>
-              <div class="metric-bar">
-                <span class="metric-bar-fill" style="width: 65%;"></span>
+            <div class="metric-block metric-block-fuel">
+              <div class="metric-block-icon">
+                <i class="pi pi-bolt"></i>
               </div>
-              <span class="metric-block-footnote">Promedio mensual: 31.2 L</span>
+              <div class="metric-block-content">
+                <span class="metric-block-label">Consumo de Combustible</span>
+                <strong class="metric-block-value">32.5 L/100km</strong>
+                <p-progressBar [value]="65" [showValue]="false" styleClass="metric-progress" />
+                <span class="metric-block-footnote">Promedio mensual: 31.2 L</span>
+              </div>
+            </div>
+            <div class="metric-block metric-block-km">
+              <div class="metric-block-icon">
+                <i class="pi pi-map-marker"></i>
+              </div>
+              <div class="metric-block-content">
+                <span class="metric-block-label">Km Recorridos</span>
+                <strong class="metric-block-value">12,450</strong>
+                <span class="metric-block-footnote">Este mes</span>
+              </div>
+            </div>
+            <div class="metric-block metric-block-alert">
+              <div class="metric-block-icon">
+                <i class="pi pi-exclamation-circle"></i>
+              </div>
+              <div class="metric-block-content">
+                <span class="metric-block-label">Incidentes Reportados</span>
+                <strong class="metric-block-value">2</strong>
+                <span class="metric-block-footnote">Total</span>
+              </div>
             </div>
           </div>
-          <div class="metric-block metric-block-km">
-            <div class="metric-block-icon">
-              <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
-            </div>
-            <div class="metric-block-content">
-              <span class="metric-block-label">Km Recorridos</span>
-              <strong class="metric-block-value">12,450</strong>
-              <span class="metric-block-footnote">Este mes</span>
-            </div>
-          </div>
-          <div class="metric-block metric-block-alert">
-            <div class="metric-block-icon">
-              <app-hero-icon name="exclamation-circle" [size]="18"></app-hero-icon>
-            </div>
-            <div class="metric-block-content">
-              <span class="metric-block-label">Incidentes Reportados</span>
-              <strong class="metric-block-value">2</strong>
-              <span class="metric-block-footnote">Total</span>
-            </div>
-          </div>
-          </div>
-        </div>
-      </section>
+        </ng-template>
+      </p-card>
     </div>
   }
 </div>

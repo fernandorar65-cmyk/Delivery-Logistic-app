@@ -1,8 +1,7 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { VehiclesEditModalComponent } from './components/vehicles-edit-modal/vehicles-edit-modal.component';
 import { VehiclesDeleteModalComponent } from './components/vehicles-delete-modal/vehicles-delete-modal.component';
 import { VehicleService } from '@app/features/vehicles/services/vehicle.service';
@@ -10,19 +9,34 @@ import { Vehicle } from '@app/features/vehicles/models/vehicle.model';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 import { LoadingCardComponent } from '@app/shared/ui/loading-card/loading-card.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { CardModule } from 'primeng/card';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { AvatarModule } from 'primeng/avatar';
+import { DividerModule } from 'primeng/divider';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { TooltipModule } from 'primeng/tooltip';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-vehicle-detail-view',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     ReactiveFormsModule,
-    HeroIconComponent,
     VehiclesEditModalComponent,
     VehiclesDeleteModalComponent,
     EmptyStateComponent,
-    LoadingCardComponent
+    LoadingCardComponent,
+    CardModule,
+    TagModule,
+    ButtonModule,
+    BreadcrumbModule,
+    AvatarModule,
+    DividerModule,
+    ProgressBarModule,
+    TooltipModule
   ],
   templateUrl: './vehicle-detail-view.component.html',
   styleUrl: './vehicle-detail-view.component.css'
@@ -276,6 +290,39 @@ export class VehicleDetailViewComponent implements OnInit {
     if (name) return name;
     const id = this.providerId();
     return id ? `Provider #${id}` : 'Provider';
+  }
+
+  breadcrumbItems = computed<MenuItem[]>(() => {
+    const pid = this.providerId();
+    return [
+      { label: 'Inicio', routerLink: '/dashboard' },
+      { label: 'Providers', routerLink: '/providers' },
+      { label: 'Vehículos', routerLink: pid ? ['/providers', pid, 'vehicles'] : [] },
+      { label: 'Detalle' }
+    ];
+  });
+
+  getStatusSeverity(status?: string): 'success' | 'info' | 'warn' | 'secondary' {
+    if (!status) return 'secondary';
+    switch (status) {
+      case 'available':
+        return 'success';
+      case 'in_route':
+        return 'info';
+      case 'maintenance':
+        return 'warn';
+      case 'inactive':
+        return 'secondary';
+      default:
+        return 'secondary';
+    }
+  }
+
+  getVehicleInitials(plate?: string | null): string {
+    if (!plate || !plate.trim()) return 'VH';
+    const cleaned = plate.replace(/\s/g, '').toUpperCase();
+    if (cleaned.length >= 2) return cleaned.slice(0, 2);
+    return cleaned || 'VH';
   }
 
   getStatusLabel(status?: string): string {

@@ -1,75 +1,101 @@
-.vehicle-delete-icon {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 999px;
-  display: inline-flex;
+/* Dialog container */
+:host ::ng-deep .vehicle-delete-dialog.p-dialog {
+  border-radius: 1rem;
+  border: 1px solid var(--p-surface-border, #e2e8f0);
+  box-shadow: 0 25px 50px -20px rgba(15, 23, 42, 0.4);
+}
+
+:host ::ng-deep .vehicle-delete-dialog .p-dialog-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--p-surface-border, #e2e8f0);
+  background: var(--p-surface-50, #f8fafc);
+}
+
+:host ::ng-deep .vehicle-delete-dialog .p-dialog-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--p-text-color, #0f172a);
+}
+
+:host ::ng-deep .vehicle-delete-dialog .p-dialog-header-close {
+  color: var(--p-text-color-secondary, #64748b);
+}
+
+:host ::ng-deep .vehicle-delete-dialog .p-dialog-content {
+  padding: 1.5rem 1.5rem 1rem;
+}
+
+:host ::ng-deep .vehicle-delete-dialog .p-dialog-footer {
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--p-surface-border, #e2e8f0);
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Content */
+.vehicle-delete-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.vehicle-delete-icon-wrap {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--p-red-100, #fee2e2);
+  color: var(--p-red-600, #dc2626);
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: #fee2e2;
-  color: #dc2626;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+
+.vehicle-delete-icon-wrap .pi {
+  font-size: 1.75rem;
 }
 
 .vehicle-delete-text {
-  margin: 0.5rem 0 0;
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-.vehicle-delete-warning {
-  display: block;
-  margin-top: 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #dc2626;
-  letter-spacing: 0.08em;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--p-text-color-secondary, #64748b);
+  max-width: 22rem;
 }
 
 .vehicle-delete-error {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  color: #b91c1c;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 0.6rem;
-  padding: 0.6rem 0.75rem;
-}
-
-.vehicle-delete-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
   margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--p-red-700, #b91c1c);
+  background: var(--p-red-50, #fef2f2);
+  border: 1px solid var(--p-red-200, #fecaca);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  text-align: left;
 }
 
-.vehicle-delete-btn {
-  border-radius: 0.65rem;
-  border: 1px solid transparent;
-  padding: 0.7rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: #f8fafc;
-  color: #475569;
-  transition: background 0.2s, color 0.2s;
+.vehicle-delete-error .pi {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
-.vehicle-delete-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
+@media (max-width: 480px) {
+  :host ::ng-deep .vehicle-delete-dialog.p-dialog {
+    margin: 0.75rem;
+    max-width: calc(100vw - 1.5rem);
+  }
 
-.vehicle-delete-btn.danger {
-  background: #ef4444;
-  color: #ffffff;
-  box-shadow: 0 12px 18px -12px rgba(239, 68, 68, 0.4);
-}
+  :host ::ng-deep .vehicle-delete-dialog .p-dialog-footer {
+    flex-direction: column-reverse;
+  }
 
-.vehicle-delete-btn.danger:hover {
-  background: #dc2626;
-}
-
-.vehicle-delete-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  :host ::ng-deep .vehicle-delete-dialog .p-dialog-footer .p-button {
+    width: 100%;
+  }
 }
