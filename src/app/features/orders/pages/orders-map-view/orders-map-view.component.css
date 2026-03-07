@@ -877,6 +877,137 @@
   color: var(--orders-text);
 }
 
+/* Detalle de ruta: instrucciones paso a paso */
+.orders-route-detail-steps {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--orders-border);
+}
+
+.orders-route-detail-steps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.orders-route-detail-steps-title {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--orders-muted);
+}
+
+.orders-route-detail-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  transition: max-height 0.25s ease;
+}
+
+.orders-route-detail-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.orders-route-detail-list::-webkit-scrollbar-track {
+  background: var(--orders-bg);
+  border-radius: 3px;
+}
+
+.orders-route-detail-list::-webkit-scrollbar-thumb {
+  background: var(--orders-muted-light);
+  border-radius: 3px;
+}
+
+.orders-route-detail-list::-webkit-scrollbar-thumb:hover {
+  background: var(--orders-muted);
+}
+
+.orders-route-detail-list--expanded {
+  max-height: min(70vh, 420px);
+  padding-right: 0.25rem;
+}
+
+.orders-route-detail-item {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--orders-border);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.orders-route-detail-item:last-child {
+  border-bottom: none;
+}
+
+.orders-route-detail-item-num {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--orders-primary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.orders-route-detail-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.orders-route-detail-instruction {
+  margin: 0;
+  font-weight: 500;
+  color: var(--orders-text);
+  font-size: 0.8125rem;
+}
+
+.orders-route-detail-name {
+  font-size: 0.75rem;
+  color: var(--orders-muted);
+}
+
+.orders-route-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.orders-route-detail-meta-pill {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--orders-muted);
+  background: var(--orders-bg);
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.orders-route-detail-list--expanded .orders-route-detail-item {
+  padding: 0.6rem 0;
+}
+
+.orders-route-detail-list--expanded .orders-route-detail-instruction {
+  font-size: 0.84375rem;
+}
+
 .orders-map-summary-cta {
   display: inline-flex;
   align-items: center;
@@ -957,6 +1088,42 @@
 :host ::ng-deep .orders-marker-circle--stop {
   background-color: #f59e0b !important;
   border-color: #d97706 !important;
+}
+
+/* Etiquetas de orden en marcadores (INICIO, 1, 2, 3, LLEGADA) para seguir la ruta */
+:host ::ng-deep .orders-marker-circle--order-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:host ::ng-deep .orders-marker-order-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+:host ::ng-deep .orders-marker-order-label--end {
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
+}
+
+/* "Puerto 1", "Puerto 2" en marcadores de parada */
+:host ::ng-deep .orders-marker--waypoint .orders-marker-order-label {
+  font-size: 0.55rem;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+:host ::ng-deep .orders-marker-order-num {
+  font-size: 1rem;
+  font-weight: 800;
 }
 
 /* Tooltips / tarjetas flotantes en el mapa (salida y destino) - estilos deben aplicarse al contenido inyectado por Leaflet */

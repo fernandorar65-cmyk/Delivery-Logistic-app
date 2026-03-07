@@ -12,6 +12,7 @@ import { CardModule } from 'primeng/card';
 import { PanelModule } from 'primeng/panel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FormsModule } from '@angular/forms';
+import { ORS_ROUTES_SAMPLE } from './orders-map-view-sample';
 
 export type OrderStatus = 'pending' | 'in_progress' | 'delivered' | 'alert';
 
@@ -90,6 +91,76 @@ export interface OrderWithLocation {
   waypoints?: [number, number][];
   /** Si es true, es un job no asignado (solo un punto en el mapa) */
   isUnassigned?: boolean;
+  /** Geometría de la ruta [lat, lng][] cuando viene de ORS (evita llamar a OSRM). */
+  routeGeometry?: [number, number][];
+  /** Índices en routeGeometry donde empieza cada tramo (inicio, parada1, parada2, ..., fin) para colorear segmentos. */
+  routeWayPointIndices?: number[];
+  /** Resumen de la ruta (distancia en m, duración en s) cuando viene de ORS. */
+  routeSummary?: { distance: number; duration: number };
+  /** Instrucciones paso a paso para el detalle de la ruta (ORS segments.steps). */
+  routeSteps?: RouteStepInstruction[];
+}
+
+/** Respuesta con rutas en formato OpenRouteService (geojson con geometry codificada y steps VRP). */
+export interface ORSRoutesResponse {
+  routes: ORSRouteWithGeojson[];
+  unassigned: unknown[];
+}
+
+/** Una ruta con geometría GeoJSON de ORS y pasos VRP. */
+export interface ORSRouteWithGeojson {
+  vehicle: number;
+  geojson: ORSGeojson;
+  steps: ORSStep[];
+}
+
+export interface ORSGeojson {
+  bbox?: number[];
+  routes: {
+    summary?: { distance: number; duration: number };
+    segments?: ORSSegment[];
+    geometry?: string; // polyline encoded
+    way_points?: number[];
+  }[];
+  metadata?: unknown;
+}
+
+export interface ORSSegment {
+  distance: number;
+  duration: number;
+  steps: ORSSegmentStep[];
+}
+
+export interface ORSSegmentStep {
+  distance: number;
+  duration: number;
+  type?: number;
+  instruction: string;
+  name: string;
+  way_points?: number[];
+  exit_number?: number;
+}
+
+/** Paso VRP en el formato ORS (location [lng, lat]). */
+export interface ORSStep {
+  type: 'start' | 'job' | 'end';
+  location: number[];
+  id?: number;
+  job?: number;
+  setup?: number;
+  service?: number;
+  waiting_time?: number;
+  arrival?: number;
+  duration?: number;
+  violations?: unknown[];
+}
+
+/** Instrucción de ruta para mostrar en el detalle (nombre, texto, distancia, duración). */
+export interface RouteStepInstruction {
+  instruction: string;
+  name: string;
+  distance: number;
+  duration: number;
 }
 
 /** Polyline de Leaflet con métodos que usamos para mostrar/ocultar y encuadrar */
@@ -102,6 +173,132 @@ type RoutePolyline = {
 
 /** Tile layer de Leaflet con addTo y remove */
 type TileLayerRef = { addTo: (m: LeafletMap) => unknown; remove: () => void };
+
+/** Decodifica una polyline codificada (formato Google/OpenRouteService) a [lat, lng][]. */
+function decodePolyline(encoded: string): [number, number][] {
+  const points: [number, number][] = [];
+  let index = 0;
+  let lat = 0;
+  let lng = 0;
+  while (index < encoded.length) {
+    let b: number;
+    let shift = 0;
+    let result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlat = (result & 1) ? ~(result >> 1) : result >> 1;
+    lat += dlat;
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlng = (result & 1) ? ~(result >> 1) : result >> 1;
+    lng += dlng;
+    points.push([lat / 1e5, lng / 1e5]);
+  }
+  return points;
+}
+
+/** Convierte la respuesta ORS (rutas con geojson) en la lista de órdenes para el mapa. */
+function orsResponseToOrders(response: ORSRoutesResponse): OrderWithLocation[] {
+  const orders: OrderWithLocation[] = [];
+  const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  for (const route of response.routes) {
+    const startStep = route.steps.find(s => s.type === 'start');
+    const endStep = route.steps.find(s => s.type === 'end');
+    const jobSteps = route.steps.filter((s): s is ORSStep & { type: 'job' } => s.type === 'job');
+    if (!startStep || jobSteps.length === 0) continue;
+
+    const [pickupLng, pickupLat] = startStep.location;
+    // Todos los jobs son waypoints (Puerto 1, 2, 3…); el destino de la ruta es el paso "end" (FIN en depósito)
+    const waypoints: [number, number][] = jobSteps.map(s => [s.location[1], s.location[0]]);
+    const [destLng, destLat] = endStep?.location ?? jobSteps[jobSteps.length - 1].location;
+    const lastJob = jobSteps[jobSteps.length - 1];
+
+    const firstRoute = route.geojson?.routes?.[0];
+    let routeGeometry: [number, number][] | undefined;
+    let routeWayPointIndices: number[] | undefined;
+    let routeSummary: { distance: number; duration: number } | undefined;
+    let routeSteps: RouteStepInstruction[] | undefined;
+
+    if (firstRoute?.geometry) {
+      try {
+        routeGeometry = decodePolyline(firstRoute.geometry).map(([lat, lng]) => [lat, lng]);
+      } catch {
+        routeGeometry = undefined;
+      }
+    }
+    if (firstRoute?.way_points?.length) {
+      routeWayPointIndices = firstRoute.way_points;
+    }
+    if (firstRoute?.summary) {
+      routeSummary = { distance: firstRoute.summary.distance, duration: firstRoute.summary.duration };
+    }
+    if (firstRoute?.segments?.length) {
+      routeSteps = firstRoute.segments.flatMap(seg =>
+        (seg.steps ?? []).map(s => ({
+          instruction: s.instruction,
+          name: s.name ?? '-',
+          distance: s.distance,
+          duration: s.duration
+        }))
+      );
+    }
+
+    orders.push({
+      id: `route-${route.vehicle}`,
+      routeId: `Ruta ${route.vehicle}`,
+      trackingNumber: `Ruta ${route.vehicle}`,
+      address: endStep ? 'Fin – Depósito' : `Última entrega (Job ${lastJob.job ?? lastJob.id})`,
+      lat: destLat,
+      lng: destLng,
+      pickupLat,
+      pickupLng,
+      pickupAddress: 'Depósito',
+      status: 'in_progress',
+      driverName: `Vehículo ${route.vehicle}`,
+      vehiclePlate: `V-${route.vehicle}`,
+      date: today,
+      taskCount: jobSteps.length,
+      waypoints: waypoints.length > 0 ? waypoints : undefined,
+      routeGeometry,
+      routeWayPointIndices,
+      routeSummary,
+      routeSteps
+    });
+  }
+
+  for (const u of response.unassigned as Array<{ id: number; location: [number, number] }>) {
+    if (!u?.location) continue;
+    const [lng, lat] = u.location;
+    orders.push({
+      id: `unassigned-${u.id}`,
+      routeId: `NA-${u.id}`,
+      trackingNumber: `Job ${u.id} (no asignado)`,
+      address: `Job ${u.id} – Sin ruta`,
+      lat,
+      lng,
+      pickupLat: lat,
+      pickupLng: lng,
+      pickupAddress: 'N/A',
+      status: 'alert',
+      driverName: '—',
+      vehiclePlate: '—',
+      date: today,
+      taskCount: 0,
+      isUnassigned: true
+    });
+  }
+
+  return orders;
+}
 
 /** Ejemplo de respuesta VRP (solver de rutas). location en el JSON es [lng, lat]. */
 const VRP_SAMPLE: VRPResponse = {
@@ -263,6 +460,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
   /** Muestra/oculta el panel con los datos raw para el mapa */
   showDataPanel = signal(false);
 
+  /** Si el detalle de la ruta (instrucciones) está expandido en el resumen */
+  routeDetailExpanded = signal(false);
+
   /** Tipo de mapa: 'map' (callejero) o 'satellite' */
   mapType = signal<'map' | 'satellite'>('map');
 
@@ -287,15 +487,15 @@ export class OrdersMapViewComponent implements AfterViewInit {
   }
 
   /** Datos de órdenes/rutas a partir de la respuesta VRP */
-  orders = signal<OrderWithLocation[]>(vrpResponseToOrders(VRP_SAMPLE));
+  orders = signal<OrderWithLocation[]>(orsResponseToOrders(ORS_ROUTES_SAMPLE as ORSRoutesResponse));
 
   private mapInstance: LeafletMap | null = null;
   private markers: LeafletMarker[] = [];
   /** Marcadores de waypoints (paradas) por orden: waypointMarkers[orderIndex] = [marker, ...] */
   private waypointMarkers: LeafletMarker[][] = [];
-  /** Polylines de rutas (no se añaden al mapa hasta que se selecciona una orden) */
-  private polylinesTrack: RoutePolyline[] = [];
-  private polylinesDash: RoutePolyline[] = [];
+  /** Polylines de rutas (una o varias por orden: varias si la ruta se dibuja por segmentos de color). */
+  private polylinesTrack: RoutePolyline[][] = [];
+  private polylinesDash: RoutePolyline[][] = [];
   /** Polylines actualmente visibles en el mapa (varias si hay selección múltiple) */
   private polylinesOnMap: RoutePolyline[] = [];
   /** Capas base del mapa (callejero y satélite) para alternar */
@@ -458,9 +658,43 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
   clearSelection(): void {
     this.selectedOrderIds.set(new Set());
+    this.routeDetailExpanded.set(false);
     this.removeAllPolylinesFromMap();
     this.updateTooltipsVisibility();
   }
+
+  toggleRouteDetailExpanded(): void {
+    this.routeDetailExpanded.update(v => !v);
+  }
+
+  /** Detalle de la ruta seleccionada (resumen + instrucciones) para el panel. */
+  getSelectedRouteDetail(): { order: OrderWithLocation; summary: { distance: number; duration: number }; steps: RouteStepInstruction[] } | null {
+    const ids = this.selectedOrderIds();
+    if (ids.size === 0) return null;
+    const order = this.orders().find(o => ids.has(o.id));
+    if (!order) return null;
+    return {
+      order,
+      summary: order.routeSummary ?? { distance: 0, duration: 0 },
+      steps: order.routeSteps ?? []
+    };
+  }
+
+  /** Formatea distancia en metros a texto (km si >= 1000). */
+  formatDistance(m: number): string {
+    if (m >= 1000) return `${(m / 1000).toFixed(1)} km`;
+    return `${Math.round(m)} m`;
+  }
+
+  /** Formatea duración en segundos a minutos. */
+  formatDuration(s: number): string {
+    const min = Math.round(s / 60);
+    if (min >= 60) return `${Math.floor(min / 60)} h ${min % 60} min`;
+    return `${min} min`;
+  }
+
+  /** Colores por segmento para que se distinga el orden del recorrido (1.º tramo, 2.º, …). */
+  private readonly ROUTE_SEGMENT_COLORS = ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2'];
 
   /** Quita todas las polylines del mapa. */
   private removeAllPolylinesFromMap(): void {
@@ -482,23 +716,25 @@ export class OrdersMapViewComponent implements AfterViewInit {
 
     for (let i = 0; i < orders.length; i++) {
       if (!ids.has(orders[i].id)) continue;
-      const polyTrack = this.polylinesTrack[i];
-      const polyDash = this.polylinesDash[i];
-      if (polyTrack) {
-        polyTrack.addTo(this.mapInstance);
-        this.polylinesOnMap.push(polyTrack);
-      }
-      if (polyDash) {
-        polyDash.addTo(this.mapInstance);
-        this.polylinesOnMap.push(polyDash);
-      }
-      if (polyTrack) {
-        try {
-          const b = polyTrack.getBounds();
-          bounds.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]);
-        } catch {
-          bounds.push([orders[i].pickupLat, orders[i].pickupLng], [orders[i].lat, orders[i].lng]);
-        }
+      const trackPolys = this.polylinesTrack[i] ?? [];
+      const dashPolys = this.polylinesDash[i] ?? [];
+      trackPolys.forEach(p => {
+        p.addTo(this.mapInstance!);
+        this.polylinesOnMap.push(p);
+      });
+      dashPolys.forEach(p => {
+        p.addTo(this.mapInstance!);
+        this.polylinesOnMap.push(p);
+      });
+      if (trackPolys.length > 0) {
+        trackPolys.forEach(p => {
+          try {
+            const b = p.getBounds();
+            bounds.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]);
+          } catch {
+            bounds.push([orders[i].pickupLat, orders[i].pickupLng], [orders[i].lat, orders[i].lng]);
+          }
+        });
       }
     }
 
@@ -563,8 +799,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
       const el = this.mapContainerRef?.nativeElement;
       if (!el) return;
 
-      const center: [number, number] = [48.75, 2.35];
-      const map = L.map(el, { center, zoom: 9 });
+      const center: [number, number] = [-12.0626, -77.0396]; // Lima (centro para datos ORS)
+      const map = L.map(el, { center, zoom: 13 });
 
       const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -629,41 +865,93 @@ export class OrdersMapViewComponent implements AfterViewInit {
     this.polylinesTrack = [];
     this.polylinesDash = [];
 
+    const segmentColors = this.ROUTE_SEGMENT_COLORS;
     const ordersList = this.orders();
     for (let orderIndex = 0; orderIndex < ordersList.length; orderIndex++) {
       const order = ordersList[orderIndex];
       const isAlert = order.status === 'alert';
       const isInProgress = order.status === 'in_progress';
-      const color = isAlert ? '#dc2626' : isInProgress ? '#2563eb' : '#059669';
+      const baseColor = isAlert ? '#dc2626' : isInProgress ? '#2563eb' : '#059669';
       const iconName = isInProgress ? 'local_shipping' : 'inventory_2';
       const statusText = isInProgress ? 'En movimiento' : this.getStatusLabel(order.status);
 
-      const latlngs: [number, number][] = [
-        [order.pickupLat, order.pickupLng],
-        [order.lat, order.lng]
-      ];
+      const latlngs: [number, number][] =
+        order.routeGeometry?.length
+          ? order.routeGeometry
+          : order.waypoints?.length
+            ? [[order.pickupLat, order.pickupLng], ...order.waypoints, [order.lat, order.lng]]
+            : [[order.pickupLat, order.pickupLng], [order.lat, order.lng]];
 
-      // Pista base (línea suave detrás)
-      const routeTrack = L.polyline(latlngs, {
-        color,
-        weight: 10,
-        opacity: 0.35,
-        lineCap: 'round',
-        lineJoin: 'round'
-      }) as unknown as RoutePolyline;
-      this.polylinesTrack.push(routeTrack);
+      const wayIndices = order.routeWayPointIndices;
+      const useSegments = wayIndices && wayIndices.length >= 2 && order.routeGeometry?.length;
 
-      // Línea punteada animada (avanzando como en el HTML de referencia)
-      const routeDash = L.polyline(latlngs, {
-        color,
-        weight: 4,
-        opacity: 1,
-        dashArray: '8, 12',
-        lineCap: 'round',
-        lineJoin: 'round',
-        className: 'orders-route-line-animated'
-      }) as unknown as RoutePolyline;
-      this.polylinesDash.push(routeDash);
+      if (useSegments) {
+        const geom = order.routeGeometry!;
+        const trackSegs: RoutePolyline[] = [];
+        const dashSegs: RoutePolyline[] = [];
+        const lastSegIndex = wayIndices.length - 2;
+        const outlineCoords: [number, number][] = geom.length > 0
+          ? [[order.pickupLat, order.pickupLng], ...geom.slice(1, -1), [order.lat, order.lng]]
+          : [...latlngs];
+        // Línea base blanca/ancha para que la ruta destaque sobre calles cercanas
+        const outlineTrack = L.polyline(outlineCoords, {
+          color: '#ffffff',
+          weight: 16,
+          opacity: 0.9,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }) as unknown as RoutePolyline;
+        trackSegs.push(outlineTrack);
+        for (let j = 0; j < wayIndices.length - 1; j++) {
+          const start = wayIndices[j];
+          const endIdx = Math.min(wayIndices[j + 1], geom.length - 1);
+          let segCoords: [number, number][] = geom.slice(start, endIdx + 1);
+          if (segCoords.length < 2) continue;
+          // Asegurar que el primer segmento empiece en el marcador de inicio y el último llegue al de fin
+          if (j === 0) segCoords = [[order.pickupLat, order.pickupLng], ...segCoords.slice(1)];
+          if (j === lastSegIndex) segCoords = [...segCoords.slice(0, -1), [order.lat, order.lng]];
+          const segColor = segmentColors[j % segmentColors.length];
+          const trackPoly = L.polyline(segCoords, {
+            color: segColor,
+            weight: 10,
+            opacity: 0.5,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }) as unknown as RoutePolyline;
+          trackSegs.push(trackPoly);
+          const dashPoly = L.polyline(segCoords, {
+            color: segColor,
+            weight: 5,
+            opacity: 1,
+            dashArray: '10, 14',
+            lineCap: 'round',
+            lineJoin: 'round',
+            className: 'orders-route-line-animated'
+          }) as unknown as RoutePolyline;
+          dashSegs.push(dashPoly);
+        }
+        this.polylinesTrack.push(trackSegs);
+        this.polylinesDash.push(dashSegs);
+      } else {
+        const routeTrack = L.polyline(latlngs, {
+          color: baseColor,
+          weight: 12,
+          opacity: 0.4,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }) as unknown as RoutePolyline;
+        const routeDash = L.polyline(latlngs, {
+          color: baseColor,
+          weight: 5,
+          opacity: 1,
+          dashArray: '8, 12',
+          lineCap: 'round',
+          lineJoin: 'round',
+          className: 'orders-route-line-animated'
+        }) as unknown as RoutePolyline;
+        this.polylinesTrack.push([routeTrack]);
+        this.polylinesDash.push([routeDash]);
+      }
 
       // Tarjeta de ubicación actual (punto de salida)
       const ubicacionCard = `
@@ -680,17 +968,17 @@ export class OrdersMapViewComponent implements AfterViewInit {
         <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
       `;
 
-      // Marcador de inicio (recojo) — icono de bandera + tooltip con tarjeta
+      // Marcador de inicio (recojo) — icono de bandera + número de orden "INICIO"
       const startIcon = L.divIcon({
         className: 'orders-marker orders-marker--start',
         html: `
-          <div class="orders-marker-circle" style="background-color:#6366f1; border-color:#4f46e5">
-            <span class="material-symbols-outlined orders-marker-icon">flag</span>
+          <div class="orders-marker-circle orders-marker-circle--order-num" style="background-color:#6366f1; border-color:#4f46e5">
+            <span class="orders-marker-order-label">INICIO</span>
           </div>
           <span class="orders-marker-label">Inicio</span>
         `,
-        iconSize: [44, 44],
-        iconAnchor: [22, 44]
+        iconSize: [52, 52],
+        iconAnchor: [26, 52]
       });
       const startMarker = L.marker([order.pickupLat, order.pickupLng], { icon: startIcon })
         .addTo(map)
@@ -704,22 +992,23 @@ export class OrdersMapViewComponent implements AfterViewInit {
       });
       this.markers.push(startMarker);
 
-      // Marcadores de parada (waypoints) — solo se muestran cuando la orden está seleccionada
+      // Marcadores de parada (waypoints) — "Puerto 1", "Puerto 2" para identificar a simple vista
       this.waypointMarkers[orderIndex] = [];
       (order.waypoints ?? []).forEach((wp, wpIndex) => {
+        const orderNum = wpIndex + 1;
         const stopIcon = L.divIcon({
           className: 'orders-marker orders-marker--waypoint',
           html: `
-            <div class="orders-marker-circle orders-marker-circle--stop" style="background-color:#f59e0b; border-color:#d97706">
-              <span class="material-symbols-outlined orders-marker-icon">stop_circle</span>
+            <div class="orders-marker-circle orders-marker-circle--stop orders-marker-circle--order-num" style="background-color:#f59e0b; border-color:#d97706">
+              <span class="orders-marker-order-label">Puerto ${orderNum}</span>
             </div>
-            <span class="orders-marker-label">Parada ${wpIndex + 1}</span>
+            <span class="orders-marker-label">Puerto ${orderNum}</span>
           `,
-          iconSize: [40, 40],
-          iconAnchor: [20, 40]
+          iconSize: [52, 52],
+          iconAnchor: [26, 52]
         });
         const wpMarker = L.marker([wp[0], wp[1]], { icon: stopIcon });
-        wpMarker.bindTooltip(`Parada ${wpIndex + 1} – Punto intermedio`, {
+        wpMarker.bindTooltip(`Puerto ${orderNum} – Punto intermedio de la ruta`, {
           permanent: false,
           direction: 'top',
           offset: [0, -24],
@@ -745,17 +1034,17 @@ export class OrdersMapViewComponent implements AfterViewInit {
         </div>
       `;
 
-      // Marcador de llegada (entrega) — paquete o camión + tooltip con tarjeta
+      // Marcador de llegada (entrega) — número "LLEGADA" para cerrar la secuencia
       const icon = L.divIcon({
         className: 'orders-marker',
         html: `
-          <div class="orders-marker-circle" style="background-color:${color}">
-            <span class="material-symbols-outlined orders-marker-icon">${iconName}</span>
+          <div class="orders-marker-circle orders-marker-circle--order-num" style="background-color:${baseColor}">
+            <span class="orders-marker-order-label orders-marker-order-label--end">FIN</span>
           </div>
-          <span class="orders-marker-label">Llegada</span>
+          <span class="orders-marker-label">Fin</span>
         `,
-        iconSize: [48, 48],
-        iconAnchor: [24, 48]
+        iconSize: [52, 52],
+        iconAnchor: [26, 52]
       });
 
       const marker = L.marker([order.lat, order.lng], { icon })
@@ -781,14 +1070,43 @@ export class OrdersMapViewComponent implements AfterViewInit {
     return div.innerHTML;
   }
 
-  /** Pide a OSRM la ruta por carretera para cada orden y actualiza las polylines cuando responden. */
+  /** Pide a OSRM la ruta por carretera para cada orden (o usa routeGeometry si ya viene de ORS) y actualiza las polylines. */
   private loadRoutesAndUpdatePolylines(map: LeafletMap): void {
     const list = this.orders();
     list.forEach((order, index) => {
+      const trackPolys = this.polylinesTrack[index] ?? [];
+      const dashPolys = this.polylinesDash[index] ?? [];
       if (order.isUnassigned) {
         const pt: [number, number] = [order.lat, order.lng];
-        if (this.polylinesTrack[index]) this.polylinesTrack[index].setLatLngs([pt, pt]);
-        if (this.polylinesDash[index]) this.polylinesDash[index].setLatLngs([pt, pt]);
+        if (trackPolys[0]) trackPolys[0].setLatLngs([pt, pt]);
+        if (dashPolys[0]) dashPolys[0].setLatLngs([pt, pt]);
+        return;
+      }
+      if (order.routeGeometry?.length) {
+        const wayIndices = order.routeWayPointIndices;
+        const useSegments = wayIndices && wayIndices.length >= 2;
+        if (useSegments) {
+          const geom = order.routeGeometry;
+          const lastSegIndex = wayIndices!.length - 2;
+          for (let j = 0; j < wayIndices!.length - 1; j++) {
+            const start = wayIndices![j];
+            const endIdx = Math.min(wayIndices![j + 1], geom.length - 1);
+            let segCoords = geom.slice(start, endIdx + 1);
+            if (segCoords.length >= 2) {
+              if (j === 0) segCoords = [[order.pickupLat, order.pickupLng], ...segCoords.slice(1)];
+              if (j === lastSegIndex) segCoords = [...segCoords.slice(0, -1), [order.lat, order.lng]];
+              if (trackPolys[j + 1]) trackPolys[j + 1].setLatLngs(segCoords);
+              if (dashPolys[j]) dashPolys[j].setLatLngs(segCoords);
+            }
+          }
+          const outlineCoords: [number, number][] = geom.length > 0
+            ? [[order.pickupLat, order.pickupLng], ...geom.slice(1, -1), [order.lat, order.lng]]
+            : [];
+          if (outlineCoords.length >= 2 && trackPolys[0]) trackPolys[0].setLatLngs(outlineCoords);
+        } else {
+          if (trackPolys[0]) trackPolys[0].setLatLngs(order.routeGeometry);
+          if (dashPolys[0]) dashPolys[0].setLatLngs(order.routeGeometry);
+        }
         return;
       }
       const points: [number, number][] =
@@ -797,9 +1115,9 @@ export class OrdersMapViewComponent implements AfterViewInit {
           : [[order.pickupLat, order.pickupLng], [order.lat, order.lng]];
 
       this.fetchRouteOSRMWithWaypoints(points).then(coords => {
-        if (coords.length > 0) {
-          if (this.polylinesTrack[index]) this.polylinesTrack[index].setLatLngs(coords);
-          if (this.polylinesDash[index]) this.polylinesDash[index].setLatLngs(coords);
+        if (coords.length > 0 && trackPolys[0] && dashPolys[0]) {
+          trackPolys[0].setLatLngs(coords);
+          dashPolys[0].setLatLngs(coords);
         }
       });
     });

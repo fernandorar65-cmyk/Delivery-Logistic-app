@@ -201,25 +201,71 @@
               </div>
               <div>
                 <p class="orders-map-summary-caption">RESUMEN RUTA</p>
-                <p class="orders-map-summary-route">{{ selectedOrderIds().size }} entrega(s) seleccionada(s)</p>
+                <p class="orders-map-summary-route">{{ getSelectedRouteDetail()?.order?.trackingNumber ?? (selectedOrderIds().size + ' entrega(s) seleccionada(s)') }}</p>
               </div>
             </div>
             <span class="orders-map-summary-pct">—</span>
           </div>
-          <div class="orders-map-summary-progress">
-            <p-progressBar [value]="60" [showValue]="false" styleClass="orders-summary-progress" />
-            <p class="orders-map-summary-meta">Progreso general</p>
-          </div>
-          <div class="orders-map-summary-grid">
-            <div class="orders-map-summary-box">
-              <p class="orders-map-summary-box-label">Tiempo Est.</p>
-              <p class="orders-map-summary-box-value">—</p>
+          @if (getSelectedRouteDetail(); as detail) {
+            <div class="orders-map-summary-progress">
+              <p-progressBar [value]="60" [showValue]="false" styleClass="orders-summary-progress" />
+              <p class="orders-map-summary-meta">Progreso general</p>
             </div>
-            <div class="orders-map-summary-box">
-              <p class="orders-map-summary-box-label">Distancia</p>
-              <p class="orders-map-summary-box-value">—</p>
+            <div class="orders-map-summary-grid">
+              <div class="orders-map-summary-box">
+                <p class="orders-map-summary-box-label">Tiempo Est.</p>
+                <p class="orders-map-summary-box-value">{{ detail.summary.duration ? formatDuration(detail.summary.duration) : '—' }}</p>
+              </div>
+              <div class="orders-map-summary-box">
+                <p class="orders-map-summary-box-label">Distancia</p>
+                <p class="orders-map-summary-box-value">{{ detail.summary.distance ? formatDistance(detail.summary.distance) : '—' }}</p>
+              </div>
             </div>
-          </div>
+            @if (detail.steps.length > 0) {
+              <div class="orders-route-detail-steps">
+                <div class="orders-route-detail-steps-header">
+                  <p class="orders-route-detail-steps-title">Detalle de la ruta</p>
+                  <p-button
+                    [label]="routeDetailExpanded() ? 'Contraer detalle' : 'Expandir detalle'"
+                    [icon]="routeDetailExpanded() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                    iconPos="right"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="toggleRouteDetailExpanded()"
+                  />
+                </div>
+                <ol class="orders-route-detail-list" [class.orders-route-detail-list--expanded]="routeDetailExpanded()">
+                  @for (step of detail.steps; track $index) {
+                    <li class="orders-route-detail-item">
+                      <div class="orders-route-detail-item-num">{{ $index + 1 }}</div>
+                      <div class="orders-route-detail-item-body">
+                        <p class="orders-route-detail-instruction">{{ step.instruction }}</p>
+                        @if (step.name && step.name !== '-') {
+                          <span class="orders-route-detail-name">{{ step.name }}</span>
+                        }
+                        <div class="orders-route-detail-meta">
+                          <span class="orders-route-detail-meta-pill">{{ formatDistance(step.distance) }}</span>
+                          <span class="orders-route-detail-meta-pill">{{ formatDuration(step.duration) }}</span>
+                        </div>
+                      </div>
+                    </li>
+                  }
+                </ol>
+              </div>
+            }
+          } @else {
+            <div class="orders-map-summary-grid">
+              <div class="orders-map-summary-box">
+                <p class="orders-map-summary-box-label">Tiempo Est.</p>
+                <p class="orders-map-summary-box-value">—</p>
+              </div>
+              <div class="orders-map-summary-box">
+                <p class="orders-map-summary-box-label">Distancia</p>
+                <p class="orders-map-summary-box-value">—</p>
+              </div>
+            </div>
+          }
           <p-button
             label="Detalles Completos"
             icon="pi pi-eye"
