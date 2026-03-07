@@ -1,35 +1,21 @@
 <div class="filter-bar">
-  <label class="search-field">
-    <app-hero-icon name="magnifying-glass" [size]="18"></app-hero-icon>
-    <input type="text" placeholder="Buscar cliente por nombre, RUC o email..." />
-  </label>
+  <p-iconField iconPosition="left" styleClass="search-field">
+    <p-inputIcon styleClass="pi pi-search" />
+    <input type="text" pInputText placeholder="Buscar cliente por nombre, RUC o email..." class="search-input" />
+  </p-iconField>
   <div class="filter-actions">
     @if (showPendingToggle) {
-      <button class="filter-chip" [class.active]="pendingActive" (click)="pendingToggle.emit()">
-        <app-hero-icon name="clock" [size]="18"></app-hero-icon>
-        @if (pendingActive) {
-          Ver todos
-        } @else {
-          Pendientes
-          @if (pendingCount > 0) {
-            ({{ pendingCount }})
-          }
-        }
-      </button>
+      <p-button
+        [label]="pendingActive ? 'Ver todos' : (pendingCount > 0 ? 'Pendientes (' + pendingCount + ')' : 'Pendientes')"
+        icon="pi pi-clock"
+        [outlined]="!pendingActive"
+        [severity]="pendingActive ? 'info' : 'secondary'"
+        (onClick)="pendingToggle.emit()"
+        styleClass="filter-chip-btn"
+      />
     }
-    <button class="filter-chip">
-      <app-hero-icon name="adjustments-horizontal" [size]="18"></app-hero-icon>
-      Todos los estados
-      <app-hero-icon name="chevron-down" [size]="16"></app-hero-icon>
-    </button>
-    <button class="filter-chip">
-      <app-hero-icon name="map-pin" [size]="18"></app-hero-icon>
-      Ciudad
-      <app-hero-icon name="chevron-down" [size]="16"></app-hero-icon>
-    </button>
-    <button class="filter-reset">
-      <app-hero-icon name="x-mark" [size]="18"></app-hero-icon>
-      Limpiar
-    </button>
+    <p-button label="Todos los estados" icon="pi pi-chevron-down" iconPos="right" [outlined]="true" severity="secondary" styleClass="filter-chip-btn" />
+    <p-button label="Ciudad" icon="pi pi-map-marker" iconPos="right" [outlined]="true" severity="secondary" styleClass="filter-chip-btn" />
+    <p-button label="Limpiar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="clearFilters()" styleClass="filter-reset-btn" />
   </div>
 </div>

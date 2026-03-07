@@ -1,6 +1,5 @@
-<div class="table-card">
-  <div class="table-wrapper">
-    @if (loading) {
+<div class="table-wrapper">
+  @if (loading) {
       <app-loading-card message="Cargando aliados..."></app-loading-card>
     } @else if (error) {
       <app-empty-state
@@ -17,7 +16,11 @@
         (action)="createRequested.emit()"
       ></app-empty-state>
     } @else {
-      <p-table [value]="allies" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped p-datatable-sm">
+      <p-table
+        [value]="allies"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        styleClass="providers-datatable p-datatable-sm p-datatable-gridlines"
+      >
         <ng-template pTemplate="header">
           <tr>
             <th>Aliado / Empresa</th>
@@ -54,14 +57,14 @@
               <p-tag [value]="getStatusLabel(ally.status)" [severity]="getStatusSeverity(ally.status)" />
             </td>
             <td>
-              <div class="flex gap-2 align-items-center">
-                <span class="flex align-items-center gap-1">
-                  <i class="pi pi-truck"></i>
-                  <span>{{ ally.trucks }}</span>
+              <div class="fleet-cell">
+                <span class="fleet-item">
+                  <i class="pi pi-truck" aria-hidden="true"></i>
+                  <span class="fleet-value">{{ ally.trucks }}</span>
                 </span>
-                <span class="flex align-items-center gap-1">
-                  <i class="pi pi-user"></i>
-                  <span>{{ ally.motorcycles }}</span>
+                <span class="fleet-item">
+                  <i class="pi pi-user" aria-hidden="true"></i>
+                  <span class="fleet-value">{{ ally.motorcycles }}</span>
                 </span>
               </div>
             </td>
@@ -114,5 +117,4 @@
         </ng-template>
       </p-table>
     }
-  </div>
 </div>

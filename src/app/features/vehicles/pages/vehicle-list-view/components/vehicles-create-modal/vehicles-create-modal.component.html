@@ -21,7 +21,16 @@
         </div>
         <div class="vehicle-form-field">
           <label>Marca</label>
-          <input pInputText formControlName="brand" placeholder="Ej: Volvo" type="text" class="w-full" />
+          <p-autocomplete
+            formControlName="brand"
+            [suggestions]="filteredBrands"
+            (completeMethod)="filterBrands($event)"
+            [forceSelection]="false"
+            [dropdown]="true"
+            appendTo="body"
+            placeholder="Ej: Volvo — o escriba una marca"
+            fluid
+          />
         </div>
         <div class="vehicle-form-field">
           <label>Modelo</label>
@@ -61,7 +70,16 @@
         </div>
         <div class="vehicle-form-field">
           <label>Combustible</label>
-          <input pInputText formControlName="fuel_type" placeholder="Ej: Diésel" type="text" class="w-full" />
+          <p-autocomplete
+            formControlName="fuel_type"
+            [suggestions]="filteredFuelTypes"
+            (completeMethod)="filterFuelTypes($event)"
+            [forceSelection]="false"
+            [dropdown]="true"
+            appendTo="body"
+            placeholder="Ej: Diésel — o escriba el tipo"
+            fluid
+          />
         </div>
         <div class="vehicle-form-field">
           <label>Peso tara (kg)</label>
@@ -73,7 +91,16 @@
         </div>
         <div class="vehicle-form-field">
           <label>Color</label>
-          <input pInputText formControlName="color" type="text" class="w-full" />
+          <p-autocomplete
+            formControlName="color"
+            [suggestions]="filteredColors"
+            (completeMethod)="filterColors($event)"
+            [forceSelection]="false"
+            [dropdown]="true"
+            appendTo="body"
+            placeholder="Ej: Blanco — o escriba el color"
+            fluid
+          />
         </div>
         <div class="vehicle-form-field">
           <label>Largo (m)</label>

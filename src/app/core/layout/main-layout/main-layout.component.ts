@@ -67,6 +67,17 @@ export class MainLayoutComponent implements OnInit {
     if (url.startsWith('/providers')) return 'Providers';
     return this.title();
   });
+
+  /** Icono de la sección actual para mostrar en el toolbar (junto al título). */
+  protected readonly sectionIcon = computed(() => {
+    const url = this.router.url?.split('?')[0] ?? '';
+    if (url.startsWith('/dashboard')) return 'pi pi-th-large';
+    if (url.startsWith('/orders')) return 'pi pi-box';
+    if (url.startsWith('/clients')) return 'pi pi-users';
+    if (url.startsWith('/companies')) return 'pi pi-check-circle';
+    if (url.startsWith('/providers')) return 'pi pi-truck';
+    return '';
+  });
   protected readonly showBackLink = computed(() => !this.router.url?.startsWith('/dashboard'));
   protected readonly userType = signal<string | null>(null);
   protected readonly userEmail = signal<string | null>(null);
@@ -94,7 +105,7 @@ export class MainLayoutComponent implements OnInit {
       gestion.push({ label: 'Grupos de Estados', icon: 'pi pi-check-circle', routerLink: '/companies/status-groups' });
     }
     if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY])) {
-      gestion.push({ label: 'Providers', icon: 'pi pi-layer-group', routerLink: '/providers' });
+      gestion.push({ label: 'Providers', icon: 'pi pi-truck', routerLink: '/providers' });
     }
     if (this.canAccess([UserTypes.PROVIDER]) && this.userId()) {
       gestion.push({
@@ -155,7 +166,7 @@ export class MainLayoutComponent implements OnInit {
       items.push({ label: 'Grupos de Estados', icon: 'pi pi-check-circle', routerLink: '/companies/status-groups' });
     }
     if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY])) {
-      items.push({ label: 'Providers', icon: 'pi pi-layer-group', routerLink: '/providers' });
+      items.push({ label: 'Providers', icon: 'pi pi-truck', routerLink: '/providers' });
     }
     if (this.canAccess([UserTypes.PROVIDER]) && this.userId()) {
       items.push({

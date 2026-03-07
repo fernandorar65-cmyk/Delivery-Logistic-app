@@ -1,189 +1,246 @@
 <section class="status-groups-page">
-  <div class="page-breadcrumb">
-    <span class="breadcrumb-muted">Configuración</span>
-    <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-current">Grupos de Estados</span>
-  </div>
-
-  <header class="page-header">
-    <div class="page-title">
-      <h1>Administración de Grupos de Estados</h1>
-      <p>Defina y gestione los flujos de estados personalizados para sus operaciones logísticas.</p>
+  <header class="status-groups-header header-card">
+    <div>
+      <p class="status-groups-eyebrow">Configuración / Grupos de Estados</p>
+      <h1 class="status-groups-title">Administración de Grupos de Estados</h1>
+      <p class="status-groups-subtitle">Defina y gestione los flujos de estados personalizados para sus operaciones logísticas.</p>
     </div>
-    <button class="btn btn-primary" (click)="openCreateModal()">
-      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
-      Crear Nuevo Grupo
-    </button>
+    <p-button
+      label="Crear Nuevo Grupo"
+      icon="pi pi-plus"
+      (onClick)="openCreateModal()"
+      styleClass="btn-new-group"
+    />
   </header>
 
-  <div class="filters-card">
-    <label class="search-field">
-      <app-hero-icon name="magnifying-glass" [size]="18"></app-hero-icon>
-      <input type="text" placeholder="Buscar grupos..." />
-    </label>
-    <label class="search-field">
-      <app-hero-icon name="funnel" [size]="18"></app-hero-icon>
-      <input type="text" placeholder="Filtrar por nombre o estado..." />
-    </label>
-    <select class="select-field">
-      <option>Todas las Compañías</option>
-      <option>Global Logística</option>
-      <option>Express S.A.</option>
-    </select>
-    <select class="select-field">
-      <option>Más recientes</option>
-      <option>A-Z</option>
-      <option>Z-A</option>
-    </select>
-  </div>
+  <div class="status-groups-card">
+    <div class="filters-toolbar">
+      <p-iconField iconPosition="left" styleClass="search-field status-groups-search">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Buscar grupos..." class="w-full" />
+      </p-iconField>
+      <p-iconField iconPosition="left" styleClass="search-field status-groups-filter">
+        <p-inputIcon styleClass="pi pi-filter" />
+        <input type="text" pInputText placeholder="Filtrar por nombre o estado..." class="w-full" />
+      </p-iconField>
+      <p-select
+        [options]="companyOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todas las Compañías"
+        styleClass="filter-select status-groups-company-select"
+      />
+      <p-select
+        [options]="sortOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Más recientes"
+        styleClass="filter-select status-groups-sort-select"
+      />
+    </div>
 
-  @if (loading()) {
-    <div class="state-card">Cargando grupos...</div>
-  } @else if (error()) {
-    <div class="state-card state-error">{{ error() }}</div>
-  } @else if (groups.length === 0) {
-    <div class="state-card">No hay grupos de estados registrados.</div>
-  } @else {
-    <div class="groups-list">
-      @for (group of groups; track group.id) {
-        <article class="group-card is-clickable" (click)="goToDetail(group)">
-          <div class="group-header">
-            <div class="group-info">
-              <div [class]="getIconToneClass(group.iconTone)">
-                <app-hero-icon [name]="group.icon" [size]="24"></app-hero-icon>
+    @if (loading()) {
+      <div class="state-message state-loading">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>Cargando grupos...</span>
+      </div>
+    } @else if (error()) {
+      <div class="state-message state-error">
+        <i class="pi pi-times-circle"></i>
+        <span>{{ error() }}</span>
+      </div>
+    } @else if (groups.length === 0) {
+      <div class="state-message state-empty">
+        <i class="pi pi-inbox"></i>
+        <span>No hay grupos de estados registrados.</span>
+      </div>
+    } @else {
+      <div class="groups-list">
+        @for (group of paginatedGroups(); track group.id) {
+          <p-card
+            styleClass="group-card-prime is-clickable"
+            (click)="goToDetail(group)"
+          >
+            <div class="group-header">
+              <div class="group-info">
+                <div [class]="getIconToneClass(group.iconTone)" class="icon-badge">
+                  <app-hero-icon [name]="group.icon" [size]="24"></app-hero-icon>
+                </div>
+                <div>
+                  <h3 class="group-name">{{ group.title }}</h3>
+                  <p class="group-description">{{ group.description }}</p>
+                </div>
               </div>
-              <div>
-                <h3>{{ group.title }}</h3>
-                <p>{{ group.description }}</p>
+              <div class="group-actions">
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  pTooltip="Editar"
+                  (onClick)="openEditModal(group); $event.stopPropagation()"
+                />
+                <p-button
+                  icon="pi pi-copy"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  pTooltip="Duplicar"
+                  (onClick)="$event.stopPropagation()"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Eliminar"
+                  (onClick)="openDeleteModal(group); $event.stopPropagation()"
+                />
               </div>
             </div>
-            <div class="group-actions">
-              <button class="icon-btn" title="Editar" (click)="openEditModal(group); $event.stopPropagation()">
-                <app-hero-icon name="pencil" [size]="16"></app-hero-icon>
-              </button>
-              <button class="icon-btn" title="Duplicar" (click)="$event.stopPropagation()">
-                <app-hero-icon name="download" [size]="16"></app-hero-icon>
-              </button>
-              <button class="icon-btn danger" title="Eliminar" (click)="openDeleteModal(group); $event.stopPropagation()">
-                <app-hero-icon name="trash" [size]="16"></app-hero-icon>
-              </button>
-            </div>
-          </div>
 
-          <div class="group-statuses">
-            @for (status of group.statuses; track status.label) {
-              <span [class]="getToneClass(status.tone)">
-                <span class="dot"></span>
-                {{ status.label }}
-              </span>
-              @if (status !== group.statuses[group.statuses.length - 1]) {
-                <app-hero-icon name="arrow_forward" [size]="14" class="status-arrow"></app-hero-icon>
+            <div class="group-statuses">
+              @for (status of group.statuses; track status.label) {
+                <p-tag [value]="status.label" [severity]="getTagSeverity(status.tone)" styleClass="status-tag-inline" />
+                @if (status !== group.statuses[group.statuses.length - 1]) {
+                  <i class="pi pi-chevron-right status-arrow"></i>
+                }
               }
-            }
-          </div>
+            </div>
 
-          <div class="group-footer">
-            <div class="group-metrics">
-              <div>
-                <span class="metric-label">Envíos activos</span>
-                <span class="metric-value">{{ group.shipments }}</span>
+            <div class="group-footer">
+              <div class="group-metrics">
+                <div>
+                  <span class="metric-label">Envíos activos</span>
+                  <span class="metric-value">{{ group.shipments }}</span>
+                </div>
+                <div>
+                  <span class="metric-label">Última modificación</span>
+                  <span class="metric-value">{{ group.updatedAt }}</span>
+                </div>
               </div>
-              <div>
-                <span class="metric-label">Última modificación</span>
-                <span class="metric-value">{{ group.updatedAt }}</span>
+              <div class="group-members">
+                @for (member of group.members; track member) {
+                  <span class="member-badge">{{ member }}</span>
+                }
               </div>
             </div>
-            <div class="group-members">
-              @for (member of group.members; track member) {
-                <span class="member-badge">{{ member }}</span>
-              }
-            </div>
-          </div>
-        </article>
+          </p-card>
+        }
+      </div>
+
+      @if (groups.length > 0) {
+        <p-paginator
+          [first]="paginatorFirst"
+          [rows]="rowsPerPage"
+          [totalRecords]="groups.length"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          (onPageChange)="onPageChange($event)"
+          styleClass="status-groups-paginator"
+          [showFirstLastIcon]="true"
+        />
       }
-    </div>
-  }
-
-  <div class="pagination-bar">
-    <p>Mostrando <strong>{{ groups.length }}</strong> de <strong>{{ totalCount() }}</strong> grupos de estados</p>
-    <div class="pagination-actions">
-      <button class="btn btn-secondary" disabled>Anterior</button>
-      <button class="btn btn-secondary">Siguiente</button>
-    </div>
+    }
   </div>
 </section>
 
-@if (createOpen()) {
-  <app-modal title="Crear nuevo grupo" size="md" (close)="closeCreateModal()">
-    <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="modal-form">
-      <label class="form-label">Nombre del grupo</label>
-      <input class="form-input" type="text" formControlName="name" placeholder="Ej: Flujo estándar" />
-      @if (createForm.get('name')?.touched && createForm.get('name')?.invalid) {
-        <p class="form-error">Ingresa un nombre válido.</p>
-      }
-      @if (createError()) {
-        <p class="form-error">{{ createError() }}</p>
-      }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" (click)="closeCreateModal()" [disabled]="createLoading()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="createForm.invalid || createLoading()">
-          @if (createLoading()) {
-            Guardando...
-          } @else {
-            Crear grupo
-          }
-        </button>
-      </div>
-    </form>
-  </app-modal>
-}
+<!-- Crear grupo -->
+<p-dialog
+  header="Crear nuevo grupo"
+  [visible]="createOpen()"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  (onHide)="closeCreateModal()"
+  styleClass="status-group-form-dialog"
+>
+  <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="modal-form">
+    <label class="form-label">Nombre del grupo</label>
+    <input type="text" pInputText formControlName="name" placeholder="Ej: Flujo estándar" class="form-input-prime w-full" />
+    @if (createForm.get('name')?.touched && createForm.get('name')?.invalid) {
+      <p class="form-error">Ingresa un nombre válido.</p>
+    }
+    @if (createError()) {
+      <p class="form-error">{{ createError() }}</p>
+    }
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="closeCreateModal()" [disabled]="createLoading()" />
+    <p-button
+      [label]="createLoading() ? 'Guardando...' : 'Crear grupo'"
+      (onClick)="submitCreate()"
+      [loading]="createLoading()"
+      [disabled]="createForm.invalid || createLoading()"
+    />
+  </ng-template>
+</p-dialog>
 
-@if (editOpen()) {
-  <app-modal title="Editar grupo" size="md" (close)="closeEditModal()">
-    <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="modal-form">
-      <label class="form-label">Nombre del grupo</label>
-      <input class="form-input" type="text" formControlName="name" placeholder="Ej: Flujo estándar" />
-      @if (editForm.get('name')?.touched && editForm.get('name')?.invalid) {
-        <p class="form-error">Ingresa un nombre válido.</p>
-      }
-      @if (editError()) {
-        <p class="form-error">{{ editError() }}</p>
-      }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" (click)="closeEditModal()" [disabled]="editLoading()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || editLoading()">
-          @if (editLoading()) {
-            Guardando...
-          } @else {
-            Guardar cambios
-          }
-        </button>
-      </div>
-    </form>
-  </app-modal>
-}
+<!-- Editar grupo -->
+<p-dialog
+  header="Editar grupo"
+  [visible]="editOpen()"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  (onHide)="closeEditModal()"
+  styleClass="status-group-form-dialog"
+>
+  <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="modal-form">
+    <label class="form-label">Nombre del grupo</label>
+    <input type="text" pInputText formControlName="name" placeholder="Ej: Flujo estándar" class="form-input-prime w-full" />
+    @if (editForm.get('name')?.touched && editForm.get('name')?.invalid) {
+      <p class="form-error">Ingresa un nombre válido.</p>
+    }
+    @if (editError()) {
+      <p class="form-error">{{ editError() }}</p>
+    }
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="closeEditModal()" [disabled]="editLoading()" />
+    <p-button
+      [label]="editLoading() ? 'Guardando...' : 'Guardar cambios'"
+      (onClick)="submitEdit()"
+      [loading]="editLoading()"
+      [disabled]="editForm.invalid || editLoading()"
+    />
+  </ng-template>
+</p-dialog>
 
-@if (deleteOpen()) {
-  <app-modal title="Eliminar grupo" size="sm" (close)="closeDeleteModal()">
-    <div class="modal-form">
-      <p class="form-label">¿Seguro que deseas eliminar este grupo?</p>
-      <p class="form-error">Esta acción no se puede deshacer.</p>
-      @if (deletingGroupName()) {
-        <p class="delete-name">{{ deletingGroupName() }}</p>
-      }
-      @if (deleteError()) {
-        <p class="form-error">{{ deleteError() }}</p>
-      }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()" [disabled]="deleteLoading()">Cancelar</button>
-        <button type="button" class="btn btn-primary danger" (click)="submitDelete()" [disabled]="deleteLoading()">
-          @if (deleteLoading()) {
-            Eliminando...
-          } @else {
-            Eliminar
-          }
-        </button>
-      </div>
-    </div>
-  </app-modal>
-}
+<!-- Eliminar grupo -->
+<p-dialog
+  header="Eliminar grupo"
+  [visible]="deleteOpen()"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  (onHide)="closeDeleteModal()"
+  styleClass="status-group-delete-dialog"
+>
+  <div class="modal-form">
+    <p class="form-label">¿Seguro que deseas eliminar este grupo?</p>
+    <p class="form-error">Esta acción no se puede deshacer.</p>
+    @if (deletingGroupName()) {
+      <p class="delete-name">{{ deletingGroupName() }}</p>
+    }
+    @if (deleteError()) {
+      <p class="form-error">{{ deleteError() }}</p>
+    }
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="closeDeleteModal()" [disabled]="deleteLoading()" />
+    <p-button
+      [label]="deleteLoading() ? 'Eliminando...' : 'Eliminar'"
+      severity="danger"
+      icon="pi pi-trash"
+      (onClick)="submitDelete()"
+      [loading]="deleteLoading()"
+      [disabled]="deleteLoading()"
+    />
+  </ng-template>
+</p-dialog>

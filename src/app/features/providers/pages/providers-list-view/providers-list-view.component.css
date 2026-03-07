@@ -1,16 +1,78 @@
-.ally-list-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: clamp(0.75rem, 2vw, 2rem);
-  max-width: 100%;
-  margin: 0 auto;
+.providers-page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
   width: 100%;
+  box-sizing: border-box;
   font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
-  min-height: 100%;
 }
 
-/* Breadcrumbs */
+/* ----- Header ----- */
+.providers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 20px -16px rgba(15, 23, 42, 0.2);
+}
+
+.providers-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.providers-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111418;
+}
+
+.providers-subtitle {
+  margin: 0.5rem 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .btn-new-ally.p-button {
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+}
+
+/* ----- Content card ----- */
+.providers-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.25);
+}
+
+:host ::ng-deep .providers-paginator.p-paginator {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding: 0.5rem 1rem;
+}
+
+/* ----- Stats (layout spacing) ----- */
+.providers-page app-providers-stats-cards {
+  display: block;
+}
+
+/* Breadcrumbs - keep for reference but not used in new layout */
 .breadcrumbs {
   display: flex;
   flex-wrap: wrap;
@@ -37,74 +99,6 @@
 .breadcrumb-current {
   color: #111418;
   font-weight: 600;
-}
-
-/* Page Header */
-.page-header {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1rem);
-  margin-bottom: clamp(1.5rem, 3vw, 2rem);
-}
-
-@media (min-width: 768px) {
-  .page-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-}
-
-.page-title-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-}
-
-.page-title {
-  color: #111418;
-  font-size: clamp(1.5rem, 4vw, 1.875rem);
-  font-weight: 900;
-  line-height: 1.2;
-  letter-spacing: -0.033em;
-  margin: 0;
-}
-
-.page-subtitle {
-  color: #617589;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  font-weight: 400;
-  margin: 0;
-}
-
-.btn-new-ally {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: #137fec;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  height: clamp(2.25rem, 5vw, 2.5rem);
-  padding: 0 clamp(1rem, 2vw, 1.25rem);
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(19, 127, 236, 0.2);
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.btn-new-ally:hover {
-  background: #0f66be;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px -5px rgba(19, 127, 236, 0.3);
-}
-
-.btn-new-ally:active {
-  transform: translateY(0);
 }
 
 /* Stats Grid */
@@ -660,7 +654,7 @@
   background: #f3f4f6;
 }
 
-/* Pagination */
+/* Legacy pagination - replaced by p-paginator */
 .pagination {
   padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
   border-top: 1px solid #e5e7eb;
@@ -805,8 +799,13 @@
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
-  .ally-list-container {
+  .providers-page {
     padding: 0.75rem;
+  }
+
+  .providers-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .data-table {

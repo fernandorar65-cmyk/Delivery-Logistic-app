@@ -15,7 +15,16 @@
         </div>
         <div class="vehicle-edit-field">
           <label>Marca</label>
-          <input formControlName="brand" type="text" />
+          <p-autocomplete
+            formControlName="brand"
+            [suggestions]="filteredBrands"
+            (completeMethod)="filterBrands($event)"
+            [forceSelection]="false"
+            [dropdown]="true"
+            appendTo="body"
+            placeholder="Seleccione o escriba la marca"
+            fluid
+          />
         </div>
         <div class="vehicle-edit-field">
           <label>Modelo</label>
@@ -38,7 +47,16 @@
       <div class="vehicle-edit-grid vehicle-edit-grid--three">
         <div class="vehicle-edit-field">
           <label>Color</label>
-          <input formControlName="color" type="text" />
+          <p-autocomplete
+            formControlName="color"
+            [suggestions]="filteredColors"
+            (completeMethod)="filterColors($event)"
+            [forceSelection]="false"
+            [dropdown]="true"
+            appendTo="body"
+            placeholder="Seleccione o escriba el color"
+            fluid
+          />
         </div>
         <div class="vehicle-edit-field">
           <label>Tipo de Carrocería</label>

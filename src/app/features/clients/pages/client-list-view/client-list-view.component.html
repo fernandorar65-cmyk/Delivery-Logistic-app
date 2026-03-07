@@ -1,23 +1,26 @@
 <div class="clients-page">
-  <div class="page-header">
-    <div class="page-title-section">
-      <h1 class="page-title">Listado de Clientes Finales</h1>
-      <p class="page-subtitle">Gestiona y visualiza la información centralizada de tus clientes corporativos.</p>
+  <header class="clients-header header-card">
+    <div>
+      <p class="clients-eyebrow">Gestión</p>
+      <h1 class="clients-title">Listado de Clientes Finales</h1>
+      <p class="clients-subtitle">Gestiona y visualiza la información centralizada de tus clientes corporativos.</p>
     </div>
-    <button (click)="openNewClientModal()" class="btn btn-primary">
-      <app-hero-icon name="plus" [size]="18"></app-hero-icon>
-      Nuevo Cliente
-    </button>
-  </div>
+    <p-button
+      label="Nuevo Cliente"
+      icon="pi pi-plus"
+      (onClick)="openNewClientModal()"
+      styleClass="btn-new-client"
+    />
+  </header>
 
-  <app-clients-toolbar
-    [showPendingToggle]="isCompanyUser()"
-    [pendingActive]="showPending()"
-    [pendingCount]="pendingCount()"
-    (pendingToggle)="togglePending()"
-  ></app-clients-toolbar>
+  <div class="clients-card">
+    <app-clients-toolbar
+      [showPendingToggle]="isCompanyUser()"
+      [pendingActive]="showPending()"
+      [pendingCount]="pendingCount()"
+      (pendingToggle)="togglePending()"
+    ></app-clients-toolbar>
 
-  @if (loading() || error() || clients().length === 0) {
     <app-clients-table
       [loading]="loading()"
       [error]="error()"
@@ -30,42 +33,27 @@
       (edit)="openEditClientModal($event)"
       (remove)="openDeleteConfirm($event)"
     ></app-clients-table>
-  } @else {
-    <app-clients-table
-      [clients]="clients()"
-      [emptyTitle]="showPending() ? 'No hay clientes pendientes' : 'No hay clientes registrados'"
-      [emptyDescription]="showPending() ? 'No tienes solicitudes de vinculación pendientes. Los clientes que soliciten vincularse aparecerán aquí.' : 'Comienza agregando tu primer cliente al sistema'"
-      [emptyActionLabel]="showPending() ? undefined : 'Crear Primer Cliente'"
-      [emptyIcon]="showPending() ? 'clock' : 'users'"
-      (edit)="openEditClientModal($event)"
-      (remove)="openDeleteConfirm($event)"
-    ></app-clients-table>
+
+    @if (!showPending() && (loading() || clients().length > 0)) {
+      <p-paginator
+        [first]="paginatorFirst"
+        [rows]="pageSize()"
+        [totalRecords]="totalCount()"
+        [rowsPerPageOptions]="[5, 10, 20, 30]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="clients-paginator"
+        [showFirstLastIcon]="true"
+      />
+    }
 
     @if (!showPending()) {
-    <app-pagination
-      [startItem]="startItem"
-      [endItem]="endItem"
-      [totalItems]="totalCount()"
-      [currentPage]="currentPage()"
-      [totalPages]="totalPages"
-      [pages]="pages"
-      [hasPrevious]="hasPrevious()"
-      [hasNext]="hasNext()"
-      itemLabel="cliente"
-      itemLabelPlural="clientes"
-      (previous)="previousPage()"
-      (next)="nextPage()"
-      (goTo)="goToPage($event)"
-    ></app-pagination>
-
-    <app-clients-stats
-      [totalCount]="totalCount()"
-      [currentCount]="clients().length"
-    ></app-clients-stats>
+      <app-clients-stats
+        [totalCount]="totalCount()"
+        [currentCount]="clients().length"
+      ></app-clients-stats>
     }
-  }
+  </div>
 
-  <!-- Modal Flotante -->
   @if (showModal()) {
     <app-clients-form-modal
       [clientForm]="clientForm"

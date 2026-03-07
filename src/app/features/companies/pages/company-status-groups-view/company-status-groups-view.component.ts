@@ -1,15 +1,25 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
-import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 import { StatusGroupsService } from '@app/features/companies/services/status-groups.service';
 import { StorageService } from '@app/core/storage/storage.service';
 import { LocalStorageEnums } from '@app/shared/models/local.storage.enums';
 import { StatusGroup } from '@app/features/companies/models/status-group.model';
 import { hasApiErrors } from '@app/shared/utils/api-response';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { CardModule } from 'primeng/card';
+import { TagModule } from 'primeng/tag';
+import { PaginatorModule } from 'primeng/paginator';
+import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
+import { RippleModule } from 'primeng/ripple';
 
 type StatusTag = {
   label: string;
@@ -28,10 +38,27 @@ type StatusGroupView = {
   members: string[];
 };
 
+type TagSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
+
 @Component({
   selector: 'app-company-status-groups-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent, ModalComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HeroIconComponent,
+    ButtonModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    SelectModule,
+    CardModule,
+    TagModule,
+    PaginatorModule,
+    DialogModule,
+    TooltipModule,
+    RippleModule
+  ],
   templateUrl: './company-status-groups-view.component.html',
   styleUrl: './company-status-groups-view.component.css'
 })
@@ -66,6 +93,33 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
 
   groups: StatusGroupView[] = [];
   totalCount = signal(0);
+
+  firstRow = signal(0);
+  rowsPerPage = 10;
+  companyOptions = [
+    { label: 'Todas las Compañías', value: 'all' },
+    { label: 'Global Logística', value: 'gl' },
+    { label: 'Express S.A.', value: 'ex' }
+  ];
+  sortOptions = [
+    { label: 'Más recientes', value: 'recent' },
+    { label: 'A-Z', value: 'az' },
+    { label: 'Z-A', value: 'za' }
+  ];
+
+  paginatedGroups = computed(() => {
+    const first = this.firstRow();
+    const list = this.groups;
+    return list.slice(first, first + this.rowsPerPage);
+  });
+
+  get paginatorFirst(): number {
+    return this.firstRow();
+  }
+
+  onPageChange(event: { first?: number; rows?: number }): void {
+    this.firstRow.set(event.first ?? 0);
+  }
 
   private readonly statusTemplates: StatusTag[][] = [
     [
@@ -120,6 +174,18 @@ export class CompanyStatusGroupsViewComponent implements OnInit {
         return 'icon-badge icon-orange';
       default:
         return 'icon-badge icon-primary';
+    }
+  }
+
+  getTagSeverity(tone: StatusTag['tone']): TagSeverity {
+    switch (tone) {
+      case 'green': return 'success';
+      case 'blue': return 'info';
+      case 'amber': return 'warn';
+      case 'orange': return 'warn';
+      case 'indigo': return 'secondary';
+      case 'cyan': return 'info';
+      default: return 'secondary';
     }
   }
 

@@ -1,54 +1,46 @@
-<main class="ally-list-container">
-  <!-- Breadcrumbs -->
-  <div class="breadcrumbs">
-    <a href="#" class="breadcrumb-link">Inicio</a>
-    <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-current">Gestión de Aliados</span>
-  </div>
-
-  <!-- Page Heading -->
-  <div class="page-header">
-    <div class="page-title-section">
-      <h1 class="page-title">Directorio de Aliados</h1>
-      <p class="page-subtitle">Gestión centralizada de socios logísticos, flota y conductores.</p>
+<main class="providers-page">
+  <header class="providers-header header-card">
+    <div>
+      <p class="providers-eyebrow">Gestión</p>
+      <h1 class="providers-title">Directorio de Aliados</h1>
+      <p class="providers-subtitle">Gestión centralizada de socios logísticos, flota y conductores.</p>
     </div>
-    <button class="btn-new-ally" (click)="openCreateModal()">
-      <app-hero-icon name="plus" [size]="20"></app-hero-icon>
-      <span>Nuevo Aliado</span>
-    </button>
-  </div>
+    <p-button
+      label="Nuevo Aliado"
+      icon="pi pi-plus"
+      (onClick)="openCreateModal()"
+      styleClass="btn-new-ally"
+    />
+  </header>
 
-  <!-- Stats Cards -->
   <app-providers-stats-cards [stats]="uniqueStats"></app-providers-stats-cards>
 
-  <!-- Toolbar: Search & Filters -->
-  <app-providers-toolbar
-    [searchQuery]="searchQuery()"
-    (searchQueryChange)="searchQuery.set($event)"
-  ></app-providers-toolbar>
+  <div class="providers-card">
+    <app-providers-toolbar
+      [searchQuery]="searchQuery()"
+      (searchQueryChange)="searchQuery.set($event)"
+    ></app-providers-toolbar>
 
-  <!-- Data Table -->
-  <app-providers-table
-    [loading]="loading()"
-    [error]="error()"
-    [allies]="paginatedAllies"
-    [showEmail]="isCompanyUser()"
-    (createRequested)="openCreateModal()"
-  ></app-providers-table>
+    <app-providers-table
+      [loading]="loading()"
+      [error]="error()"
+      [allies]="paginatedAllies"
+      [showEmail]="isCompanyUser()"
+      (createRequested)="openCreateModal()"
+    ></app-providers-table>
 
-  <app-pagination
-    [startItem]="startItem"
-    [endItem]="endItem"
-    [totalItems]="filteredAllies.length"
-    [currentPage]="currentPage()"
-    [totalPages]="totalPages"
-    [pages]="pages"
-    itemLabel="aliado"
-    itemLabelPlural="aliados"
-    (previous)="previousPage()"
-    (next)="nextPage()"
-    (goTo)="goToPage($event)"
-  ></app-pagination>
+    @if (filteredAllies.length > 0 && (loading() || paginatedAllies.length > 0)) {
+      <p-paginator
+        [first]="paginatorFirst"
+        [rows]="itemsPerPage()"
+        [totalRecords]="filteredAllies.length"
+        [rowsPerPageOptions]="[5, 10, 20, 30]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="providers-paginator"
+        [showFirstLastIcon]="true"
+      />
+    }
+  </div>
 
   <app-provider-create-modal
     [open]="createOpen()"

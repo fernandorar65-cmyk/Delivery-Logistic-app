@@ -96,6 +96,11 @@ aside.sidebar.sidebar-collapsed {
   letter-spacing: -0.01em;
 }
 
+.page-title-icon {
+  font-size: 1.25rem;
+  color: #64748b;
+}
+
 .search-field .search-input {
   min-width: 12rem;
   font-size: 0.9375rem;

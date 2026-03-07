@@ -20,6 +20,9 @@
                   <span>Panel de control</span>
                 </a>
               }
+              @if (sectionIcon()) {
+                <i [class]="sectionIcon()" class="page-title-icon"></i>
+              }
               <span class="page-title">{{ sectionTitle() }}</span>
             </div>
           </ng-template>

@@ -1,38 +1,68 @@
 .clients-page {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: clamp(1rem, 2vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.25rem, 2.5vw, 1.75rem);
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
   font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
 }
 
-.page-header {
+/* ----- Header ----- */
+.clients-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: clamp(1rem, 2vw, 1.5rem);
-  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.page-title-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+.header-card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 20px -16px rgba(15, 23, 42, 0.2);
 }
 
-.page-title {
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
-  font-weight: 800;
+.clients-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.clients-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
   color: #111418;
-  margin: 0;
 }
 
-.page-subtitle {
-  font-size: clamp(0.9rem, 2vw, 1rem);
-  color: #617589;
-  margin: 0;
+.clients-subtitle {
+  margin: 0.5rem 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .btn-new-client.p-button {
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+}
+
+/* ----- Card ----- */
+.clients-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.25);
+}
+
+:host ::ng-deep .clients-paginator.p-paginator {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding: 0.5rem 1rem;
 }
 
 .btn {
@@ -454,7 +484,7 @@
 }
 
 @media (max-width: 768px) {
-  .page-header {
+  .clients-header {
     flex-direction: column;
     align-items: stretch;
   }

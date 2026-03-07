@@ -1,6 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ProviderService } from '@app/features/providers/services/provider.service';
 import { Provider, ProviderCreate } from '@app/features/providers/models/provider.model';
 import { ProviderCreateModalComponent } from '@app/features/providers/components/provider-create-modal/provider-create-modal.component';
@@ -11,21 +10,22 @@ import { Ally, StatCard } from './providers-list-view.types';
 import { ProvidersStatsCardsComponent } from './components/providers-stats-cards/providers-stats-cards.component';
 import { ProvidersToolbarComponent } from './components/providers-toolbar/providers-toolbar.component';
 import { ProvidersTableComponent } from './components/providers-table/providers-table.component';
-import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { hasApiErrors } from '@app/shared/utils/api-response';
 import { normalizeUserType } from '@app/shared/models/user-types';
+import { ButtonModule } from 'primeng/button';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-providers-list-view',
   standalone: true,
   imports: [
     CommonModule,
-    HeroIconComponent,
     ProviderCreateModalComponent,
     ProvidersStatsCardsComponent,
     ProvidersToolbarComponent,
     ProvidersTableComponent,
-    PaginationComponent
+    ButtonModule,
+    PaginatorModule
   ],
   templateUrl: './providers-list-view.component.html',
   styleUrl: './providers-list-view.component.css'
@@ -198,7 +198,7 @@ export class AllyListViewComponent implements OnInit {
   searchQuery = signal<string>('');
   currentPage = signal(1);
   totalItems = signal(0);
-  itemsPerPage = 5;
+  itemsPerPage = signal(5);
 
   // Filtrar aliados según búsqueda
   get filteredAllies(): Ally[] {
@@ -218,22 +218,22 @@ export class AllyListViewComponent implements OnInit {
   // Aliados paginados
   get paginatedAllies(): Ally[] {
     const filtered = this.filteredAllies;
-    const start = (this.currentPage() - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
+    const start = (this.currentPage() - 1) * this.itemsPerPage();
+    const end = start + this.itemsPerPage();
     return filtered.slice(start, end);
   }
 
   // Métodos para la paginación
   get totalPages(): number {
-    return Math.ceil(this.filteredAllies.length / this.itemsPerPage);
+    return Math.ceil(this.filteredAllies.length / this.itemsPerPage()) || 1;
   }
 
   get startItem(): number {
-    return (this.currentPage() - 1) * this.itemsPerPage + 1;
+    return (this.currentPage() - 1) * this.itemsPerPage() + 1;
   }
 
   get endItem(): number {
-    return Math.min(this.currentPage() * this.itemsPerPage, this.filteredAllies.length);
+    return Math.min(this.currentPage() * this.itemsPerPage(), this.filteredAllies.length);
   }
 
   get pages(): number[] {
@@ -256,6 +256,18 @@ export class AllyListViewComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage.set(page);
     }
+  }
+
+  get paginatorFirst(): number {
+    return (this.currentPage() - 1) * this.itemsPerPage();
+  }
+
+  onPageChange(event: { first?: number; rows?: number }): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? this.itemsPerPage();
+    if (event.rows != null) this.itemsPerPage.set(rows);
+    const page = Math.floor(first / rows) + 1;
+    this.goToPage(page);
   }
 
   // Estado y etiquetas se calculan en el componente de tabla.

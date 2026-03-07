@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientService } from '@app/features/clients/services/client.service';
 import { Client, ClientCheckResponse, ClientCreate } from '@app/features/clients/models/client.model';
-import { HeroIconComponent } from '@app/shared/ui/hero-icon/hero-icon';
 import { ClientsToolbarComponent } from './components/clients-toolbar/clients-toolbar.component';
 import { ClientsTableComponent } from './components/clients-table/clients-table.component';
-import { PaginationComponent } from '@app/shared/ui/pagination/pagination.component';
 import { ClientsStatsComponent } from './components/clients-stats/clients-stats.component';
 import { ClientsFormModalComponent } from './components/clients-form-modal/clients-form-modal.component';
 import { ClientsSuccessModalComponent } from './components/clients-success-modal/clients-success-modal.component';
@@ -19,6 +17,8 @@ import { CompanyClientMatchResponse } from '@app/features/clients/models/company
 import { catchError, finalize, of } from 'rxjs';
 import { ModalComponent } from '@app/shared/ui/modal/modal.component';
 import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-modal.component';
+import { ButtonModule } from 'primeng/button';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-client-list-view',
@@ -26,15 +26,15 @@ import { ConfirmModalComponent } from '@app/shared/ui/confirm-modal/confirm-moda
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    HeroIconComponent,
     ClientsToolbarComponent,
     ClientsTableComponent,
-    PaginationComponent,
     ClientsStatsComponent,
     ClientsFormModalComponent,
     ClientsSuccessModalComponent,
     ModalComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    ButtonModule,
+    PaginatorModule
   ],
   templateUrl: './client-list-view.component.html',
   styleUrl: './client-list-view.component.css'
@@ -246,6 +246,17 @@ export class ClientListViewComponent implements OnInit {
       return 0;
     }
     return Math.min(this.startItem + count - 1, this.totalCount());
+  }
+
+  get paginatorFirst(): number {
+    return (this.currentPage() - 1) * this.pageSize();
+  }
+
+  onPageChange(event: { first?: number; rows?: number }): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? this.pageSize();
+    const page = Math.floor(first / rows) + 1;
+    this.goToPage(page);
   }
 
   get totalPages(): number {
