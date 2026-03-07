@@ -413,11 +413,11 @@ export class ClientListViewComponent implements OnInit {
   }
 
   verifyClientEmail(): void {
-    if (!this.isCompanyUser() || this.isEditMode()) {
+    if (this.isEditMode()) {
       return;
     }
-    const emailValue = (this.clientForm.value.email ?? '').toString().trim().toLowerCase();
-    if (!emailValue) {
+    const emailRaw = (this.clientForm.value.email ?? '').toString().trim();
+    if (!emailRaw) {
       this.emailStatus.set('idle');
       this.checkError.set('Ingresa un correo válido para verificar.');
       return;
@@ -433,7 +433,8 @@ export class ClientListViewComponent implements OnInit {
     this.emailStatus.set('checking');
     this.checkLoading.set(true);
 
-    this.clientService.checkClientEmail(emailValue).pipe(
+    // GET /users/check-client/?email=... — enviar email tal cual (sin .toLowerCase) para coincidir con el backend
+    this.clientService.checkClientEmail(emailRaw).pipe(
       catchError((err) => {
         if (err?.status === 404) {
           this.emailStatus.set('unique');
@@ -461,8 +462,10 @@ export class ClientListViewComponent implements OnInit {
       if (exists) {
         this.checkedClientId.set(response.result?.id ?? null);
         this.emailStatus.set('exists');
-        this.matchEmail.set(response.result?.user_email ?? emailValue);
-        this.openMatchModal();
+        this.matchEmail.set(response.result?.user_email ?? response.result?.email ?? emailRaw);
+        if (this.isCompanyUser()) {
+          this.openMatchModal();
+        }
         return;
       }
       this.emailStatus.set('unique');

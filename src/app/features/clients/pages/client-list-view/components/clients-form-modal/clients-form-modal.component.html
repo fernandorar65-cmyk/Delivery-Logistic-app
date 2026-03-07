@@ -20,7 +20,7 @@
       <div class="form-group">
         <label for="email">Email <span class="required">*</span></label>
         <div class="email-row">
-          <p-iconField iconPosition="left" styleClass="flex-1">
+          <p-iconField iconPosition="left" styleClass="client-form-email-field flex-1">
             <p-inputIcon styleClass="pi pi-envelope" />
             <input
               type="email"
@@ -50,7 +50,9 @@
           <span class="email-status">Verificando correo...</span>
         }
         @if (showEmailCheck && emailStatus === 'exists') {
-          <span class="email-status email-status-warning">El cliente ya existe. Se enviará solicitud.</span>
+          <span class="email-status email-status-warning">
+            {{ isCompanyUser ? 'El cliente ya existe. Se enviará solicitud.' : 'El cliente ya está registrado en el sistema.' }}
+          </span>
         }
         @if (showEmailCheck && emailStatus === 'unique') {
           <span class="email-status email-status-success">Correo disponible para registrar.</span>

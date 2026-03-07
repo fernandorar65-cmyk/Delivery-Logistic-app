@@ -21,7 +21,8 @@
       (pendingToggle)="togglePending()"
     ></app-clients-toolbar>
 
-    <app-clients-table
+    <div class="clients-content">
+      <app-clients-table
       [loading]="loading()"
       [error]="error()"
       [clients]="clients()"
@@ -33,6 +34,7 @@
       (edit)="openEditClientModal($event)"
       (remove)="openDeleteConfirm($event)"
     ></app-clients-table>
+    </div>
 
     @if (!showPending() && (loading() || clients().length > 0)) {
       <p-paginator
@@ -47,10 +49,12 @@
     }
 
     @if (!showPending()) {
-      <app-clients-stats
-        [totalCount]="totalCount()"
-        [currentCount]="clients().length"
-      ></app-clients-stats>
+      <div class="clients-stats-section">
+        <app-clients-stats
+          [totalCount]="totalCount()"
+          [currentCount]="clients().length"
+        ></app-clients-stats>
+      </div>
     }
   </div>
 
@@ -64,7 +68,8 @@
       [checkError]="checkError()"
       [checkSuccess]="checkSuccess()"
       [emailStatus]="emailStatus()"
-      [showEmailCheck]="isCompanyUser() && !isEditMode()"
+      [showEmailCheck]="!isEditMode()"
+      [isCompanyUser]="isCompanyUser()"
       (close)="closeModal()"
       (submit)="onSubmit($event)"
       (verifyEmail)="verifyClientEmail()"

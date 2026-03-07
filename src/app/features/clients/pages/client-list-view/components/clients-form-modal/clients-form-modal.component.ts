@@ -38,6 +38,7 @@ export class ClientsFormModalComponent {
   @Input() checkSuccess: string | null = null;
   @Input() emailStatus: 'idle' | 'checking' | 'unique' | 'exists' | 'error' = 'idle';
   @Input() showEmailCheck = false;
+  @Input() isCompanyUser = false;
   @Output() close = new EventEmitter<void>();
   @Output() submit = new EventEmitter<Event>();
   @Output() verifyEmail = new EventEmitter<void>();

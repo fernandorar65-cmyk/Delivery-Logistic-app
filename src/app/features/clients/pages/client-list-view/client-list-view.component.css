@@ -1,7 +1,7 @@
 .clients-page {
   display: grid;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  gap: 1.75rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
   font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
 }
 
@@ -10,13 +10,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .header-card {
   background: #ffffff;
   border-radius: 0.9rem;
-  padding: 1.25rem 1.5rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.5rem, 3vw, 2rem);
   border: 1px solid #e2e8f0;
   box-shadow: 0 10px 20px -16px rgba(15, 23, 42, 0.2);
 }
@@ -41,6 +41,7 @@
   margin: 0.5rem 0 0;
   color: #64748b;
   font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 :host ::ng-deep .btn-new-client.p-button {
@@ -52,9 +53,19 @@
 .clients-card {
   background: #ffffff;
   border-radius: 1rem;
-  padding: 1.25rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
   border: 1px solid #e2e8f0;
   box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.clients-content {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 :host ::ng-deep .clients-paginator.p-paginator {
@@ -62,7 +73,8 @@
   border: 1px solid #e2e8f0;
   border-top: none;
   border-radius: 0 0 0.75rem 0.75rem;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0;
 }
 
 .btn {
@@ -436,8 +448,11 @@
 
 .stats-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
 }
 
 .stat-card {
@@ -481,6 +496,19 @@
 .stat-icon.orange {
   background: rgba(249, 115, 22, 0.1);
   color: #f97316;
+}
+
+/* Separación de la sección de estadísticas respecto al contenido superior */
+.clients-stats-section {
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.clients-stats-section:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
 @media (max-width: 768px) {

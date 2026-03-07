@@ -8,13 +8,15 @@
       [description]="error"
     ></app-empty-state>
   } @else if (clients.length === 0) {
-    <app-empty-state
-      [icon]="emptyIcon"
-      [title]="emptyTitle"
-      [description]="emptyDescription"
-      [actionLabel]="emptyActionLabel"
-      (action)="createRequested.emit()"
-    ></app-empty-state>
+    <div class="empty-state-wrap">
+      <app-empty-state
+        [icon]="emptyIcon"
+        [title]="emptyTitle"
+        [description]="emptyDescription"
+        [actionLabel]="emptyActionLabel"
+        (action)="createRequested.emit()"
+      ></app-empty-state>
+    </div>
   } @else {
     <p-table
       [value]="clients"

@@ -103,6 +103,45 @@
   flex: 1;
 }
 
+/* ----- Campo email con icono: alineación del icono del sobre ----- */
+:host ::ng-deep .email-row .client-form-email-field.p-iconfield,
+:host ::ng-deep .email-row .client-form-email-field.p-iconField {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex !important;
+  align-items: stretch;
+  min-height: 2.75rem;
+  overflow: visible;
+}
+
+:host ::ng-deep .email-row .client-form-email-field .p-inputtext {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding-left: 2.5rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* Centrar el icono verticalmente sin recortes */
+:host ::ng-deep .email-row .client-form-email-field .p-inputicon {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 0.875rem;
+  margin: 0;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
 .email-check-btn {
   padding: 0.65rem 1rem;
   border: 1px solid #d1d5db;

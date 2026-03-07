@@ -4,15 +4,18 @@
   [showClose]="false"
   (close)="close.emit()"
 >
-  <div class="success-icon">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M20 6 9 17l-5-5"></path>
-    </svg>
+  <div class="success-body">
+    <div class="success-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6 9 17l-5-5"></path>
+      </svg>
+    </div>
+    <p class="success-message">El registro fue guardado con éxito.</p>
+    <p-button
+      label="Entendido"
+      severity="primary"
+      (onClick)="close.emit()"
+      styleClass="success-btn"
+    />
   </div>
-  <div class="success-content">
-    <p>El registro fue guardado con éxito.</p>
-  </div>
-  <button class="btn btn-primary" type="button" (click)="close.emit()">
-    Entendido
-  </button>
 </app-modal>

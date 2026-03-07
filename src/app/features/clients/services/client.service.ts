@@ -35,6 +35,7 @@ export class ClientService {
     return this.http.get<ClientCompanyListResponse>(`${environment.apiUrl}/company-clients/my-companies/`);
   }
 
+  /** GET /users/check-client/?email=... — 200 si el cliente existe, 400 si el usuario no es cliente, 404 si no existe */
   checkClientEmail(email: string): Observable<ClientCheckResponse> {
     const params = new HttpParams().set('email', email);
     return this.http.get<ClientCheckResponse>(`${environment.apiUrl}/users/check-client/`, { params });
