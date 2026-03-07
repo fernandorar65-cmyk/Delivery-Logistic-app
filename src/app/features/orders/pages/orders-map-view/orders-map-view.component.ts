@@ -968,7 +968,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
         <div class="orders-map-infocard-arrow orders-map-infocard-arrow--top"></div>
       `;
 
-      // Marcador de inicio (recojo) — icono de bandera + número de orden "INICIO"
+      // Marcador de inicio (recojo) — icono "INICIO"; si coincide con FIN (mismo depósito), se desplaza hacia arriba para verse ambos
+      const startSameAsEnd = order.pickupLat === order.lat && order.pickupLng === order.lng;
       const startIcon = L.divIcon({
         className: 'orders-marker orders-marker--start',
         html: `
@@ -978,11 +979,14 @@ export class OrdersMapViewComponent implements AfterViewInit {
           <span class="orders-marker-label">Inicio</span>
         `,
         iconSize: [52, 52],
-        iconAnchor: [26, 52]
+        iconAnchor: startSameAsEnd ? [26, 78] : [26, 52]
       });
       const startMarker = L.marker([order.pickupLat, order.pickupLng], { icon: startIcon })
         .addTo(map)
         .on('click', () => this.selectOrder(order));
+      if (startSameAsEnd && (startMarker as unknown as { setZIndexOffset?: (n: number) => void }).setZIndexOffset) {
+        (startMarker as unknown as { setZIndexOffset: (n: number) => void }).setZIndexOffset(10);
+      }
       startMarker.bindTooltip(ubicacionCard, {
         permanent: false,
         direction: 'bottom',
