@@ -48,6 +48,7 @@ export class ProviderService {
     return this.http.delete<void>(`${this.apiUrl}/providers/${id}/`);
   }
 
+  /** GET /users/check-provider/?email=... — 200 si el provider existe, 400 si el usuario no es provider, 404 si no existe */
   checkProviderEmail(email: string): Observable<ProviderCheckResponse> {
     const params = new HttpParams().set('email', email);
     return this.http.get<ProviderCheckResponse>(`${this.apiUrl}/users/check-provider/`, { params }).pipe(

@@ -54,8 +54,8 @@ export class ProviderCreateModalComponent {
   });
 
   verifyEmail(): void {
-    const emailValue = (this.form.value.contact_email ?? '').toString().trim().toLowerCase();
-    if (!emailValue) {
+    const emailRaw = (this.form.value.contact_email ?? '').toString().trim();
+    if (!emailRaw) {
       this.emailStatus.set('idle');
       return;
     }
@@ -69,7 +69,8 @@ export class ProviderCreateModalComponent {
     this.checkSuccess.set(null);
     this.emailStatus.set('checking');
     this.checkLoading.set(true);
-    this.providerService.checkProviderEmail(emailValue).pipe(
+    // Enviar el email tal como lo escribió el usuario (sin .toLowerCase) para que el backend coincida con el registro
+    this.providerService.checkProviderEmail(emailRaw).pipe(
       catchError((err) => {
         if (err?.status === 404) {
           this.emailStatus.set('unique');
@@ -97,11 +98,14 @@ export class ProviderCreateModalComponent {
         this.checkSuccess.set(null);
         return;
       }
-      const exists = Boolean(response.result?.id);
+      // API GET /users/check-provider/?email=... → 200 con result = provider cuando el correo ya está en uso
+      const result = response.result;
+      const providerId = result?.id ?? result?.user_id;
+      const exists = Boolean(result && providerId);
       if (exists) {
         this.emailStatus.set('exists');
-        this.matchEmail.set(response.result?.user_email || emailValue);
-        this.matchProviderId.set(response.result?.id || null);
+        this.matchEmail.set(result?.user_email ?? result?.email ?? emailRaw);
+        this.matchProviderId.set(providerId ?? null);
         this.matchError.set(null);
         this.checkSuccess.set(null);
         this.matchModalOpen.set(true);

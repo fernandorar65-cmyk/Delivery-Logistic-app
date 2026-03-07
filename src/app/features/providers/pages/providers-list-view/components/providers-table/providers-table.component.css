@@ -101,6 +101,23 @@
   min-width: 0;
 }
 
+:host ::ng-deep .ally-info .p-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+:host ::ng-deep .ally-info .ally-avatar-initials.p-avatar {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1d4ed8;
+}
+
+:host ::ng-deep .ally-info .ally-avatar-img.p-avatar img {
+  object-fit: cover;
+}
+
 .ally-avatar {
   width: clamp(2rem, 5vw, 2.5rem);
   height: clamp(2rem, 5vw, 2.5rem);
@@ -140,19 +157,22 @@
 }
 
 .ally-name {
-  font-weight: 700;
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  color: #111418;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #0f172a;
   margin: 0;
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .ally-id {
-  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: #64748b;
   margin: 0;
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.02em;
 }
 
 .ally-email {

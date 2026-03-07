@@ -75,6 +75,12 @@ export class ProvidersTableComponent {
         return 'secondary';
     }
   }
+
+  /** ID corto para la tabla (primeros 8 caracteres); tooltip muestra el UUID completo */
+  getShortId(id: string | undefined): string {
+    if (!id) return '—';
+    return id.length > 8 ? `#${id.slice(0, 8)}` : `#${id}`;
+  }
 }
 
 
