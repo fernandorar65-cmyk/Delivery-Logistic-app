@@ -117,6 +117,13 @@ export const routes: Routes = [
           .then(m => m.InternalUsersViewComponent)
       },
       {
+        path: 'companies/:id/solicitudes-asignacion',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'company'] },
+        loadComponent: () => import('@app/features/companies/pages/company-order-assignment-requests-view/company-order-assignment-requests-view.component')
+          .then(m => m.CompanyOrderAssignmentRequestsViewComponent)
+      },
+      {
         path: 'clients',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company'] },

@@ -24,6 +24,16 @@
                 <i [class]="sectionIcon()" class="page-title-icon"></i>
               }
               <span class="page-title">{{ sectionTitle() }}</span>
+              @if (canAccess([UserTypes.COMPANY]) && userId()) {
+                <a
+                  [routerLink]="['/companies', userId(), 'solicitudes-asignacion']"
+                  routerLinkActive="header-link-active"
+                  class="header-link"
+                >
+                  <i class="pi pi-list"></i>
+                  <span>Solicitudes de asignación</span>
+                </a>
+              }
             </div>
           </ng-template>
           <ng-template #end>

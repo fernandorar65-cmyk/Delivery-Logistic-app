@@ -1,7 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Company, CompanyCreate, CompanyUpdate, CompanyListResponse, CompanyResponse } from '@app/features/companies/models/company.model';
+import {
+  OrderAssignmentRequest,
+  OrderAssignmentRequestsResponse
+} from '@app/features/companies/models/order-assignment-request.model';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -49,6 +53,51 @@ export class CompanyService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}/`);
+  }
+
+  /** Parámetros para listar solicitudes de asignación: page (1, 2, 3...) y status (accepted | rejected | pending). */
+  getOrderAssignmentRequests(
+    companyId: string,
+    params?: { page?: number; status?: 'accepted' | 'rejected' | 'pending' }
+  ): Observable<OrderAssignmentRequestsResponse> {
+    let httpParams = new HttpParams();
+    if (params?.page != null && params.page >= 1) {
+      httpParams = httpParams.set('page', String(params.page));
+    }
+    if (params?.status != null) {
+      httpParams = httpParams.set('status', params.status);
+    }
+    return this.http
+      .get<OrderAssignmentRequestsResponse>(
+        `${this.apiUrl}/${companyId}/order-assignment-requests/`,
+        { params: httpParams }
+      )
+      .pipe(
+        map((response) => {
+          const result = response?.result;
+          return {
+            ...response,
+            result: Array.isArray(result) ? result : [],
+            pagination: response?.pagination ?? { total: 0 }
+          };
+        })
+      );
+  }
+
+  /** Aceptar una solicitud de asignación de orden. */
+  acceptOrderAssignmentRequest(companyId: string, requestId: string): Observable<OrderAssignmentRequest | unknown> {
+    return this.http.post<OrderAssignmentRequest | unknown>(
+      `${this.apiUrl}/${companyId}/order-assignment-requests/${requestId}/accept/`,
+      {}
+    );
+  }
+
+  /** Rechazar una solicitud de asignación de orden. */
+  rejectOrderAssignmentRequest(companyId: string, requestId: string): Observable<OrderAssignmentRequest | unknown> {
+    return this.http.post<OrderAssignmentRequest | unknown>(
+      `${this.apiUrl}/${companyId}/order-assignment-requests/${requestId}/reject/`,
+      {}
+    );
   }
 
   private normalizeListResponse(response: CompanyListResponse): CompanyListResponse {

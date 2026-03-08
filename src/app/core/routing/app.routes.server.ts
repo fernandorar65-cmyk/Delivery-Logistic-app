@@ -92,6 +92,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'companies/:id/solicitudes-asignacion',
+    renderMode: RenderMode.Server
+  },
+  {
     path: 'providers/usuarios-internos',
     renderMode: RenderMode.Server
   }

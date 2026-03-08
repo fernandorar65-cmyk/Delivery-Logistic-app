@@ -104,6 +104,13 @@ export class MainLayoutComponent implements OnInit {
     if (this.canAccess([UserTypes.COMPANY])) {
       gestion.push({ label: 'Grupos de Estados', icon: 'pi pi-check-circle', routerLink: '/companies/status-groups' });
     }
+    if (this.canAccess([UserTypes.COMPANY]) && this.userId()) {
+      gestion.push({
+        label: 'Solicitudes de asignación',
+        icon: 'pi pi-list',
+        routerLink: ['/companies', this.userId()!, 'solicitudes-asignacion']
+      });
+    }
     if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY])) {
       gestion.push({ label: 'Providers', icon: 'pi pi-truck', routerLink: '/providers' });
     }
@@ -164,6 +171,13 @@ export class MainLayoutComponent implements OnInit {
     }
     if (this.canAccess([UserTypes.COMPANY])) {
       items.push({ label: 'Grupos de Estados', icon: 'pi pi-check-circle', routerLink: '/companies/status-groups' });
+    }
+    if (this.canAccess([UserTypes.COMPANY]) && this.userId()) {
+      items.push({
+        label: 'Solicitudes de asignación',
+        icon: 'pi pi-list',
+        routerLink: ['/companies', this.userId()!, 'solicitudes-asignacion']
+      });
     }
     if (this.canAccess([UserTypes.ADMIN, UserTypes.COMPANY])) {
       items.push({ label: 'Providers', icon: 'pi pi-truck', routerLink: '/providers' });

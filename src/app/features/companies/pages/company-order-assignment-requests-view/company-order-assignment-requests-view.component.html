@@ -1,0 +1,220 @@
+<div class="page-container">
+  <!-- Header con Toolbar PrimeNG -->
+  <p-toolbar styleClass="page-toolbar border-none mb-3">
+    <ng-template pTemplate="start">
+      <div class="flex align-items-center gap-3 flex-wrap">
+        <p-button
+          icon="pi pi-arrow-left"
+          [rounded]="true"
+          [outlined]="true"
+          severity="secondary"
+          pTooltip="Volver a compañías"
+          (onClick)="goBack()"
+        />
+        <div class="toolbar-title-block">
+          <p class="toolbar-eyebrow">
+            <a routerLink="/companies" class="toolbar-link">Compañías</a>
+            <span class="toolbar-sep">/</span>
+            <span>Solicitudes de asignación</span>
+          </p>
+          <h1 class="toolbar-title">Solicitudes de asignación de órdenes</h1>
+          <p class="toolbar-subtitle">{{ companyName() }}</p>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <p-button
+        label="Volver a compañías"
+        icon="pi pi-arrow-left"
+        iconPos="left"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="goBack()"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  @if (loading()) {
+    <p-card styleClass="requests-card requests-card-loading">
+      <ng-template pTemplate="content">
+        <div class="flex flex-column gap-3 p-4">
+          <p-skeleton width="100%" height="2.5rem" />
+          <p-skeleton width="100%" height="2.5rem" />
+          <p-skeleton width="100%" height="2.5rem" />
+          <p-skeleton width="100%" height="2.5rem" />
+          <p-skeleton width="60%" height="2.5rem" />
+        </div>
+        <div class="flex align-items-center justify-content-center gap-2 py-4">
+          <p-progressSpinner [style]="{ width: '2rem', height: '2rem' }" strokeWidth="4" />
+          <span class="text-color-secondary">Cargando solicitudes...</span>
+        </div>
+      </ng-template>
+    </p-card>
+  } @else if (error()) {
+    <p-card styleClass="requests-card requests-card-error">
+      <ng-template pTemplate="content">
+        <app-empty-state
+          icon="exclamation-triangle"
+          title="Error al cargar"
+          [description]="error()!"
+        ></app-empty-state>
+        <div class="flex justify-content-center mt-3">
+          <p-button label="Reintentar" icon="pi pi-refresh" (onClick)="retry()" />
+        </div>
+      </ng-template>
+    </p-card>
+  } @else {
+    <p-card styleClass="requests-card requests-card-table">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center justify-content-between flex-wrap gap-2 p-3">
+          <div class="flex align-items-center gap-2">
+            <span class="card-header-title">Solicitudes</span>
+            @if (pendingCount() > 0) {
+              <p-badge [value]="pendingCount()" severity="warn" styleClass="pending-badge" />
+            }
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        @if (actionError()) {
+          <p-message
+            severity="error"
+            [closable]="true"
+            (close)="actionError.set(null)"
+            styleClass="mb-3 w-full"
+          >
+            {{ actionError() }}
+          </p-message>
+        }
+        <!-- Filtros arriba de la tabla -->
+        <div class="table-filters-bar">
+          <div class="filters-row">
+            <label class="filter-label">Estado</label>
+            <p-select
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="statusFilter()"
+              (ngModelChange)="onStatusChange($any($event))"
+              placeholder="Estado"
+              styleClass="filter-status-select"
+              [disabled]="loading()"
+            />
+            <span class="filter-page-label">Página</span>
+            <span class="filter-page-value">{{ currentPage() }}</span>
+            <p-button
+              icon="pi pi-refresh"
+              label="Actualizar"
+              [rounded]="true"
+              [outlined]="true"
+              severity="secondary"
+              size="small"
+              [loading]="actionRequestId() !== null"
+              (onClick)="refreshRequests()"
+            />
+          </div>
+        </div>
+        <!-- Tabla siempre visible; si no hay datos se muestra vacía con emptymessage -->
+        <p-table
+          [value]="requests()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped requests-datatable"
+          [rowHover]="true"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">#</th>
+              <th>Cliente</th>
+              <th>Compañía</th>
+              <th>Estado</th>
+              <th>Pedidos</th>
+              <th>Ruta</th>
+              <th>Descripción</th>
+              <th>Fecha solicitud</th>
+              <th>Respondido</th>
+              <th class="text-right" style="min-width: 6rem">Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request let-rowIndex="rowIndex">
+            <tr>
+              <td><span class="font-medium text-color-secondary">{{ rowIndex + 1 }}</span></td>
+              <td><span class="font-medium">{{ request.client_name ?? '—' }}</span></td>
+              <td>{{ request.company_name ?? '—' }}</td>
+              <td>
+                <p-tag
+                  [value]="getStatusDisplay(request)"
+                  [severity]="getStatusSeverity(request.status)"
+                  styleClass="status-tag"
+                />
+              </td>
+              <td>
+                <span class="font-medium">{{ request.order_count ?? 0 }}</span> pedido(s)
+                @if (request.orders?.length) {
+                  <span
+                    class="text-color-secondary text-sm d-block mt-1 truncate-tracking"
+                    [pTooltip]="getOrdersSummary(request)"
+                  >
+                    {{ getOrdersSummary(request) }}
+                  </span>
+                }
+              </td>
+              <td class="route-cell">
+                <span
+                  class="route-text"
+                  [pTooltip]="getRouteSummary(request)"
+                  >{{ getFirstRoute(request) }}</span
+                >
+              </td>
+              <td class="description-cell">{{ request.description ?? '—' }}</td>
+              <td><span class="text-color-secondary">{{ formatDate(request.created_at) }}</span></td>
+              <td><span class="text-color-secondary">{{ formatDate(request.responded_at ?? undefined) }}</span></td>
+              <td class="text-right">
+                <div class="flex align-items-center justify-content-end gap-1">
+                  <p-button
+                    icon="pi pi-check"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="success"
+                    size="small"
+                    [loading]="actionRequestId() === request.id"
+                    [disabled]="!canAcceptOrReject(request) || actionRequestId() !== null"
+                    pTooltip="Aceptar solicitud"
+                    (onClick)="acceptRequest(request)"
+                  />
+                  <p-button
+                    icon="pi pi-times"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                    size="small"
+                    [loading]="actionRequestId() === request.id"
+                    [disabled]="!canAcceptOrReject(request) || actionRequestId() !== null"
+                    pTooltip="Rechazar solicitud"
+                    (onClick)="rejectRequest(request)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10" class="text-center p-4 text-color-secondary">No hay solicitudes con los filtros seleccionados.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        @if (totalCount() > 0) {
+          <p-paginator
+            [first]="(currentPage() - 1) * rowsPerPage"
+            [rows]="rowsPerPage"
+            [totalRecords]="totalCount()"
+            [rowsPerPageOptions]="[10]"
+            (onPageChange)="onPageChange($event)"
+            styleClass="requests-paginator mt-3"
+            [showFirstLastIcon]="true"
+          />
+        }
+      </ng-template>
+    </p-card>
+  }
+</div>

@@ -1,0 +1,238 @@
+/* ========== Contenedor ========== */
+.page-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== Toolbar (header) ========== */
+:host ::ng-deep .page-toolbar.p-toolbar {
+  background: var(--p-content-background);
+  border-radius: var(--p-border-radius);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.page-toolbar.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.toolbar-title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.toolbar-eyebrow {
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+  margin: 0 0 0.25rem 0;
+}
+
+.toolbar-link {
+  color: var(--p-primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.toolbar-link:hover {
+  text-decoration: underline;
+}
+
+.toolbar-sep {
+  margin: 0 0.35rem;
+  color: var(--p-text-muted-color);
+}
+
+.toolbar-title {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--p-text-color);
+  margin: 0 0 0.25rem 0;
+}
+
+.toolbar-subtitle {
+  font-size: 0.9375rem;
+  color: var(--p-text-muted-color);
+  margin: 0;
+}
+
+/* ========== Cards ========== */
+:host ::ng-deep .requests-card.p-card {
+  border-radius: var(--p-border-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  padding: 1rem;
+}
+
+:host ::ng-deep .requests-card .p-card-body {
+  padding: 1rem;
+}
+
+:host ::ng-deep .requests-card .p-card-content {
+  padding: 1rem;
+}
+
+.requests-card-loading :host ::ng-deep .p-card-content,
+.requests-card-empty :host ::ng-deep .p-card-content,
+.requests-card-error :host ::ng-deep .p-card-content {
+  padding: 1.5rem;
+}
+
+.requests-card-table :host ::ng-deep .p-card-header {
+  padding: 0;
+  border-bottom: 1px solid var(--p-surface-200);
+}
+
+.card-header-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--p-text-color);
+}
+
+.pending-badge {
+  font-weight: 600;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--p-text-muted-color);
+  margin: 0;
+}
+
+.table-filters-bar {
+  padding: 0.75rem 0 1rem 0;
+  border-bottom: 1px solid var(--p-surface-200);
+  margin-bottom: 0.5rem;
+}
+
+.filters-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters-row .filter-label {
+  margin-right: 0.25rem;
+}
+
+.filter-status-select {
+  min-width: 10rem;
+}
+
+.filter-page-label {
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+  margin-right: 0.5rem;
+}
+
+.filter-page-value {
+  font-weight: 600;
+  color: var(--p-text-color);
+}
+
+.empty-inline {
+  padding: 2rem 1rem;
+}
+
+.requests-card-table :host ::ng-deep .p-card-content {
+  padding: 1rem 1.25rem;
+}
+
+/* Tabla usa todo el ancho disponible */
+:host ::ng-deep .requests-datatable.p-datatable .p-datatable-wrapper {
+  width: 100%;
+}
+
+:host ::ng-deep .requests-datatable.p-datatable table {
+  width: 100%;
+}
+
+/* ========== Tabla ========== */
+:host ::ng-deep .requests-datatable.p-datatable .p-datatable-thead > tr > th {
+  background: var(--p-surface-50);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--p-text-muted-color);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--p-surface-200);
+}
+
+:host ::ng-deep .requests-datatable.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .requests-datatable.p-datatable .p-datatable-tbody > tr:hover {
+  background: var(--p-surface-50);
+}
+
+:host ::ng-deep .requests-datatable .status-tag.p-tag {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.description-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-cell {
+  max-width: 280px;
+}
+
+.route-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+}
+
+.d-block {
+  display: block;
+}
+
+.text-sm {
+  font-size: 0.8125rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.truncate-tracking {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Utilidades */
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}

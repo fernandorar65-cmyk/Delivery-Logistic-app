@@ -301,6 +301,13 @@ export class CompanyListViewComponent {
     }
   }
 
+  goToSolicitudesAsignacion(company: Company): void {
+    const id = company?.id;
+    if (id) {
+      this.router.navigate(['/companies', id, 'solicitudes-asignacion']);
+    }
+  }
+
   openEditCompanyModal(company: Company) {
     this.isEditMode.set(true);
     this.editingCompanyId.set(company.id || null);

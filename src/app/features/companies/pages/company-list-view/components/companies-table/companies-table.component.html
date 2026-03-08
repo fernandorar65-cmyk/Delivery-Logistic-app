@@ -60,6 +60,14 @@
                   (onClick)="uploadOrder.emit(company)"
                   pTooltip="Subir orden"
                 />
+                <p-button
+                  icon="pi pi-list"
+                  [rounded]="true"
+                  severity="secondary"
+                  [text]="true"
+                  (onClick)="solicitudesAsignacion.emit(company)"
+                  pTooltip="Solicitudes de asignación"
+                />
               }
               <p-button
                 icon="pi pi-pencil"
