@@ -19,6 +19,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 import { PaginatorModule } from 'primeng/paginator';
 import type { PaginatorState } from 'primeng/paginator';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.component';
 
 @Component({
@@ -41,6 +44,9 @@ import { EmptyStateComponent } from '@app/shared/ui/empty-state/empty-state.comp
     ProgressSpinnerModule,
     SelectModule,
     PaginatorModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
     EmptyStateComponent
   ],
   templateUrl: './company-order-assignment-requests-view.component.html',
@@ -69,6 +75,9 @@ export class CompanyOrderAssignmentRequestsViewComponent implements OnInit {
   /** Filtro por estado: '' = todos, 'pending' | 'accepted' | 'rejected'. */
   statusFilter = signal<string>('');
 
+  /** Filtro por palabras: busca en cliente, compañía, estado y descripción (solo en la página actual). */
+  searchFilter = signal<string>('');
+
   /** Opciones para el filtro de estado (valores del API: accepted, rejected, pending). */
   statusOptions = [
     { label: 'Todos los estados', value: '' },
@@ -79,6 +88,20 @@ export class CompanyOrderAssignmentRequestsViewComponent implements OnInit {
 
   /** Cantidad de solicitudes pendientes (para badge). */
   pendingCount = computed(() => this.requests().filter((r) => this.canAcceptOrReject(r)).length);
+
+  /** Filtrar solicitudes por el texto de búsqueda (cliente, compañía, estado, descripción) en la página actual. */
+  filteredRequests = computed(() => {
+    const list = this.requests();
+    const q = (this.searchFilter() ?? '').trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((r) => {
+      const client = (r.client_name ?? '').toLowerCase();
+      const company = (r.company_name ?? '').toLowerCase();
+      const status = (r.status_display ?? r.status ?? '').toLowerCase();
+      const desc = (r.description ?? '').toLowerCase();
+      return client.includes(q) || company.includes(q) || status.includes(q) || desc.includes(q);
+    });
+  });
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');

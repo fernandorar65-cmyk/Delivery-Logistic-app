@@ -49,6 +49,9 @@ aside.sidebar.sidebar-collapsed {
   flex-shrink: 0;
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .top-header .top-toolbar.p-toolbar,

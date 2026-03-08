@@ -89,6 +89,18 @@
         <!-- Filtros arriba de la tabla -->
         <div class="table-filters-bar">
           <div class="filters-row">
+            <p-iconField iconPosition="left" styleClass="filter-search-field">
+              <p-inputIcon styleClass="pi pi-search" />
+              <input
+                type="text"
+                pInputText
+                placeholder="Buscar"
+                class="search-input"
+                [ngModel]="searchFilter()"
+                (ngModelChange)="searchFilter.set($event)"
+                [disabled]="loading()"
+              />
+            </p-iconField>
             <label class="filter-label">Estado</label>
             <p-select
               [options]="statusOptions"
@@ -116,7 +128,7 @@
         </div>
         <!-- Tabla siempre visible; si no hay datos se muestra vacía con emptymessage -->
         <p-table
-          [value]="requests()"
+          [value]="filteredRequests()"
           [tableStyle]="{ 'min-width': '50rem' }"
           styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped requests-datatable"
           [rowHover]="true"
@@ -199,7 +211,9 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="10" class="text-center p-4 text-color-secondary">No hay solicitudes con los filtros seleccionados.</td>
+              <td colspan="10" class="text-center p-4 text-color-secondary">
+                {{ (searchFilter() || '').trim() ? 'Ninguna solicitud coincide con la búsqueda.' : 'No hay solicitudes con los filtros seleccionados.' }}
+              </td>
             </tr>
           </ng-template>
         </p-table>
