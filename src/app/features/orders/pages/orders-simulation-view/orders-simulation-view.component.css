@@ -1,0 +1,22 @@
+.orders-simulation-page {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.orders-simulation-card ::ng-deep .p-card-header {
+  border-bottom: 1px solid var(--orders-border, #e2e8f0);
+}
+
+.orders-simulation-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--orders-text, #0f172a);
+}
+
+.orders-simulation-desc {
+  font-size: 0.9rem;
+  color: var(--orders-muted, #64748b);
+  line-height: 1.45;
+}

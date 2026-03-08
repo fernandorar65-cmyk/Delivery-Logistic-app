@@ -69,6 +69,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.includes('/token/')) {
     return next(req);
   }
+  // No interceptar el servicio de optimización de rutas (no usa token)
+  if (req.url.includes('optimize-routes')) {
+    return next(req);
+  }
   
   let accessToken: string | null = null;
   let refreshToken: string | null = null;

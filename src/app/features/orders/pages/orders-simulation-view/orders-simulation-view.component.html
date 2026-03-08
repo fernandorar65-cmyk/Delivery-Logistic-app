@@ -1,0 +1,73 @@
+<div class="orders-simulation-page">
+  <p-card styleClass="orders-simulation-card">
+    <ng-template pTemplate="header">
+      <div class="p-3">
+        <h1 class="orders-simulation-title">Simulación de rutas</h1>
+        <p class="orders-simulation-desc m-0">
+          Seleccione las órdenes aceptadas y la cantidad de vehículos. Al hacer clic en «Simular ruta» se llamará al API de optimización y se abrirá el mapa con el resultado.
+        </p>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+      @if (acceptedOrdersError()) {
+        <p-message severity="warn" [closable]="true" (close)="acceptedOrdersError.set(null)" styleClass="mb-3 w-full">{{ acceptedOrdersError() }}</p-message>
+      }
+      @if (simulationError()) {
+        <p-message severity="error" [closable]="true" (close)="simulationError.set(null)" styleClass="mb-3 w-full">{{ simulationError() }}</p-message>
+      }
+      <div class="grid">
+        <div class="col-12 lg:col-8">
+          <div class="flex align-items-center justify-content-between mb-2">
+            <span class="font-semibold">Órdenes aceptadas</span>
+            @if (acceptedOrdersList().length > 0) {
+              <span class="text-color-secondary text-sm">{{ selectedRowIdsForSimulation().size }} seleccionada(s)</span>
+            }
+          </div>
+          @if (acceptedOrdersLoading()) {
+            <p class="p-4 text-center text-color-secondary">Cargando órdenes...</p>
+          } @else if (acceptedOrdersList().length === 0) {
+            <p class="p-4 text-center text-color-secondary">No hay órdenes aceptadas.</p>
+          } @else {
+            <p-table [value]="acceptedOrdersList()" [tableStyle]="{ 'min-width': '40rem' }" styleClass="p-datatable-sm p-datatable-gridlines" [rowHover]="true">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 3rem"></th>
+                  <th>ID / Tracking</th>
+                  <th>Destino</th>
+                  <th>Fecha límite</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td>
+                    <p-checkbox [binary]="true" [ngModel]="isRowSelectedForSimulation(row.rowId)" (onChange)="toggleSelectOrderForSimulation(row.rowId)" />
+                  </td>
+                  <td>{{ row.order.tracking_number || row.order.id || '—' }}</td>
+                  <td>{{ row.order.destino || row.order.delivery?.address || '—' }}</td>
+                  <td>{{ formatOrderDeadline(row.order.pickup_date_to ?? row.order.pickup_date) }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <div class="flex gap-2 mt-2">
+              <p-button label="Seleccionar todas" [text]="true" size="small" (onClick)="selectAllOrdersForSimulation()" />
+              <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearSelectionForSimulation()" />
+            </div>
+          }
+        </div>
+        <div class="col-12 lg:col-4 flex flex-column gap-3">
+          <div>
+            <label class="font-semibold block mb-2">Número de vehículos</label>
+            <p-inputNumber [ngModel]="vehicleCount()" (ngModelChange)="vehicleCount.set($event ?? 1)" [min]="1" [max]="20" [showButtons]="true" inputId="vehicleCount" />
+          </div>
+          <p-button
+            label="Simular ruta"
+            icon="pi pi-map"
+            (onClick)="simulateRoute()"
+            [loading]="simulationLoading()"
+            [disabled]="selectedRowIdsForSimulation().size === 0 || simulationLoading()"
+          />
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
+</div>

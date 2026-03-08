@@ -36,6 +36,13 @@ export const routes: Routes = [
         path: 'orders',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'company', 'provider', 'client'] },
+        loadComponent: () => import('@app/features/orders/pages/orders-simulation-view/orders-simulation-view.component')
+          .then(m => m.OrdersSimulationViewComponent)
+      },
+      {
+        path: 'orders/map',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'company', 'provider', 'client'] },
         loadComponent: () => import('@app/features/orders/pages/orders-map-view/orders-map-view.component')
           .then(m => m.OrdersMapViewComponent)
       },

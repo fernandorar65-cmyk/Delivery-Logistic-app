@@ -13,18 +13,22 @@ import type {
 export class RouteOptimizationService {
   private http = inject(HttpClient);
 
+  /** URL base del servicio de optimización (variable de entorno propia; no usa token). */
   private get baseUrl(): string {
-    const env = environment as { apiUrl: string; optimizeRoutesUrl?: string };
-    const url = env.optimizeRoutesUrl?.trim();
-    return url ? url.replace(/\/?$/, '') : `${env.apiUrl.replace(/\/?$/, '')}/optimize-routes`;
+    const url = (environment as { routeOptimizationApiUrl?: string }).routeOptimizationApiUrl?.trim() ?? '';
+    return url.replace(/\/?$/, '');
   }
 
   /**
    * Optimiza rutas enviando órdenes y vehículos al backend.
    * POST body: { orders: [{ id, lat, lon }, ...], vehicles: [{ id, start_lat, start_lon }, ...] }
+   * No envía Authorization; este endpoint tiene URL y servicio propios.
    * @returns Observable con { routes, unassigned }
    */
   optimizeRoutes(payload: OptimizeRoutesRequest): Observable<OptimizeRoutesResponse> {
+    if (!this.baseUrl) {
+      throw new Error('routeOptimizationApiUrl no está configurada en environment.');
+    }
     return this.http.post<OptimizeRoutesResponse>(`${this.baseUrl}/`, payload);
   }
 }

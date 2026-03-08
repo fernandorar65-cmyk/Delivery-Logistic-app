@@ -30,6 +30,14 @@ export interface OrderAssignmentOrder {
   /** Ruta completa "De ... a ...". */
   origen_destino?: string;
   created_at?: string;
+  /** Latitud del destino (entrega) para optimización de rutas. */
+  lat?: number;
+  /** Longitud del destino (entrega) para optimización de rutas. */
+  lon?: number;
+  /** Latitud del origen (recojo) para optimización de rutas. */
+  pickup_lat?: number;
+  /** Longitud del origen (recojo) para optimización de rutas. */
+  pickup_lon?: number;
   [key: string]: unknown;
 }
 

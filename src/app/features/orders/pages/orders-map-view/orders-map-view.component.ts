@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -12,7 +12,8 @@ import { CardModule } from 'primeng/card';
 import { PanelModule } from 'primeng/panel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FormsModule } from '@angular/forms';
-import { ORS_ROUTES_SAMPLE } from './orders-map-view-sample';
+import { Router } from '@angular/router';
+import { OrdersSimulationResultService } from '@app/features/orders/services/orders-simulation-result.service';
 
 export type OrderStatus = 'pending' | 'in_progress' | 'delivered' | 'alert';
 
@@ -206,23 +207,30 @@ function decodePolyline(encoded: string): [number, number][] {
 }
 
 /** Convierte la respuesta ORS (rutas con geojson) en la lista de órdenes para el mapa. */
-function orsResponseToOrders(response: ORSRoutesResponse): OrderWithLocation[] {
+export function orsResponseToOrders(response: ORSRoutesResponse): OrderWithLocation[] {
   const orders: OrderWithLocation[] = [];
   const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-  for (const route of response.routes) {
-    const startStep = route.steps.find(s => s.type === 'start');
-    const endStep = route.steps.find(s => s.type === 'end');
-    const jobSteps = route.steps.filter((s): s is ORSStep & { type: 'job' } => s.type === 'job');
-    if (!startStep || jobSteps.length === 0) continue;
+  const routesList = Array.isArray(response.routes) ? response.routes : [];
+  for (const route of routesList) {
+    const startStep = route.steps?.find((s: { type?: string }) => s.type === 'start');
+    const endStep = route.steps?.find((s: { type?: string }) => s.type === 'end');
+    const jobSteps = (route.steps ?? []).filter((s: { type?: string }): s is ORSStep & { type: 'job' } => s.type === 'job');
+    if (!startStep) continue;
 
-    const [pickupLng, pickupLat] = startStep.location;
-    // Todos los jobs son waypoints (Puerto 1, 2, 3…); el destino de la ruta es el paso "end" (FIN en depósito)
-    const waypoints: [number, number][] = jobSteps.map(s => [s.location[1], s.location[0]]);
-    const [destLng, destLat] = endStep?.location ?? jobSteps[jobSteps.length - 1].location;
+    const loc = startStep.location;
+    const pickupLng = Array.isArray(loc) ? Number(loc[0]) : 0;
+    const pickupLat = Array.isArray(loc) ? Number(loc[1]) : 0;
+    const waypoints: [number, number][] = jobSteps.map((s: ORSStep) => {
+      const l = s.location;
+      return [Array.isArray(l) ? Number(l[1]) : 0, Array.isArray(l) ? Number(l[0]) : 0];
+    });
     const lastJob = jobSteps[jobSteps.length - 1];
+    const endLoc = endStep?.location ?? lastJob?.location ?? startStep.location;
+    const destLng = Array.isArray(endLoc) ? Number(endLoc[0]) : pickupLng;
+    const destLat = Array.isArray(endLoc) ? Number(endLoc[1]) : pickupLat;
 
-    const firstRoute = route.geojson?.routes?.[0];
+    const firstRoute = route.geojson?.routes?.[0] as { geometry?: string; way_points?: number[]; summary?: { distance: number; duration: number }; segments?: Array<{ steps?: Array<{ instruction: string; name?: string; distance: number; duration: number }> }> } | undefined;
     let routeGeometry: [number, number][] | undefined;
     let routeWayPointIndices: number[] | undefined;
     let routeSummary: { distance: number; duration: number } | undefined;
@@ -252,19 +260,20 @@ function orsResponseToOrders(response: ORSRoutesResponse): OrderWithLocation[] {
       );
     }
 
+    const vehicleId = (route as { vehicle?: number }).vehicle ?? orders.length + 1;
     orders.push({
-      id: `route-${route.vehicle}`,
-      routeId: `Ruta ${route.vehicle}`,
-      trackingNumber: `Ruta ${route.vehicle}`,
-      address: endStep ? 'Fin – Depósito' : `Última entrega (Job ${lastJob.job ?? lastJob.id})`,
+      id: `route-${vehicleId}`,
+      routeId: `Ruta ${vehicleId}`,
+      trackingNumber: `Ruta ${vehicleId}`,
+      address: endStep ? 'Fin – Depósito' : (lastJob ? `Última entrega (Job ${(lastJob as { job?: number; id?: number }).job ?? (lastJob as { job?: number; id?: number }).id})` : 'Depósito'),
       lat: destLat,
       lng: destLng,
       pickupLat,
       pickupLng,
       pickupAddress: 'Depósito',
       status: 'in_progress',
-      driverName: `Vehículo ${route.vehicle}`,
-      vehiclePlate: `V-${route.vehicle}`,
+      driverName: `Vehículo ${vehicleId}`,
+      vehiclePlate: `V-${vehicleId}`,
       date: today,
       taskCount: jobSteps.length,
       waypoints: waypoints.length > 0 ? waypoints : undefined,
@@ -277,7 +286,9 @@ function orsResponseToOrders(response: ORSRoutesResponse): OrderWithLocation[] {
 
   for (const u of response.unassigned as Array<{ id: number; location: [number, number] }>) {
     if (!u?.location) continue;
-    const [lng, lat] = u.location;
+    const loc = u.location;
+    const lng = Array.isArray(loc) ? Number(loc[0]) : 0;
+    const lat = Array.isArray(loc) ? Number(loc[1]) : 0;
     orders.push({
       id: `unassigned-${u.id}`,
       routeId: `NA-${u.id}`,
@@ -440,8 +451,11 @@ function vrpResponseToOrders(response: VRPResponse): OrderWithLocation[] {
   templateUrl: './orders-map-view.component.html',
   styleUrl: './orders-map-view.component.css'
 })
-export class OrdersMapViewComponent implements AfterViewInit {
+export class OrdersMapViewComponent implements AfterViewInit, OnInit {
   @ViewChild('mapContainer') mapContainerRef!: ElementRef<HTMLDivElement>;
+
+  private router = inject(Router);
+  private simulationResultService = inject(OrdersSimulationResultService);
 
   searchText = signal('');
   /** Filtro por estado: 'all' | 'in_progress' | 'alert' | 'pending' | 'delivered' */
@@ -486,8 +500,8 @@ export class OrdersMapViewComponent implements AfterViewInit {
     return this.orders().filter(o => o.status === status).length;
   }
 
-  /** Datos de órdenes/rutas a partir de la respuesta VRP */
-  orders = signal<OrderWithLocation[]>(orsResponseToOrders(ORS_ROUTES_SAMPLE as ORSRoutesResponse));
+  /** Datos de órdenes/rutas a partir de la respuesta VRP o de la API de simulación. */
+  orders = signal<OrderWithLocation[]>([]);
 
   private mapInstance: LeafletMap | null = null;
   private markers: LeafletMarker[] = [];
@@ -782,6 +796,15 @@ export class OrdersMapViewComponent implements AfterViewInit {
     setTimeout(() => this.initMap(), 150);
   }
 
+  ngOnInit(): void {
+    const result = this.simulationResultService.getResult();
+    if (!result || !Array.isArray(result) || result.length === 0) {
+      this.router.navigate(['/orders']);
+      return;
+    }
+    this.orders.set(result as OrderWithLocation[]);
+  }
+
   private async initMap(): Promise<void> {
     try {
       const leafletModule = await import('leaflet');
@@ -860,6 +883,10 @@ export class OrdersMapViewComponent implements AfterViewInit {
       polyline: (latlngs: [number, number][], opts?: object) => { addTo: (m: LeafletMap) => unknown };
     };
     if (!L?.divIcon || !L?.marker) return;
+    this.markers.forEach(m => m.remove());
+    this.waypointMarkers.flat().forEach(m => m.remove());
+    this.polylinesTrack.flat().forEach(p => p.remove());
+    this.polylinesDash.flat().forEach(p => p.remove());
     this.markers = [];
     this.waypointMarkers = [];
     this.polylinesTrack = [];
